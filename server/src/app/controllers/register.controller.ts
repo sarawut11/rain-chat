@@ -1,5 +1,5 @@
-import * as md5 from 'md5';
-import { ServicesContext } from '../context';
+import * as md5 from "md5";
+import { ServicesContext } from "../context";
 
 export const registerController = async (ctx, next) => {
   const { userService } = ServicesContext.getInstance();
@@ -9,14 +9,14 @@ export const registerController = async (ctx, next) => {
   if (result.length) {
     ctx.body = {
       success: false,
-      message: '用户名已存在',
+      message: "用户名已存在",
     };
   } else {
     ctx.body = {
       success: true,
-      message: '注册成功！',
+      message: "注册成功！",
     };
-    console.log('注册成功');
+    console.log("注册成功");
     userService.insertData([name, md5(password)]);
   }
 };

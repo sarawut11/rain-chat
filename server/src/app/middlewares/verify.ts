@@ -2,8 +2,8 @@
  * @file 处理验证的中间件
  */
 
-import * as jwt from 'jsonwebtoken';
-import configs from '@configs';
+import * as jwt from "jsonwebtoken";
+import configs from "@configs";
 
 export const authVerify = token => {
   try {

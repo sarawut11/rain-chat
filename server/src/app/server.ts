@@ -1,11 +1,11 @@
-import * as http from 'http';
-import * as Koa from 'koa';
-import { createServer } from 'http';
+import * as http from "http";
+import * as Koa from "koa";
+import { createServer } from "http";
 
-import { Logger } from './utils/Logger';
-import { appSocket } from './socket/app.socket';
+import { Logger } from "./utils/Logger";
+import { appSocket } from "./socket/app.socket";
 
-const log = Logger('app:core:server');
+const log = Logger("app:core:server");
 
 export class Server {
   static app: Koa;
@@ -60,17 +60,17 @@ export class Server {
   }
 
   private static onError(server: http.Server, error: Error): void {
-    if (error['syscall'] !== 'listen') {
+    if (error["syscall"] !== "listen") {
       throw error;
     }
     const addr = server.address();
     // handle specific listen errors with friendly messages
-    switch (error['code']) {
-      case 'EACCES':
+    switch (error["code"]) {
+      case "EACCES":
         log.error(`${this.bind(addr)} requires elevated privileges`);
         process.exit(1);
         break;
-      case 'EADDRINUSE':
+      case "EADDRINUSE":
         log.error(`${this.bind(addr)} is already in use`);
         process.exit(1);
         break;
@@ -80,6 +80,6 @@ export class Server {
   }
 
   private static bind(addr: string | any): string {
-    return typeof addr === 'string' ? `pipe ${addr}` : `port http://localhost:${addr.port}`;
+    return typeof addr === "string" ? `pipe ${addr}` : `port http://localhost:${addr.port}`;
   }
 }

@@ -1,17 +1,17 @@
-import * as jwt from 'jsonwebtoken';
-import * as md5 from 'md5';
-import configs from '@configs';
-import { ServicesContext } from '../context';
+import * as jwt from "jsonwebtoken";
+import * as md5 from "md5";
+import configs from "@configs";
+import { ServicesContext } from "../context";
 
 // 用户名登录系统只涉及非github用户，也就是github用户只能走github授权来登录
 export const loginController = async (ctx, next) => {
   const { userService } = ServicesContext.getInstance();
 
-  const { name = '', password = '' } = ctx.request.body;
-  if (name === '' || password === '') {
+  const { name = "", password = "" } = ctx.request.body;
+  if (name === "" || password === "") {
     ctx.body = {
       success: false,
-      message: '用户名或密码不能为空',
+      message: "用户名或密码不能为空",
     };
     return;
   }
@@ -27,7 +27,7 @@ export const loginController = async (ctx, next) => {
       });
       ctx.body = {
         success: true,
-        message: '登录成功',
+        message: "登录成功",
         userInfo: {
           name,
           user_id: id,
@@ -45,13 +45,13 @@ export const loginController = async (ctx, next) => {
     } else {
       ctx.body = {
         success: false,
-        message: '密码错误',
+        message: "密码错误",
       };
     }
   } else {
     ctx.body = {
       success: false,
-      message: '用户名错误',
+      message: "用户名错误",
     };
   }
 };

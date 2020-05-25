@@ -1,14 +1,14 @@
-import configs from '@configs';
-import * as bodyParser from 'koa-bodyparser';
-import * as compress from 'koa-compress';
-import * as cors from '@koa/cors';
+import configs from "@configs";
+import * as bodyParser from "koa-bodyparser";
+import * as compress from "koa-compress";
+import * as cors from "@koa/cors";
 
-import { ServicesContext } from './context';
-import { appRoutes } from './routes';
-import { Server } from './server';
-import { ChatService, GroupChatService, GroupService, UserService } from './services';
+import { ServicesContext } from "./context";
+import { appRoutes } from "./routes";
+import { Server } from "./server";
+import { ChatService, GroupChatService, GroupService, UserService } from "./services";
 
-const corsArgs = configs.production ? { origin: "https://im.aermin.top" } : {};
+const corsArgs = configs.production ? { origin: "https://production_link" } : {};
 
 export const App = Server.init(app => {
   app

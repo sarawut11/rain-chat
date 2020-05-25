@@ -1,5 +1,5 @@
-import * as fs from 'fs';
-import { getSqlMap } from './getSQLMap';
+import * as fs from "fs";
+import { getSqlMap } from "./getSQLMap";
 
 const sqlContentMap = {};
 
@@ -10,7 +10,7 @@ const sqlContentMap = {};
  * @return {string}          脚本文件内容
  */
 function getSqlContent(fileName: string, path: string) {
-  const content = fs.readFileSync(path, 'binary');
+  const content = fs.readFileSync(path, "binary");
   sqlContentMap[fileName] = content;
 }
 

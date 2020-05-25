@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import * as fs from "fs";
 
 /**
  * 遍历目录下的文件目录
@@ -10,9 +10,9 @@ export const walkFile = (pathResolve: string, mime: string): object => {
   const files = fs.readdirSync(pathResolve);
   const fileList = {};
   for (const [i, item] of files.entries()) {
-    const itemArr = item.split('.');
+    const itemArr = item.split(".");
 
-    const itemMime = itemArr.length > 1 ? itemArr[itemArr.length - 1] : 'undefined';
+    const itemMime = itemArr.length > 1 ? itemArr[itemArr.length - 1] : "undefined";
     if (mime === itemMime) {
       fileList[item] = pathResolve + item;
     }

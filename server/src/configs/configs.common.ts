@@ -1,14 +1,14 @@
-import * as path from 'path';
+import * as path from "path";
 
-const rootUrl = path.join(process.cwd(), 'dist');
+const rootUrl = path.join(process.cwd(), "dist");
 
 export default {
-  rootUrl: path.join(process.cwd(), 'dist'),
-  staticPath: path.join(rootUrl, '../build'),
+  rootUrl: path.join(process.cwd(), "dist"),
+  staticPath: path.join(rootUrl, "../build"),
   logger: {
-    debug: 'app*',
+    debug: "app*",
     console: {
-      level: 'error',
+      level: "error",
     },
   },
 };

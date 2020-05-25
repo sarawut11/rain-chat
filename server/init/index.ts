@@ -1,6 +1,6 @@
 /* eslint-disable guard-for-in */
-import { getSqlContentMap } from './util/getSQLConentMap';
-import { query } from './db';
+import { getSqlContentMap } from "./util/getSQLConentMap";
+import { query } from "./db";
 
 // 打印脚本执行日志
 const eventLog = (err, sqlFile, index) => {
@@ -18,21 +18,21 @@ const sqlContentMap = getSqlContentMap();
 const createAllTables = async () => {
   for (const key in sqlContentMap) {
     const sqlShell = sqlContentMap[key];
-    const sqlShellList = sqlShell.split(';');
+    const sqlShellList = sqlShell.split(";");
 
     for (const [i, shell] of sqlShellList.entries()) {
       if (shell.trim()) {
         const result = await query(shell);
         if (result.serverStatus * 1 === 2) {
-          eventLog(null, key, i);
+          eventLog(undefined, key, i);
         } else {
           eventLog(true, key, i);
         }
       }
     }
   }
-  console.log('sql脚本执行结束！');
-  console.log('请按 ctrl + c 键退出！');
+  console.log("sql脚本执行结束！");
+  console.log("请按 ctrl + c 键退出！");
 };
 
 createAllTables();

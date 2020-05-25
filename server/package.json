@@ -16,7 +16,8 @@
     "init_sql": "ts-node-dev --respawn --transpileOnly ./init/index.ts ",
     "build:prod": "npm run clean-dist && webpack --config webpack.config.js --progress --colors --prod",
     "start:prod": "pm2 start ./dist/index.js --env production",
-    "stop:prod": "pm2 stop ./dist/index.js --env production"
+    "stop:prod": "pm2 stop ./dist/index.js --env production",
+    "lint": "tslint -c tslint.json 'src/**/*.ts' 'init/**/*.ts'"
   },
   "engines": {
     "node": ">= 0.10.0"
@@ -65,6 +66,7 @@
     "nodemon": "^1.19.0",
     "ts-loader": "^5.3.3",
     "ts-node-dev": "^1.0.0-pre.43",
+    "tslint": "^6.1.2",
     "webpack": "^4.29.0",
     "webpack-cli": "^3.2.1",
     "webpack-node-externals": "^1.7.2"

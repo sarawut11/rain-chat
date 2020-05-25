@@ -1,22 +1,22 @@
-import commonConfigs from './configs.common';
+import commonConfigs from "./configs.common";
 
 export default {
   production: false,
   ...commonConfigs,
-  port: '3000',
+  port: "3000",
   dbConnection: {
-    host: '127.0.0.1',
+    host: "127.0.0.1",
     port: 3306,
-    database: 'rain-chat',
-    user: 'root',
-    password: 'vitae-rain-chat',
+    database: "rain-chat",
+    user: "root",
+    password: "vitae-rain-chat",
   },
-  client_secret: '',
-  jwt_secret: 'chat-sec',
+  client_secret: "",
+  jwt_secret: "chat-sec",
   qiniu: {
-    accessKey: '',
-    secretKey: '',
-    bucket: '',
+    accessKey: "",
+    secretKey: "",
+    bucket: "",
   },
-  robot_key: '',
+  robot_key: "",
 };

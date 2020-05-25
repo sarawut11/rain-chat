@@ -1,5 +1,5 @@
-import * as qiniu from 'qiniu';
-import configs from '@configs';
+import * as qiniu from "qiniu";
+import configs from "@configs";
 
 export function getUploadToken() {
   const { accessKey, secretKey, bucket } = configs.qiniu;
@@ -12,6 +12,6 @@ export function getUploadToken() {
   const putPolicy = new qiniu.rs.PutPolicy(options);
   const uploadToken = putPolicy.uploadToken(mac);
 
-  console.log('uploadToken', uploadToken);
+  console.log("uploadToken", uploadToken);
   return uploadToken;
 }

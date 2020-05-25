@@ -1,4 +1,4 @@
-import { ServicesContext } from '../context';
+import { ServicesContext } from "../context";
 
 export const getPrivateMsg = async ({ toUser, user_id, start = 1, count = 20 }) => {
   const { userService, chatService } = ServicesContext.getInstance();
@@ -25,7 +25,7 @@ export const getGroupItem = async ({
   const { groupChatService } = ServicesContext.getInstance();
 
   const RowDataPacket1 = await groupChatService.getGroupMsg(groupId, start - 1, count);
-  const RowDataPacket2 = await groupChatService.getGroupInfo([groupId, null]);
+  const RowDataPacket2 = await groupChatService.getGroupInfo([groupId, undefined]);
   const RowDataPacket3 = await groupChatService.getGroupMember(groupId);
   const members = JSON.parse(JSON.stringify(RowDataPacket3));
   const messages = JSON.parse(JSON.stringify(RowDataPacket1));
@@ -82,6 +82,6 @@ export const getAllMessage = async ({ user_id, clientHomePageList }) => {
     };
   } catch (error) {
     console.log(error);
-    return null;
+    return undefined;
   }
 };

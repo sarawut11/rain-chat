@@ -1,7 +1,7 @@
-import * as winston from 'winston';
-import configs from '@configs';
+import * as winston from "winston";
+import configs from "@configs";
 // imports debug moduel
-import * as Debug from 'debug';
+import * as Debug from "debug";
 
 // Imports the Google Cloud client library for Winston
 // const { LoggingWinston } = require('@google-cloud/logging-winston');
@@ -37,7 +37,7 @@ export const winstonStream = stream(write(logger.info));
 // Configure the debug module
 process.env.DEBUG = configs.logger.debug;
 
-const debug = Debug('app:response');
+const debug = Debug("app:response");
 
 /**
  * Debug stream for the morgan plugin
@@ -49,7 +49,7 @@ export const debugStream = stream(write(debug));
  */
 const format = (scope: string, message: string): string => `[${scope}] ${message}`;
 
-const parse = (args: any[]) => (args.length > 0 ? args : '');
+const parse = (args: any[]) => (args.length > 0 ? args : "");
 
 export const Logger = (scope: string) => {
   const scopeDebug = Debug(scope);

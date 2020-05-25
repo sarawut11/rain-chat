@@ -1,7 +1,7 @@
-import configs from '@configs';
-import * as jwt from 'jsonwebtoken';
-import * as request from 'request-promise';
-import { ServicesContext } from '../context';
+import configs from "@configs";
+import * as jwt from "jsonwebtoken";
+import * as request from "request-promise";
+import { ServicesContext } from "../context";
 
 async function getAccessToken(ctx) {
   try {
@@ -12,8 +12,8 @@ async function getAccessToken(ctx) {
       client_id: clientId,
     };
     const options = {
-      method: 'POST',
-      uri: 'https://github.com/login/oauth/access_token',
+      method: "POST",
+      uri: "https://github.com/login/oauth/access_token",
       body: date,
       json: true, // Automatically stringifies the body to JSON
     };
@@ -30,12 +30,12 @@ export const githubOAuthController = async (ctx, next) => {
   try {
     const accessToken = await getAccessToken(ctx);
     const options = {
-      uri: 'https://api.github.com/user',
+      uri: "https://api.github.com/user",
       qs: {
         access_token: accessToken, // -> uri + '?access_token=xxxxx%20xxxxx'
       },
       headers: {
-        'User-Agent': 'Request-Promise',
+        "User-Agent": "Request-Promise",
       },
       json: true,
     };
@@ -55,7 +55,7 @@ export const githubOAuthController = async (ctx, next) => {
       github_id: id,
       website: blog,
       company,
-      user_id: null,
+      user_id: undefined,
     };
     const RowDataPacket = await userService.findGithubUser(id); // judge if this github account exist
     let githubUser = JSON.parse(JSON.stringify(RowDataPacket));
@@ -67,7 +67,7 @@ export const githubOAuthController = async (ctx, next) => {
       githubUser = JSON.parse(JSON.stringify(RowDataPacket));
     }
     data.user_id = githubUser[0].id;
-    console.log('github res && ctx.body', response, data);
+    console.log("github res && ctx.body", response, data);
     ctx.body = data;
   } catch (error) {
     throw new Error(error);
