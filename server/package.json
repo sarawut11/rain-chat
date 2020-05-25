@@ -1,8 +1,8 @@
 {
-  "name": "ghChat",
+  "name": "rain-chat",
   "version": "1.0.0",
-  "description": "server of ghChat",
-  "author": "aermin <aermin@qq.com>",
+  "description": "server of rain-chat",
+  "author": "sarawut <sanit.sa@outlook.com>",
   "private": true,
   "scripts": {
     "clean": "rimraf package-lock.json node_modules",

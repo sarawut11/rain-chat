@@ -6,7 +6,7 @@
 # https://github.com/sequelpro/sequelpro
 #
 # Host: localhost (MySQL 5.7.22)
-# Database: ghchat
+# Database: rain-chat
 # Generation Time: 2019-07-29 03:01:21 +0000
 # ************************************************************
 

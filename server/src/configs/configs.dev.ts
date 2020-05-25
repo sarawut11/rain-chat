@@ -5,11 +5,11 @@ export default {
   ...commonConfigs,
   port: '3000',
   dbConnection: {
-    host: '127.0.0.1', // 数据库IP
-    port: 3306, // 数据库端口
-    database: 'ghchat', // 数据库名称
-    user: 'root', // 数据库用户名
-    password: 'ghchat@123', // 数据库密码
+    host: '127.0.0.1',
+    port: 3306,
+    database: 'rain-chat',
+    user: 'root',
+    password: 'vitae-rain-chat',
   },
   client_secret: '',
   jwt_secret: 'chat-sec',
@@ -18,5 +18,5 @@ export default {
     secretKey: '',
     bucket: '',
   },
-  robot_key: '', // 机器人聊天用到的key => 请自己申请http://www.tuling123.com/
+  robot_key: '',
 };
