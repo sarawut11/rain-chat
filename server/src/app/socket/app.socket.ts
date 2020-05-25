@@ -55,7 +55,7 @@ export const appSocket = server => {
     let clientHomePageList;
     console.log("connection socketId=>", socketId, "time=>", new Date().toLocaleString());
 
-    // 获取群聊和私聊的数据
+    // Get data for group chats and private chats
     await emitAsync(socket, "initSocket", socketId, (userId, homePageList) => {
       console.log("userId", userId);
       user_id = userId;
@@ -85,7 +85,7 @@ export const appSocket = server => {
     }
     console.log("initGroupChat user_id=>", user_id, "time=>", new Date().toLocaleString());
 
-    // 私聊发信息
+    // Private message
     socket.on("sendPrivateMsg", async (data, cbFn) => {
       try {
         if (!data) return;
@@ -112,7 +112,7 @@ export const appSocket = server => {
       }
     });
 
-    // 群聊发信息
+    // Group chat
     socket.on("sendGroupMsg", async (data, cbFn) => {
       try {
         if (!data) return;
@@ -179,7 +179,7 @@ export const appSocket = server => {
       }
     });
 
-    // 建群
+    // Create Group
     socket.on("createGroup", async (data, fn) => {
       try {
         const to_group_id = uuid();
@@ -197,19 +197,19 @@ export const appSocket = server => {
       }
     });
 
-    // 修改群资料
+    // Update Group Information
     socket.on("updateGroupInfo", async (data, fn) => {
       try {
         await groupService.updateGroupInfo(data);
         console.log("updateGroupInfo data=>", data, "time=>", new Date().toLocaleString());
-        fn("修改群资料成功");
+        fn("Group data modified successfully");
       } catch (error) {
         console.log("error", error.message);
         io.to(socketId).emit("error", { code: 500, message: error.message });
       }
     });
 
-    // 加群
+    // Join Group
     socket.on("joinGroup", async (data, fn) => {
       try {
         const { userInfo, toGroupId } = data;
@@ -218,7 +218,7 @@ export const appSocket = server => {
           await groupService.joinGroup(userInfo.user_id, toGroupId);
           socket.broadcast.to(toGroupId).emit("getGroupMsg", {
             ...userInfo,
-            message: `${userInfo.name}加入了群聊`,
+            message: `${userInfo.name} joined a group chat`,
             to_group_id: toGroupId,
             tip: "joinGroup",
           });
@@ -233,7 +233,7 @@ export const appSocket = server => {
       }
     });
 
-    // 退群
+    // Leave Group
     socket.on("leaveGroup", async data => {
       try {
         const { user_id, toGroupId } = data;
@@ -246,7 +246,7 @@ export const appSocket = server => {
       }
     });
 
-    // 获取群成员信息
+    // Get group member information
     socket.on("getGroupMember", async (groupId, fn) => {
       try {
         const RowDataPacket = await groupChatService.getGroupMember(groupId);
@@ -277,7 +277,7 @@ export const appSocket = server => {
       }
     });
 
-    //  模糊匹配用户或者群组
+    //  Fuzzy match users or groups
     socket.on("fuzzyMatch", async (data, fn) => {
       try {
         let fuzzyMatchResult;
@@ -307,9 +307,9 @@ export const appSocket = server => {
     });
 
     /**
-     * 加为联系人
-     * @param  user_id  本机用户
-     *         from_user  本机用户的朋友（对方）
+     * Add as contact
+     * @param  user_id    Local user
+     * @param  from_user  Friends of the local user (the other party)
      */
     socket.on("addAsTheContact", async (data, fn) => {
       try {
@@ -336,7 +336,7 @@ export const appSocket = server => {
       }
     });
 
-    // 机器人聊天
+    // Robot chat
     socket.on("robotChat", async (data, fn) => {
       try {
         const date = {
@@ -353,9 +353,9 @@ export const appSocket = server => {
         const response = configs.robot_key
           ? await request(options)
           : {
-              text:
-                "请在 http://www.tuling123.com/ 登录并注册个机器人, 取到apikey放到代码configs中",
-            };
+            text:
+              "Please log in and register a robot at http://www.tuling123.com/, get the apikey and put it in the code configs",
+          };
         console.log("robotChat data=>", data, "time=>", new Date().toLocaleString());
         fn(response);
       } catch (error) {

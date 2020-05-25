@@ -1,10 +1,10 @@
 import * as fs from "fs";
 
 /**
- * 遍历目录下的文件目录
- * @param  {string} pathResolve  需进行遍历的目录路径
- * @param  {string} mime         遍历文件的后缀名
- * @return {object}              返回遍历后的目录结果
+ * Traverse the file directory under the directory
+ * @param  {string} pathResolve  Directory path to be traversed
+ * @param  {string} mime         Suffix name of traversal file
+ * @return {object}              Returns the directory result after traversal
  */
 export const walkFile = (pathResolve: string, mime: string): object => {
   const files = fs.readdirSync(pathResolve);

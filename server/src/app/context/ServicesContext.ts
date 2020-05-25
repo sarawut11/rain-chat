@@ -15,7 +15,7 @@ export class ServicesContext {
   public get userService() {
     return this._userService;
   }
-  public setuserService(service: UserService): ServicesContext {
+  public setUserService(service: UserService): ServicesContext {
     this._userService = service;
     return this;
   }
@@ -45,7 +45,7 @@ export class ServicesContext {
   public get groupChatService() {
     return this._groupChatService;
   }
-  public setgroupChatService(service: GroupChatService): ServicesContext {
+  public setGroupChatService(service: GroupChatService): ServicesContext {
     this._groupChatService = service;
     return this;
   }

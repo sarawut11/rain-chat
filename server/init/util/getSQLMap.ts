@@ -2,7 +2,7 @@
 import { walkFile } from "./walkFile";
 
 /**
- * 获取sql目录下的文件目录数据
+ * Get file directory data under sql directory
  * @return {object}
  */
 export function getSqlMap(): object {

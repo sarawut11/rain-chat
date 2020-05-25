@@ -1,5 +1,5 @@
 /**
- * @file 处理验证的中间件
+ * @file Middleware to handle verification
  */
 
 import * as jwt from "jsonwebtoken";
@@ -7,7 +7,7 @@ import configs from "@configs";
 
 export const authVerify = token => {
   try {
-    // 解码取出之前存在payload的user_id
+    // Decode the user_id that existed in the previous payload
     const payload = jwt.verify(token, configs.jwt_secret);
     return payload;
   } catch (err) {

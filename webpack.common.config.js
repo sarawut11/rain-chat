@@ -7,8 +7,8 @@ module.exports = {
     chunkFilename: '[name].[chunkhash].js',
     publicPath: '/',
   },
-  /* src文件夹下面的以.js结尾的文件，要使用babel解析 */
-  /* cacheDirectory是用来缓存编译结果，下次编译加速 */
+  /* Files ending in .js under the src folder must be parsed using babel */
+  /* cacheDirectory is used to cache compilation results, the next compilation speed up */
   module: {
     rules: [
       {
@@ -22,7 +22,7 @@ module.exports = {
           {
             loader: 'url-loader',
             options: {
-              limit: 8192, // 小于等于8K的图片会被转成base64编码，直接插入HTML中，减少HTTP请求。
+              limit: 8192, // Images less than or equal to 8K will be converted to base64 encoding and inserted directly into HTML to reduce HTTP requests.
             },
           },
         ],
@@ -31,7 +31,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      // 每次自动把js插入到模板index.html里面去
+      // Automatically insert js into the template index.html every time
       filename: 'index.html',
       template: path.resolve(__dirname, 'src/index.html'),
     }),

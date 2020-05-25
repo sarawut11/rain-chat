@@ -15,7 +15,7 @@ module.exports = merge(commonConfig, {
   entry: {
     app: ['babel-polyfill', path.resolve(__dirname, 'src/index.js')],
   },
-  /* 输出到build文件夹，输出文件名字为[name].[chunkhash].js */
+  /* Output to the build folder, the output file name is [name]. [Chunkhash] .js */
   output: {
     filename: '[name].[contenthash].js',
     path: path.resolve(__dirname, 'build'),
