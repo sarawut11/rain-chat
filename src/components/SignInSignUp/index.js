@@ -73,22 +73,22 @@ export default class SignInSignUp extends Component {
     const loginClass = isLogin ? 'active' : 'inactive';
     const registerClass = isLogin ? 'inactive' : 'active';
     const linkUrl = isLogin ? '/register' : '/login';
-    const buttonName = isLogin ? '登录' : '注册';
+    const buttonName = isLogin ? 'Log in' : 'Register';
     const OAuthHref = `https://github.com/login/oauth/authorize?client_id=${this.clientId}`;
     return (
       <div className="formContent fadeInDown">
         {this.state.showSpinner && <Spinner />}
         <div className="ghChatLogo">
-          <img src="https://cdn.aermin.top/ghChatIcon.png" alt="ghChatLogo" />
+          <img src="../../assets/vitae-logo.png" alt="vitae-logo" />
         </div>
         <Link to={linkUrl}>
-          <span className={loginClass}>登录</span>
+          <span className={loginClass}>Log in</span>
         </Link>
         <Link to={linkUrl}>
-          <span className={registerClass}>注册</span>
+          <span className={registerClass}>Register</span>
         </Link>
         <div className="userAvatarWrapper">
-          <UserAvatar name={name || 'Ÿ'} size="100" />
+          <UserAvatar name={name || 'U'} size="100" />
         </div>
         <div className="center">
           <input
@@ -96,7 +96,7 @@ export default class SignInSignUp extends Component {
             name="name"
             value={name}
             onChange={this.handleChange}
-            placeholder="用户名"
+            placeholder="Username"
           />
         </div>
         <div className="center">
@@ -105,21 +105,21 @@ export default class SignInSignUp extends Component {
             name="password"
             value={password}
             onChange={this.handleChange}
-            placeholder="密码"
+            placeholder="Password"
           />
         </div>
         <div className="center">
           <input type="button" onClick={this.handleClick} value={buttonName} />
         </div>
-        <div className="center">
-          <p className="authTips">推荐使用GitHub登录</p>
+        {/* <div className="center">
+          <p className="authTips">Github Login</p>
           <a className="githubOAuth" href={OAuthHref}>
             <svg className="icon githubIcon" aria-hidden="true">
               <use xlinkHref="#icon-github" />
             </svg>
           </a>
-        </div>
-        <div className="version">Version: 2.5.6</div>
+        </div> */}
+        <div className="version">Version: 1.0.0</div>
       </div>
     );
   }

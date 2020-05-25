@@ -7,12 +7,12 @@
   "background_color": "#fff",
   "icons": [
     {
-      "src": "https://cdn.aermin.top/ghChatIcon192%2A192.png",
+      "src": "/assets/vitae-logo.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://cdn.aermin.top/ghChatIcon512%2A512.png",
+      "src": "/assets/vitae-logo.png",
       "type": "image/png",
       "sizes": "512x512"
     }
