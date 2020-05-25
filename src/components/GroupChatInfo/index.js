@@ -112,7 +112,7 @@ export default class GroupChatInfo extends Component {
     return (
       <div className="chatInformation">
         <CreateGroupModal
-          title="修改群资料"
+          title="Modify group information"
           modalVisible={modalVisible}
           confirm={args => this._confirm(args)}
           hasCancel
@@ -123,7 +123,7 @@ export default class GroupChatInfo extends Component {
         />
         <div className="info">
           <p className="noticeTitle">
-            群公告
+            Group announcement
             {this._isCreator && (
               <svg
                 onClick={this._openEditorInfoModal}
@@ -136,15 +136,15 @@ export default class GroupChatInfo extends Component {
           </p>
           <p className="noticeContent">{groupInfo.group_notice}</p>
           <p className="memberTitle">
-            {`在线人数: ${onlineNumber}`}
+            {`online users: ${onlineNumber}`}
             <span className="showAllMember" onClick={this._showAllMember}>
-              {`${justShowOnlineMember ? '查看所有' : '只看在线'}`}
+              {`${justShowOnlineMember ? 'view all' : 'Just watch online'}`}
             </span>
           </p>
         </div>
         {this.GroupMemberRender(groupMember)}
         <p className="leave" onClick={leaveGroup}>
-          退出群聊
+          Leave group chat
         </p>
       </div>
     );

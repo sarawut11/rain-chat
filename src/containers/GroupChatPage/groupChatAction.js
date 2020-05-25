@@ -54,7 +54,8 @@ const addGroupInfoAction = ({ allGroupChats, member, members, groupId, groupInfo
 const updateGroupTitleNoticeAction = ({ allGroupChats, groupNotice, groupName, groupId }) => {
   const allGroupChatsCopy = new Map(allGroupChats);
   const goalGroupChat = allGroupChatsCopy.get(groupId);
-  if (!goalGroupChat || !goalGroupChat.groupInfo) console.error('不存在此群的信息');
+  if (!goalGroupChat || !goalGroupChat.groupInfo)
+    console.error('There is no information for this group');
   goalGroupChat.groupInfo = {
     ...goalGroupChat.groupInfo,
     group_notice: groupNotice,

@@ -8,16 +8,16 @@ function confirmCancelRender(props) {
   if (hasCancel && hasConfirm) {
     return (
       <div className="twoButton">
-        <p onClick={cancel}>取消</p>
-        <p onClick={confirm}>确定</p>
+        <p onClick={cancel}>Cancel</p>
+        <p onClick={confirm}>Confirm</p>
       </div>
     );
   }
   if (hasConfirm || hasCancel) {
     return (
       <div className="oneButton">
-        {hasCancel && <p onClick={cancel}>取消</p>}
-        {hasConfirm && <p onClick={confirm}>确定</p>}
+        {hasCancel && <p onClick={cancel}>cancel</p>}
+        {hasConfirm && <p onClick={confirm}>Confirm</p>}
       </div>
     );
   }
@@ -27,7 +27,7 @@ function confirmCancelRender(props) {
 confirmCancelRender.propTypes = {
   hasCancel: PropTypes.bool,
   hasConfirm: PropTypes.bool,
-  cancel: PropTypes.func, // 点击遮罩取消Modal的前提是有传cancel方法
+  cancel: PropTypes.func, // The premise of canceling Modal by clicking the mask is that there is a cancel method
   confirm: PropTypes.func,
 };
 

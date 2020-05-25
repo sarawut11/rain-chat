@@ -40,7 +40,7 @@ export default class Chat {
             groupMessages => {
               if (groupMessages && groupMessages.length === 0) {
                 this._hasLoadAllMessages = true;
-                notification('已经到底啦', 'warn', 2);
+                notification('Already in the end', 'warn', 2);
                 reject();
               }
               store.dispatch(
@@ -56,7 +56,7 @@ export default class Chat {
           );
         } catch (error) {
           console.log(error);
-          notification('出错啦，请稍后再试', 'error');
+          notification('Something went wrong, please try again later', 'error');
           const errorText = 'try again later';
           reject(errorText);
         }
@@ -78,7 +78,7 @@ export default class Chat {
           privateChatMessages => {
             if (privateChatMessages && privateChatMessages.length === 0) {
               this._hasLoadAllMessages = true;
-              notification('已经到底啦', 'warn', 2);
+              notification('Already in the end', 'warn', 2);
               reject();
             }
             store.dispatch(

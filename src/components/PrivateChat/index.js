@@ -37,15 +37,15 @@ export default class PrivateChat extends Component {
       addPrivateChatMessages,
     } = this.props;
     const data = {
-      from_user: user_id, // 自己的id
-      to_user: this.friendId, // 对方id
-      avatar, // 自己的头像
+      from_user: user_id, // Own id
+      to_user: this.friendId, // Other's id
+      avatar, // Own avatar
       name,
       github_id,
       message:
-        inputMsg === '' ? `${name}: [${attachments[0].type || 'file'}]` : `${name}: ${inputMsg}`, // 消息内容
-      attachments, // 附件
-      // time: Date.parse(new Date()) / 1000 // 时间
+        inputMsg === '' ? `${name}: [${attachments[0].type || 'file'}]` : `${name}: ${inputMsg}`, // Message content
+      attachments, // attatchment
+      // time: Date.parse(new Date()) / 1000 //
     };
     this._sendByMe = true;
     const response = await request.socketEmitAndGetResponse('sendPrivateMsg', data, error => {
@@ -147,7 +147,7 @@ export default class PrivateChat extends Component {
     return (
       <div className="chat-wrapper">
         <ShareModal
-          title="分享此联系人给"
+          title="Share this contact to"
           modalVisible={showShareModal}
           chatId={this.chatId}
           showShareModal={this._showShareModal}
@@ -185,7 +185,7 @@ export default class PrivateChat extends Component {
           initApp && (
             <Button
               clickFn={debounce(this.addAsTheContact, 2000, true)}
-              value="加为联系人"
+              value="Add as contact"
               disable={disableJoinButton}
               className="button"
             />

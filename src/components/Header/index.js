@@ -44,7 +44,7 @@ export default class Header extends Component {
         },
       ];
       const groupInfo = Object.assign({ members }, res);
-      res.message = `${name}: 创建群成功！`;
+      res.message = `${name}: Create group successfully!`;
       res.time = res.create_time;
       res.from_user = res.creator_id;
       updateHomePageList({ data: res, homePageList });
@@ -82,7 +82,7 @@ export default class Header extends Component {
           </svg>
         </span>
         <CreateGroupModal
-          title="创建群组"
+          title="Create Group"
           modalVisible={this.state.showGroupModal}
           confirm={args => this.confirm(args)}
           hasCancel

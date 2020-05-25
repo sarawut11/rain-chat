@@ -42,7 +42,7 @@ export default class SignInSignUp extends Component {
         })
         .catch(error => {
           console.log(
-            '使用github登录前请确定你的github设置了public的email，否则可能会失败 error => ',
+            'Before logging in with github, please make sure that your github is set up with a public email, otherwise it may fail error => ',
             error,
           );
           window.open(

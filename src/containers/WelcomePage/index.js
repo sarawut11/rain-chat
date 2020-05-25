@@ -10,8 +10,8 @@ export default class welcome extends Component {
   render() {
     return (
       <div className="welcomeWrapper">
-        <p className="title">欢迎ヾ(=･ω･=)o</p>
-        <p className="content">选个群组/用户开始聊天吧ε==(づ′▽`)づ</p>
+        <p className="title">Welcome</p>
+        <p className="content">Choose a group / user to start chatting</p>
       </div>
     );
   }

@@ -31,12 +31,12 @@ class userInfoRender extends Component {
       <div className="userInfo">
         <UserAvatar name={name} src={avatar} size="50" />
         {name && <p className="name">{name}</p>}
-        {intro && <p>{`介绍: ${intro}`}</p>}
-        {location && <p>{`来自: ${location}`}</p>}
-        {company && <p>{`公司: ${company}`}</p>}
+        {intro && <p>{`Introduction: ${intro}`}</p>}
+        {location && <p>{`Location: ${location}`}</p>}
+        {company && <p>{`Company: ${company}`}</p>}
         {/* {status && <p>{status}</p>} */}
         {website && (
-          <p className="website" onClick={() => _openUrl(website)}>{`网站: ${website}`}</p>
+          <p className="website" onClick={() => _openUrl(website)}>{`website: ${website}`}</p>
         )}
         {github && <p className="github" onClick={() => _openUrl(github)}>{`github: ${github}`}</p>}
         {showContactButton && (
@@ -91,7 +91,7 @@ class PersonalInfo extends Component {
           deleteHomePageList({ homePageList, chatId: userInfo.user_id });
           deletePrivateChat({ allPrivateChats, chatId: userInfo.user_id });
           this.props.hide();
-          notification('删除联系人成功', 'success', 2);
+          notification('Successfully deleted contact', 'success', 2);
         }
       },
     );

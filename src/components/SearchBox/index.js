@@ -29,7 +29,7 @@ export default class SearchBox extends Component {
           type="text"
           name="searchField"
           value={isSearching ? searchField : ''}
-          placeholder="搜索用户/群"
+          placeholder="Search users / groups"
           onChange={this._searchFieldChange}
         />
       </div>
