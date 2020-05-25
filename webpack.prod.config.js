@@ -1,4 +1,5 @@
 const path = require('path');
+/* eslint-disable */
 const merge = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const webpack = require('webpack');
@@ -9,6 +10,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const commonConfig = require('./webpack.common.config.js');
+/* eslint-enable */
 
 module.exports = merge(commonConfig, {
   mode: 'production',

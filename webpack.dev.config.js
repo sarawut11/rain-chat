@@ -1,6 +1,9 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 const merge = require('webpack-merge');
 const path = require('path');
+// eslint-disable-next-line import/no-extraneous-dependencies
 const webpack = require('webpack');
+// eslint-disable-next-line import/no-extraneous-dependencies
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const commonConfig = require('./webpack.common.config.js');
 
