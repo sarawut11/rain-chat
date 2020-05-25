@@ -11,7 +11,7 @@ export class GroupChatService {
    */
   getGroupMsg(groupId, start, count) {
     const _sql =
-      "SELECT * FROM (SELECT g.message,g.attachments,g.time,g.from_user,g.to_group_id, i.avatar ,i.name, i.github_id FROM group_msg  As g inner join user_info AS i ON g.from_user = i.id  WHERE to_group_id = ? order by time desc limit ?,?) as n order by n.time; ";
+      "SELECT * FROM (SELECT g.message,g.attachments,g.time,g.from_user,g.to_group_id, i.avatar ,i.name FROM group_msg  As g inner join user_info AS i ON g.from_user = i.id  WHERE to_group_id = ? order by time desc limit ?,?) as n order by n.time; ";
     return query(_sql, [groupId, start, count]);
   }
 
@@ -22,7 +22,7 @@ export class GroupChatService {
    */
   getGroupMember(groupId) {
     const _sql =
-      "SELECT g.user_id, u.socketid, u.name, u.avatar, u.github_id, u.github, u.intro, u.company, u.location, u.website FROM group_user_relation AS g inner join user_info AS u ON g.user_id = u.id WHERE to_group_id = ?";
+      "SELECT g.user_id, u.socketid, u.name, u.avatar, u.intro, u.company, u.location, u.website FROM group_user_relation AS g inner join user_info AS u ON g.user_id = u.id WHERE to_group_id = ?";
     return query(_sql, groupId);
   }
 

@@ -23,7 +23,7 @@ export const loginController = async (ctx, next) => {
       const { id, name, sex, website, intro, company, avatar, location, socketId } = res[0];
       const payload = { id };
       const token = jwt.sign(payload, configs.jwt_secret, {
-        expiresIn: Math.floor(Date.now() / 1000) + 24 * 60 * 60 * 7, // 一周
+        expiresIn: Math.floor(Date.now() / 1000) + 24 * 60 * 60 * 7, // One Week
       });
       ctx.body = {
         success: true,
