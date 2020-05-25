@@ -49,7 +49,7 @@ export default class PrivateChat extends Component {
     };
     this._sendByMe = true;
     const response = await request.socketEmitAndGetResponse('sendPrivateMsg', data, error => {
-      notification('消息发送失败', 'error', 2);
+      notification('Message failed to send', 'error', 2);
     });
     addPrivateChatMessages({
       allPrivateChats,
@@ -66,14 +66,14 @@ export default class PrivateChat extends Component {
     this.setState({ disableJoinButton: true });
     const { allPrivateChats, homePageList, updateHomePageList, addPrivateChatInfo } = this.props;
     if (this.chatId === this._userInfo.user_id) {
-      notification('不能添加自己为联系人哦', 'error', 2);
+      notification('Can not add yourself as a contact', 'error', 2);
       return;
     }
     const data = await request.socketEmitAndGetResponse(
       'addAsTheContact',
       { user_id: this._userInfo.user_id, from_user: this.friendId },
       error => {
-        notification('添加失败！', 'error', 1.5);
+        notification('Add failed! ', 'error', 1.5);
         this.setState({ disableJoinButton: false });
       },
     );
@@ -81,7 +81,7 @@ export default class PrivateChat extends Component {
     const dataInHomePageList = {
       ...data,
       to_user: data.user_id,
-      message: '添加联系人成功，给我发消息吧:)',
+      message: 'Add contact successfully, send me a message:)',
       time: Date.parse(new Date()) / 1000,
     };
     updateHomePageList({ data: dataInHomePageList, homePageList });

@@ -242,7 +242,7 @@ export default class InputArea extends Component {
         />
         {/* <pre id="textarea" /> */}
         <p className={buttonClass} onClick={this._sendMessage}>
-          发送
+          Send
         </p>
       </div>
     );
