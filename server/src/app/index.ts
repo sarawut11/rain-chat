@@ -22,10 +22,10 @@ export const App = Server.init(app => {
   .createConnection()
   .then(() => {
     ServicesContext.getInstance()
-      .setuserService(new UserService())
+      .setUserService(new UserService())
       .setGroupService(new GroupService())
       .setChatService(new ChatService())
-      .setgroupChatService(new GroupChatService());
+      .setGroupChatService(new GroupChatService());
 
     Server.run(configs.port);
   });

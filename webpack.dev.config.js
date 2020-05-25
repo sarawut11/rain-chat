@@ -14,7 +14,9 @@ module.exports = merge(commonConfig, {
     app: ['babel-polyfill', 'react-hot-loader/patch', path.resolve(__dirname, 'src/index.js')],
   },
   output: {
-    /* 这里本来应该是[chunkhash]的，但是由于[chunkhash]和react-hot-loader不兼容。只能妥协 */
+    /* It should have been [chunkhash] here, 
+    but because [chunkhash] and react-hot-loader are not compatible. 
+    Can only compromise */
     filename: '[name].[hash].js',
     path: path.resolve(__dirname, './build'),
   },
@@ -32,11 +34,11 @@ module.exports = merge(commonConfig, {
     ],
   },
   devServer: {
-    contentBase: path.resolve(__dirname, './src'), // 让WEB服务器运行静态资源（index.html）
+    contentBase: path.resolve(__dirname, './src'), // Let the WEB server run static resources (index.html)
     hot: true,
     historyApiFallback: true,
     compress: true,
-    stats: 'errors-only', // 只在发生错误时输出
+    stats: 'errors-only', // Output only when an error occurs
   },
   plugins: [new webpack.HotModuleReplacementPlugin(), new ProgressBarPlugin()],
 });

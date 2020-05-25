@@ -27,7 +27,7 @@ module.exports = {
         ignoreTemplateLiterals: true,
         ignoreRegExpLiterals: true,
       },
-    ], // 使用 prettier 来控制缩进,避免与 ESLint 冲突 */
+    ], // Use prettier to control indentation and avoid conflict with ESLint */
 
     'object-shorthand': [
       2,
