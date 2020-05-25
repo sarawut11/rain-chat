@@ -1,6 +1,6 @@
 {
-  "name": "ghChat",
-  "short_name": "ghChat",
+  "name": "rain-chat",
+  "short_name": "rain-chat",
   "display": "standalone",
   "start_url": "/",
   "theme_color": "#60b0f4",

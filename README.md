@@ -7,7 +7,7 @@ Back-end: node(koa2)+mysql+JWT(Json web token);
 use socket.io to send messages with each other.
 And get other technology please follow the package.json file.
 
-## Suggest to open PWA: [How to turn on PWA in chrome?](https://github.com/aermin/blog/issues/63)
+## Suggest to open PWA: [How to turn on PWA in chrome?](https://support.google.com/chrome/answer/9658361?co=GENIE.Platform%3DDesktop&hl=en)
 
 ## Features && Progress
 

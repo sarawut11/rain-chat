@@ -6,11 +6,11 @@ const initState = {
   robotMsg: [
     // 机器人首语
     {
-      message: 'hi, 我是机器人，欢迎与我聊天哦！也欢迎点击加入ghChat交流群进行交流 :grinning:',
+      message: 'hi, 我是机器人，欢迎与我聊天哦！也欢迎点击加入rain-chat交流群进行交流 :grinning:',
       user: '机器人小R',
     },
     {
-      message: '::share::{"name":"ghChat","to_group_id":"ddbffd80-3663-11e9-a580-d119b23ef62e"}',
+      message: '::share::{"name":"rain-chat","to_group_id":"ddbffd80-3663-11e9-a580-d119b23ef62e"}',
       user: '机器人小R',
     },
   ],

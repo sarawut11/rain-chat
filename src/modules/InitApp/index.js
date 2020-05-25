@@ -24,7 +24,7 @@ import Chat from '../Chat';
 class InitApp {
   constructor(props) {
     this.WEBSITE_ADDRESS =
-      process.env.NODE_ENV === 'production' ? 'https://im.aermin.top' : 'http://localhost:3000';
+      process.env.NODE_ENV === 'production' ? 'https://production_link' : 'http://localhost:3000';
     this._userInfo = JSON.parse(localStorage.getItem('userInfo'));
     this._hasCalledMe = false;
     this._browserNotification = new BrowserNotification();

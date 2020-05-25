@@ -1,5 +1,5 @@
 {
-  "name": "ghChat",
+  "name": "rain-chat",
   "version": "1.0.0",
   "description": "a chat tool for GitHub ",
   "main": "index.js",
@@ -13,14 +13,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aermin/ghChat.git"
+    "url": "git+https://github.com/sarawut11/rain-chat.git"
   },
-  "author": "aermin",
+  "author": "sarawut",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/aermin/ghChat/issues"
+    "url": "https://github.com/sarawut11/rain-chat/issues"
   },
-  "homepage": "https://github.com/aermin/ghChat#readme",
+  "homepage": "https://github.com/sarawut11/rain-chat#readme",
   "devDependencies": {
     "autoprefixer": "^8.6.3",
     "babel-core": "^6.26.3",
