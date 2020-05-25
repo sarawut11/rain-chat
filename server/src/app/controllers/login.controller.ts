@@ -3,7 +3,7 @@ import * as md5 from "md5";
 import configs from "@configs";
 import { ServicesContext } from "../context";
 
-// 用户名登录系统只涉及非github用户，也就是github用户只能走github授权来登录
+// The username login system only involves non-github users, that is, github users can only log in with github authorization
 export const loginController = async (ctx, next) => {
   const { userService } = ServicesContext.getInstance();
 
@@ -11,29 +11,28 @@ export const loginController = async (ctx, next) => {
   if (name === "" || password === "") {
     ctx.body = {
       success: false,
-      message: "用户名或密码不能为空",
+      message: "Username or password cannot be empty",
     };
     return;
   }
   const RowDataPacket = await userService.findDataByName(name);
   const res = JSON.parse(JSON.stringify(RowDataPacket));
   if (res.length > 0) {
-    //   验证成功后，服务端会签发一个 Token，再把这个 Token 发送给客户端
+    //   After the verification is successful, the server will issue a Token, and then send the Token to the client
     if (md5(password) === res[0].password) {
-      const { id, name, sex, website, github, intro, company, avatar, location, socketId } = res[0];
+      const { id, name, sex, website, intro, company, avatar, location, socketId } = res[0];
       const payload = { id };
       const token = jwt.sign(payload, configs.jwt_secret, {
         expiresIn: Math.floor(Date.now() / 1000) + 24 * 60 * 60 * 7, // 一周
       });
       ctx.body = {
         success: true,
-        message: "登录成功",
+        message: "Login Successful",
         userInfo: {
           name,
           user_id: id,
           sex,
           website,
-          github,
           intro,
           company,
           avatar,
@@ -45,13 +44,13 @@ export const loginController = async (ctx, next) => {
     } else {
       ctx.body = {
         success: false,
-        message: "密码错误",
+        message: "Wrong Password",
       };
     }
   } else {
     ctx.body = {
       success: false,
-      message: "用户名错误",
+      message: "Username Error",
     };
   }
 };

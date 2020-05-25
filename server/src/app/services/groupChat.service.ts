@@ -2,12 +2,12 @@ import { query } from "../utils/db";
 
 export class GroupChatService {
   /**
-   * 获取群消息
-   * @param  群id
-   * @return  message 群消息
-   * @return  time  时间
-   * @return  from_user  发送人id
-   *  @return  avatar  发送人头像
+   * Get Group Message
+   * @param groupId     Group Id
+   * @return  message   Group Message
+   * @return  time      Time
+   * @return  from_user Sender ID
+   * @return  avatar    Sender Avatar
    */
   getGroupMsg(groupId, start, count) {
     const _sql =
@@ -16,9 +16,9 @@ export class GroupChatService {
   }
 
   /**
-   * 获取群成员
-   * @param   群id
-   * @return  group_member_id  群成员id
+   * Get group members
+   * @param   groupId   Group Id
+   * @return  group_member_id  Group Member Id
    */
   getGroupMember(groupId) {
     const _sql =
@@ -27,8 +27,8 @@ export class GroupChatService {
   }
 
   /**
-   * 获取群资料
-   * @param   arr 包括 groupId  groupName 至少一个
+   * Get group information
+   * @param   arr Including at least one groupId groupName
    * @return
    */
   getGroupInfo(arr) {
@@ -38,12 +38,12 @@ export class GroupChatService {
   }
 
   /**
-   * 存聊天记录
-   * @param   user_id  用户id
-   * @param   groupId 群id
-   * @param   message  消息
-   * @param   name 用户名
-   * @param   time  时间
+   * Save chat history
+   * @param   user_id  User Id
+   * @param   groupId  Group Id
+   * @param   message  Message
+   * @param   name     Username
+   * @param   time     Time
    * @return
    */
 
@@ -55,9 +55,9 @@ export class GroupChatService {
   }
 
   /**
-   * 群添加成员并返回群成员
-   * @param   user_id  用户id
-   * @param   groupId 群id
+   * Add members to the group and return to the group members
+   * @param   user_id   User Id
+   * @param   groupId   Group Id
    * @return
    */
   addGroupUserRelation(user_id, groupId) {

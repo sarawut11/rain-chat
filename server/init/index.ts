@@ -2,19 +2,19 @@
 import { getSqlContentMap } from "./util/getSQLConentMap";
 import { query } from "./db";
 
-// 打印脚本执行日志
+// Print script execution log
 const eventLog = (err, sqlFile, index) => {
   if (err) {
-    console.log(`[ERROR] sql脚本文件: ${sqlFile} 第${index + 1}条脚本 执行失败 o(╯□╰)o ！`);
+    console.log(`[ERROR] sql script file: ${sqlFile} ${index + 1}th script execution failed o(╯□╰)o ！`);
   } else {
-    console.log(`[SUCCESS] sql脚本文件: ${sqlFile} 第${index + 1}条脚本 执行成功 O(∩_∩)O !`);
+    console.log(`[SUCCESS] sql script file: ${sqlFile} ${index + 1}th script executed successfully O(∩_∩)O !`);
   }
 };
 
-// 获取所有sql脚本内容
+// Get all sql script content
 const sqlContentMap = getSqlContentMap();
 
-// 执行建表sql脚本
+// Execute the table creation sql script
 const createAllTables = async () => {
   for (const key in sqlContentMap) {
     const sqlShell = sqlContentMap[key];
@@ -31,8 +31,8 @@ const createAllTables = async () => {
       }
     }
   }
-  console.log("sql脚本执行结束！");
-  console.log("请按 ctrl + c 键退出！");
+  console.log("SQL script execution is over!");
+  console.log("Please press ctrl + c to exit!");
 };
 
 createAllTables();

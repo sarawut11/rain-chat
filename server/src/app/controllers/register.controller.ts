@@ -9,14 +9,14 @@ export const registerController = async (ctx, next) => {
   if (result.length) {
     ctx.body = {
       success: false,
-      message: "用户名已存在",
+      message: "Username already exists",
     };
   } else {
     ctx.body = {
       success: true,
-      message: "注册成功！",
+      message: "Registration success!",
     };
-    console.log("注册成功");
+    console.log("Registration success");
     userService.insertData([name, md5(password)]);
   }
 };
