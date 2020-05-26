@@ -26,3 +26,4 @@ Thumbs.db
 .nyc_output
 .awcache
 /secrets.*
+test.rest
