@@ -5,6 +5,7 @@ import store from './redux/store';
 import App from './router';
 import AxiosHandle from './utils/request';
 import './index.scss';
+import 'antd/dist/antd.css';
 
 if (window.location.protocol === 'https:' && navigator.serviceWorker) {
   window.addEventListener('load', () => {
