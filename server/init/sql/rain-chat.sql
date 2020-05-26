@@ -28,12 +28,13 @@ CREATE TABLE `user_info` (
   `avatar` varchar(250) DEFAULT '',
   `intro` varchar(100) DEFAULT NULL,
   `socketid` char(255) DEFAULT NULL,
-  `referral` int(11) DEFAULT 1,
+  `sponsor` int(11) DEFAULT 1,
   `wallet_address` char(255) DEFAULT NULL,
   `balance` double DEFAULT 0,
   `pop_balance` double DEFAULT 0,
   `pop_limit` double DEFAULT 0,
   `role` varchar(20) DEFAULT 'FREE',
+  `uniqueid` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 # Dump of table group_info

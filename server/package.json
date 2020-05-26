@@ -42,6 +42,7 @@
     "request-promise": "^4.2.2",
     "socket.io": "^2.0.3",
     "typescript": "^3.4.3",
+    "uniqid": "^5.2.0",
     "uuid": "^3.2.1",
     "winston": "^3.2.1"
   },
