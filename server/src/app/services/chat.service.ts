@@ -10,8 +10,6 @@ export class ChatService {
    *          message   Private chat information
    *          time      Time
    *          avatar    Sender's avatar
-   *          sex       Sender's gender
-   *          location  Sender's residence
    */
   getPrivateDetail(from_user, to_user, start, count) {
     const data = [from_user, to_user, to_user, from_user, start, count];

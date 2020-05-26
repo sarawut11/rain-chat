@@ -6,6 +6,13 @@ export const registerController = async (ctx, next) => {
 
   console.log(ctx.request.body);
   const { username, password } = ctx.request.body;
+  if (username === "" || password === "") {
+    ctx.body = {
+      success: false,
+      message: "Username or password cannot be empty",
+    };
+    return;
+  }
   const result = await userService.findDataByUsername(username);
   if (result.length) {
     ctx.body = {

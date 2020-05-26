@@ -21,7 +21,7 @@ export class UserService {
     return query(_sql, username);
   }
 
-  // Find user information by user id user_info includes user name, gender, avatar, last login time, status, etc. excluding password
+  // Find user information by user id user_info includes user name, avatar, last login time, status, etc. excluding password
   getUserInfo(user_id) {
     const _sql =
       "SELECT id AS user_id, username, avatar, intro FROM user_info WHERE user_info.id =? ";
@@ -101,14 +101,8 @@ export class UserService {
 
   // Find user information by user name user_info does not include password
   // const findUIByName = (name) {
-  //   const _sql = 'SELECT id ,name ,sex,avatar,location FROM user_info WHERE name = ? ';
+  //   const _sql = 'SELECT id ,name,avatar FROM user_info WHERE name = ? ';
   //   return query(_sql, name);
-  // };
-
-  // Edit my information
-  // const editorInfo = (data) {
-  //   const _sql = ' UPDATE  user_info SET website = ?,sex = ?,location = ? WHERE id = ? ; ';
-  //   return query(_sql, data);
   // };
 
   // Find user information by user id user_info including password
