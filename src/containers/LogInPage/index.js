@@ -76,7 +76,7 @@ class LogIn extends Component {
     const { visible } = this.state.modal;
     return (
       <div className="login">
-        <Modal title="提示" visible={visible} confirm={this.confirm} hasConfirm>
+        <Modal title="Alert" visible={visible} confirm={this.confirm} hasConfirm>
           <p className="content">You have successfully logged in</p>
         </Modal>
         <SignInSignUp setValue={this.setValue} isLogin />
