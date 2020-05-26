@@ -16,6 +16,26 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+# Dump of table user_info
+# ------------------------------------------------------------
+DROP TABLE IF EXISTS `user_info`;
+CREATE TABLE `user_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL DEFAULT 'NOT NULL',
+  `password` varchar(40) DEFAULT NULL,
+  `name` varchar(20) DEFAULT NULL,
+  `email` varchar(40) DEFAULT NULL,
+  `avatar` varchar(250) DEFAULT '',
+  `intro` varchar(100) DEFAULT NULL,
+  `socketid` char(255) DEFAULT NULL,
+  `ref_user_id` int(11) DEFAULT 0,
+  `wallet_address` char(255) DEFAULT NULL,
+  `balance` double DEFAULT 0,
+  `pop_balance` double DEFAULT 0,
+  `pop_limit` double DEFAULT 0,
+  `role` varchar(20) DEFAULT 'FREE',
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 # Dump of table group_info
 # ------------------------------------------------------------
 DROP TABLE IF EXISTS `group_info`;
@@ -63,20 +83,6 @@ CREATE TABLE `private_msg` (
   PRIMARY KEY (`id`),
   KEY `from_user` (`from_user`),
   KEY `to_user` (`to_user`)
-) ENGINE = InnoDB DEFAULT CHARSET = utf8;
-# Dump of table user_info
-# ------------------------------------------------------------
-DROP TABLE IF EXISTS `user_info`;
-CREATE TABLE `user_info` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) NOT NULL DEFAULT 'NOT NULL',
-  `password` varchar(40) DEFAULT NULL,
-  `name` varchar(20) DEFAULT NULL,
-  `email` varchar(40) DEFAULT NULL,
-  `avatar` varchar(250) DEFAULT '',
-  `intro` varchar(100) DEFAULT NULL,
-  `socketid` char(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 # Dump of table user_user_relation
 # ------------------------------------------------------------

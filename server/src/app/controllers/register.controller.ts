@@ -4,7 +4,6 @@ import { ServicesContext } from "../context";
 export const registerController = async (ctx, next) => {
   const { userService } = ServicesContext.getInstance();
 
-  console.log(ctx.request.body);
   const { username, password } = ctx.request.body;
   if (username === "" || password === "") {
     ctx.body = {
