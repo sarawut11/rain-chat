@@ -37,19 +37,19 @@ export default class PrivateChat extends Component {
       addPrivateChatMessages,
     } = this.props;
     const data = {
-      from_user: user_id, // 自己的id
-      to_user: this.friendId, // 对方id
-      avatar, // 自己的头像
+      from_user: user_id, // Own id
+      to_user: this.friendId, // Other's id
+      avatar, // Own avatar
       name,
       github_id,
       message:
-        inputMsg === '' ? `${name}: [${attachments[0].type || 'file'}]` : `${name}: ${inputMsg}`, // 消息内容
-      attachments, // 附件
-      // time: Date.parse(new Date()) / 1000 // 时间
+        inputMsg === '' ? `${name}: [${attachments[0].type || 'file'}]` : `${name}: ${inputMsg}`, // Message content
+      attachments, // attatchment
+      // time: Date.parse(new Date()) / 1000 //
     };
     this._sendByMe = true;
     const response = await request.socketEmitAndGetResponse('sendPrivateMsg', data, error => {
-      notification('消息发送失败', 'error', 2);
+      notification('Message failed to send', 'error', 2);
     });
     addPrivateChatMessages({
       allPrivateChats,
@@ -66,14 +66,14 @@ export default class PrivateChat extends Component {
     this.setState({ disableJoinButton: true });
     const { allPrivateChats, homePageList, updateHomePageList, addPrivateChatInfo } = this.props;
     if (this.chatId === this._userInfo.user_id) {
-      notification('不能添加自己为联系人哦', 'error', 2);
+      notification('Can not add yourself as a contact', 'error', 2);
       return;
     }
     const data = await request.socketEmitAndGetResponse(
       'addAsTheContact',
       { user_id: this._userInfo.user_id, from_user: this.friendId },
       error => {
-        notification('添加失败！', 'error', 1.5);
+        notification('Add failed! ', 'error', 1.5);
         this.setState({ disableJoinButton: false });
       },
     );
@@ -81,7 +81,7 @@ export default class PrivateChat extends Component {
     const dataInHomePageList = {
       ...data,
       to_user: data.user_id,
-      message: '添加联系人成功，给我发消息吧:)',
+      message: 'Add contact successfully, send me a message:)',
       time: Date.parse(new Date()) / 1000,
     };
     updateHomePageList({ data: dataInHomePageList, homePageList });
@@ -147,7 +147,7 @@ export default class PrivateChat extends Component {
     return (
       <div className="chat-wrapper">
         <ShareModal
-          title="分享此联系人给"
+          title="Share this contact to"
           modalVisible={showShareModal}
           chatId={this.chatId}
           showShareModal={this._showShareModal}
@@ -185,7 +185,7 @@ export default class PrivateChat extends Component {
           initApp && (
             <Button
               clickFn={debounce(this.addAsTheContact, 2000, true)}
-              value="加为联系人"
+              value="Add as contact"
               disable={disableJoinButton}
               className="button"
             />

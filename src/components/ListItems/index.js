@@ -22,9 +22,9 @@ class ListItems extends Component {
         style={this.props.match.path === '/robot_chat' ? { backgroundColor: '#f5f5f5' } : {}}
       >
         <Link to="/robot_chat" className="robotItem">
-          <UserAvatar name="机器人小R" size="46" />
+          <UserAvatar name="Robot R" size="46" />
           <div className="content">
-            <span className="title robotTitle">机器人小R</span>
+            <span className="title robotTitle">Robot R</span>
           </div>
         </Link>
       </li>
@@ -36,7 +36,7 @@ class ListItems extends Component {
         let message = data.message;
         const isShareUrl = message && /::share::{"/.test(message);
         if (isShareUrl) {
-          message = '[邀请卡片]';
+          message = '[Invitation card]';
         }
         const chatFromId = data.to_group_id || (data.user_id && data.user_id.toString());
         const isGroupChat = !!data.to_group_id;
@@ -95,8 +95,8 @@ class ListItems extends Component {
               </div>
               {!showAsContacts && (
                 <div className="message">
-                  {data.showCallMeTip && <span className="callMe">[有人@我]</span>}
-                  {message || '暂无消息'}
+                  {data.showCallMeTip && <span className="callMe">[@me]</span>}
+                  {message || 'No news'}
                 </div>
               )}
             </div>

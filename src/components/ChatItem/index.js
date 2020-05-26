@@ -34,7 +34,7 @@ class ChatItem extends Component {
         }}
       >
         <p className="shareTitle">{` "${decodeURI(name)}"`}</p>
-        <p className="shareButton">点击加为联系人</p>
+        <p className="shareButton">Click add as a contact</p>
       </div>
     );
   };
@@ -49,9 +49,9 @@ class ChatItem extends Component {
           this.clickToShare({ redirectUrl });
         }}
       >
-        <p>邀请你加入群:</p>
+        <p>Invite you to join the group:</p>
         <p className="shareTitle">{` "${decodeURI(name)}"`}</p>
-        <p className="shareButton">点击加入</p>
+        <p className="shareButton">Click to join</p>
       </div>
     );
   };

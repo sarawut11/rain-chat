@@ -55,7 +55,7 @@ class MyInfo extends Component {
           showShareIcon
         />
         <ShareModal
-          title="分享此联系人给"
+          title="Share this contact to"
           modalVisible={this.state.showShareModal}
           chatId={user_id}
           cancel={this._closeShareModal}

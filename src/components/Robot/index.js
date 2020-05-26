@@ -73,7 +73,7 @@ export default class Robot extends Component {
     ));
     return (
       <div className="chat-wrapper">
-        <ChatHeader title="机器人聊天" chatType="robot" />
+        <ChatHeader title="Robot chat" chatType="robot" />
         <ul className="chat-content-list">
           {listItems}
           <div

@@ -28,7 +28,10 @@ class ShareModal extends Component {
     dummy.select();
     document.execCommand('copy');
     document.body.removeChild(dummy);
-    notification('你已复制了邀请链接，可以发给应用外的人啦', 'success');
+    notification(
+      'You have copied the invitation link and can send it to people outside the app',
+      'success',
+    );
   };
 
   searchFieldChange(field) {
@@ -86,7 +89,7 @@ class ShareModal extends Component {
           <svg className="icon shareIcon" aria-hidden="true">
             <use xlinkHref="#icon-share1" />
           </svg>
-          复制链接分享给应用外的人
+          Copy link to share with people outside the app
         </div>
       </Modal>
     );

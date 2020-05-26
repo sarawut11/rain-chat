@@ -42,7 +42,7 @@ function Setting({ initApp, history, globalSettings, setGlobalSettings }) {
   return (
     <div className="setting">
       <Modal
-        title="确定退出？"
+        title="Are you sure to exit?"
         visible={logoutModalVisible}
         confirm={logout}
         hasCancel
@@ -51,7 +51,7 @@ function Setting({ initApp, history, globalSettings, setGlobalSettings }) {
       />
 
       <div className="notificationConfig">
-        <span>消息通知： </span>
+        <span>Notification: </span>
         <Switch
           onChange={value => _onChange(GLOBAL_SETTINGS.NOTIFICATION, value)}
           checked={globalSettings.notification}
@@ -72,15 +72,15 @@ function Setting({ initApp, history, globalSettings, setGlobalSettings }) {
         className="contact"
         onClick={() => window.open('https://github.com/aermin/blog/issues/63')}
       >
-        开启PWA(将ghChat安装到桌面)
+        Open PWA (install rain-chat to the desktop)
       </div>
       <div className="contact" onClick={() => window.open('https://github.com/aermin/ghChat')}>
-        项目地址 & 欢迎star
+        Project address & welcome star
       </div>
       <div className="contact" onClick={() => openRepoUrl(history)}>
-        项目交流群
+        Project Exchange Group
       </div>
-      <Button clickFn={() => setLogoutModalVisible(true)} value="退出登录" />
+      <Button clickFn={() => setLogoutModalVisible(true)} value="Sign out" />
     </div>
   );
 }
