@@ -69,14 +69,13 @@ CREATE TABLE `private_msg` (
 DROP TABLE IF EXISTS `user_info`;
 CREATE TABLE `user_info` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(20) NOT NULL DEFAULT 'NOT NULL',
+  `username` varchar(50) NOT NULL DEFAULT 'NOT NULL',
   `password` varchar(40) DEFAULT NULL,
+  `name` varchar(20) DEFAULT NULL,
+  `email` varchar(40) DEFAULT NULL,
   `avatar` varchar(250) DEFAULT '',
-  `location` varchar(50) DEFAULT NULL,
-  `socketid` char(255) DEFAULT NULL,
-  `website` varchar(50) DEFAULT NULL,
   `intro` varchar(100) DEFAULT NULL,
-  `company` varchar(50) DEFAULT NULL,
+  `socketid` char(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 # Dump of table user_user_relation

@@ -4,8 +4,9 @@ import { ServicesContext } from "../context";
 export const registerController = async (ctx, next) => {
   const { userService } = ServicesContext.getInstance();
 
-  const { name, password } = ctx.request.body;
-  const result = await userService.findDataByName(name);
+  console.log(ctx.request.body);
+  const { username, password } = ctx.request.body;
+  const result = await userService.findDataByUsername(username);
   if (result.length) {
     ctx.body = {
       success: false,
@@ -17,6 +18,6 @@ export const registerController = async (ctx, next) => {
       message: "Registration success!",
     };
     console.log("Registration success");
-    userService.insertData([name, md5(password)]);
+    userService.insertData([username, md5(password)]);
   }
 };
