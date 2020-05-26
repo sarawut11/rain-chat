@@ -66,6 +66,7 @@ export default class Robot extends Component {
             img={this._userInfo.avatar}
             msg={msg.message}
             name={this._userInfo.name}
+            username={this._userInfo.username}
             time={toNormalTime(Date.parse(new Date()) / 1000)}
           />
         )}

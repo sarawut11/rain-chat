@@ -138,6 +138,7 @@ export default class ChatContentList extends Component {
             img={item.avatar}
             msg={message}
             name={item.name}
+            username={item.username}
             time={time}
             github_id={item.github_id}
             clickImage={this.clickImage}

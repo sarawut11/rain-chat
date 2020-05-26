@@ -10,6 +10,7 @@ class LogIn extends Component {
     super(props);
 
     this.state = {
+      name: '',
       email: '',
       username: '',
       password: '',
@@ -21,7 +22,7 @@ class LogIn extends Component {
 
   async login() {
     const { password } = this.state;
-    let { email, username } = this.state;
+    let { email, username, name } = this.state;
     // Check the username value whether it's in email format
     if (/^\S+@\S+\.\S+$/.test(username)) {
       email = username;
@@ -56,8 +57,8 @@ class LogIn extends Component {
   }
 
   setValue = value => {
-    const { username, password } = value;
-    this.setState({ username, password }, async () => {
+    const { username, password, name } = value;
+    this.setState({ username, password, name }, async () => {
       await this.login();
     });
   };

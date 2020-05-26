@@ -26,19 +26,13 @@ class userInfoRender extends Component {
       showShareIcon,
       showShareModal,
     } = this.props;
-    const { name, location, website, github, intro, avatar, company } = userInfo;
+    const { username, name, intro, avatar } = userInfo;
     return (
       <div className="userInfo">
-        <UserAvatar name={name} src={avatar} size="50" />
+        <UserAvatar name={username} src={avatar} size="50" />
         {name && <p className="name">{name}</p>}
         {intro && <p>{`Introduction: ${intro}`}</p>}
-        {location && <p>{`Location: ${location}`}</p>}
-        {company && <p>{`Company: ${company}`}</p>}
         {/* {status && <p>{status}</p>} */}
-        {website && (
-          <p className="website" onClick={() => _openUrl(website)}>{`website: ${website}`}</p>
-        )}
-        {github && <p className="github" onClick={() => _openUrl(github)}>{`github: ${github}`}</p>}
         {showContactButton && (
           <Button
             className={classnames('personalInfoBtn', 'chatBtn')}

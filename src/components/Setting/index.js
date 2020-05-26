@@ -18,7 +18,6 @@ function openRepoUrl(history) {
 
 function Setting({ initApp, history, globalSettings, setGlobalSettings }) {
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
-  const [githubStars, setGithubStars] = useState('--');
 
   const logout = () => {
     window.socket.disconnect();
@@ -26,12 +25,6 @@ function Setting({ initApp, history, globalSettings, setGlobalSettings }) {
     initApp(false);
     history.push('/login');
   };
-
-  useEffect(() => {
-    axios.get('https://api.github.com/repos/aermin/ghChat').then(res => {
-      setGithubStars(res.data.stargazers_count);
-    });
-  });
 
   const _onChange = (type, value) => {
     setGlobalSettings({
@@ -58,28 +51,6 @@ function Setting({ initApp, history, globalSettings, setGlobalSettings }) {
         />
       </div>
 
-      <div
-        className="githubStarRender"
-        onClick={() => window.open('https://github.com/aermin/ghChat')}
-      >
-        <svg className="icon githubIcon" aria-hidden="true">
-          <use xlinkHref="#icon-github-copy" />
-        </svg>
-        <span className="starTitle">{`${githubStars}  Stars`}</span>
-      </div>
-
-      <div
-        className="contact"
-        onClick={() => window.open('https://github.com/aermin/blog/issues/63')}
-      >
-        Open PWA (install rain-chat to the desktop)
-      </div>
-      <div className="contact" onClick={() => window.open('https://github.com/aermin/ghChat')}>
-        Project address & welcome star
-      </div>
-      <div className="contact" onClick={() => openRepoUrl(history)}>
-        Project Exchange Group
-      </div>
       <Button clickFn={() => setLogoutModalVisible(true)} value="Sign out" />
     </div>
   );
