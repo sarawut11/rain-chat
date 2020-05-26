@@ -13,7 +13,7 @@ export default {
   },
   client_secret: "",
   jwt_secret: "chat-sec",
-  cryptoKey: "VITAE-RAIN-CHAT",
+  crypto_key: "VITAE-RAIN-CHAT",
   qiniu: {
     accessKey: "",
     secretKey: "",
