@@ -21,6 +21,11 @@ export class UserService {
     return query(_sql, username);
   }
 
+  findDataByEmail(email) {
+    const _sql = "SELECT * FROM user_info WHERE email = ?;";
+    return query(_sql, email);
+  }
+
   // Find user information by user id user_info includes user name, avatar, last login time, status, etc. excluding password
   getUserInfo(user_id) {
     const _sql =

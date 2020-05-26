@@ -16,8 +16,15 @@ export const loginController = async (ctx, next) => {
     };
     return;
   }
-  const RowDataPacket = await userService.findDataByUsername(username);
-  const res = JSON.parse(JSON.stringify(RowDataPacket));
+  let RowDataPacket = await userService.findDataByUsername(username);
+  console.log(RowDataPacket);
+  let res = JSON.parse(JSON.stringify(RowDataPacket));
+  // Find user again with email
+  if (res.length <= 0) {
+    RowDataPacket = await userService.findDataByEmail(username);
+    console.log(RowDataPacket);
+    res = JSON.parse(JSON.stringify(RowDataPacket));
+  }
   if (res.length > 0) {
     //   After the verification is successful, the server will issue a Token, and then send the Token to the client
     if (md5(password) === res[0].password) {
