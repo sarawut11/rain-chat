@@ -28,7 +28,7 @@ CREATE TABLE `user_info` (
   `avatar` varchar(250) DEFAULT '',
   `intro` varchar(100) DEFAULT NULL,
   `socketid` char(255) DEFAULT NULL,
-  `ref_user_id` int(11) DEFAULT 0,
+  `referral` int(11) DEFAULT 1,
   `wallet_address` char(255) DEFAULT NULL,
   `balance` double DEFAULT 0,
   `pop_balance` double DEFAULT 0,
@@ -102,3 +102,12 @@ CREATE TABLE `user_user_relation` (
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+INSERT INTO user_info (id, username, password, name, role)
+VALUES
+  (
+    1,
+    'admin',
+    '202cb962ac59075b964b07152d234b70',
+    'Vitae Admin',
+    'OWNER'
+  )

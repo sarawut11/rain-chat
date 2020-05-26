@@ -7,7 +7,7 @@ import { ServicesContext } from "../context";
 export const loginController = async (ctx, next) => {
   const { userService } = ServicesContext.getInstance();
 
-  const { email = "",  username = "", password = "" } = ctx.request.body;
+  const { email = "", username = "", password = "" } = ctx.request.body;
   if ((username === "" && email === "") || password === "") {
     ctx.body = {
       success: false,
@@ -15,13 +15,7 @@ export const loginController = async (ctx, next) => {
     };
     return;
   }
-  let RowDataPacket;
-  if (username !== "") {
-    RowDataPacket = await userService.findDataByUsername(username);
-  }
-  if (email !== "") {
-    RowDataPacket = await userService.findDataByEmail(email);
-  }
+  const RowDataPacket = await userService.findUserByEmailOrUsername(email, username);
   const res = JSON.parse(JSON.stringify(RowDataPacket));
   if (res.length > 0) {
     //   After the verification is successful, the server will issue a Token, and then send the Token to the client
