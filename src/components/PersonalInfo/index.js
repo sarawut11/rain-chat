@@ -43,14 +43,14 @@ class userInfoRender extends Component {
           <Button
             className={classnames('personalInfoBtn', 'chatBtn')}
             clickFn={goToChat}
-            value="私聊此人"
+            value="Whisper this person"
           />
         )}
         {isContact && (
           <Button
             className={classnames('personalInfoBtn', 'deleteBtn')}
             clickFn={deleteContact}
-            value="删除此人"
+            value="Delete this person"
           />
         )}
         {showShareIcon && (
