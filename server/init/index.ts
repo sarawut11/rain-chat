@@ -5,9 +5,9 @@ import { query } from "./db";
 // Print script execution log
 const eventLog = (err, sqlFile, index) => {
   if (err) {
-    console.log(`[ERROR] sql script file: ${sqlFile} ${index + 1}th script execution failed o(╯□╰)o ！`);
+    console.log(`[ERROR] sql script file: ${sqlFile} ${index + 1}th command execution failed o(╯□╰)o ！`);
   } else {
-    console.log(`[SUCCESS] sql script file: ${sqlFile} ${index + 1}th script executed successfully O(∩_∩)O !`);
+    console.log(`[SUCCESS] sql script file: ${sqlFile} ${index + 1}th command executed successfully O(∩_∩)O !`);
   }
 };
 
@@ -31,7 +31,7 @@ const createAllTables = async () => {
       }
     }
   }
-  console.log("SQL script execution is over!");
+  console.log("SQL command execution is over!");
   console.log("Please press ctrl + c to exit!");
 };
 

@@ -10,7 +10,8 @@ class LogIn extends Component {
     super(props);
 
     this.state = {
-      name: '',
+      email: '',
+      username: '',
       password: '',
       modal: {
         visible: false,
@@ -19,8 +20,13 @@ class LogIn extends Component {
   }
 
   async login() {
-    const { name, password } = this.state;
-    if (!/^[a-zA-Z0-9_\u4e00-\u9fa5]+$/.test(name)) {
+    const { password } = this.state;
+    let { email, username } = this.state;
+    // Check the username value whether it's in email format
+    if (/^\S+@\S+\.\S+$/.test(username)) {
+      email = username;
+      username = '';
+    } else if (!/^[a-zA-Z0-9_\u4e00-\u9fa5]+$/.test(username)) {
       notification(
         'Username can only consist of characters, numbers, letters, underscores',
         'warn',
@@ -32,10 +38,10 @@ class LogIn extends Component {
       return;
     }
     try {
-      const res = await Request.axios('post', '/api/v1/login', { name, password });
+      const res = await Request.axios('post', '/api/v1/login', { email, username, password });
       if (res && res.success) {
         localStorage.setItem('userInfo', JSON.stringify(res.userInfo));
-        // 弹窗
+        // Popup
         this.setState({
           modal: {
             visible: true,
@@ -50,8 +56,8 @@ class LogIn extends Component {
   }
 
   setValue = value => {
-    const { name, password } = value;
-    this.setState({ name, password }, async () => {
+    const { username, password } = value;
+    this.setState({ username, password }, async () => {
       await this.login();
     });
   };

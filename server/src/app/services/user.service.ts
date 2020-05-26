@@ -4,54 +4,39 @@ export class UserService {
   // Fuzzy matching users
   fuzzyMatchUsers(link) {
     const _sql = `
-    SELECT * FROM user_info WHERE name LIKE ?;
+    SELECT * FROM user_info WHERE username LIKE ?;
   `;
     return query(_sql, link);
   }
 
   // Register User
   insertData(value) {
-    const _sql = "insert into user_info(name,password) values(?,?);";
+    const _sql = "insert into user_info(name,email,username,password) values(?,?,?,?);";
     return query(_sql, value);
   }
 
-  // Add github user
-  insertGithubData({ name, github_id, avatar, location, website, github, intro, company }) {
-    const _sql =
-      "insert into user_info(name, github_id, avatar, location, website, github, intro, company) values(?,?,?,?,?,?,?,?);";
-    return query(_sql, [name, github_id, avatar, location, website, github, intro, company]);
+  // Find user information by user name user_info
+  findDataByUsername(username) {
+    const _sql = "SELECT * FROM user_info WHERE username = ?;";
+    return query(_sql, username);
   }
 
-  // Find github user information through github_id
-  findGithubUser(githubId) {
-    const _sql = "SELECT * FROM user_info WHERE github_id = ? ;";
-    return query(_sql, githubId);
+  findDataByEmail(email) {
+    const _sql = "SELECT * FROM user_info WHERE email = ?;";
+    return query(_sql, email);
   }
 
-  // Update github user information
-  updateGithubUser({ name, avatar, location, website, github, intro, github_id, company }) {
-    const _sql =
-      " UPDATE  user_info SET name = ?,avatar = ?,location = ?,website = ?,github = ?,intro= ?, company = ? WHERE github_id = ? ; ";
-    return query(_sql, [name, avatar, location, website, github, intro, company, github_id]);
-  }
-
-  // Find non-github user information by user name user_info
-  findDataByName(name) {
-    const _sql = "SELECT * FROM user_info WHERE name = ? and github_id IS NULL;";
-    return query(_sql, name);
-  }
-
-  // Find user information by user id user_info includes user name, gender, avatar, last login time, status, etc. excluding password
+  // Find user information by user id user_info includes user name, avatar, last login time, status, etc. excluding password
   getUserInfo(user_id) {
     const _sql =
-      "SELECT id AS user_id, name, avatar, location, website, github, github_id, intro, company  FROM user_info   WHERE  user_info.id =? ";
+      "SELECT id AS user_id, username, avatar, intro FROM user_info WHERE user_info.id =? ";
     return query(_sql, [user_id]);
   }
 
   // Check if the user id is a friend of the local user by checking the user id. If yes, return user_id and remark.
   isFriend(user_id, from_user) {
     const _sql =
-      "SELECT  * FROM user_user_relation  AS u WHERE  u.user_id = ? AND u.from_user = ? ";
+      "SELECT * FROM user_user_relation AS u WHERE u.user_id = ? AND u.from_user = ? ";
     return query(_sql, [user_id, from_user]);
   }
 
@@ -82,7 +67,7 @@ export class UserService {
   // Find homepage private chat list by user_id
   // TODO: Optimize SQL statement
   getPrivateList(user_id) {
-    const _sql = ` SELECT r.from_user as user_id, i.name, i.avatar, i.github_id, r.time as be_friend_time,
+    const _sql = ` SELECT r.from_user as user_id, i.username, i.avatar, r.time as be_friend_time,
       (SELECT p.message FROM private_msg AS p WHERE (p.to_user = r.from_user and p.from_user = r.user_id) or (p.from_user = r.from_user and p.to_user = r.user_id) ORDER BY p.time DESC   LIMIT 1 )  AS message ,
       (SELECT p.time FROM private_msg AS p WHERE (p.to_user = r.from_user and p.from_user = r.user_id) or (p.from_user = r.from_user and p.to_user = r.user_id) ORDER BY p.time DESC   LIMIT 1 )  AS time,
       (SELECT p.attachments FROM private_msg AS p WHERE (p.to_user = r.from_user and p.from_user = r.user_id) or (p.from_user = r.from_user and p.to_user = r.user_id) ORDER BY p.time DESC   LIMIT 1 )  AS attachments
@@ -121,14 +106,8 @@ export class UserService {
 
   // Find user information by user name user_info does not include password
   // const findUIByName = (name) {
-  //   const _sql = 'SELECT id ,name ,sex,avatar,location,github FROM user_info WHERE name = ? ';
+  //   const _sql = 'SELECT id ,name,avatar FROM user_info WHERE name = ? ';
   //   return query(_sql, name);
-  // };
-
-  // Edit my information
-  // const editorInfo = (data) {
-  //   const _sql = ' UPDATE  user_info SET github = ?,website = ?,sex = ?,location = ? WHERE id = ? ; ';
-  //   return query(_sql, data);
   // };
 
   // Find user information by user id user_info including password

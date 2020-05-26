@@ -10,6 +10,8 @@ export default class Register extends Component {
     super(props);
     this.state = {
       name: '',
+      email: '',
+      username: '',
       password: '',
       modal: {
         visible: false,
@@ -18,8 +20,12 @@ export default class Register extends Component {
   }
 
   register = async () => {
-    const { name, password } = this.state;
-    if (!/^[a-zA-Z0-9_\u4e00-\u9fa5]+$/.test(name)) {
+    const { name, email, username, password } = this.state;
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      notification('Invalid Email Format', 'warn');
+      return;
+    }
+    if (!/^[a-zA-Z0-9_\u4e00-\u9fa5]+$/.test(username)) {
       notification('Username can only consist of numbers, letters, underscores', 'warn');
       return;
     }
@@ -30,10 +36,12 @@ export default class Register extends Component {
     try {
       const res = await Request.axios('post', '/api/v1/register', {
         name,
+        email,
+        username,
         password,
       });
       if (res && res.success) {
-        // 弹窗
+        // Popup
         this.setState({
           modal: {
             visible: true,
@@ -48,10 +56,12 @@ export default class Register extends Component {
   };
 
   setValue = value => {
-    const { name, password } = value;
+    const { name, email, username, password } = value;
     this.setState(
       {
         name,
+        email,
+        username,
         password,
       },
       async () => {

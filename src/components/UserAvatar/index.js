@@ -69,7 +69,7 @@ export default function UserAvatar(props) {
 
     innerStyle.backgroundColor = background;
 
-    inner = <span>{name.charAt(0)}</span>;
+    inner = <span>{name.charAt(0).toUpperCase()}</span>;
   }
 
   return (
