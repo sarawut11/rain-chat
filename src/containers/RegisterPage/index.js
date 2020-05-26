@@ -21,6 +21,10 @@ export default class Register extends Component {
 
   register = async () => {
     const { name, email, username, password } = this.state;
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      notification('Invalid Email Format', 'warn');
+      return;
+    }
     if (!/^[a-zA-Z0-9_\u4e00-\u9fa5]+$/.test(username)) {
       notification('Username can only consist of numbers, letters, underscores', 'warn');
       return;

@@ -7,22 +7,21 @@ import { ServicesContext } from "../context";
 export const loginController = async (ctx, next) => {
   const { userService } = ServicesContext.getInstance();
 
-  console.log(ctx.request.body);
-  const { username = "", password = "" } = ctx.request.body;
-  if (username === "" || password === "") {
+  const { email = "",  username = "", password = "" } = ctx.request.body;
+  if ((username === "" && email === "") || password === "") {
     ctx.body = {
       success: false,
       message: "Username or password cannot be empty",
     };
     return;
   }
-  let RowDataPacket = await userService.findDataByUsername(username);
-  console.log(RowDataPacket);
-  let res = JSON.parse(JSON.stringify(RowDataPacket));
-  // Find user again with email
-  if (res.length <= 0) {
-    RowDataPacket = await userService.findDataByEmail(username);
-    console.log(RowDataPacket);
+  let RowDataPacket, res;
+  if (username !== "") {
+    RowDataPacket = await userService.findDataByUsername(username);
+    res = JSON.parse(JSON.stringify(RowDataPacket));
+  }
+  if (email !== "") {
+    RowDataPacket = await userService.findDataByEmail(email);
     res = JSON.parse(JSON.stringify(RowDataPacket));
   }
   if (res.length > 0) {

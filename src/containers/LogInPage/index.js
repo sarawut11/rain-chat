@@ -10,6 +10,7 @@ class LogIn extends Component {
     super(props);
 
     this.state = {
+      email: '',
       username: '',
       password: '',
       modal: {
@@ -19,10 +20,12 @@ class LogIn extends Component {
   }
 
   async login() {
-    const { username, password } = this.state;
-    // Check username value whethere it's in email format
+    const { password } = this.state;
+    let { email, username } = this.state;
+    // Check the username value whether it's in email format
     if (/^\S+@\S+\.\S+$/.test(username)) {
-      console.log('Email Format');
+      email = username;
+      username = '';
     } else if (!/^[a-zA-Z0-9_\u4e00-\u9fa5]+$/.test(username)) {
       notification(
         'Username can only consist of characters, numbers, letters, underscores',
@@ -35,7 +38,7 @@ class LogIn extends Component {
       return;
     }
     try {
-      const res = await Request.axios('post', '/api/v1/login', { username, password });
+      const res = await Request.axios('post', '/api/v1/login', { email, username, password });
       if (res && res.success) {
         localStorage.setItem('userInfo', JSON.stringify(res.userInfo));
         // Popup
