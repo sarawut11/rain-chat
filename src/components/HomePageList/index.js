@@ -17,8 +17,8 @@ class HomePageList extends Component {
       showSearchUser: true,
       showSearchGroup: true,
       searchResultTitle: {
-        user: '您联系过的用户',
-        group: '您联系过的群组',
+        user: 'Users you have contacted',
+        group: 'Groups you have contacted',
       },
     };
     this._userInfo = JSON.parse(localStorage.getItem('userInfo'));
@@ -53,8 +53,8 @@ class HomePageList extends Component {
       showSearchUser: true,
       showSearchGroup: true,
       searchResultTitle: {
-        user: '您联系过的用户',
-        group: '您联系过的群组',
+        user: 'Users you have contacted',
+        group: 'Groups you have contacted',
       },
     });
     if (this._filedStr.length > 0) {
@@ -86,7 +86,7 @@ class HomePageList extends Component {
       if (data.searchUser) {
         this.setState(state => ({
           showSearchUser: false,
-          searchResultTitle: { ...state.searchResultTitle, user: '所有用户' },
+          searchResultTitle: { ...state.searchResultTitle, user: 'All users' },
         }));
         data.fuzzyMatchResult.forEach(element => {
           element.user_id = element.id;
@@ -94,7 +94,7 @@ class HomePageList extends Component {
       } else {
         this.setState(state => ({
           showSearchGroup: false,
-          searchResultTitle: { ...state.searchResultTitle, group: '所有群组' },
+          searchResultTitle: { ...state.searchResultTitle, group: 'All groups' },
         }));
       }
       this.setState(state => ({
@@ -108,7 +108,7 @@ class HomePageList extends Component {
       this.setState({ isSearching: false });
     }
     this._chat.clearUnreadHandle({ homePageList, chatFromId });
-    // clear [有人@我] [@Me]
+    // clear [@Me]
     this.props.showCallMeTip({ homePageList, chatFromId, showCallMeTip: false });
   };
 
@@ -146,11 +146,11 @@ class HomePageList extends Component {
                   clickItem={chatFromId => this.clickItemHandle({ homePageList, chatFromId })}
                 />
               ) : (
-                <p className="search-none">暂无</p>
+                <p className="search-none">No</p>
               )}
               {showSearchUser && (
                 <p className="clickToSearch" onClick={() => this.searchInDB({ searchUser: true })}>
-                  网络查找相关的用户
+                  Find related users on the Internet
                 </p>
               )}
               <p className="searchResultTitle">{searchResultTitle.group}</p>
@@ -162,11 +162,11 @@ class HomePageList extends Component {
                   clickItem={chatFromId => this.clickItemHandle({ homePageList, chatFromId })}
                 />
               ) : (
-                <p className="search-none">暂无</p>
+                <p className="search-none">No</p>
               )}
               {showSearchGroup && (
                 <p className="clickToSearch" onClick={() => this.searchInDB({ searchUser: false })}>
-                  网络查找相关的群组
+                  Network to find related groups
                 </p>
               )}
             </div>

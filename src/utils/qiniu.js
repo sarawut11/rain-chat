@@ -1,7 +1,7 @@
 import * as qiniu from 'qiniu-js';
 
 export default async function upload(file, uploadToken, completeEvent) {
-  // subscription.unsubscribe(); // 上传取消
+  // subscription.unsubscribe(); // Upload canceled
   const observer = {
     next(res) {
       // console.log('qiniu observer next', res);
@@ -22,5 +22,5 @@ export default async function upload(file, uploadToken, completeEvent) {
   const { user_id } = JSON.parse(localStorage.getItem('userInfo'));
   const key = `${user_id}_${new Date().getTime()}_${file.name}`;
   const observable = qiniu.upload(file, key, uploadToken, putExtra, config);
-  const subscription = observable.subscribe(observer); // 上传开始
+  const subscription = observable.subscribe(observer); // Upload starts
 }

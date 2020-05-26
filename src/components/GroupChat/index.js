@@ -37,20 +37,20 @@ class GroupChat extends Component {
     const { user_id, avatar, name, github_id } = this._userInfo;
     const { allGroupChats, homePageList, updateHomePageList, addGroupMessages } = this.props;
     const data = {
-      from_user: user_id, // 自己的id
-      avatar, // 自己的头像
+      from_user: user_id, // Own id
+      avatar, // Own avatar
       name,
       github_id,
       groupName: this.groupName,
       message:
-        inputMsg === '' ? `${name}: [${attachments[0].type || 'file'}]` : `${name}: ${inputMsg}`, // 消息内容
-      attachments, // 附件
+        inputMsg === '' ? `${name}: [${attachments[0].type || 'file'}]` : `${name}: ${inputMsg}`, // Message content
+      attachments, // attatchment
       to_group_id: this.chatId,
-      // time: Date.parse(new Date()) / 1000 // 时间
+      // time: Date.parse(new Date()) / 1000 // time
     };
     this._sendByMe = true;
     const response = await request.socketEmitAndGetResponse('sendGroupMsg', data, error => {
-      notification('信息发送失败', 'error', 2);
+      notification('Failed to send message', 'error', 2);
     });
     addGroupMessages({ allGroupChats, message: response, groupId: this.chatId });
     updateHomePageList({ data: response, homePageList, myUserId: user_id });
@@ -64,14 +64,14 @@ class GroupChat extends Component {
       'joinGroup',
       { userInfo: this._userInfo, toGroupId: this.chatId },
       error => {
-        notification('加群失败', 'error', 1.5);
+        notification('Add group failed', 'error', 1.5);
         this.setState({ disableJoinButton: false });
       },
     );
     const { messages, groupInfo } = response;
     const lastContent = {
-      name: '群助手',
-      message: '您已加群成功，可以开始聊天啦~',
+      name: 'Group assistant',
+      message: 'You have successfully added a group, you can start chatting~',
       time: Date.parse(new Date()) / 1000,
     };
     messages.push(lastContent);
@@ -141,7 +141,7 @@ class GroupChat extends Component {
   componentDidMount() {
     const { allGroupChats } = this.props;
     const chatItem = allGroupChats && allGroupChats.get(this.chatId);
-    // (产品设计) 当查找没加过的群，点击去没群内容，请求出群内容，避免不了解而后悔加群
+    // (Product Design) When searching for groups that have not been added, click to go to the group content, request the group content, and avoid adding groups if you do n’t understand.
     if (!chatItem && window.socket) {
       window.socket.emit('getOneGroupItem', { groupId: this.chatId, start: 1 }, groupMsgAndInfo => {
         this.setState({ groupMsgAndInfo });
@@ -194,7 +194,7 @@ class GroupChat extends Component {
           showShareIcon={!!chatItem}
         />
         <Modal
-          title="确定退出此群？"
+          title="Are you sure you want to leave this group?"
           visible={showLeaveGroupModal}
           confirm={this.leaveGroup}
           hasCancel
@@ -202,7 +202,7 @@ class GroupChat extends Component {
           cancel={this._showLeaveModal}
         />
         <ShareModal
-          title="分享此群给"
+          title="Share this group to"
           modalVisible={showShareModal}
           chatId={this.chatId}
           showShareModal={this._showShareModal}
@@ -253,7 +253,7 @@ class GroupChat extends Component {
           initApp && (
             <Button
               clickFn={debounce(this.joinGroup, 2000, true)}
-              value="加入群聊"
+              value="Join group chat"
               disable={disableJoinButton}
               className="button"
             />

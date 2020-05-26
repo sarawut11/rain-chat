@@ -14,11 +14,11 @@ import store from '../../redux/store';
 function getPlaceholder(isRobotChat) {
   switch (true) {
     case /group_chat/.test(window.location.href):
-      return '支持Enter发信息/粘贴发图/@别人哦';
+      return 'Hit Enter to send messages / Paste to send pictures / @ Other people';
     case isRobotChat:
-      return '支持Enter发信息哦';
+      return 'Hit Enter to send messages';
     default:
-      return '支持Enter发信息/粘贴发图哦';
+      return 'Hit Enter to send messages / Paste to send pictures';
   }
 }
 
@@ -104,7 +104,7 @@ export default class InputArea extends Component {
     reader.onloadend = async event => {
       const limitSize = 1000 * 1024 * 2; // 2 MB
       if (file.size > limitSize) {
-        notification('发的文件不能超过2MB哦!', 'warn', 2);
+        notification('The file you send cannot exceed 2MB!', 'warn', 2);
         return;
       }
       if (event.target.readyState === FileReader.DONE) {
@@ -189,7 +189,7 @@ export default class InputArea extends Component {
         }
         const limitSize = 1000 * 1024 * 2; // 2 MB
         if (file.size > limitSize) {
-          notification('发的文件不能超过2MB哦!', 'warn', 2);
+          notification('The file you send cannot exceed 2MB!', 'warn', 2);
           return;
         }
         await this._fetchUpLoadToken();
@@ -242,7 +242,7 @@ export default class InputArea extends Component {
         />
         {/* <pre id="textarea" /> */}
         <p className={buttonClass} onClick={this._sendMessage}>
-          发送
+          Send
         </p>
       </div>
     );

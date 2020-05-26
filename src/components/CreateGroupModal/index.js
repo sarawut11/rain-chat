@@ -21,11 +21,14 @@ export default class GroupModal extends Component {
   _confirm = () => {
     const { groupName, groupNotice } = this.state;
     if (!groupName || !groupNotice) {
-      notification('你有空行没填哦', 'error');
+      notification('Do you have a blank line?', 'error');
       return;
     }
     if (groupName === 'rain-chat') {
-      notification('这个群名仅供项目本身使用啦，请用别的群名', 'error');
+      notification(
+        'This group name is only for the project itself, please use another group name',
+        'error',
+      );
       return;
     }
     this.props.confirm({ groupName, groupNotice });
@@ -45,25 +48,25 @@ export default class GroupModal extends Component {
       >
         <div className="groupModalContent">
           <div>
-            <span>群名:</span>
+            <span>Group name:</span>
             <input
               name="groupName"
               value={groupName}
               onChange={this.handleChange}
               type="text"
-              placeholder="不超过12个字哦"
+              placeholder="Less than 12 letters"
               maxLength="12"
             />
           </div>
           <div>
-            <span>群公告:</span>
+            <span>Group Notice:</span>
             <textarea
               name="groupNotice"
               value={groupNotice}
               onChange={this.handleChange}
               rows="3"
               type="text"
-              placeholder="不超过60个字哦"
+              placeholder="Less than 60 letters"
               maxLength="60"
             />
           </div>

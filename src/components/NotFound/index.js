@@ -12,9 +12,9 @@ export default function NotFound() {
           <h1>404</h1>
         </div>
         <div className="contentBox">
-          <p>你所访问的页面不存在</p>
+          <p>The page you visited does not exist</p>
           <Link className="link" to="/">
-            返回首页
+            Back to top
           </Link>
         </div>
       </div>

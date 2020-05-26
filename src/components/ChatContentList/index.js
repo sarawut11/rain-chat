@@ -91,7 +91,7 @@ export default class ChatContentList extends Component {
     this._scrollHeight = scrollHeight;
     if (scrollTop === 0 && scrollHeight !== clientHeight && this._executeNextLoad) {
       if (!this.props.shouldScrollToFetchData) {
-        notification('查看更多请先加群哦', 'warn');
+        notification('For more information, please add a group first', 'warn');
         return;
       }
       this._lazyLoadMessage();
