@@ -10,20 +10,29 @@ export class UserService {
   }
 
   // Register User
-  insertData(value) {
-    const _sql = "insert into user_info(name,email,username,password) values(?,?,?,?);";
+  insertUser(value) {
+    const _sql = "insert into user_info(name,email,username,password,sponsor) values(?,?,?,?,?);";
     return query(_sql, value);
   }
 
-  // Find user information by user name user_info
-  findDataByUsername(username) {
+  findUserById(id) {
+    const _sql = "SELECT * FROM user_info WHERE id = ?;";
+    return query(_sql, id);
+  }
+
+  findUserByUsername(username) {
     const _sql = "SELECT * FROM user_info WHERE username = ?;";
     return query(_sql, username);
   }
 
-  findDataByEmail(email) {
+  findUserByEmail(email) {
     const _sql = "SELECT * FROM user_info WHERE email = ?;";
     return query(_sql, email);
+  }
+
+  findUserByEmailOrUsername(email, username) {
+    const _sql = "SELECT * FROM user_info WHERE email = ? OR username = ?;";
+    return query(_sql, [email, username]);
   }
 
   // Find user information by user id user_info includes user name, avatar, last login time, status, etc. excluding password
