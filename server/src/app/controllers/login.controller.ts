@@ -21,8 +21,7 @@ export const loginController = async (ctx, next) => {
   if (res.length > 0) {
     //   After the verification is successful, the server will issue a Token, and then send the Token to the client
     if (md5(password) === res[0].password) {
-      const { id, name, username, intro, avatar, socketId } = res[0];
-      console.log(res[0]);
+      const { id, name, email, balance, username, intro, avatar, socketId } = res[0];
       const payload = { id };
       const token = jwt.sign(payload, configs.jwt_secret, {
         expiresIn: Math.floor(Date.now() / 1000) + 24 * 60 * 60 * 7, // One Week
@@ -32,8 +31,10 @@ export const loginController = async (ctx, next) => {
         message: "Login Successful",
         userInfo: {
           name,
+          email,
           username,
           user_id: id,
+          balance,
           intro,
           avatar,
           socketId,

@@ -4,8 +4,8 @@ import { ServicesContext } from "../context";
 export const registerController = async (ctx, next) => {
   const { userService } = ServicesContext.getInstance();
 
-  const { username, password } = ctx.request.body;
-  if (username === "" || password === "") {
+  const { name, email, username, password } = ctx.request.body;
+  if (username === "" || password === "" || name === "" || email === "") {
     ctx.body = {
       success: false,
       message: "Username or password cannot be empty",
@@ -24,6 +24,6 @@ export const registerController = async (ctx, next) => {
       message: "Registration success!",
     };
     console.log("Registration success");
-    userService.insertData([username, md5(password)]);
+    userService.insertData([name, email, username, md5(password)]);
   }
 };

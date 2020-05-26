@@ -11,7 +11,7 @@ export class UserService {
 
   // Register User
   insertData(value) {
-    const _sql = "insert into user_info(username,password) values(?,?);";
+    const _sql = "insert into user_info(name,email,username,password) values(?,?,?,?);";
     return query(_sql, value);
   }
 

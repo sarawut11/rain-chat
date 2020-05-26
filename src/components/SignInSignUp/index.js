@@ -10,6 +10,8 @@ export default class SignInSignUp extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      name: '',
+      email: '',
       username: '',
       password: '',
       showSpinner: true,
@@ -21,42 +23,8 @@ export default class SignInSignUp extends Component {
     this.setState({ [target.name]: target.value });
   };
 
-  async loginGithub() {
-    const href = window.location.href;
-    if (/\/login\?code/.test(href)) {
-      const code = href.split('?code=')[1];
-      Request.axios('post', '/api/v1/github_oauth', {
-        code,
-        clientId: this.clientId,
-      })
-        .then(response => {
-          localStorage.setItem('userInfo', JSON.stringify(response));
-          window.location.reload();
-          const originalLink = sessionStorage.getItem('originalLink');
-          if (originalLink) {
-            sessionStorage.removeItem('originalLink');
-            window.location.href = originalLink;
-            return;
-          }
-          window.location.href = '/';
-        })
-        .catch(error => {
-          console.log(
-            'Before logging in with github, please make sure that your github is set up with a public email, otherwise it may fail error => ',
-            error,
-          );
-          window.open(
-            'https://user-images.githubusercontent.com/24861316/75133098-6b564600-5714-11ea-824a-b367ed55b1a1.png',
-          );
-          window.location.href = '/login';
-        });
-    }
-  }
-
   componentDidMount() {
-    this.loginGithub().then(() => {
-      this.setState({ showSpinner: false });
-    });
+    this.setState({ showSpinner: false });
   }
 
   handleClick = () => {
@@ -69,16 +37,15 @@ export default class SignInSignUp extends Component {
 
   render() {
     const { isLogin } = this.props;
-    const { username, password } = this.state;
+    const { name, email, username, password } = this.state;
     const loginClass = isLogin ? 'active' : 'inactive';
     const registerClass = isLogin ? 'inactive' : 'active';
     const linkUrl = isLogin ? '/register' : '/login';
     const buttonName = isLogin ? 'Log in' : 'Register';
-    const OAuthHref = `https://github.com/login/oauth/authorize?client_id=${this.clientId}`;
     return (
       <div className="formContent fadeInDown">
         {this.state.showSpinner && <Spinner />}
-        <div className="ghChatLogo">
+        <div className="rain-chat-logo">
           <img src="../../assets/vitae-logo.png" alt="vitae-logo" />
         </div>
         <Link to={linkUrl}>
@@ -90,6 +57,28 @@ export default class SignInSignUp extends Component {
         <div className="userAvatarWrapper">
           <UserAvatar name={username || 'U'} size="100" />
         </div>
+        {!isLogin && (
+          <div className="center">
+            <div className="center">
+              <input
+                type="text"
+                name="name"
+                value={name}
+                onChange={this.handleChange}
+                placeholder="Full Name"
+              />
+            </div>
+            <div className="center">
+              <input
+                type="text"
+                name="email"
+                value={email}
+                onChange={this.handleChange}
+                placeholder="Email"
+              />
+            </div>
+          </div>
+        )}
         <div className="center">
           <input
             type="text"
