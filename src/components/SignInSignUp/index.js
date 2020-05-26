@@ -10,7 +10,7 @@ export default class SignInSignUp extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: '',
+      username: '',
       password: '',
       showSpinner: true,
     };
@@ -69,7 +69,7 @@ export default class SignInSignUp extends Component {
 
   render() {
     const { isLogin } = this.props;
-    const { name, password } = this.state;
+    const { username, password } = this.state;
     const loginClass = isLogin ? 'active' : 'inactive';
     const registerClass = isLogin ? 'inactive' : 'active';
     const linkUrl = isLogin ? '/register' : '/login';
@@ -88,13 +88,13 @@ export default class SignInSignUp extends Component {
           <span className={registerClass}>Register</span>
         </Link>
         <div className="userAvatarWrapper">
-          <UserAvatar name={name || 'U'} size="100" />
+          <UserAvatar name={username || 'U'} size="100" />
         </div>
         <div className="center">
           <input
             type="text"
-            name="name"
-            value={name}
+            name="username"
+            value={username}
             onChange={this.handleChange}
             placeholder="Username"
           />
@@ -111,14 +111,6 @@ export default class SignInSignUp extends Component {
         <div className="center">
           <input type="button" onClick={this.handleClick} value={buttonName} />
         </div>
-        {/* <div className="center">
-          <p className="authTips">Github Login</p>
-          <a className="githubOAuth" href={OAuthHref}>
-            <svg className="icon githubIcon" aria-hidden="true">
-              <use xlinkHref="#icon-github" />
-            </svg>
-          </a>
-        </div> */}
         <div className="version">Version: 1.0.0</div>
       </div>
     );

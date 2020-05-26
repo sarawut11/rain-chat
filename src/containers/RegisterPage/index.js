@@ -9,7 +9,7 @@ export default class Register extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: '',
+      username: '',
       password: '',
       modal: {
         visible: false,
@@ -18,8 +18,8 @@ export default class Register extends Component {
   }
 
   register = async () => {
-    const { name, password } = this.state;
-    if (!/^[a-zA-Z0-9_\u4e00-\u9fa5]+$/.test(name)) {
+    const { username, password } = this.state;
+    if (!/^[a-zA-Z0-9_\u4e00-\u9fa5]+$/.test(username)) {
       notification('Username can only consist of numbers, letters, underscores', 'warn');
       return;
     }
@@ -29,7 +29,7 @@ export default class Register extends Component {
     }
     try {
       const res = await Request.axios('post', '/api/v1/register', {
-        name,
+        username,
         password,
       });
       if (res && res.success) {
@@ -48,10 +48,10 @@ export default class Register extends Component {
   };
 
   setValue = value => {
-    const { name, password } = value;
+    const { username, password } = value;
     this.setState(
       {
-        name,
+        username,
         password,
       },
       async () => {
