@@ -74,7 +74,7 @@ export default class Register extends Component {
     const { visible } = this.state.modal;
     return (
       <div className="register">
-        <Modal title="提示" visible={visible} hasConfirm confirm={this.confirm} hasCancel={false}>
+        <Modal title="Alert" visible={visible} hasConfirm confirm={this.confirm} hasCancel={false}>
           <p className="content">You have successfully registered</p>
         </Modal>
         {/* <Message isShow = {this.state.message.isShow}  type = {this.state.message.type}  content = {this.state.message.content} /> */}
