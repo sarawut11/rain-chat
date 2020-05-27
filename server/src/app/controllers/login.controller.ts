@@ -33,7 +33,7 @@ export const loginController = async (ctx, next) => {
           intro,
           avatar,
           socketId,
-          userid,
+          referral: userid,
           token,
         },
       };
