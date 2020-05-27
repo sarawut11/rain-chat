@@ -25,7 +25,7 @@ function Setting({ initApp, history, globalSettings, setGlobalSettings }) {
   const user_info = JSON.parse(localStorage.getItem('userInfo'));
 
   const [refLink, setRefLink] = useState(
-    user_info ? `${window.location.origin}/register?ref=${user_info.uniqueid}` : '',
+    user_info ? `${window.location.origin}/register?ref=${user_info.referral}` : '',
   );
 
   const logout = () => {
