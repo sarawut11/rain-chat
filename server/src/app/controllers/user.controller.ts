@@ -6,18 +6,16 @@ export const getProfileInfo = async (ctx, next) => {
 
   const res = await userService.findUserByUsername(username);
   if (res.length > 0) {
-    const { id, username, name, email, balance, intro, avatar, socketId, userid } = res[0];
+    const { username, name, email, balance, intro, avatar, userid } = res[0];
     ctx.body = {
       success: true,
       userInfo: {
         name,
         email,
         username,
-        user_id: id,
         balance,
         intro,
         avatar,
-        socketId,
         referral: userid
       },
     };

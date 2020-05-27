@@ -103,12 +103,3 @@ CREATE TABLE `user_user_relation` (
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-INSERT INTO user_info (id, username, password, name, role)
-VALUES
-  (
-    1,
-    'admin',
-    '202cb962ac59075b964b07152d234b70',
-    'Vitae Admin',
-    'OWNER'
-  )

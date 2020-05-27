@@ -58,9 +58,9 @@ export class UserService {
     return query(_sql, [user_id]);
   }
 
-  setUserInfo(username, userinfo) {
-    const _sql = "UPDATE user_info SET socketid = ?, intro = ? WHERE username = ? limit 1 ; ";
-    return query(_sql, [username, userinfo.name, userinfo.intro]);
+  setUserInfo(username, { name, intro }) {
+    const _sql = "UPDATE user_info SET name = ?, intro = ? WHERE username = ? limit 1 ; ";
+    return query(_sql, [name, intro, username]);
   }
 
   // Check if the user id is a friend of the local user by checking the user id. If yes, return user_id and remark.
