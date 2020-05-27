@@ -21,7 +21,12 @@ function openRepoUrl(history) {
 
 function Setting({ initApp, history, globalSettings, setGlobalSettings }) {
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
-  const [refLink, setRefLink] = useState(localStorage.getItem('refLink'));
+
+  const user_info = JSON.parse(localStorage.getItem('userInfo'));
+
+  const [refLink, setRefLink] = useState(
+    user_info ? `${window.location.origin}/register?ref=${user_info.referral}` : '',
+  );
 
   const logout = () => {
     window.socket.disconnect();
@@ -37,7 +42,6 @@ function Setting({ initApp, history, globalSettings, setGlobalSettings }) {
   };
 
   const generateRefLink = async () => {
-    const user_info = JSON.parse(localStorage.getItem('userInfo'));
     const sponsor = user_info.username;
 
     try {
@@ -90,13 +94,13 @@ function Setting({ initApp, history, globalSettings, setGlobalSettings }) {
           </Row>
         </Col>
 
-        <Col span={24}>
+        {/* <Col span={24}>
           <Row justify="center" align="middle">
             <Button type="primary" onClick={onGenerateRefClick}>
               Generate Reference Link
             </Button>
           </Row>
-        </Col>
+        </Col> */}
       </Row>
 
       <CustomButton clickFn={() => setLogoutModalVisible(true)} value="Sign out" />

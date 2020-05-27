@@ -38,9 +38,7 @@ export default class SignInSignUp extends Component {
   render() {
     const { isLogin } = this.props;
     const { name, email, username, password } = this.state;
-    const loginClass = isLogin ? 'active' : 'inactive';
-    const registerClass = isLogin ? 'inactive' : 'active';
-    const linkUrl = isLogin ? '/register' : '/login';
+
     const buttonName = isLogin ? 'Log in' : 'Register';
     return (
       <div className="formContent fadeInDown">
@@ -48,12 +46,6 @@ export default class SignInSignUp extends Component {
         <div className="rain-chat-logo">
           <img src="../../assets/vitae-logo.png" alt="vitae-logo" />
         </div>
-        <Link to={linkUrl}>
-          <span className={loginClass}>Log in</span>
-        </Link>
-        <Link to={linkUrl}>
-          <span className={registerClass}>Register</span>
-        </Link>
         <div className="userAvatarWrapper">
           <UserAvatar name={username || 'U'} size="100" />
         </div>

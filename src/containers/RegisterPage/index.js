@@ -18,6 +18,7 @@ export default class Register extends Component {
         visible: false,
       },
       show: false,
+      sponsor: '',
     };
   }
 
@@ -40,6 +41,7 @@ export default class Register extends Component {
         // Popup
         scope.setState({
           show: true,
+          sponsor: refcode,
         });
       } else {
         notification(res.message, 'error');
@@ -52,7 +54,7 @@ export default class Register extends Component {
   }
 
   register = async () => {
-    const { name, email, username, password } = this.state;
+    const { name, email, username, password, sponsor } = this.state;
     if (!/^\S+@\S+\.\S+$/.test(email)) {
       notification('Invalid Email Format', 'warn');
       return;
@@ -71,6 +73,7 @@ export default class Register extends Component {
         email,
         username,
         password,
+        sponsor,
       });
       if (res && res.success) {
         // Popup
