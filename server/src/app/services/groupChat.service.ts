@@ -22,7 +22,7 @@ export class GroupChatService {
    */
   getGroupMember(groupId) {
     const _sql =
-      "SELECT g.user_id, u.socketid, u.name, u.avatar, u.intro, u.company, u.location, u.website FROM group_user_relation AS g inner join user_info AS u ON g.user_id = u.id WHERE to_group_id = ?";
+      "SELECT g.user_id, u.socketid, u.name, u.avatar, u.intro, u.balance, u.pop_balance, u.wallet_address FROM group_user_relation AS g inner join user_info AS u ON g.user_id = u.id WHERE to_group_id = ?";
     return query(_sql, groupId);
   }
 
