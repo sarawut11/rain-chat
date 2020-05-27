@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import UserAvatar from '../UserAvatar';
-import PersonalInfo from '../PersonalInfo';
+import ProfileInfo from '../ProfileInfo';
 import ShareModal from '../ShareModal';
 import store from '../../redux/store';
 import './styles.scss';
@@ -46,7 +46,7 @@ class MyInfo extends Component {
           clickAvatar={this._showPersonalInfo}
           showLogo={!!github_id}
         />
-        <PersonalInfo
+        <ProfileInfo
           userInfo={this._userInfo}
           hide={this._showPersonalInfo}
           modalVisible={this.state.showPersonalInfo}
