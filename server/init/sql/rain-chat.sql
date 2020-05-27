@@ -21,6 +21,7 @@
 DROP TABLE IF EXISTS `user_info`;
 CREATE TABLE `user_info` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userid` varchar(50) NOT NULL DEFAULT '',
   `username` varchar(50) NOT NULL DEFAULT 'NOT NULL',
   `password` varchar(40) DEFAULT NULL,
   `name` varchar(20) DEFAULT NULL,
@@ -34,7 +35,6 @@ CREATE TABLE `user_info` (
   `pop_balance` double DEFAULT 0,
   `pop_limit` double DEFAULT 0,
   `role` varchar(20) DEFAULT 'FREE',
-  `uniqueid` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 # Dump of table group_info

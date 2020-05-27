@@ -15,10 +15,10 @@ export const generateReferral = async (ctx, next) => {
 
   const RowDataPacket = await userService.findUserByUsername(sponsor);
   const res = JSON.parse(JSON.stringify(RowDataPacket));
-  let refcode = res[0].uniqueid;
+  let refcode = res[0].userid;
   if (refcode === "" || !refcode) {
     refcode = uniqid();
-    await userService.setUniqueId(sponsor, refcode);
+    await userService.setUserId(sponsor, refcode);
   }
   if (res.length > 0) {
     ctx.body = {
@@ -33,7 +33,7 @@ export const validateReferral = async (ctx, next) => {
   const { refcode } = ctx.request.body;
   const { userService } = ServicesContext.getInstance();
 
-  const RowDataPacket = await userService.findUserByUniqueId(refcode);
+  const RowDataPacket = await userService.findUserByUserId(refcode);
   const res = JSON.parse(JSON.stringify(RowDataPacket));
   if (res.length > 0) {
     ctx.body = {

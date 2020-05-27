@@ -1,4 +1,3 @@
-import configs from "@configs";
 import * as bodyParser from "koa-bodyparser";
 import * as compress from "koa-compress";
 import * as cors from "@koa/cors";
@@ -8,7 +7,7 @@ import { appRoutes } from "./routes";
 import { Server } from "./server";
 import { ChatService, GroupChatService, GroupService, UserService } from "./services";
 
-const corsArgs = configs.production ? { origin: "https://production_link" } : {};
+const corsArgs = process.env.NODE_ENV === "production" ? { origin: "https://production_link" } : {};
 
 export const App = Server.init(app => {
   app
@@ -27,5 +26,5 @@ export const App = Server.init(app => {
       .setChatService(new ChatService())
       .setGroupChatService(new GroupChatService());
 
-    Server.run(configs.port);
+    Server.run(process.env.PORT);
   });

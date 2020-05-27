@@ -25,6 +25,7 @@
   "dependencies": {
     "@koa/cors": "^2.2.3",
     "@types/crypto-js": "^3.1.47",
+    "@types/dotenv": "^8.2.0",
     "async": "0.2.9",
     "crypto-js": "^4.0.0",
     "jsonwebtoken": "^8.1.0",

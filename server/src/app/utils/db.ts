@@ -1,7 +1,12 @@
 import { createPool } from "mysql";
-import configs from "@configs";
 
-const pool = createPool(configs.dbConnection);
+const pool = createPool({
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT),
+  database: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+});
 
 export const query = (sql, values?): Promise<any> =>
   new Promise((resolve, reject) => {
@@ -12,6 +17,7 @@ export const query = (sql, values?): Promise<any> =>
       } else {
         connection.query(sql, values, (err, rows) => {
           if (err) {
+            console.error("QUERY ERROR:", err.message);
             reject(err);
           } else {
             resolve(rows);

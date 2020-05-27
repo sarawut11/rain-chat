@@ -27,3 +27,4 @@ Thumbs.db
 .awcache
 /secrets.*
 test.rest
+.env

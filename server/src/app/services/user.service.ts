@@ -11,7 +11,7 @@ export class UserService {
 
   // Register User
   insertUser(value) {
-    const _sql = "insert into user_info(name,email,username,password,sponsor,uniqueid) values(?,?,?,?,?,?);";
+    const _sql = "insert into user_info(name,email,username,password,sponsor,userid) values(?,?,?,?,?,?);";
     return query(_sql, value);
   }
 
@@ -30,9 +30,9 @@ export class UserService {
     return query(_sql, email);
   }
 
-  findUserByUniqueId(uniqueid) {
-    const _sql = "SELECT * FROM user_info WHERE uniqueid = ?;";
-    return query(_sql, uniqueid);
+  findUserByUserId(userid) {
+    const _sql = "SELECT * FROM user_info WHERE userid = ?;";
+    return query(_sql, userid);
   }
 
   findUserByEmailOrUsername(email, username) {
@@ -40,14 +40,14 @@ export class UserService {
     return query(_sql, [email, username]);
   }
 
-  getUniqueId(username) {
-    const _sql = "SELECT uniqueid FROM user_info WHERE username = ?;";
+  getUserId(username) {
+    const _sql = "SELECT userid FROM user_info WHERE username = ?;";
     return query(_sql, username);
   }
 
-  setUniqueId(username, uniqueid) {
-    const data = [uniqueid, username];
-    const _sql = "UPDATE user_info SET uniqueid = ? WHERE username = ? limit 1 ; ";
+  setUserId(username, userid) {
+    const data = [userid, username];
+    const _sql = "UPDATE user_info SET userid = ? WHERE username = ? limit 1 ; ";
     return query(_sql, data);
   }
 
@@ -56,6 +56,11 @@ export class UserService {
     const _sql =
       "SELECT id AS user_id, username, avatar, intro FROM user_info WHERE user_info.id =? ";
     return query(_sql, [user_id]);
+  }
+
+  setUserInfo(username, userinfo) {
+    const _sql = "UPDATE user_info SET socketid = ?, intro = ? WHERE username = ? limit 1 ; ";
+    return query(_sql, [username, userinfo.name, userinfo.intro]);
   }
 
   // Check if the user id is a friend of the local user by checking the user id. If yes, return user_id and remark.

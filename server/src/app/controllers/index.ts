@@ -4,3 +4,4 @@
 export * from "./login.controller";
 export * from "./register.controller";
 export * from "./referral.controller";
+export * from "./user.controller";

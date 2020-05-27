@@ -5,7 +5,7 @@ import { ServicesContext } from "../context";
 export const registerController = async (ctx, next) => {
   const { userService } = ServicesContext.getInstance();
 
-  const { name, email, username, password, refcode } = ctx.request.body;
+  const { name, email, username, password, sponsor } = ctx.request.body;
   if (username === "" || password === "" || name === "" || email === "") {
     ctx.body = {
       success: false,
@@ -13,7 +13,7 @@ export const registerController = async (ctx, next) => {
     };
     return;
   }
-  if (refcode === "" || !refcode) {
+  if (sponsor === "" || !sponsor) {
     ctx.body = {
       success: false,
       message: "Please provide the referral code",
@@ -21,7 +21,7 @@ export const registerController = async (ctx, next) => {
     return;
   }
   // Check Referral Username
-  const sponsor_result = await userService.findUserByUniqueId(refcode);
+  const sponsor_result = await userService.findUserByUserId(sponsor);
   if (!sponsor_result.length) {
     ctx.body = {
       success: false,
