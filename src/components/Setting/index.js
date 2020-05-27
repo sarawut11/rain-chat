@@ -28,8 +28,6 @@ function Setting({ initApp, history, globalSettings, setGlobalSettings }) {
     user_info ? `${window.location.origin}/register?ref=${user_info.uniqueid}` : '',
   );
 
-  console.log(window.location);
-
   const logout = () => {
     window.socket.disconnect();
     localStorage.removeItem('userInfo');
