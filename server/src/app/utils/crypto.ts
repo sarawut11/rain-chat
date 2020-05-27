@@ -1,6 +1,7 @@
 import * as crypto from "crypto-js";
+import configs from "@configs";
 
-const crypto_key = process.env.CRYPTO_KEY;
+const crypto_key = configs.crypto_key;
 
 export function encrypt(data) {
   return crypto.AES.encrypt(data, crypto_key).toString();

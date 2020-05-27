@@ -3,11 +3,12 @@
  */
 
 import * as jwt from "jsonwebtoken";
+import configs from "@configs";
 
 export const authVerify = token => {
   try {
     // Decode the user_id that existed in the previous payload
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    const payload = jwt.verify(token, configs.jwt_secret);
     return payload;
   } catch (err) {
     // ctx.throw(401, err);
@@ -17,7 +18,7 @@ export const authVerify = token => {
 };
 
 export const generateToken = payload => {
-  return jwt.sign(payload, process.env.JWT_SECRET, {
+  return jwt.sign(payload, configs.jwt_secret, {
     expiresIn: Math.floor(Date.now() / 1000) + 24 * 60 * 60 * 7, // One Week
   });
 };

@@ -55,7 +55,7 @@ export const Logger = (scope: string) => {
   const scopeDebug = Debug(scope);
   return {
     debug(message: string, ...args: any[]) {
-      if (process.env.NODE_ENV === "production") {
+      if (configs.production) {
         logger.debug(format(scope, message), parse(args));
       }
       scopeDebug(message, parse(args));
