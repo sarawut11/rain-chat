@@ -4,8 +4,8 @@ import { Provider } from 'react-redux'; // 让所有容器组件都可以访问s
 import store from './redux/store';
 import App from './router';
 import AxiosHandle from './utils/request';
-import './index.scss';
 import 'antd/dist/antd.css';
+import './index.scss';
 
 if (window.location.protocol === 'https:' && navigator.serviceWorker) {
   window.addEventListener('load', () => {
