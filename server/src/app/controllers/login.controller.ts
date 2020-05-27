@@ -1,6 +1,5 @@
-import * as jwt from "jsonwebtoken";
 import * as md5 from "md5";
-import configs from "@configs";
+import { generateToken } from "../middlewares/verify";
 import { ServicesContext } from "../context";
 
 // The username login system only involves non-github users, that is, github users can only log in with github authorization
@@ -20,11 +19,8 @@ export const loginController = async (ctx, next) => {
   if (res.length > 0) {
     //   After the verification is successful, the server will issue a Token, and then send the Token to the client
     if (md5(password) === res[0].password) {
-      const { id, name, email, balance, username, intro, avatar, socketId } = res[0];
-      const payload = { id };
-      const token = jwt.sign(payload, configs.jwt_secret, {
-        expiresIn: Math.floor(Date.now() / 1000) + 24 * 60 * 60 * 7, // One Week
-      });
+      const { id, name, email, balance, username, intro, avatar, socketId, userid } = res[0];
+      const token = generateToken({ id });
       ctx.body = {
         success: true,
         message: "Login Successful",
@@ -37,6 +33,7 @@ export const loginController = async (ctx, next) => {
           intro,
           avatar,
           socketId,
+          referral: userid,
           token,
         },
       };

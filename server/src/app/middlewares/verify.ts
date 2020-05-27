@@ -16,3 +16,9 @@ export const authVerify = token => {
     return false;
   }
 };
+
+export const generateToken = payload => {
+  return jwt.sign(payload, configs.jwt_secret, {
+    expiresIn: Math.floor(Date.now() / 1000) + 24 * 60 * 60 * 7, // One Week
+  });
+};

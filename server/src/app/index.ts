@@ -1,7 +1,7 @@
-import configs from "@configs";
 import * as bodyParser from "koa-bodyparser";
 import * as compress from "koa-compress";
 import * as cors from "@koa/cors";
+import configs from "@configs";
 
 import { ServicesContext } from "./context";
 import { appRoutes } from "./routes";

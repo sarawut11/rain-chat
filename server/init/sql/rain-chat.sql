@@ -21,6 +21,7 @@
 DROP TABLE IF EXISTS `user_info`;
 CREATE TABLE `user_info` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userid` varchar(50) NOT NULL DEFAULT '',
   `username` varchar(50) NOT NULL DEFAULT 'NOT NULL',
   `password` varchar(40) DEFAULT NULL,
   `name` varchar(20) DEFAULT NULL,
@@ -28,7 +29,7 @@ CREATE TABLE `user_info` (
   `avatar` varchar(250) DEFAULT '',
   `intro` varchar(100) DEFAULT NULL,
   `socketid` char(255) DEFAULT NULL,
-  `referral` int(11) DEFAULT 1,
+  `sponsor` int(11) DEFAULT 1,
   `wallet_address` char(255) DEFAULT NULL,
   `balance` double DEFAULT 0,
   `pop_balance` double DEFAULT 0,

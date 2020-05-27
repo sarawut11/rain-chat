@@ -1,17 +1,16 @@
 import * as Router from "koa-router";
 
-import {
-  loginController,
-  registerController,
-  generateReferral,
-  validateReferral,
-} from "../controllers";
+import * as APIController from "../controllers";
 
 export const apiRoutes = new Router()
   // Authentication
-  .post("/register", registerController)
-  .post("/login", loginController)
+  .post("/register", APIController.registerController)
+  .post("/login", APIController.loginController)
 
   // Referral
-  .post("/ref/generate", generateReferral)
-  .post("/ref/validate", validateReferral);
+  .post("/ref/generate", APIController.generateReferral)
+  .post("/ref/validate", APIController.validateReferral)
+
+  // Profile
+  .get("/user/:username", APIController.getProfileInfo)
+  .put("/user/:username", APIController.updateProfileInfo);

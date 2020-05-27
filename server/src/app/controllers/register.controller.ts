@@ -1,11 +1,11 @@
 import * as md5 from "md5";
-import * as cryptoUtils from "../utils/crypto";
+import * as uniqid from "uniqid";
 import { ServicesContext } from "../context";
 
 export const registerController = async (ctx, next) => {
   const { userService } = ServicesContext.getInstance();
 
-  const { name, email, username, password, refcode } = ctx.request.body;
+  const { name, email, username, password, sponsor } = ctx.request.body;
   if (username === "" || password === "" || name === "" || email === "") {
     ctx.body = {
       success: false,
@@ -13,7 +13,7 @@ export const registerController = async (ctx, next) => {
     };
     return;
   }
-  if (refcode === "" || !refcode) {
+  if (sponsor === "" || !sponsor) {
     ctx.body = {
       success: false,
       message: "Please provide the referral code",
@@ -21,8 +21,7 @@ export const registerController = async (ctx, next) => {
     return;
   }
   // Check Referral Username
-  const sponsorid = cryptoUtils.decrypt(refcode);
-  const sponsor_result = await userService.findUserById(sponsorid);
+  const sponsor_result = await userService.findUserByUserId(sponsor);
   if (!sponsor_result.length) {
     ctx.body = {
       success: false,
@@ -42,6 +41,6 @@ export const registerController = async (ctx, next) => {
       message: "Registration success!",
     };
     console.log("Registration success");
-    userService.insertUser([name, email, username, md5(password), sponsorid]);
+    userService.insertUser([name, email, username, md5(password), sponsor_result[0].id, uniqid()]);
   }
 };
