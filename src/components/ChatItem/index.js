@@ -140,7 +140,7 @@ class ChatItem extends Component {
     });
 
   render() {
-    const { me, img, time, name, msg, clickAvatar, github_id } = this.props;
+    const { me, img, time, name, username, msg, clickAvatar } = this.props;
     let attachments = this.props.attachments;
     if (typeof attachments === 'string') {
       attachments = JSON.parse(attachments);
@@ -152,7 +152,7 @@ class ChatItem extends Component {
       <div className="chat-item">
         {me ? (
           <div className="mychat">
-            <UserAvatar name={name} src={img} size="40" showLogo={!!github_id} />
+            <UserAvatar name={username} src={img} size="40" />
             <div className="nt">
               {time && <span>{time}</span>}
               {name && <span>{name}</span>}
@@ -161,13 +161,7 @@ class ChatItem extends Component {
           </div>
         ) : (
           <div className="otherchat">
-            <UserAvatar
-              name={name}
-              src={img}
-              size="40"
-              clickAvatar={clickAvatar}
-              showLogo={!!github_id}
-            />
+            <UserAvatar name={username} src={img} size="40" clickAvatar={clickAvatar} />
             <div className="nt">
               {name && <span>{name}</span>}
               {time && <span>{time}</span>}
@@ -186,11 +180,11 @@ ChatItem.propTypes = {
   me: PropTypes.bool,
   img: PropTypes.string,
   name: PropTypes.string,
+  username: PropTypes.string,
   time: PropTypes.string,
   msg: PropTypes.string,
   attachments: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
   clickAvatar: PropTypes.func,
-  github_id: PropTypes.number,
   shouldScrollIntoView: PropTypes.bool,
   clickImage: PropTypes.func,
 };
@@ -199,11 +193,11 @@ ChatItem.defaultProps = {
   me: undefined,
   img: undefined,
   name: '',
+  username: '',
   time: undefined,
   clickAvatar: undefined,
   msg: '',
   attachments: '[]',
-  github_id: null,
   shouldScrollIntoView: true,
   clickImage() {},
 };

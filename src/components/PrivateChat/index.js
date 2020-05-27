@@ -157,7 +157,7 @@ export default class PrivateChat extends Component {
         />
         <ChatHeader
           showPersonalInfo={() => this._showPersonalInfo(true)}
-          title={(userInfo && userInfo.name) || '----'}
+          title={(userInfo && userInfo.username) || '----'}
           showShareModal={this._showShareModal}
           chatType="private"
           showShareIcon={!!chatItem}
