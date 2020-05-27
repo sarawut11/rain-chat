@@ -4,7 +4,7 @@ import axios from 'axios';
 export default class Request {
   static axiosConfigInit() {
     if (process.env.NODE_ENV !== 'production') {
-      axios.defaults.baseURL = 'http://192.168.1.100:3000';
+      axios.defaults.baseURL = 'http://localhost:3000';
     }
   }
 
