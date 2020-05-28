@@ -338,34 +338,6 @@ const initServer = server => {
       }
     });
 
-    // Robot chat
-    socket.on("robotChat", async (data, fn) => {
-      try {
-        const date = {
-          key: configs.robot_key,
-          info: data.message,
-          userid: data.user_id,
-        };
-        const options = {
-          method: "POST",
-          uri: "http://www.tuling123.com/openapi/api",
-          body: date,
-          json: true, // Automatically stringifies the body to JSON
-        };
-        const response = configs.robot_key
-          ? await request(options)
-          : {
-            text:
-              "Please log in and register a robot at http://www.tuling123.com/, get the apikey and put it in the code configs",
-          };
-        console.log("robotChat data=>", data, "time=>", new Date().toLocaleString());
-        fn(response);
-      } catch (error) {
-        console.log("error", error.message);
-        io.to(socketId).emit("error", { code: 500, message: error.message });
-      }
-    });
-
     socket.on("deleteContact", async ({ from_user, to_user }, fn) => {
       try {
         await userService.deleteContact(from_user, to_user);
