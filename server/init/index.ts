@@ -48,7 +48,7 @@ const initDB = async () => {
   // Create Vitae Rain Room
   const groupId = uuid();
   sql = "INSERT INTO group_info (id,to_group_id,name,group_notice,creator_id,create_time) VALUES (?,?,?,?,?,?);";
-  await query(sql, [1, groupId, "Vitae Rain Room", "Vitae Rain Room", admin.id, moment().utc().unix()]);
+  await query(sql, [1, groupId, "Vitae Rain Room", "Vitae Rain Room", 1, moment().utc().unix()]);
 
   // Assign Admin to Vitae Rain Room
   sql = "INSERT INTO group_user_relation (id, to_group_id, userid) VALUE (?,?,?);";

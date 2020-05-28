@@ -3,7 +3,7 @@ import * as Koa from "koa";
 import { createServer } from "http";
 
 import { Logger } from "./utils/Logger";
-import { appSocket } from "./socket/app.socket";
+import { socketServer } from "./socket/app.socket";
 
 const log = Logger("app:core:server");
 
@@ -28,7 +28,7 @@ export class Server {
   }
 
   static run(port: string) {
-    appSocket(Server.server);
+    socketServer.initServer(Server.server);
 
     Server.server.listen(this.normalizePort(port));
     //   .on('listening', () => this.onListening(Server.server))
