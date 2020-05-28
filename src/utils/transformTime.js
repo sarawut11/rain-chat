@@ -39,7 +39,7 @@ export const toNormalTime = timestamp => {
 
   const isYesterday = thisYear === yearOfArg && thisMonth === monthOfArg && yesterday === dayOfArg;
   if (isYesterday) {
-    return `昨天 ${addZero(hourOfArg)}:${addZero(minuteOfArg)}`;
+    return `Yesterday ${addZero(hourOfArg)}:${addZero(minuteOfArg)}`;
   }
 
   if (yearOfArg === thisYear) {

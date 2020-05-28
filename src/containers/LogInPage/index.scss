@@ -16,4 +16,55 @@
   #icon {
     width: 60%;
   }
+
+  .login-logo-text {
+    position: absolute;
+    left: 35px;
+    top: 20px;
+    color: white;
+    font-family: Lato;
+    font-style: italic;
+    font-size: 32px;
+  }
+
+  .login-container {
+    width: 100%;
+
+    .login-form-container {
+      height: 100vh;
+      background: url(../../assets/landing-page-background.svg);
+      background-repeat: no-repeat;
+      background-size: auto 100%;
+    }
+
+    .login-description-container {
+      padding-top: 20px;
+      color: #064E89 !important;
+      font-family: Lato, sans-serif !important;
+      h1 {
+        text-align: center;
+        font-size: 23px;
+        font-weight: 900;
+        color: #064E89 !important;
+      }
+      h2 {
+        font-size: 18px;
+        font-weight: 700;
+        color: #064E89 !important;
+      }
+      p {
+        font-weight: 300;
+        letter-spacing: 1px;
+      }
+      img {
+        width: 200px;
+      }
+    }
+  }
+
+}
+
+
+.login-description-box {
+  width: 380px;
 }

@@ -43,11 +43,11 @@ export default class SignInSignUp extends Component {
     return (
       <div className="formContent fadeInDown">
         {this.state.showSpinner && <Spinner />}
-        <div className="rain-chat-logo">
+        {/* <div className="rain-chat-logo">
           <img src="../../assets/vitae-logo.png" alt="vitae-logo" />
-        </div>
+        </div> */}
         <div className="userAvatarWrapper">
-          <UserAvatar name={username || 'U'} size="100" />
+          <UserAvatar name={username || 'U'} size="100" color="#44C97D" />
         </div>
         {!isLogin && (
           <div className="center">
@@ -92,7 +92,6 @@ export default class SignInSignUp extends Component {
         <div className="center">
           <input type="button" onClick={this.handleClick} value={buttonName} />
         </div>
-        <div className="version">Version: 1.0.0</div>
       </div>
     );
   }
