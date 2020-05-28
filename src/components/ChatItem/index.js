@@ -152,7 +152,7 @@ class ChatItem extends Component {
       <div className="chat-item">
         {me ? (
           <div className="mychat">
-            <UserAvatar name={username} src={img} size="40" />
+            <UserAvatar name={name} src={img} size="40" />
             <div className="nt">
               {time && <span>{time}</span>}
               {name && <span>{name}</span>}
@@ -161,7 +161,7 @@ class ChatItem extends Component {
           </div>
         ) : (
           <div className="otherchat">
-            <UserAvatar name={username} src={img} size="40" clickAvatar={clickAvatar} />
+            <UserAvatar name={name} src={img} size="40" clickAvatar={clickAvatar} />
             <div className="nt">
               {name && <span>{name}</span>}
               {time && <span>{time}</span>}

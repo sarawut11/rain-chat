@@ -117,11 +117,6 @@ export default class ChatContentList extends Component {
         // is group chat
         isMe = this._userInfo && this._userInfo.user_id === item.from_user;
       }
-      let message;
-      if (item.message) {
-        const beginWithName = /\S.*:\s/.test(item.message);
-        message = beginWithName ? item.message.substring(item.name.length + 2) : item.message;
-      }
       const time = toNormalTime(item.time);
       const attachments = item.attachments;
       if (item.tip) {
@@ -136,7 +131,7 @@ export default class ChatContentList extends Component {
           <ChatItem
             me={isMe}
             img={item.avatar}
-            msg={message}
+            msg={item.message}
             name={item.name}
             username={item.username}
             time={time}
