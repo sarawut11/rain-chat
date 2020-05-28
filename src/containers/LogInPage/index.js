@@ -138,8 +138,6 @@ class LogIn extends Component {
                 </Row>
               </Col>
               <Col span={3} />
-              {/* <div className="login-description-box">
-              </div> */}
             </Row>
           </Col>
         </Row>
