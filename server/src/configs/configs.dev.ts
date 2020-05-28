@@ -32,6 +32,5 @@ export default {
     accessKey: "",
     secretKey: "",
     bucket: "",
-  },
-  robot_key: "",
+  }
 };
