@@ -1,4 +1,5 @@
 import { query } from "../utils/db";
+import configs from "@configs";
 
 export class GroupChatService {
   /**
@@ -50,7 +51,8 @@ export class GroupChatService {
   saveGroupMsg({ from_user, to_group_id, message, time, attachments }) {
     const data = [from_user, to_group_id, message, time, attachments];
     const _sql =
-      " INSERT INTO group_msg(from_user,to_group_id,message ,time, attachments) VALUES(?,?,?,?,?); ";
+      `INSERT INTO ${to_group_id === configs.rain_group_id ? "rain_group_msg" : "group_msg"}
+      (from_user,to_group_id,message ,time, attachments) VALUES(?,?,?,?,?); `;
     return query(_sql, data);
   }
 

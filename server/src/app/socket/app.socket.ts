@@ -356,7 +356,7 @@ const initServer = server => {
           ? await request(options)
           : {
             text:
-              "Please log in and register a robot at http://www.tuling123.com/, get the apikey and put it in the code configs",
+              "I am disabled for now.",
           };
         console.log("robotChat data=>", data, "time=>", new Date().toLocaleString());
         fn(response);

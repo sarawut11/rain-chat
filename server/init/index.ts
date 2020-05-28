@@ -1,6 +1,5 @@
 /* eslint-disable guard-for-in */
 import * as md5 from "md5";
-import * as uuid from "uuid/v1";
 import * as uniqid from "uniqid";
 import * as moment from "moment";
 import { getSqlContentMap } from "./util/getSQLConentMap";
@@ -46,13 +45,13 @@ const initDB = async () => {
   await query(sql, [1, admin.username, md5(admin.password), admin.name, "OWNER", uniqid()]);
 
   // Create Vitae Rain Room
-  const groupId = uuid();
+  const rainGroupId = configs.rain_group_id;
   sql = "INSERT INTO group_info (id,to_group_id,name,group_notice,creator_id,create_time) VALUES (?,?,?,?,?,?);";
-  await query(sql, [1, groupId, "Vitae Rain Room", "Vitae Rain Room", 1, moment().utc().unix()]);
+  await query(sql, [1, rainGroupId, "Vitae Rain Room", "Vitae Rain Room", 1, moment().utc().unix()]);
 
   // Assign Admin to Vitae Rain Room
   sql = "INSERT INTO group_user_relation (id, to_group_id, userid) VALUE (?,?,?);";
-  await query(sql, [1, groupId, 1]);
+  await query(sql, [1, rainGroupId, 1]);
 
   console.log("SQL command execution is over!");
   console.log("Please press ctrl + c to exit!");

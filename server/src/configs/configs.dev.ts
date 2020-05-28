@@ -17,6 +17,7 @@ export default {
     name: "Vitae Admin",
     intro: "Workspace Admin"
   },
+  rain_group_id: "vitae-rain-group",
   client_secret: "",
   jwt_secret: "chat-sec",
   crypto_key: "VITAE-RAIN-CHAT",

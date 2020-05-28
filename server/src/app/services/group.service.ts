@@ -9,11 +9,6 @@ export class GroupService {
     return query(_sql, link);
   }
 
-  getRainGroupId() {
-    const _sql = "SELECT to_group_id FROM group_info WHERE id = 1;";
-    return query(_sql);
-  }
-
   // Join the group
   joinGroup(user_id, to_group_id) {
     const _sql = "INSERT INTO group_user_relation(user_id,to_group_id) VALUES(?,?);";

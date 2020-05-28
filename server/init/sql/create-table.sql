@@ -62,6 +62,19 @@ CREATE TABLE `group_msg` (
   PRIMARY KEY (`id`),
   KEY `to_group` (`to_group_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+# Dump of table rain_group_msg
+# ------------------------------------------------------------
+DROP TABLE IF EXISTS `rain_group_msg`;
+CREATE TABLE `rain_group_msg` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `from_user` int(11) NOT NULL,
+  `to_group_id` char(100) NOT NULL DEFAULT '',
+  `message` text NOT NULL,
+  `time` int(11) NOT NULL,
+  `attachments` varchar(250) DEFAULT '''[]''',
+  PRIMARY KEY (`id`),
+  KEY `to_group` (`to_group_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 # Dump of table group_user_relation
 # ------------------------------------------------------------
 DROP TABLE IF EXISTS `group_user_relation`;

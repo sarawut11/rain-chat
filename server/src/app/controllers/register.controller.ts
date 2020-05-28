@@ -2,6 +2,7 @@ import * as md5 from "md5";
 import * as uniqid from "uniqid";
 import { ServicesContext } from "../context";
 import { socketServer } from "../socket/app.socket";
+import configs from "@configs";
 
 export const registerController = async (ctx, next) => {
   const { userService, groupService } = ServicesContext.getInstance();
@@ -42,13 +43,11 @@ export const registerController = async (ctx, next) => {
       await userService.insertUser([name, email, username, md5(password), sponsor_result[0].id, uniqid()]);
       // Join Rain Group & Broadcast
       const userInfo = (await userService.getUserInfoByUsername(username))[0];
-      const { to_group_id } = (await groupService.getRainGroupId())[0];
-      console.log(userInfo, to_group_id);
-      await groupService.joinGroup(userInfo.user_id, to_group_id);
+      await groupService.joinGroup(userInfo.user_id, configs.rain_group_id);
       socketServer.broadcast("getGroupMsg", {
         ...userInfo,
         message: `${userInfo.name} joined a group chat`,
-        to_group_id,
+        to_group_id: configs.rain_group_id,
         tip: "joinGroup",
       }, error => console.log(error.message));
 
