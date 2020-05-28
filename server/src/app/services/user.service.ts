@@ -1,4 +1,5 @@
 import { query } from "../utils/db";
+import configs from "@configs";
 
 export class UserService {
   // Fuzzy matching users
@@ -97,12 +98,16 @@ export class UserService {
   // Find home page group list by user_id
   // TODO: Optimize SQL statement
   getGroupList(user_id) {
-    const _sql = `SELECT r.to_group_id ,i.name , i.create_time,
+    const _sql = `
+    ( SELECT r.to_group_id ,i.name , i.create_time,
       (SELECT g.message  FROM group_msg AS g  WHERE g.to_group_id = r.to_group_id  ORDER BY TIME DESC   LIMIT 1 )  AS message ,
       (SELECT g.time  FROM group_msg AS g  WHERE g.to_group_id = r.to_group_id  ORDER BY TIME DESC   LIMIT 1 )  AS time,
       (SELECT g.attachments FROM group_msg AS g  WHERE g.to_group_id = r.to_group_id  ORDER BY TIME DESC   LIMIT 1 )  AS attachments
-      FROM  group_user_relation AS r inner join group_info AS i on r.to_group_id = i.to_group_id WHERE r.user_id = ? ;`;
-    return query(_sql, user_id);
+      FROM  group_user_relation AS r inner join group_info AS i on r.to_group_id = i.to_group_id WHERE r.user_id = ? AND r.to_group_id != ? )
+    UNION
+    ( SELECT i.to_group_id ,i.name , i.create_time, g.message, g.time, g.attachments
+      FROM  group_info AS i INNER JOIN rain_group_msg as g on g.from_user = ? AND i.to_group_id = ? ORDER BY TIME DESC LIMIT 1 );`;
+    return query(_sql, [user_id, configs.rain_group_id, user_id, configs.rain_group_id]);
   }
 
   // Find homepage private chat list by user_id
