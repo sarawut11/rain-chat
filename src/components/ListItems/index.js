@@ -34,6 +34,7 @@ class ListItems extends Component {
       dataList &&
       dataList.map((data, index) => {
         let message = data.message;
+        console.log(data);
         const isShareUrl = message && /::share::{"/.test(message);
         if (isShareUrl) {
           message = '[Invitation card]';

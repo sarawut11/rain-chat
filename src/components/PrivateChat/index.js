@@ -42,8 +42,7 @@ export default class PrivateChat extends Component {
       avatar, // Own avatar
       name,
       github_id,
-      message:
-        inputMsg === '' ? `${name}: [${attachments[0].type || 'file'}]` : `${name}: ${inputMsg}`, // Message content
+      message: inputMsg === '' ? `[${attachments[0].type || 'file'}]` : `${inputMsg}`, // Message content
       attachments, // attatchment
       // time: Date.parse(new Date()) / 1000 //
     };
@@ -157,7 +156,7 @@ export default class PrivateChat extends Component {
         />
         <ChatHeader
           showPersonalInfo={() => this._showPersonalInfo(true)}
-          title={(userInfo && userInfo.username) || '----'}
+          title={(userInfo && userInfo.name) || '----'}
           showShareModal={this._showShareModal}
           chatType="private"
           showShareIcon={!!chatItem}

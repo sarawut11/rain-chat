@@ -108,7 +108,7 @@ export class UserService {
   // Find homepage private chat list by user_id
   // TODO: Optimize SQL statement
   getPrivateList(user_id) {
-    const _sql = ` SELECT r.from_user as user_id, i.username, i.avatar, r.time as be_friend_time,
+    const _sql = ` SELECT r.from_user as user_id, i.username, i.name, i.avatar, r.time as be_friend_time,
       (SELECT p.message FROM private_msg AS p WHERE (p.to_user = r.from_user and p.from_user = r.user_id) or (p.from_user = r.from_user and p.to_user = r.user_id) ORDER BY p.time DESC   LIMIT 1 )  AS message ,
       (SELECT p.time FROM private_msg AS p WHERE (p.to_user = r.from_user and p.from_user = r.user_id) or (p.from_user = r.from_user and p.to_user = r.user_id) ORDER BY p.time DESC   LIMIT 1 )  AS time,
       (SELECT p.attachments FROM private_msg AS p WHERE (p.to_user = r.from_user and p.from_user = r.user_id) or (p.from_user = r.from_user and p.to_user = r.user_id) ORDER BY p.time DESC   LIMIT 1 )  AS attachments
