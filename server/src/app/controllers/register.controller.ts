@@ -1,9 +1,10 @@
 import * as md5 from "md5";
 import * as uniqid from "uniqid";
 import { ServicesContext } from "../context";
+import { socketServer } from "../socket/app.socket";
 
 export const registerController = async (ctx, next) => {
-  const { userService } = ServicesContext.getInstance();
+  const { userService, groupService } = ServicesContext.getInstance();
 
   const { name, email, username, password, sponsor } = ctx.request.body;
   if (username === "" || password === "" || name === "" || email === "") {
@@ -36,11 +37,32 @@ export const registerController = async (ctx, next) => {
       message: "Username already exists",
     };
   } else {
-    ctx.body = {
-      success: true,
-      message: "Registration success!",
-    };
-    console.log("Registration success");
-    userService.insertUser([name, email, username, md5(password), sponsor_result[0].id, uniqid()]);
+    try {
+      // Register DB
+      await userService.insertUser([name, email, username, md5(password), sponsor_result[0].id, uniqid()]);
+      // Join Rain Group & Broadcast
+      const userInfo = (await userService.getUserInfoByUsername(username))[0];
+      const { to_group_id } = (await groupService.getRainGroupId())[0];
+      console.log(userInfo, to_group_id);
+      await groupService.joinGroup(userInfo.user_id, to_group_id);
+      socketServer.broadcast("getGroupMsg", {
+        ...userInfo,
+        message: `${userInfo.name} joined a group chat`,
+        to_group_id,
+        tip: "joinGroup",
+      }, error => console.log(error.message));
+
+      ctx.body = {
+        success: true,
+        message: "Registration success!",
+      };
+      console.log("Registration success");
+    } catch (error) {
+      console.log(error.message);
+      ctx.body = {
+        success: false,
+        message: "Registration failed!",
+      };
+    }
   }
 };

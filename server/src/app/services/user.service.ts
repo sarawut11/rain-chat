@@ -51,16 +51,27 @@ export class UserService {
     return query(_sql, data);
   }
 
+  getId(username) {
+    const _sql = "SELECT id FROM user_info WHERE username = ?;";
+    return query(_sql, username);
+  }
+
   // Find user information by user id user_info includes user name, avatar, last login time, status, etc. excluding password
   getUserInfo(user_id) {
     const _sql =
-      "SELECT id AS user_id, username, avatar, intro FROM user_info WHERE user_info.id =? ";
+      "SELECT id AS user_id, username, name, avatar, intro FROM user_info WHERE user_info.id =? ";
     return query(_sql, [user_id]);
   }
 
-  setUserInfo(username, userinfo) {
-    const _sql = "UPDATE user_info SET socketid = ?, intro = ? WHERE username = ? limit 1 ; ";
-    return query(_sql, [username, userinfo.name, userinfo.intro]);
+  getUserInfoByUsername(username) {
+    const _sql =
+      "SELECT id AS user_id, username, name, avatar, intro FROM user_info WHERE user_info.username =? ";
+    return query(_sql, [username]);
+  }
+
+  setUserInfo(username, { name, intro }) {
+    const _sql = "UPDATE user_info SET name = ?, intro = ? WHERE username = ? limit 1 ; ";
+    return query(_sql, [name, intro, username]);
   }
 
   // Check if the user id is a friend of the local user by checking the user id. If yes, return user_id and remark.

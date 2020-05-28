@@ -13,6 +13,7 @@ export const query = (sql, values?): Promise<any> =>
       } else {
         connection.query(sql, values, (err, rows) => {
           if (err) {
+            console.error("QUERY ERROR:", err.message);
             reject(err);
           } else {
             resolve(rows);

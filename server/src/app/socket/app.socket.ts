@@ -10,6 +10,8 @@ import { getUploadToken } from "../utils/qiniu";
 import { getAllMessage, getGroupItem } from "./message.socket";
 import { requestFrequency } from "../middlewares/requestFrequency";
 
+let io: socketIo.Server;
+
 function getSocketIdHandle(arr) {
   return arr[0] ? JSON.parse(JSON.stringify(arr[0])).socketid : "";
 }
@@ -30,7 +32,7 @@ function emitAsync(socket, emitName, data, callback) {
   });
 }
 
-export const appSocket = server => {
+const initServer = server => {
   const {
     userService,
     chatService,
@@ -38,12 +40,11 @@ export const appSocket = server => {
     groupService,
   } = ServicesContext.getInstance();
 
-  const io = socketIo(server);
-
+  io = socketIo(server);
   io.use((socket, next) => {
     const token = socket.handshake.query.token;
     if (authVerify(token)) {
-      console.log("veryfy socket token success", token);
+      console.log("verify socket token success", token);
       return next();
     }
     return next(new Error(`Authentication error! time =>${new Date().toLocaleString()}`));
@@ -74,7 +75,8 @@ export const appSocket = server => {
     const arr = await userService.getUserSocketId(user_id);
     const existSocketIdStr = getSocketIdHandle(arr);
     const newSocketIdStr = existSocketIdStr ? `${existSocketIdStr},${socketId}` : socketId;
-    await userService.saveUserSocketId(user_id, newSocketIdStr);
+    // await userService.saveUserSocketId(user_id, newSocketIdStr); // TOO LONG DB EXCEPTION in dev mode
+    await userService.saveUserSocketId(user_id, socketId);
     console.log("initSocket user_id=>", user_id, "time=>", new Date().toLocaleString());
 
     // init GroupChat
@@ -425,4 +427,19 @@ export const appSocket = server => {
       }
     });
   });
+};
+
+const broadcast = (emitName, data, onError) => {
+  try {
+    io.sockets.emit(emitName, data);
+  } catch (error) {
+    if (onError) {
+      onError(error);
+    }
+  }
+};
+
+export const socketServer = {
+  initServer,
+  broadcast,
 };
