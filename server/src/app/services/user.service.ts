@@ -106,8 +106,8 @@ export class UserService {
       FROM  group_user_relation AS r inner join group_info AS i on r.to_group_id = i.to_group_id WHERE r.user_id = ? AND r.to_group_id != ? )
     UNION
     ( SELECT i.to_group_id ,i.name , i.create_time, g.message, g.time, g.attachments
-      FROM  group_info AS i INNER JOIN rain_group_msg as g on g.from_user = ? AND i.to_group_id = ? ORDER BY TIME DESC LIMIT 1 );`;
-    return query(_sql, [user_id, configs.rain_group_id, user_id, configs.rain_group_id]);
+      FROM  group_info AS i INNER JOIN rain_group_msg as g on i.to_group_id = ? ORDER BY TIME DESC LIMIT 1 );`;
+    return query(_sql, [user_id, configs.rain_group_id, configs.rain_group_id]);
   }
 
   // Find homepage private chat list by user_id

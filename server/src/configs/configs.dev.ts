@@ -5,10 +5,10 @@ export default {
   ...commonConfigs,
   port: "3000",
   dbConnection: {
-    host: "192.168.1.96",
+    host: "127.0.0.1",
     port: 3306,
     database: "rain-chat",
-    user: "vitae-root",
+    user: "root",
     password: "vitae-rain-chat",
   },
   default_admin: {
