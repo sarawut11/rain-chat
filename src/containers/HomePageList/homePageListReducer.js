@@ -8,7 +8,14 @@ import {
   UPDATE_LIST_GROUP_NAME,
 } from './homePageListAction';
 
-const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+let userInfo = {};
+
+try {
+  userInfo = JSON.parse(localStorage.getItem('userInfo'));
+} catch (e) {
+  console.log(e);
+}
+
 const getHomePageListReducer = (previousState = [], action) => {
   switch (action.type) {
     case SET_HOME_PAGE_LIST:
