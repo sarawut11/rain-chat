@@ -75,6 +75,7 @@ const initServer = server => {
     const arr = await userService.getUserSocketId(user_id);
     const existSocketIdStr = getSocketIdHandle(arr);
     const newSocketIdStr = existSocketIdStr ? `${existSocketIdStr},${socketId}` : socketId;
+    // await userService.saveUserSocketId(user_id, newSocketIdStr); // TOO LONG DB EXCEPTION in dev mode
     await userService.saveUserSocketId(user_id, socketId);
     console.log("initSocket user_id=>", user_id, "time=>", new Date().toLocaleString());
 
