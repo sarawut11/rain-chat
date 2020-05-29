@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import './style.scss';
+import { Button } from 'antd';
 
 class ChatHeader extends Component {
   clickToBack = () => {
@@ -36,10 +37,14 @@ class ChatHeader extends Component {
           )}
           {title}
         </div>
-        {showShareIcon && (
-          <svg onClick={this._showShareModal} className="icon shareIcon" aria-hidden="true">
-            <use xlinkHref="#icon-share" />
-          </svg>
+        {groupId && groupId === 'vitae-rain-group' ? (
+          <Button type="primary">Send Vitae to Rain</Button>
+        ) : (
+          showShareIcon && (
+            <svg onClick={this._showShareModal} className="icon shareIcon" aria-hidden="true">
+              <use xlinkHref="#icon-share" />
+            </svg>
+          )
         )}
         {!isRobotChat && (
           <svg onClick={this._clickChatInfo} className="icon information-icon" aria-hidden="true">

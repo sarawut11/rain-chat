@@ -46,7 +46,6 @@ class ListItems extends Component {
           const chatItem = allGroupChats && allGroupChats.get(data.to_group_id);
           GroupMembers = chatItem && chatItem.groupInfo && chatItem.groupInfo.members;
           groupId = chatItem && chatItem.groupInfo && chatItem.groupInfo.to_group_id;
-          console.log('chatItem', chatItem);
         }
         const { params } = match;
         const unreadColor = data.to_group_id ? 'groupUnread' : 'privateUnread';

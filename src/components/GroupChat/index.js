@@ -183,7 +183,6 @@ class GroupChat extends Component {
     const messages = chatItem ? chatItem.messages : groupMsgAndInfo.messages;
     const groupInfo = chatItem ? chatItem.groupInfo : groupMsgAndInfo.groupInfo;
 
-    console.log('groupinfo', groupInfo);
     return (
       <div className="chat-wrapper">
         <ChatHeader
