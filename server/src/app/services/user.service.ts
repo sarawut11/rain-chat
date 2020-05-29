@@ -75,6 +75,11 @@ export class UserService {
     return query(_sql, [name, intro, username]);
   }
 
+  setAvatar(username, avatar) {
+    const _sql = "UPDATE user_info SET avatar = ? WHERE username = ? limit 1 ; ";
+    return query(_sql, [avatar, username]);
+  }
+
   // Check if the user id is a friend of the local user by checking the user id. If yes, return user_id and remark.
   isFriend(user_id, from_user) {
     const _sql =
