@@ -11,6 +11,10 @@
     .chat-title{
         padding-left: 30px;
         font-size: 18px;
+        img {
+          width: 30px;
+          margin-right: 10px;
+        }
     }
     .back-icon {
         color: $blue;
@@ -28,5 +32,9 @@
     .shareIcon {
         right: 50px;
         font-size: 28px;
+    }
+    button {
+      position: absolute;
+      right: 60px;
     }
 }

@@ -41,9 +41,11 @@ class ListItems extends Component {
         const chatFromId = data.to_group_id || (data.user_id && data.user_id.toString());
         const isGroupChat = !!data.to_group_id;
         let GroupMembers;
+        let groupId;
         if (isGroupChat) {
           const chatItem = allGroupChats && allGroupChats.get(data.to_group_id);
           GroupMembers = chatItem && chatItem.groupInfo && chatItem.groupInfo.members;
+          groupId = chatItem && chatItem.groupInfo && chatItem.groupInfo.to_group_id;
         }
         const { params } = match;
         const unreadColor = data.to_group_id ? 'groupUnread' : 'privateUnread';
@@ -70,7 +72,7 @@ class ListItems extends Component {
             value={chatFromId}
           >
             {isGroupChat ? (
-              <GroupAvatar members={GroupMembers || []} />
+              <GroupAvatar members={GroupMembers || []} groupId={groupId} />
             ) : (
               <UserAvatar
                 src={data.avatar}
