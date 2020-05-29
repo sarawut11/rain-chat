@@ -1,6 +1,7 @@
-import { ServicesContext } from "../context";
 import * as mime from "mime-types";
 import * as aws from "../utils/aws";
+import { ServicesContext } from "../context";
+import { socketServer } from "../socket/app.socket";
 
 export const getProfileInfo = async (ctx, next) => {
   const { username } = ctx.params;
@@ -39,6 +40,13 @@ export const updateProfileInfo = async (ctx, next) => {
 
   try {
     await userService.setUserInfo(username, { name, intro });
+    socketServer.broadcast("updateProfileInfo", {
+      userInfo: {
+        username,
+        name,
+        intro,
+      }
+    }, error => console.log(error.message));
     ctx.body = {
       success: true,
       message: "Profile updated successfully."
@@ -65,6 +73,12 @@ export const uploadAvatar = async (ctx, next) => {
       fileType: avatar.type,
     });
     await userService.setAvatar(username, url);
+    socketServer.broadcast("updateAvatar", {
+      userInfo: {
+        username,
+        avatar: url,
+      }
+    }, error => console.log(error.message));
     ctx.body = {
       success: true,
       message: "Successfully Uploaded",
