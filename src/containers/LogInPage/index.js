@@ -98,7 +98,7 @@ class LogIn extends Component {
           <p className="content">You have successfully logged in</p>
         </Modal>
 
-        <Row justify="space-around" align="middle" className="login-container">
+        <Row className="login-container">
           <Col xs={24} sm={24} md={24} lg={10} className="login-form-container">
             <Row justify="center" align="middle" style={{ height: '100%' }}>
               <SignInSignUp setValue={this.setValue} isLogin />
@@ -106,7 +106,7 @@ class LogIn extends Component {
           </Col>
 
           <Col xs={24} sm={24} md={24} lg={14} className="login-description-container">
-            <Row justify="center" align="middle">
+            <Row justify="center" align="middle" style={{ minHeight: '100%' }}>
               <Col span={3} />
               <Col span={18}>
                 <Row justify="center" align="middle" gutter={[0, 20]}>
