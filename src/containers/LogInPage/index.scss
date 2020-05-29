@@ -29,6 +29,7 @@
 
   .login-container {
     width: 100%;
+    min-height: 100vh;
 
     .login-form-container {
       height: 100vh;
@@ -38,6 +39,7 @@
     }
 
     .login-description-container {
+      min-height: 100%;
       padding-top: 20px;
       color: #064E89 !important;
       font-family: Lato, sans-serif !important;
