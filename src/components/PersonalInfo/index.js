@@ -60,7 +60,7 @@ class PersonalInfo extends Component {
     console.log('userInfo', userInfo);
     return (
       <Drawer title={name} visible={modalVisible} onClose={hide} className="user-info-drawer">
-        <Row gutter={[0, 30]}>
+        <Row gutter={[0, 20]}>
           {intro && (
             <Col span={24}>
               <p>{intro}</p>
@@ -68,22 +68,20 @@ class PersonalInfo extends Component {
           )}
           {username && (
             <Col span={24}>
-              <h3>{username}</h3>
               <p>Username</p>
+              <h3>@{username}</h3>
             </Col>
           )}
           {email && (
             <Col span={24}>
-              <h3>{email}</h3>
               <p>Email</p>
+              <h3>{email}</h3>
             </Col>
           )}
-          {role && (
-            <Col span={24}>
-              <h3>{role}</h3>
-              <p>Role</p>
-            </Col>
-          )}
+          <Col span={24}>
+            <p>Role</p>
+            <h3>{role || 'Free member'}</h3>
+          </Col>
           {showContactButton && (
             <Col span={24}>
               {showContactButton && (
