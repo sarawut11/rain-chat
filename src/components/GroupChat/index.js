@@ -129,7 +129,7 @@ class GroupChat extends Component {
     const personalInfo = members.filter(member => member.user_id === user_id)[0];
     if (!members.length || !user_id) return;
     if (!personalInfo) {
-      notification('此人已不在群中啦', 'warn', 1.5);
+      notification('This person is no longer in the group', 'warn', 1.5);
       return;
     }
     this.setState({ personalInfo }, () => {
