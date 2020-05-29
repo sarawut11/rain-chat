@@ -182,10 +182,13 @@ class GroupChat extends Component {
     const chatItem = allGroupChats.get(this.chatId);
     const messages = chatItem ? chatItem.messages : groupMsgAndInfo.messages;
     const groupInfo = chatItem ? chatItem.groupInfo : groupMsgAndInfo.groupInfo;
+
+    console.log('groupinfo', groupInfo);
     return (
       <div className="chat-wrapper">
         <ChatHeader
           title={(groupInfo && groupInfo.name) || '----'}
+          groupId={groupInfo && groupInfo.to_group_id}
           chatType="group"
           hasShowed={showGroupChatInfo}
           showShareModal={this._showShareModal}

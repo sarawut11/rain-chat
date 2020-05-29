@@ -22,7 +22,7 @@ class ChatHeader extends Component {
   };
 
   render() {
-    const { title, chatType, showShareIcon } = this.props;
+    const { title, chatType, showShareIcon, groupId } = this.props;
     const icon = chatType === 'group' ? '#icon-group' : '#icon-people';
     const isRobotChat = chatType === 'robot';
     return (
@@ -30,7 +30,12 @@ class ChatHeader extends Component {
         <svg onClick={this.clickToBack} className="icon back-icon" aria-hidden="true">
           <use xlinkHref="#icon-back1" />
         </svg>
-        <div className="chat-title">{title}</div>
+        <div className="chat-title">
+          {groupId && groupId === 'vitae-rain-group' && (
+            <img src="../../assets/vitae-logo.png" alt="vitae-logo" />
+          )}
+          {title}
+        </div>
         {showShareIcon && (
           <svg onClick={this._showShareModal} className="icon shareIcon" aria-hidden="true">
             <use xlinkHref="#icon-share" />

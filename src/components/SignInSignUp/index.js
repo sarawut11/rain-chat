@@ -43,9 +43,6 @@ export default class SignInSignUp extends Component {
     return (
       <div className="formContent fadeInDown">
         {this.state.showSpinner && <Spinner />}
-        {/* <div className="rain-chat-logo">
-          <img src="../../assets/vitae-logo.png" alt="vitae-logo" />
-        </div> */}
         <div className="userAvatarWrapper">
           <UserAvatar name={username || 'U'} size="100" color="#44C97D" />
         </div>

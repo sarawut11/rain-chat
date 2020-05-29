@@ -57,7 +57,6 @@ class PersonalInfo extends Component {
     } = this.props;
 
     const { username, name, intro, email, role } = userInfo;
-    console.log('userInfo', userInfo);
     return (
       <Drawer title={name} visible={modalVisible} onClose={hide} className="user-info-drawer">
         <Row gutter={[0, 20]}>
