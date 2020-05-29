@@ -3,61 +3,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import classnames from 'classnames';
-import ModalBase from '../ModalBase';
-import UserAvatar from '../UserAvatar';
+import { Drawer, Row, Col, Button } from 'antd';
 import './styles.scss';
-import Button from '../Button';
 import notification from '../Notification';
-
-function _openUrl(url) {
-  const formatUrl = /https:\/\/|http:\/\//.test(url) ? url : `https://${url}`;
-  window.open(formatUrl);
-}
-
-class userInfoRender extends Component {
-  render() {
-    const {
-      userInfo,
-      goToChat,
-      isContact,
-      deleteContact,
-      showContactButton,
-      showShareIcon,
-      showShareModal,
-    } = this.props;
-    const { username, name, intro, avatar } = userInfo;
-    return (
-      <div className="userInfo">
-        <UserAvatar name={username} src={avatar} size="50" />
-        {name && <p className="name">{name}</p>}
-        {intro && <p>{`Introduction: ${intro}`}</p>}
-        {/* {status && <p>{status}</p>} */}
-        {showContactButton && (
-          <Button
-            className={classnames('personalInfoBtn', 'chatBtn')}
-            clickFn={goToChat}
-            value="Whisper this person"
-          />
-        )}
-        {isContact && (
-          <Button
-            className={classnames('personalInfoBtn', 'deleteBtn')}
-            clickFn={deleteContact}
-            value="Delete this person"
-          />
-        )}
-        {showShareIcon && (
-          <svg onClick={showShareModal} className="icon shareIcon" aria-hidden="true">
-            <use xlinkHref="#icon-share" />
-          </svg>
-        )}
-      </div>
-    );
-  }
-}
-
-const ModalRender = ModalBase(userInfoRender);
 
 class PersonalInfo extends Component {
   goToChat = () => {
@@ -107,19 +55,66 @@ class PersonalInfo extends Component {
       showShareIcon,
       showShareModal,
     } = this.props;
+
+    const { username, name, intro, email, role } = userInfo;
+    console.log('userInfo', userInfo);
     return (
-      <ModalRender
-        userInfo={userInfo}
-        visible={modalVisible}
-        cancel={hide}
-        isContact={this.isContact}
-        deleteContact={this.deleteContact}
-        goToChat={this.goToChat}
-        showContactButton={showContactButton}
-        showShareIcon={showShareIcon}
-        chatId={userInfo.user_id}
-        showShareModal={showShareModal}
-      />
+      <Drawer title={name} visible={modalVisible} onClose={hide} className="user-info-drawer">
+        <Row gutter={[0, 20]}>
+          {intro && (
+            <Col span={24}>
+              <p>{intro}</p>
+            </Col>
+          )}
+          {username && (
+            <Col span={24}>
+              <p>Username</p>
+              <h3>@{username}</h3>
+            </Col>
+          )}
+          {email && (
+            <Col span={24}>
+              <p>Email</p>
+              <h3>{email}</h3>
+            </Col>
+          )}
+          <Col span={24}>
+            <p>Role</p>
+            <h3>{role || 'Free member'}</h3>
+          </Col>
+          {showContactButton && (
+            <Col span={24}>
+              {showContactButton && (
+                <Button
+                  type="primary"
+                  onClick={this.goToChat}
+                  style={{ width: '100%', marginBottom: 10 }}
+                >
+                  Send Message
+                </Button>
+              )}
+
+              {this.isContact && (
+                <Button
+                  type="primary"
+                  danger
+                  onClick={this.deleteContact}
+                  style={{ width: '100%' }}
+                >
+                  Remove from contact
+                </Button>
+              )}
+            </Col>
+          )}
+          {showShareIcon && (
+            <Col span={24}>
+              <svg onClick={showShareModal} className="icon shareIcon" aria-hidden="true">
+                <use xlinkHref="#icon-share" />
+              </svg>
+            </Col>
+          )}
+        </Row>
+      </Drawer>
     );
   }
 }
