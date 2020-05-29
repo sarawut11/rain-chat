@@ -20,7 +20,7 @@ export default {
   aws_bucket: {
     access_key: "AKIA5ACID4V6ZD55XEGT",
     secret_access_key: "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",
-    bucket_endpoint: "http://vitae-rain-chat.s3-website.us-east-2.amazonaws.com",
+    bucket_endpoint: "https://s3.us-east-2.amazonaws.com",
     bucket_name: "vitae-rain-chat",
     bucket_region: "us-east-2"
   },
