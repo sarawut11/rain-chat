@@ -14,4 +14,8 @@ export const apiRoutes = new Router()
   .get("/user/:username", APIController.getProfileInfo)
   .put("/user/:username", APIController.updateProfileInfo)
   .post("/user/:username/avatar", APIController.uploadAvatar)
-  .get("/user/:username/avatar", APIController.getAvatar);
+  .get("/user/:username/avatar", APIController.getAvatar)
+
+  // Ads
+  .post("/ads/:username/create", APIController.registerAds)
+  .get("/ads/:username", APIController.getAdsByUsername);

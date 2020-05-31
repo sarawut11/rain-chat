@@ -65,7 +65,7 @@ export const uploadAvatar = async (ctx, next) => {
     const { userService } = ServicesContext.getInstance();
 
     const avatar = ctx.request.files.avatar;
-    const fileName = `avatar-${username}.${mime.extension(avatar.type)}`;
+    const fileName = `avatar/avatar-${username}.${mime.extension(avatar.type)}`;
 
     const { url } = await aws.uploadFile({
       fileName: fileName,

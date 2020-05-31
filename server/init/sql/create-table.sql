@@ -110,6 +110,23 @@ CREATE TABLE `user_user_relation` (
   `time` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+# Dump of table ads_info
+# ------------------------------------------------------------
+DROP TABLE IF EXISTS `ads_info`;
+CREATE TABLE `ads_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `asset_link` varchar(200) DEFAULT '',
+  `impressions` int(11) DEFAULT 0,
+  `link` varchar(200) DEFAULT '',
+  `button_name` varchar(20) DEFAULT '',
+  `title` varchar(50) DEFAULT '',
+  `description` varchar(200) DEFAULT '',
+  `approved` tinyint(1) NOT NULL DEFAULT '0',
+  `last_time` int(11) DEFAULT 1,
+  `time` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

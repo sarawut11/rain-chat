@@ -1,4 +1,10 @@
-import { ChatService, GroupChatService, GroupService, UserService } from "./../services";
+import {
+  ChatService,
+  GroupChatService,
+  GroupService,
+  UserService,
+  AdsService
+} from "./../services";
 
 export class ServicesContext {
   static instance: ServicesContext;
@@ -47,6 +53,16 @@ export class ServicesContext {
   }
   public setGroupChatService(service: GroupChatService): ServicesContext {
     this._groupChatService = service;
+    return this;
+  }
+
+  // ads
+  private _adsService: AdsService;
+  public get adsService() {
+    return this._adsService;
+  }
+  public setAdsService(service: AdsService): ServicesContext {
+    this._adsService = service;
     return this;
   }
 }
