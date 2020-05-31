@@ -1,9 +1,7 @@
 /* eslint-disable consistent-return */
-import * as request from "request-promise";
 import * as socketIo from "socket.io";
 import * as uuid from "uuid/v1";
 
-import configs from "@configs";
 import { ServicesContext } from "../context";
 import { authVerify } from "../middlewares/verify";
 import { getUploadToken } from "../utils/qiniu";

@@ -50,8 +50,10 @@ const initDB = async () => {
   await query(sql, [1, rainGroupId, "Vitae Rain Room", "Vitae Rain Room", 1, moment().utc().unix()]);
 
   // Assign Admin to Vitae Rain Room
-  sql = "INSERT INTO group_user_relation (id, to_group_id, userid) VALUE (?,?,?);";
+  sql = "INSERT INTO group_user_relation (id, to_group_id, user_id) VALUE (?,?,?);";
   await query(sql, [1, rainGroupId, 1]);
+  sql = "INSERT INTO rain_group_msg (from_user, to_group_id, message, time, attachments) VALUE (?,?,?,?,?);";
+  await query(sql, [0, rainGroupId, "Welcome to Vitae Rain Room", moment().utc().unix(), "[]"]);
 
   console.log("SQL command execution is over!");
   console.log("Please press ctrl + c to exit!");

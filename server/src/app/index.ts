@@ -1,5 +1,6 @@
 import * as bodyParser from "koa-bodyparser";
 import * as compress from "koa-compress";
+import * as koaBody from "koa-body";
 import * as cors from "@koa/cors";
 import configs from "@configs";
 
@@ -15,6 +16,7 @@ export const App = Server.init(app => {
     .use(compress())
     .use(cors(corsArgs))
     .use(bodyParser())
+    .use(koaBody({ multipart: true }))
     .use(appRoutes.routes())
     .use(appRoutes.allowedMethods());
 })
