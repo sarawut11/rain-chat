@@ -16,4 +16,9 @@ export class AdsService {
     const _sql = "SELECT * FROM ads_info WHERE user_id = ?;";
     return query(_sql, user_id);
   }
+
+  findAllAds() {
+    const _sql = "SELECT * FROM ads_info";
+    return query(_sql);
+  }
 }

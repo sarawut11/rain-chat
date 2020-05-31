@@ -85,3 +85,21 @@ export const getAdsByUsername = async (ctx, next) => {
     };
   }
 };
+
+export const getAllAds = async (ctx, next) => {
+  try {
+    const { adsService } = ServicesContext.getInstance();
+    const result = await adsService.findAllAds();
+    ctx.body = {
+      success: true,
+      message: "Success",
+      ads: result
+    };
+  } catch (error) {
+    console.log(error.message);
+    ctx.body = {
+      success: false,
+      message: "Failed"
+    };
+  }
+};
