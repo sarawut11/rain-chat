@@ -100,6 +100,7 @@ export const getAvatar = async (ctx, next) => {
     const { avatar } = (await userService.getUserInfoByUsername(username))[0];
     ctx.body = {
       success: true,
+      message: "Success",
       avatar: avatar
     };
   } catch (error) {
