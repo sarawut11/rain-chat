@@ -81,7 +81,7 @@ function Setting({ initApp, history, globalSettings, setGlobalSettings }) {
         />
       </div> */}
 
-      <Row justify="center" align="middle" gutter={[10, 10]}>
+      {/* <Row justify="center" align="middle" gutter={[10, 10]}>
         <Col span={24}>
           <Row justify="center" align="middle">
             Reference Link
@@ -100,8 +100,8 @@ function Setting({ initApp, history, globalSettings, setGlobalSettings }) {
               Generate Reference Link
             </Button>
           </Row>
-        </Col> */}
-      </Row>
+        </Col> 
+      </Row> */}
 
       <CustomButton clickFn={() => setLogoutModalVisible(true)} value="Sign out" />
     </div>

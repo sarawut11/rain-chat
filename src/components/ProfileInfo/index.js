@@ -10,10 +10,12 @@ import UserAvatar from '../UserAvatar';
 import './styles.scss';
 import notification from '../Notification';
 import Request from '../../utils/request';
+import AvatarUpload from '../AvatarUpload';
+import { imageInfo } from 'qiniu-js';
 
 class userInfoRender extends Component {
   state = {
-    avatar: '',
+    avatar: null,
     email: '',
     intro: '',
     name: '',
@@ -33,10 +35,11 @@ class userInfoRender extends Component {
   };
 
   onUpdateClick = async () => {
-    const { name, intro, username } = this.state;
+    const { name, intro, username, avatar } = this.state;
     this.setState({ updating: true });
     try {
-      const res = await Request.axios('put', `/api/v1/user/${username}`, { name, intro });
+      // await Request.axios('post', `/api/v1/user/${username}/avatar`, { avatar });
+      const res = await Request.axios('put', `/api/v1/user/${username}`, { name, intro, avatar });
 
       if (res && res.success) {
         localStorage.setItem('userInfo', JSON.stringify({ ...this.props.userInfo, name, intro }));
@@ -59,6 +62,11 @@ class userInfoRender extends Component {
     this.setState({ updating: false });
   };
 
+  onAvatarImageChange = file => {
+    console.log('onavatar image change', file);
+    this.setState({ avatar: file, updateAvailable: true });
+  };
+
   render() {
     const {
       username,
@@ -73,7 +81,11 @@ class userInfoRender extends Component {
 
     return (
       <div className="userInfo">
-        <UserAvatar name={username} src={avatar} size="50" />
+        {/* <UserAvatar name={username} src={avatar} size="50" /> */}
+
+        <Row justify="center">
+          <AvatarUpload onChange={this.onAvatarImageChange} />
+        </Row>
 
         {username && <p className="name">{username}</p>}
 
