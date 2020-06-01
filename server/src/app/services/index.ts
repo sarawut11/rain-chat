@@ -5,3 +5,4 @@ export * from "./chat.service";
 export * from "./group.service";
 export * from "./groupChat.service";
 export * from "./user.service";
+export * from "./ads.service";

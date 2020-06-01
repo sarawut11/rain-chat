@@ -1,5 +1,4 @@
 import * as Router from "koa-router";
-
 import * as APIController from "../controllers";
 
 export const apiRoutes = new Router()
@@ -13,4 +12,8 @@ export const apiRoutes = new Router()
 
   // Profile
   .get("/user/:username", APIController.getProfileInfo)
-  .put("/user/:username", APIController.updateProfileInfo);
+  .put("/user/:username", APIController.updateProfileInfo)
+
+  // Ads
+  .post("/ads/:username/create", APIController.registerAds)
+  .get("/ads/:username", APIController.getAdsByUsername);

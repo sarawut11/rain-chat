@@ -35,7 +35,7 @@ export const registerController = async (ctx, next) => {
   if (result.length) {
     ctx.body = {
       success: false,
-      message: "Username already exists",
+      message: "Username or email already exists",
     };
   } else {
     try {
