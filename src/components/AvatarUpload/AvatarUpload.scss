@@ -1,0 +1,13 @@
+.ant-upload-picture-card-wrapper {
+  margin: 0px;
+  width: auto;
+
+  .ant-upload {
+    margin: 0px;
+    border-radius: 50%;
+
+    img {
+      border-radius: 50%;
+    }
+  }
+}

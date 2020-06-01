@@ -77,10 +77,10 @@ class PersonalInfo extends Component {
               <h3>{email}</h3>
             </Col>
           )}
-          <Col span={24}>
+          {/* <Col span={24}>
             <p>Role</p>
             <h3>{role || 'Free member'}</h3>
-          </Col>
+          </Col> */}
           {showContactButton && (
             <Col span={24}>
               {showContactButton && (

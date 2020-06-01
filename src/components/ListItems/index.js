@@ -107,7 +107,7 @@ class ListItems extends Component {
       });
     return (
       <ul className="homePageList">
-        {showRobot && !isSearching && robotChat}
+        {/* {showRobot && !isSearching && robotChat} */}
         {listItems}
       </ul>
     );

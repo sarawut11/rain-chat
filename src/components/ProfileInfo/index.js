@@ -10,10 +10,12 @@ import UserAvatar from '../UserAvatar';
 import './styles.scss';
 import notification from '../Notification';
 import Request from '../../utils/request';
+import AvatarUpload from '../AvatarUpload';
+import { imageInfo } from 'qiniu-js';
 
 class userInfoRender extends Component {
   state = {
-    avatar: '',
+    avatar: null,
     email: '',
     intro: '',
     name: '',
@@ -33,30 +35,30 @@ class userInfoRender extends Component {
   };
 
   onUpdateClick = async () => {
-    const { name, intro, username } = this.state;
+    const { name, intro, username, avatar } = this.state;
     this.setState({ updating: true });
     try {
-      const res = await Request.axios('put', `/api/v1/user/${username}`, { name, intro });
+      const data = new FormData();
+      data.append('avatar', avatar);
+      data.append('name', name);
+      data.append('intro', intro);
+      const res = await Request.axios('put', `/api/v1/user/${username}`, data);
 
       if (res && res.success) {
         localStorage.setItem('userInfo', JSON.stringify({ ...this.props.userInfo, name, intro }));
         notification(res.message, 'info');
-        antNotification.success({
-          message: res.message,
-        });
       } else {
         notification(res.message, 'error');
-        antNotification.error({
-          message: res.message,
-        });
       }
     } catch (error) {
       notification(error, 'error');
-      antNotification.error({
-        message: 'Profile update failed.',
-      });
     }
     this.setState({ updating: false });
+  };
+
+  onAvatarImageChange = file => {
+    console.log('onavatar image change', file);
+    this.setState({ avatar: file, updateAvailable: true });
   };
 
   render() {
@@ -73,7 +75,9 @@ class userInfoRender extends Component {
 
     return (
       <div className="userInfo">
-        <UserAvatar name={username} src={avatar} size="50" />
+        <Row justify="center">
+          <AvatarUpload onChange={this.onAvatarImageChange} originalAvatar={avatar} />
+        </Row>
 
         {username && <p className="name">{username}</p>}
 
