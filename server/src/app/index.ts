@@ -1,13 +1,12 @@
-import * as bodyParser from "koa-bodyparser";
 import * as compress from "koa-compress";
 import * as koaBody from "koa-body";
 import * as cors from "@koa/cors";
 import configs from "@configs";
 
-import { ServicesContext } from "./context";
+import { ServicesContext, RainContext } from "./context";
 import { appRoutes } from "./routes";
 import { Server } from "./server";
-import { ChatService, GroupChatService, GroupService, UserService } from "./services";
+import { ChatService, GroupChatService, GroupService, UserService, AdsService } from "./services";
 
 const corsArgs = configs.production ? { origin: "https://production_link" } : {};
 
@@ -15,7 +14,6 @@ export const App = Server.init(app => {
   app
     .use(compress())
     .use(cors(corsArgs))
-    .use(bodyParser())
     .use(koaBody({ multipart: true }))
     .use(appRoutes.routes())
     .use(appRoutes.allowedMethods());
@@ -27,7 +25,8 @@ export const App = Server.init(app => {
       .setUserService(new UserService())
       .setGroupService(new GroupService())
       .setChatService(new ChatService())
-      .setGroupChatService(new GroupChatService());
-
+      .setGroupChatService(new GroupChatService())
+      .setAdsService(new AdsService());
+    RainContext.getInstance();
     Server.run(configs.port);
   });

@@ -1,12 +1,13 @@
 /* eslint-disable consistent-return */
 import * as socketIo from "socket.io";
-import * as uuid from "uuid/v1";
 
 import { ServicesContext } from "../context";
 import { authVerify } from "../middlewares/verify";
 import { getUploadToken } from "../utils/qiniu";
 import { getAllMessage, getGroupItem } from "./message.socket";
 import { requestFrequency } from "../middlewares/requestFrequency";
+import * as privateSockets from "./private.socket";
+import * as groupSockets from "./group.socket";
 
 let io: socketIo.Server;
 
@@ -85,197 +86,49 @@ const initServer = server => {
     }
     console.log("initGroupChat user_id=>", user_id, "time=>", new Date().toLocaleString());
 
-    // Private message
-    socket.on("sendPrivateMsg", async (data, cbFn) => {
-      try {
-        if (!data) return;
-        data.time = Date.parse(new Date().toString()) / 1000;
-        await Promise.all([
-          chatService.savePrivateMsg({
-            ...data,
-            attachments: JSON.stringify(data.attachments),
-          }),
-          userService.getUserSocketId(data.to_user).then(arr => {
-            const existSocketIdStr = getSocketIdHandle(arr);
-            const toUserSocketIds = (existSocketIdStr && existSocketIdStr.split(",")) || [];
+    socket
+      // Private message
+      .on("sendPrivateMsg", async (data, cbFn) => {
+        await privateSockets.sendPrivateMsg(io, socket, data, cbFn);
+      })
+      .on("getOnePrivateChatMessages", async (data, fn) => {
+        await privateSockets.getOnePrivateChatMessages(io, socket, data, fn);
+      })
+      .on("addAsTheContact", async (data, fn) => {
+        privateSockets.addAsTheContact(io, socket, data, fn);
+      })
+      .on("getUserInfo", async (user_id, fn) => {
+        await privateSockets.getUserInfo(io, socket, user_id, fn);
+      })
+      .on("deleteContact", async ({ from_user, to_user }, fn) => {
+        await privateSockets.deleteContact(io, socket, { from_user, to_user }, fn);
+      })
 
-            toUserSocketIds.forEach(e => {
-              io.to(e).emit("getPrivateMsg", data);
-            });
-          }),
-        ]);
-        console.log("sendPrivateMsg data=>", data, "time=>", new Date().toLocaleString());
-        cbFn(data);
-      } catch (error) {
-        console.log("error", error.message);
-        io.to(socketId).emit("error", { code: 500, message: error.message });
-      }
-    });
-
-    // Group chat
-    socket.on("sendGroupMsg", async (data, cbFn) => {
-      try {
-        if (!data) return;
-        data.attachments = JSON.stringify(data.attachments);
-        data.time = Date.parse(new Date().toString()) / 1000;
-        await groupChatService.saveGroupMsg({ ...data });
-        socket.broadcast.to(data.to_group_id).emit("getGroupMsg", data);
-        console.log("sendGroupMsg data=>", data, "time=>", new Date().toLocaleString());
-        cbFn(data);
-      } catch (error) {
-        console.log("error", error.message);
-        io.to(socketId).emit("error", { code: 500, message: error.message });
-      }
-    });
-
-    socket.on("getOnePrivateChatMessages", async (data, fn) => {
-      try {
-        const { user_id, toUser, start, count } = data;
-        const RowDataPacket = await chatService.getPrivateDetail(user_id, toUser, start - 1, count);
-        const privateMessages = JSON.parse(JSON.stringify(RowDataPacket));
-        console.log(
-          "getOnePrivateChatMessages data=>",
-          data,
-          "time=>",
-          new Date().toLocaleString(),
-        );
-        fn(privateMessages);
-      } catch (error) {
-        console.log("error", error.message);
-        io.to(socketId).emit("error", { code: 500, message: error.message });
-      }
-    });
-
-    // get group messages in a group;
-    socket.on("getOneGroupMessages", async (data, fn) => {
-      try {
-        const RowDataPacket = await groupChatService.getGroupMsg(
-          data.groupId,
-          data.start - 1,
-          data.count,
-        );
-        const groupMessages = JSON.parse(JSON.stringify(RowDataPacket));
-        console.log("getOneGroupMessages data=>", data, "time=>", new Date().toLocaleString());
-        fn(groupMessages);
-      } catch (error) {
-        console.log("error", error.message);
-        io.to(socketId).emit("error", { code: 500, message: error.message });
-      }
-    });
-
-    // get group item including messages and group info.
-    socket.on("getOneGroupItem", async (data, fn) => {
-      try {
-        const groupMsgAndInfo = await getGroupItem({
-          groupId: data.groupId,
-          start: data.start || 1,
-          count: 20,
-        });
-        console.log("getOneGroupItem data=>", data, "time=>", new Date().toLocaleString());
-        fn(groupMsgAndInfo);
-      } catch (error) {
-        console.log("error", error.message);
-        io.to(socketId).emit("error", { code: 500, message: error.message });
-      }
-    });
-
-    // Create Group
-    socket.on("createGroup", async (data, fn) => {
-      try {
-        const to_group_id = uuid();
-        data.create_time = Date.parse(new Date().toString()) / 1000;
-        const { name, group_notice, creator_id, create_time } = data;
-        const arr = [to_group_id, name, group_notice, creator_id, create_time];
-        await groupService.createGroup(arr);
-        await groupService.joinGroup(creator_id, to_group_id);
-        socket.join(to_group_id);
-        console.log("createGroup data=>", data, "time=>", new Date().toLocaleString());
-        fn({ to_group_id, ...data });
-      } catch (error) {
-        console.log("error", error.message);
-        io.to(socketId).emit("error", { code: 500, message: error.message });
-      }
-    });
-
-    // Update Group Information
-    socket.on("updateGroupInfo", async (data, fn) => {
-      try {
-        await groupService.updateGroupInfo(data);
-        console.log("updateGroupInfo data=>", data, "time=>", new Date().toLocaleString());
-        fn("Group data modified successfully");
-      } catch (error) {
-        console.log("error", error.message);
-        io.to(socketId).emit("error", { code: 500, message: error.message });
-      }
-    });
-
-    // Join Group
-    socket.on("joinGroup", async (data, fn) => {
-      try {
-        const { userInfo, toGroupId } = data;
-        const joinedThisGroup = (await groupService.isInGroup(userInfo.user_id, toGroupId)).length;
-        if (!joinedThisGroup) {
-          await groupService.joinGroup(userInfo.user_id, toGroupId);
-          socket.broadcast.to(toGroupId).emit("getGroupMsg", {
-            ...userInfo,
-            message: `${userInfo.name} joined a group chat`,
-            to_group_id: toGroupId,
-            tip: "joinGroup",
-          });
-        }
-        socket.join(toGroupId);
-        const groupItem = await getGroupItem({ groupId: toGroupId });
-        console.log("joinGroup data=>", data, "time=>", new Date().toLocaleString());
-        fn(groupItem);
-      } catch (error) {
-        console.log("error", error.message);
-        io.to(socketId).emit("error", { code: 500, message: error.message });
-      }
-    });
-
-    // Leave Group
-    socket.on("leaveGroup", async data => {
-      try {
-        const { user_id, toGroupId } = data;
-        socket.leave(toGroupId);
-        await groupService.leaveGroup(user_id, toGroupId);
-        console.log("leaveGroup data=>", data, "time=>", new Date().toLocaleString());
-      } catch (error) {
-        console.log("error", error.message);
-        io.to(socketId).emit("error", { code: 500, message: error.message });
-      }
-    });
-
-    // Get group member information
-    socket.on("getGroupMember", async (groupId, fn) => {
-      try {
-        const RowDataPacket = await groupChatService.getGroupMember(groupId);
-        const userInfos = JSON.parse(JSON.stringify(RowDataPacket));
-        io.in(groupId).clients((err, onlineSockets) => {
-          if (err) {
-            throw err;
-          }
-          userInfos.forEach(userInfo => {
-            userInfo.status = 0;
-            if (userInfo.socketid) {
-              const socketIds = userInfo.socketid.split(",");
-              for (const onlineSocket of onlineSockets) {
-                const socketExist = socketIds.some(socketId => socketId === onlineSocket);
-                if (socketExist) {
-                  userInfo.status = 1;
-                }
-              }
-            }
-            delete userInfo.socketid;
-          });
-          console.log("getGroupMember data=>", groupId, "time=>", new Date().toLocaleString());
-          fn(userInfos);
-        });
-      } catch (error) {
-        console.log("error", error.message);
-        io.to(socketId).emit("error", { code: 500, message: error.message });
-      }
-    });
+      // Group chat
+      .on("sendGroupMsg", async (data, cbFn) => {
+        await groupSockets.sendGroupMsg(io, socket, data, cbFn);
+      })
+      .on("getOneGroupMessages", async (data, fn) => {
+        await groupSockets.getOneGroupMessages(io, socket, data, fn);
+      })
+      .on("getOneGroupItem", async (data, fn) => {
+        await groupSockets.getOneGroupItem(io, socket, data, fn);
+      })
+      .on("createGroup", async (data, fn) => {
+        await groupSockets.createGroup(io, socket, data, fn);
+      })
+      .on("updateGroupInfo", async (data, fn) => {
+        await groupSockets.updateGroupInfo(io, socket, data, fn);
+      })
+      .on("joinGroup", async (data, fn) => {
+        await groupSockets.joinGroup(io, socket, data, fn);
+      })
+      .on("leaveGroup", async data => {
+        await groupSockets.leaveGroup(io, socket, data);
+      })
+      .on("getGroupMember", async (groupId, fn) => {
+        await groupSockets.getGroupMember(io, socket, groupId, fn);
+      });
 
     //  Fuzzy match users or groups
     socket.on("fuzzyMatch", async (data, fn) => {
@@ -300,59 +153,6 @@ const initServer = server => {
         const uploadToken = await getUploadToken();
         console.log("getQiniuToken data=>", data, "time=>", new Date().toLocaleString());
         return fn(uploadToken);
-      } catch (error) {
-        console.log("error", error.message);
-        io.to(socketId).emit("error", { code: 500, message: error.message });
-      }
-    });
-
-    /**
-     * Add as contact
-     * @param  user_id    Local user
-     * @param  from_user  Friends of the local user (the other party)
-     */
-    socket.on("addAsTheContact", async (data, fn) => {
-      try {
-        const { user_id, from_user } = data;
-        const time = Date.now() / 1000;
-        await userService.addFriendEachOther(user_id, from_user, time);
-        const userInfo = await userService.getUserInfo(from_user);
-        console.log("addAsTheContact data=>", data, "time=>", new Date().toLocaleString());
-        fn(userInfo[0]);
-      } catch (error) {
-        console.log("error", error.message);
-        io.to(socketId).emit("error", { code: 500, message: error.message });
-      }
-    });
-
-    socket.on("getUserInfo", async (user_id, fn) => {
-      try {
-        const userInfo = await userService.getUserInfo(user_id);
-        console.log("getUserInfo user_id=>", user_id, "time=>", new Date().toLocaleString());
-        fn(userInfo[0]);
-      } catch (error) {
-        console.log("error", error.message);
-        io.to(socketId).emit("error", { code: 500, message: error.message });
-      }
-    });
-
-    socket.on("deleteContact", async ({ from_user, to_user }, fn) => {
-      try {
-        await userService.deleteContact(from_user, to_user);
-        const sockets = await userService.getUserSocketId(to_user);
-        const existSocketIdStr = getSocketIdHandle(sockets);
-        const toUserSocketIds = (existSocketIdStr && existSocketIdStr.split(",")) || [];
-        toUserSocketIds.forEach(e => {
-          io.to(e).emit("beDeleted", from_user);
-        });
-        console.log(
-          "deleteContact user_id && to_user =>",
-          from_user,
-          to_user,
-          "time=>",
-          new Date().toLocaleString(),
-        );
-        fn({ code: 200, data: "delete contact successfully" });
       } catch (error) {
         console.log("error", error.message);
         io.to(socketId).emit("error", { code: 500, message: error.message });
@@ -412,4 +212,5 @@ const broadcast = (emitName, data, onError) => {
 export const socketServer = {
   initServer,
   broadcast,
+  getSocketIdHandle,
 };

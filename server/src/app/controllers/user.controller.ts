@@ -1,4 +1,3 @@
-import * as mime from "mime-types";
 import * as aws from "../utils/aws";
 import { ServicesContext } from "../context";
 import { socketServer } from "../socket/app.socket";
@@ -33,80 +32,36 @@ export const getProfileInfo = async (ctx, next) => {
 };
 
 export const updateProfileInfo = async (ctx, next) => {
-
-  const { username } = ctx.params;
-  const { name, intro } = ctx.request.body;
-  const { userService } = ServicesContext.getInstance();
-
-  try {
-    await userService.setUserInfo(username, { name, intro });
-    socketServer.broadcast("updateProfileInfo", {
-      userInfo: {
-        username,
-        name,
-        intro,
-      }
-    }, error => console.log(error.message));
-    ctx.body = {
-      success: true,
-      message: "Profile updated successfully."
-    };
-  } catch (error) {
-    ctx.body = {
-      success: false,
-      message: error.message
-    };
-  }
-};
-
-export const uploadAvatar = async (ctx, next) => {
   try {
     const { username } = ctx.params;
+    const avatar = ctx.request.files.avatar;
+    const { name, intro } = ctx.request.body;
     const { userService } = ServicesContext.getInstance();
 
-    const avatar = ctx.request.files.avatar;
-    const fileName = `avatar-${username}.${mime.extension(avatar.type)}`;
-
+    const fileName = `avatar/avatar-${username}`;
     const { url } = await aws.uploadFile({
       fileName: fileName,
       filePath: avatar.path,
       fileType: avatar.type,
     });
-    await userService.setAvatar(username, url);
-    socketServer.broadcast("updateAvatar", {
-      userInfo: {
-        username,
-        avatar: url,
-      }
-    }, error => console.log(error.message));
-    ctx.body = {
-      success: true,
-      message: "Successfully Uploaded",
-      avatar: url
-    };
-  } catch (error) {
-    console.log(error.message);
-    ctx.body = {
-      success: false,
-      message: "Upload Failed",
-    };
-  }
-};
 
-export const getAvatar = async (ctx, next) => {
-  try {
-    const { username } = ctx.params;
-    const { userService } = ServicesContext.getInstance();
-    const { avatar } = (await userService.getUserInfoByUsername(username))[0];
+    await userService.setUserInfo(username, { name, intro, avatar: url });
+    const userInfo = {
+      username,
+      avatar: url,
+      name,
+      intro,
+    };
+    socketServer.broadcast("updateProfileInfo", { userInfo }, error => console.log(error.message));
     ctx.body = {
       success: true,
-      avatar: avatar
+      message: "Profile updated successfully.",
+      userInfo,
     };
   } catch (error) {
-    console.log(error.message);
     ctx.body = {
       success: false,
-      message: "Fetching Avatar Failed."
+      message: error.message
     };
   }
 };
