@@ -11,6 +11,13 @@ function getBase64(img, callback) {
   reader.readAsDataURL(img);
 }
 
+function blobToFile(theBlob, fileName) {
+  // A Blob() is almost a File() - it's just missing the two properties below which we will add
+  theBlob.lastModifiedDate = new Date();
+  theBlob.name = fileName;
+  return theBlob;
+}
+
 function beforeUpload(file) {
   const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
   if (!isJpgOrPng) {
@@ -61,7 +68,10 @@ class Avatar extends React.Component {
           src,
         },
       });
-      scope.props.onChange(file);
+      // const myFile = blobToFile(file, 'my-avatar.png');
+      const myFile = new File([file], 'my-avatar.png');
+      console.log('myFile', myFile);
+      scope.props.onChange(myFile);
     };
 
     fr.readAsDataURL(file);

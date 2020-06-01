@@ -39,7 +39,12 @@ class userInfoRender extends Component {
     this.setState({ updating: true });
     try {
       // await Request.axios('post', `/api/v1/user/${username}/avatar`, { avatar });
-      const res = await Request.axios('put', `/api/v1/user/${username}`, { name, intro, avatar });
+      console.log('avatar', avatar);
+      const data = new FormData();
+      data.append('avatar', avatar);
+      data.append('name', name);
+      data.append('intro', intro);
+      const res = await Request.axios('put', `/api/v1/user/${username}`, data);
 
       if (res && res.success) {
         localStorage.setItem('userInfo', JSON.stringify({ ...this.props.userInfo, name, intro }));
