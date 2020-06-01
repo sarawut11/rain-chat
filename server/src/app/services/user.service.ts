@@ -70,9 +70,9 @@ export class UserService {
     return query(_sql, [username]);
   }
 
-  setUserInfo(username, { name, intro }) {
-    const _sql = "UPDATE user_info SET name = ?, intro = ? WHERE username = ? limit 1 ; ";
-    return query(_sql, [name, intro, username]);
+  setUserInfo(username, { name, intro, avatar }) {
+    const _sql = "UPDATE user_info SET name = ?, intro = ?, avatar = ? WHERE username = ? limit 1 ; ";
+    return query(_sql, [name, intro, avatar, username]);
   }
 
   setAvatar(username, avatar) {

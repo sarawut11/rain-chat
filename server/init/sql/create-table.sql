@@ -123,7 +123,7 @@ CREATE TABLE `ads_info` (
   `title` varchar(50) DEFAULT '',
   `description` varchar(200) DEFAULT '',
   `approved` tinyint(1) NOT NULL DEFAULT '0',
-  `last_time` int(11) DEFAULT 1,
+  `last_time` int(11) DEFAULT 0,
   `time` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;

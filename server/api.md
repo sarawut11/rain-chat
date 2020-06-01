@@ -1,9 +1,9 @@
-# API Documentation
+# API / Socket Documentation
 > **Note**
 > - All Date / Time formats are in unix timestamp format in UTC timezone
 
-
-## 1. Authentication
+# 1. API Endpoints
+## 1.1 Authentication
 ### /login (POST)
   ***Request Body***
   | Fields   | Description    |
@@ -49,7 +49,7 @@
   }
   ```
 
-## 2. Referral / Sponsor
+## 1.2 Referral / Sponsor
 ### /ref/generate (POST)
   ***Request Body***
   | Fields  | Description        |
@@ -75,7 +75,7 @@
     message: "Valid or Invalid Message"
   }
   ```
-## 3. Profile
+## 1.3 Profile
 ### /user/:username (GET)
   ***Response***
   ```
@@ -96,41 +96,26 @@
   }
   ```
 ### /user/:username (PUT)
-  ***Request Body***
-  | Fields | Description |
-  | ------ | ----------- |
-  | name   | Full name   |
-  | intro  | About Me    |
-  ***Response***
-  ```
-  {
-    success: true/false,
-    message: "Success or Failed Message"
-  }
-  ```
-### /user/:username/avatar (POST)
   ***Request Body (Form-Data)***
   | Fields | Description       |
   | ------ | ----------------- |
   | avatar | Avatar Image File |
+  | name   | Full name         |
+  | intro  | About Me          |
   ***Response***
   ```
   {
     success: true/false,
     message: "Success or Failed Message",
-    avatar: // Url of avatar when success == true
+    userInfo: { // when success == true
+      username,
+      avatar, // Url of avatar
+      name,
+      intro,
+    }
   }
   ```
-### /user/:username/avatar (GET)
-  ***Response***
-  ```
-  {
-    success: true/false,
-    message: "Success or Failed Message",
-    avatar: // Url of avatar when success == true
-  }
-  ```
-## 4. Ads
+## 1.4 Ads
 ### /ads/:username/create (POST)
   ***Request Body (Form-Data)***
   | Fields      | Description                       |
@@ -172,3 +157,43 @@
     ]
   }
   ```
+
+# 2. Socket Events
+> Note
+> - Client : Frontend (Client) -> Backend (Server)
+> - Server : Backend (Server) -> Frontend (Client)
+
+## 2.1 Initialize Socket
+### initSocketSuccess (Server)
+### initSocket (Server)
+### connect (Client)
+### reconnect (Client)
+### disconnect (Client)
+
+## 2.2 Private Chat
+### sendPrivateMsg (Client)
+### getPrivateMsg (Server)
+### getOnePrivateChatMessages (Client)
+### addAsTheContact (Client)
+### getUserInfo (Client)
+### deleteContact (Client)
+### beDeleted (Server)
+
+## 2.3 Group Chat
+### sendGroupMsg (Client)
+### getGroupMsg (Server)
+### getOneGroupMessages (Client)
+### getOneGroupItem (Server)
+### createGroup (Client)
+### joinGroup (Client)
+### leaveGroup (Client)
+### updateGroupInfo (Client)
+### getGroupMember (Client)
+
+## 2.4 Search / Contact
+### fuzzyMatch (Client)
+### getQiniuToken (Client)
+
+## 2.5 Profile
+### updateAvatar (Server)
+### updateProfileInfo (Server)

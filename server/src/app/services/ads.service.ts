@@ -21,4 +21,14 @@ export class AdsService {
     const _sql = "SELECT * FROM ads_info";
     return query(_sql);
   }
+
+  findApprovedAds() {
+    const _sql = "SELECT * FROM ads_info WHERE approved = 1;";
+    return query(_sql);
+  }
+
+  findAdsToRain() {
+    const _sql = "SELECT * FROM ads_info WHERE approved = 1 ORDER BY last_time ASC LIMIT 1;";
+    return query(_sql);
+  }
 }

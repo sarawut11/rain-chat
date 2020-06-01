@@ -3,7 +3,7 @@ import * as koaBody from "koa-body";
 import * as cors from "@koa/cors";
 import configs from "@configs";
 
-import { ServicesContext } from "./context";
+import { ServicesContext, RainContext } from "./context";
 import { appRoutes } from "./routes";
 import { Server } from "./server";
 import { ChatService, GroupChatService, GroupService, UserService, AdsService } from "./services";
@@ -27,6 +27,6 @@ export const App = Server.init(app => {
       .setChatService(new ChatService())
       .setGroupChatService(new GroupChatService())
       .setAdsService(new AdsService());
-
+    RainContext.getInstance();
     Server.run(configs.port);
   });
