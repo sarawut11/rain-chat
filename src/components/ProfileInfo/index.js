@@ -86,8 +86,6 @@ class userInfoRender extends Component {
 
     return (
       <div className="userInfo">
-        {/* <UserAvatar name={username} src={avatar} size="50" /> */}
-
         <Row justify="center">
           <AvatarUpload onChange={this.onAvatarImageChange} />
         </Row>
