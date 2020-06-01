@@ -1,3 +1,5 @@
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable no-nested-ternary */
 /* eslint-disable func-names */
 import React from 'react';
 import { Upload, message } from 'antd';
@@ -9,13 +11,6 @@ function getBase64(img, callback) {
   const reader = new FileReader();
   reader.addEventListener('load', () => callback(reader.result));
   reader.readAsDataURL(img);
-}
-
-function blobToFile(theBlob, fileName) {
-  // A Blob() is almost a File() - it's just missing the two properties below which we will add
-  theBlob.lastModifiedDate = new Date();
-  theBlob.name = fileName;
-  return theBlob;
 }
 
 function beforeUpload(file) {
@@ -42,14 +37,11 @@ class Avatar extends React.Component {
       return;
     }
     if (info.file.status === 'done') {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj, imageUrl =>
+      getBase64(info.file.originFileObj, () =>
         this.setState({
-          imageUrl,
           loading: false,
         }),
       );
-      console.log('info file', info.file);
       this.props.onChange(info.file);
     }
   };
@@ -68,7 +60,6 @@ class Avatar extends React.Component {
           src,
         },
       });
-      // const myFile = blobToFile(file, 'my-avatar.png');
       const myFile = new File([file], 'my-avatar.png');
       console.log('myFile', myFile);
       scope.props.onChange(myFile);
@@ -84,14 +75,14 @@ class Avatar extends React.Component {
         <div className="ant-upload-text">Upload</div>
       </div>
     );
-    const { imageUrl, image } = this.state;
+    const { image } = this.state;
+    const { originalAvatar } = this.props;
     return (
       <ImgCrop rotate shape="round">
         <Upload
           name="avatar"
           listType="picture-card"
           className="avatar-uploader"
-          // action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
           action={this.handleUploadImageAction}
           showUploadList={false}
           beforeUpload={beforeUpload}
@@ -99,6 +90,8 @@ class Avatar extends React.Component {
         >
           {image.src ? (
             <img src={image.src} alt="avatar" style={{ width: '100%' }} />
+          ) : originalAvatar ? (
+            <img src={originalAvatar} alt="avatar" style={{ width: '100%' }} />
           ) : (
             uploadButton
           )}

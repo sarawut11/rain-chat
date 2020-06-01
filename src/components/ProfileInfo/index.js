@@ -38,8 +38,6 @@ class userInfoRender extends Component {
     const { name, intro, username, avatar } = this.state;
     this.setState({ updating: true });
     try {
-      // await Request.axios('post', `/api/v1/user/${username}/avatar`, { avatar });
-      console.log('avatar', avatar);
       const data = new FormData();
       data.append('avatar', avatar);
       data.append('name', name);
@@ -49,20 +47,11 @@ class userInfoRender extends Component {
       if (res && res.success) {
         localStorage.setItem('userInfo', JSON.stringify({ ...this.props.userInfo, name, intro }));
         notification(res.message, 'info');
-        antNotification.success({
-          message: res.message,
-        });
       } else {
         notification(res.message, 'error');
-        antNotification.error({
-          message: res.message,
-        });
       }
     } catch (error) {
       notification(error, 'error');
-      antNotification.error({
-        message: 'Profile update failed.',
-      });
     }
     this.setState({ updating: false });
   };
@@ -87,7 +76,7 @@ class userInfoRender extends Component {
     return (
       <div className="userInfo">
         <Row justify="center">
-          <AvatarUpload onChange={this.onAvatarImageChange} />
+          <AvatarUpload onChange={this.onAvatarImageChange} originalAvatar={avatar} />
         </Row>
 
         {username && <p className="name">{username}</p>}
