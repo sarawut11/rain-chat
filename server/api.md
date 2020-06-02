@@ -51,6 +51,7 @@
 
 ## 1.2 Referral / Sponsor
 ### /ref/generate (POST)
+  Generate referral code
   ***Request Body***
   | Fields  | Description        |
   | ------- | ------------------ |
@@ -64,6 +65,7 @@
   }
   ```
 ### /ref/validate (POST)
+  Validate sponsor's referral code.
   ***Request Body***
   | Fields  | Description             |
   | ------- | ----------------------- |
@@ -77,6 +79,7 @@
   ```
 ## 1.3 Profile
 ### /user/:username (GET)
+  Get profile info of user with username.
   ***Response***
   ```
   {
@@ -96,6 +99,7 @@
   }
   ```
 ### /user/:username (PUT)
+  Update profile info of user with username.
   ***Request Body (Form-Data)***
   | Fields | Description       |
   | ------ | ----------------- |
@@ -117,6 +121,7 @@
   ```
 ## 1.4 Ads
 ### /ads/:username/create (POST)
+  Register ads
   ***Request Body (Form-Data)***
   | Fields      | Description                       |
   | ----------- | --------------------------------- |
@@ -134,6 +139,7 @@
   }
   ```
 ### /ads/:username (GET)
+  Get all ads created by user with username
   ***Response***
   ```
   {
@@ -155,6 +161,55 @@
       },
       ...
     ]
+  }
+  ```
+### /ads/:username/:id (GET)
+  Get ads details created by username with id.
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    ads: {
+      id,           // Ads Id
+      user_id,      // Advertiser's id
+      asset_link,   // Link to the ads content
+      impressions,
+      link,
+      button_name,
+      title,
+      description,
+      approved,     // 0: Pending | 1: approved
+      last_time,    // Last advertised time - Unix timestamp in UTC
+      time,         // Registration Time - Unix timestamp in UTC
+    }
+  }
+  ```
+### /ads/:username/:id (PUT)
+  Update ads created by username with id
+  ***Request Body (Form-Data)***
+  | Fields      | Description                       |
+  | ----------- | --------------------------------- |
+  | asset       | Content of Ads - Image or Video   |
+  | impressions | Number of impressions to campaign |
+  | link        | Link to the Ads Product           |
+  | button_name | Name of the button to ads link    |
+  | title       | Title of Ads                      |
+  | description | Description of Ads                |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message"
+  }
+  ```
+### /ads/:username/:id (DELETE)
+  Delete ads created by username with id
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message"
   }
   ```
 

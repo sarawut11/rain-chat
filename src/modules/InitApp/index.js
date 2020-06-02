@@ -172,8 +172,8 @@ class InitApp {
     window.socket.on('showAds', ({ ads }) => {
       console.log('Show Ads', ads);
     });
-    window.socket.on('getRain', ({ normalReward }) => {
-      console.log('Getting Reward:', normalReward);
+    window.socket.on('getRain', ({ reward }) => {
+      console.log('Getting Reward:', reward);
     });
   }
 

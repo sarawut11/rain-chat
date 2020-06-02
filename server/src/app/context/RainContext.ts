@@ -81,7 +81,9 @@ export class RainContext {
     const popReward = rainReward / 2;
     await userService.rainUsersBySocketId(clients, normalReward, popReward);
     clients.forEach(socketId => {
-      socketServer.emitTo(socketId, "getRain", { normalReward }, error => console.log("getRain Error:", error.message));
+      socketServer.emitTo(socketId, "getRain", {
+        reward: normalReward
+      }, error => console.log("getRain Error:", error.message));
     });
   }
 }

@@ -21,7 +21,7 @@ export const uploadFile = ({ fileName, filePath, fileType }): Promise<any> =>
       ContentType: fileType,
     }, function (err, data) {
       if (err) {
-        console.log(err);
+        console.error(err);
         reject(err);
       } else if (data) {
         resolve({
@@ -31,3 +31,26 @@ export const uploadFile = ({ fileName, filePath, fileType }): Promise<any> =>
       }
     });
   });
+
+export const deleteFile = (filePath): Promise<any> =>
+  new Promise((resolve, reject) => {
+    s3.deleteObject({
+      Bucket: bucket,
+      Key: getKeyFromPath(filePath)
+    }, function (err, data) {
+      if (err) {
+        console.error(err);
+        reject(err);
+      } else {
+        resolve({
+          success: true
+        });
+      }
+    });
+  });
+
+export const getKeyFromPath = filePath => {
+  const pattern = "amazonaws.com/";
+  const key = filePath.substring(filePath.indexOf(pattern) + pattern.length);
+  return key;
+};
