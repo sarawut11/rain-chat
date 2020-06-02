@@ -178,6 +178,7 @@
 ### getUserInfo (Client)
 ### deleteContact (Client)
 ### beDeleted (Server)
+### updateProfileInfo (Server)
 
 ## 2.3 Group Chat
 ### sendGroupMsg (Client)
@@ -194,6 +195,27 @@
 ### fuzzyMatch (Client)
 ### getQiniuToken (Client)
 
-## 2.5 Profile
-### updateAvatar (Server)
-### updateProfileInfo (Server)
+## 2.5 Rain
+### showAds (Server)
+  Show Ads on frontend when this event is emitted.
+  ***Data***
+  ```
+  {
+    ads: {
+      id,
+      asset_link,
+      title,
+      description,
+      link,
+      button_name,
+    }
+  }
+  ```
+### getRain (Server)
+  Notify clients when they are getting rewards.
+  ***Data***
+  ```
+  {
+    reward: // Normal Rain Reward (e.g 0.00025)
+  }
+  ```

@@ -1,5 +1,6 @@
 import { query } from "../utils/db";
 import configs from "@configs";
+import { isNullOrUndefined } from "util";
 
 export class UserService {
   // Fuzzy matching users
@@ -71,8 +72,13 @@ export class UserService {
   }
 
   setUserInfo(username, { name, intro, avatar }) {
-    const _sql = "UPDATE user_info SET name = ?, intro = ?, avatar = ? WHERE username = ? limit 1 ; ";
-    return query(_sql, [name, intro, avatar, username]);
+    if (isNullOrUndefined(avatar)) {
+      const _sql = "UPDATE user_info SET name = ?, intro = ? WHERE username = ? limit 1 ; ";
+      return query(_sql, [name, intro, username]);
+    } else {
+      const _sql = "UPDATE user_info SET name = ?, intro = ?, avatar = ? WHERE username = ? limit 1 ; ";
+      return query(_sql, [name, intro, avatar, username]);
+    }
   }
 
   setAvatar(username, avatar) {
@@ -112,7 +118,7 @@ export class UserService {
     UNION
     ( SELECT i.to_group_id ,i.name , i.create_time, g.message, g.time, g.attachments
       FROM  group_info AS i INNER JOIN rain_group_msg as g on i.to_group_id = ? ORDER BY TIME DESC LIMIT 1 );`;
-    return query(_sql, [user_id, configs.rain_group_id, configs.rain_group_id]);
+    return query(_sql, [user_id, configs.rain.group_id, configs.rain.group_id]);
   }
 
   // Find homepage private chat list by user_id
@@ -128,13 +134,33 @@ export class UserService {
 
   saveUserSocketId(user_id, socketId) {
     const data = [socketId, user_id];
-    const _sql = " UPDATE  user_info SET socketid = ? WHERE id= ? limit 1 ; ";
+    const _sql = "UPDATE user_info SET socketid = ? WHERE id= ? limit 1 ; ";
     return query(_sql, data);
   }
 
   getUserSocketId(toUserId) {
-    const _sql = " SELECT socketid FROM user_info WHERE id=? limit 1 ;";
+    const _sql = "SELECT socketid FROM user_info WHERE id=? limit 1 ;";
     return query(_sql, [toUserId]);
+  }
+
+  getUserBySocketId(socketId) {
+    const _sql = "SELECT * FROM user_info WHERE socketid LIKE ? limit 1;";
+    return query(_sql, socketId);
+  }
+
+  rainUser(username, reward) {
+    const _sql = "UPDATE user_info SET balance = balance + ?, pop_balance = pop_balance + ? WHERE username = ?;";
+    return query(_sql, [reward / 2, reward / 2, username]);
+  }
+
+  rainUsersBySocketId(socketIds, reward, pop_reward) {
+    let _sql = "";
+    const params = [];
+    socketIds.forEach(socketId => {
+      _sql += "UPDATE user_info SET balance = balance + ?, pop_balance = pop_balance + ? WHERE socketid LIKE ?;";
+      params.push(reward, pop_reward, socketId);
+    });
+    return query(_sql, params);
   }
 
   // Add as a friend unilaterally (may later add the function of turning on friend verification)

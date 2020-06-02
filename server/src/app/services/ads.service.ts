@@ -28,7 +28,12 @@ export class AdsService {
   }
 
   findAdsToRain() {
-    const _sql = "SELECT * FROM ads_info WHERE approved = 1 ORDER BY last_time ASC LIMIT 1;";
+    const _sql = "SELECT * FROM ads_info WHERE approved = 1 and impressions > 0 ORDER BY last_time ASC LIMIT 1;";
     return query(_sql);
+  }
+
+  rainAds(id, impression, last_time) {
+    const _sql = "UPDATE ads_info SET impressions = ?, last_time = ? WHERE id = ?;";
+    return query(_sql, [impression, last_time, id]);
   }
 }
