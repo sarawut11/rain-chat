@@ -34,6 +34,13 @@ class Tabs extends Component {
             </svg>
           </Link>
         </div>
+        <div className="tab">
+          <Link to="/ads">
+            <svg className="icon " aria-hidden="true">
+              <use xlinkHref={pathname === '/ads' ? '#icon-setting-copy' : '#icon-setting'} />
+            </svg>
+          </Link>
+        </div>
       </div>
     );
   }

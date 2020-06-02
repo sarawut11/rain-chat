@@ -45,13 +45,22 @@ class userInfoRender extends Component {
       const res = await Request.axios('put', `/api/v1/user/${username}`, data);
 
       if (res && res.success) {
-        localStorage.setItem('userInfo', JSON.stringify({ ...this.props.userInfo, name, intro }));
-        notification(res.message, 'info');
+        localStorage.setItem(
+          'userInfo',
+          JSON.stringify({ ...this.props.userInfo, ...res.userInfo }),
+        );
+        antNotification.success({
+          message: res.message,
+        });
       } else {
-        notification(res.message, 'error');
+        antNotification.error({
+          message: res.message,
+        });
       }
     } catch (error) {
-      notification(error, 'error');
+      antNotification.error({
+        message: 'Profile update failed.',
+      });
     }
     this.setState({ updating: false });
   };
