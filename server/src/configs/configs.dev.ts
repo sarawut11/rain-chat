@@ -24,7 +24,13 @@ export default {
     bucket_name: "vitae-rain-chat",
     bucket_region: "us-east-2"
   },
-  rain_group_id: "vitae-rain-group",
+  rain: {
+    group_id: "vitae-rain-group",
+    ads_duration: 1000 * 20, // 20s
+    rain_time_interval: 1000 * 60 * 30, // 30 minutes
+    cost_per_impression: 1 / 2000, // $1 = 2000 impression
+    pop_rain_limit: 100, // Vitae Token
+  },
   client_secret: "",
   jwt_secret: "chat-sec",
   crypto_key: "VITAE-RAIN-CHAT",

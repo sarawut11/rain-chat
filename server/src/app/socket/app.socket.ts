@@ -15,6 +15,14 @@ function getSocketIdHandle(arr) {
   return arr[0] ? JSON.parse(JSON.stringify(arr[0])).socketid : "";
 }
 
+const getRoomClients = (room): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    io.of("/").in(room).clients((error, clients) => {
+      resolve(clients);
+    });
+  });
+};
+
 function emitAsync(socket, emitName, data, callback) {
   return new Promise((resolve, reject) => {
     if (!socket || !socket.emit) {
@@ -209,8 +217,19 @@ const broadcast = (emitName, data, onError) => {
   }
 };
 
+const emitTo = (to_socket_id, emitName, data, onError) => {
+  try {
+    io.to(to_socket_id).emit(emitName, data);
+  } catch (error) {
+    if (onError)
+      onError(error);
+  }
+};
+
 export const socketServer = {
   initServer,
   broadcast,
+  emitTo,
   getSocketIdHandle,
+  getRoomClients,
 };
