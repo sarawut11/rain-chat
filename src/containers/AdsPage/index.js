@@ -2,18 +2,18 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Ads from '../../components/Ads';
 import { initAppAction } from '../../redux/actions/initAppAction';
-import { setGlobalAdssAction } from './adsAction';
+import { setAdsAction } from './adsAction';
 
 const mapStateToProps = state => ({
-  globalAdss: state.globalAdssState,
+  ads: state.adsState,
 });
 
 const mapDispatchToProps = dispatch => ({
   initApp(arg) {
     dispatch(initAppAction(arg));
   },
-  setGlobalAdss(arg) {
-    dispatch(setGlobalAdssAction(arg));
+  setAds(arg) {
+    dispatch(setAdsAction(arg));
   },
 });
 

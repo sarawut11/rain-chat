@@ -62,10 +62,11 @@ class Ads extends Component {
 
   onCreateAdsClick = () => {
     this.setState({ createAdsVisible: true });
-  }
+  };
 
   render() {
     const { loadingAds, adsList, user_info, createAdsVisible } = this.state;
+    console.log('ads component', this);
     return (
       <div className="ads-container">
         <CreateAds visible={createAdsVisible} hideModal={this.hideCreateAdsModal} />

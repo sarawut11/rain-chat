@@ -1,30 +1,24 @@
-import { SET_GLOBAL_SETTINGS } from './settingAction';
+import { SET_ADS } from './adsAction';
 
-const GLOBAL_SETTINGS = {
-  NOTIFICATION: 'notification',
+const ADS = {
+  ADSLIST: 'adsList',
 };
 
-const initialSettings = {
-  [GLOBAL_SETTINGS.NOTIFICATION]: true,
+const initialState = {
+  [ADS.ADSLIST]: [],
 };
 
-const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-const previousSettings =
-  userInfo && JSON.parse(localStorage.getItem(`settings-${userInfo.user_id}`));
+// const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+// const previousSettings =
+//   userInfo && JSON.parse(localStorage.getItem(`settings-${userInfo.user_id}`));
 
-const setGlobalSettingsReducer = (previousState = previousSettings || initialSettings, action) => {
+const setAdsReducer = (previousState = initialState, action) => {
   switch (action.type) {
-    case SET_GLOBAL_SETTINGS:
-      if (userInfo) {
-        localStorage.setItem(
-          `settings-${userInfo.user_id}`,
-          JSON.stringify({ ...previousState, ...action.data }),
-        );
-      }
+    case SET_ADS:
       return { ...previousState, ...action.data };
     default:
       return previousState;
   }
 };
 
-export { setGlobalSettingsReducer, GLOBAL_SETTINGS };
+export { setAdsReducer, ADS };

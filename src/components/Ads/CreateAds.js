@@ -8,7 +8,14 @@ const layout = {
   wrapperCol: { span: 19 },
 };
 export default class CreateAds extends Component {
-  state = { asset: null, link: '', button_name: '', title: '', description: '' };
+  state = {
+    asset: null,
+    link: '',
+    button_name: '',
+    title: '',
+    description: '',
+    confirmLoading: false,
+  };
 
   handleOk = e => {
     console.log(e);
@@ -27,7 +34,7 @@ export default class CreateAds extends Component {
 
   render() {
     const { visible } = this.props;
-    const { asset, link, button_name, title, description } = this.state;
+    const { asset, link, button_name, title, description, confirmLoading } = this.state;
     return (
       <div>
         <Modal
@@ -35,6 +42,7 @@ export default class CreateAds extends Component {
           visible={visible}
           onOk={this.handleOk}
           onCancel={this.handleCancel}
+          confirmLoading={confirmLoading}
         >
           <Form {...layout}>
             <Item label="Title">

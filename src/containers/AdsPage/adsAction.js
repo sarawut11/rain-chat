@@ -1,8 +1,8 @@
-const SET_GLOBAL_SETTINGS = 'SET_GLOBAL_SETTINGS';
+const SET_ADS = 'SET_ADS';
 
-const setGlobalSettingsAction = (globalSettings = {}) => ({
-  type: SET_GLOBAL_SETTINGS,
-  data: globalSettings,
+const setAdsAction = (ads = {}) => ({
+  type: SET_ADS,
+  data: { adsList: ads.data },
 });
 
-export { SET_GLOBAL_SETTINGS, setGlobalSettingsAction };
+export { SET_ADS, setAdsAction };
