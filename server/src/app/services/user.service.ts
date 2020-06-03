@@ -148,6 +148,27 @@ export class UserService {
     return query(_sql, socketId);
   }
 
+  getUsersByPopLimited() {
+    const limit = configs.rain.pop_rain_balance_limit;
+    const _sql = "SELECT * FROM user_info WHERE pop_balance >= ?;";
+    return query(_sql, limit);
+  }
+
+  getUsersByLastActivity(limit) {
+    const _sql = `
+    SELECT u.id as user_id, u.socketid
+    FROM rain_group_msg as rgm
+    JOIN user_info as u
+    ON rgm.from_user = u.id
+    ORDER BY rgm.time DESC LIMIT ?;`;
+    return query(_sql, limit);
+  }
+
+  resetPopbalance() {
+    const _sql = "UPDATE user_info SET pop_balance = 0 WHERE pop_balance >= ?;";
+    return query(_sql, configs.rain.pop_rain_balance_limit);
+  }
+
   rainUser(username, reward) {
     const _sql = "UPDATE user_info SET balance = balance + ?, pop_balance = pop_balance + ? WHERE username = ?;";
     return query(_sql, [reward / 2, reward / 2, username]);

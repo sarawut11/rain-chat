@@ -88,6 +88,26 @@ export class RainContext {
         reward: normalReward
       }, error => console.log("getRain Error:", error.message));
     });
+    this.popRain();
+  }
+
+  async popRain() {
+    const { userService } = ServicesContext.getInstance();
+    const users = await userService.getUsersByPopLimited();
+    await userService.resetPopbalance();
+    if (users.length == 0) {
+      console.log("No users with limited pop balance");
+      return;
+    }
+    let popReward = 0;
+    const socketIds = [];
+    users.forEach(user => popReward += Number(user.pop_balance));
+    const lastActiveUsers = await userService.getUsersByLastActivity(configs.rain.pop_rain_last_post);
+    console.log(lastActiveUsers.length, popReward);
+    popReward /= lastActiveUsers.length;
+    lastActiveUsers.forEach(user => socketIds.push(user.socketid.split(",")));
+    console.log(`Pop rain ${lastActiveUsers.length} users with ${popReward} rewards`);
+    this.rainUsers(socketIds, popReward);
   }
 }
 
