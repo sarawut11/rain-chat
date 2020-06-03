@@ -38,13 +38,15 @@ export const getGroupItem = async ({
 
 export const getAllMessage = async ({ user_id, clientHomePageList }) => {
   try {
-    const { userService, chatService, groupChatService } = ServicesContext.getInstance();
+    const { userService, chatService, groupChatService, adsService } = ServicesContext.getInstance();
 
     const res1 = await userService.getPrivateList(user_id);
     const privateList = JSON.parse(JSON.stringify(res1));
     const res2 = await userService.getGroupList(user_id);
     const groupList = JSON.parse(JSON.stringify(res2));
     const homePageList = groupList.concat(privateList);
+    const res3 = await adsService.findAdsByUserId(user_id);
+    const adsList = JSON.parse(JSON.stringify(res3));
     const privateChat = new Map();
     const groupChat = new Map();
     if (homePageList && homePageList.length) {
@@ -57,10 +59,10 @@ export const getAllMessage = async ({ user_id, clientHomePageList }) => {
             const sortTime = goal.time;
             const res = item.user_id
               ? await chatService.getUnreadCount({
-                  sortTime,
-                  from_user: user_id,
-                  to_user: item.user_id,
-                })
+                sortTime,
+                from_user: user_id,
+                to_user: item.user_id,
+              })
               : await groupChatService.getUnreadCount({ sortTime, to_group_id: item.to_group_id });
             item.unread = goal.unread + JSON.parse(JSON.stringify(res))[0].unread;
           }
@@ -79,6 +81,7 @@ export const getAllMessage = async ({ user_id, clientHomePageList }) => {
       homePageList,
       privateChat: Array.from(privateChat),
       groupChat: Array.from(groupChat),
+      adsList
     };
   } catch (error) {
     console.log(error);

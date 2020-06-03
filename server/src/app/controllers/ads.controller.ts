@@ -6,12 +6,12 @@ import { ServicesContext } from "../context";
 export const registerAds = async (ctx, next) => {
   try {
     const { username } = ctx.params;
-    const { impressions, link, buttonName, title, description } = ctx.request.body;
+    const { link, buttonName, title, description } = ctx.request.body;
     const asset = ctx.request.files.asset;
     const { userService, adsService } = ServicesContext.getInstance();
 
     // Check Username
-    const RowDataPacket = await userService.findUserByUsername(username);
+    const RowDataPacket = await userService.getUserInfoByUsername(username);
     if (RowDataPacket.length <= 0) {
       ctx.body = {
         success: false,
@@ -31,9 +31,8 @@ export const registerAds = async (ctx, next) => {
 
     // Register DB
     await adsService.insertAds({
-      user_id: userInfo.id,
+      user_id: userInfo.user_id,
       asset_link: url,
-      impressions,
       link,
       button_name: buttonName,
       title,
@@ -60,7 +59,7 @@ export const getAdsByUsername = async (ctx, next) => {
     const { userService, adsService } = ServicesContext.getInstance();
 
     // Check Username
-    const RowDataPacket = await userService.findUserByUsername(username);
+    const RowDataPacket = await userService.getUserInfoByUsername(username);
     if (RowDataPacket.length <= 0) {
       ctx.body = {
         success: false,
@@ -70,7 +69,7 @@ export const getAdsByUsername = async (ctx, next) => {
     }
     const userInfo = RowDataPacket[0];
 
-    const result = await adsService.findAdsByUserId(userInfo.id);
+    const result = await adsService.findAdsByUserId(userInfo.user_id);
     ctx.body = {
       success: true,
       message: "Success",
@@ -144,7 +143,7 @@ export const updateAds = async (ctx, next) => {
   try {
     const { username, id } = ctx.params;
     const asset = ctx.request.files.asset;
-    const { impressions, link, buttonName, title, description } = ctx.request.body;
+    const { link, buttonName, title, description } = ctx.request.body;
     const { adsService, userService } = ServicesContext.getInstance();
 
     const RowDataPacket = await adsService.findAdsById(id);
@@ -182,7 +181,6 @@ export const updateAds = async (ctx, next) => {
     // Register DB
     await adsService.updateAds(id, userInfo.user_id, {
       asset_link,
-      impressions,
       link,
       button_name: buttonName,
       title,
@@ -229,6 +227,44 @@ export const deleteAds = async (ctx, next) => {
     ctx.body = {
       success: true,
       message: "Successfully Deleted."
+    };
+  } catch (error) {
+    console.error(error.message);
+    ctx.body = {
+      success: false,
+      message: "Failed"
+    };
+  }
+};
+
+export const requestAds = async (ctx, next) => {
+  try {
+    const { username, id } = ctx.params;
+    const { impressions } = ctx.request.body;
+    const { adsService, userService } = ServicesContext.getInstance();
+
+    const RowDataPacket = await adsService.findAdsById(id);
+    if (RowDataPacket.length == 0) {
+      ctx.body = {
+        success: false,
+        message: "Ads doesn't exist"
+      };
+      return;
+    }
+    const existingAds = RowDataPacket[0];
+    const userInfo = (await userService.getUserInfoByUsername(username))[0];
+    if (existingAds.user_id !== userInfo.user_id) {
+      ctx.body = {
+        success: false,
+        message: "This ads belongs to another user"
+      };
+      return;
+    }
+
+    await adsService.requestAds(id, userInfo.user_id, impressions);
+    ctx.body = {
+      success: true,
+      message: "Successfully requested"
     };
   } catch (error) {
     console.error(error.message);

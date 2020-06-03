@@ -26,8 +26,9 @@ export default {
   },
   rain: {
     group_id: "vitae-rain-group",
+    rain_coming_delay: 1000 * 5, // 5s
     ads_duration: 1000 * 20, // 20s
-    rain_time_interval: 1000 * 60 * 30, // 30 minutes
+    rain_time_interval: 1000 * 30, // 30s
     cost_per_impression: 1 / 2000, // $1 = 2000 impression
     pop_rain_limit: 100, // Vitae Token
   },

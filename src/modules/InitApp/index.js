@@ -169,6 +169,9 @@ class InitApp {
   }
 
   _listeningRain() {
+    window.socket.on('rainComing', () => {
+      console.log('Rain is coming soon');
+    });
     window.socket.on('showAds', ({ ads }) => {
       console.log('Show Ads', ads);
     });

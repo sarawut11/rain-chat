@@ -39,7 +39,12 @@ export class RainContext {
           return;
         }
 
+        // Broadcast RainComing event
+        console.log("Rain is coming");
+        socketServer.broadcast("rainComing", {}, error => console.log("showAds Error:", error.message));
+
         // Show Ads First
+        await delay(configs.rain.rain_coming_delay);
         console.log("Raining - id:", ads.id);
         socketServer.broadcast("showAds", {
           ads: {
@@ -53,22 +58,20 @@ export class RainContext {
         }, error => console.log("showAds Error:", error.message));
 
         // Rain Rewards after ads duration
-        setTimeout(async () => {
-          const impressions = ads.impressions;
-          const clients = await socketServer.getRoomClients(configs.rain.group_id);
+        await delay(configs.rain.ads_duration);
+        const impressions = ads.impressions;
+        const clients = await socketServer.getRoomClients(configs.rain.group_id);
 
-          // Rain
-          let rainReward = 0;
-          if (impressions > clients.length) { // Enough impressions
-            rainReward = configs.rain.cost_per_impression;
-          } else { // Insufficient impressions
-            rainReward = configs.rain.cost_per_impression * impressions / clients.length;
-          }
-          console.log("Ads Rain Reward:", rainReward);
+        let rainReward = 0;
+        if (impressions > clients.length) { // Enough impressions
+          rainReward = configs.rain.cost_per_impression;
+        } else { // Insufficient impressions
+          rainReward = configs.rain.cost_per_impression * impressions / clients.length;
+        }
+        console.log("Ads Rain Reward:", rainReward);
 
-          await this.rainUsers(clients, rainReward);
-          await adsService.rainAds(ads.id, impressions - clients.length, moment().utc().unix());
-        }, configs.rain.ads_duration);
+        await this.rainUsers(clients, rainReward);
+        await adsService.rainAds(ads.id, impressions - clients.length, moment().utc().unix());
       } catch (error) {
         console.log("Rain Failed, ", error.message);
       }
@@ -87,3 +90,5 @@ export class RainContext {
     });
   }
 }
+
+const delay = ms => new Promise(res => setTimeout(res, ms));
