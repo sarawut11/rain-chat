@@ -33,7 +33,6 @@ CREATE TABLE `user_info` (
   `wallet_address` char(255) DEFAULT NULL,
   `balance` double DEFAULT 0,
   `pop_balance` double DEFAULT 0,
-  `pop_limit` double DEFAULT 0,
   `role` varchar(20) DEFAULT 'FREE',
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;

@@ -10,7 +10,7 @@ export class AdsService {
   };
 
   insertAds({ user_id, asset_link, link, button_name, title, description, time }) {
-    const _sql = "insert into ads_info(user_id,asset_link,link,button_name,title,description,time) values(?,?,?,?,?,?,?,?);";
+    const _sql = "insert into ads_info(user_id,asset_link,link,button_name,title,description,time) values(?,?,?,?,?,?,?);";
     return query(_sql, [user_id, asset_link, link, button_name, title, description, time]);
   }
 

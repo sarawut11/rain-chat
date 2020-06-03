@@ -140,6 +140,16 @@
   {
     success: true/false,
     message: "Success or Failed Message",
+    ads: {
+      id,
+      user_id,
+      asset_link,
+      link,
+      button_name,
+      title,
+      description,
+      time,
+    }
   }
   ```
 ### /ads/:username (GET)

@@ -10,6 +10,14 @@ export const registerAds = async (ctx, next) => {
     const asset = ctx.request.files.asset;
     const { userService, adsService } = ServicesContext.getInstance();
 
+    if (asset === undefined) {
+      ctx.body = {
+        success: false,
+        message: "Attach a video or an image and try again."
+      };
+      return;
+    }
+
     // Check Username
     const RowDataPacket = await userService.getUserInfoByUsername(username);
     if (RowDataPacket.length <= 0) {
@@ -30,7 +38,7 @@ export const registerAds = async (ctx, next) => {
     });
 
     // Register DB
-    await adsService.insertAds({
+    const ads = {
       user_id: userInfo.user_id,
       asset_link: url,
       link,
@@ -38,11 +46,16 @@ export const registerAds = async (ctx, next) => {
       title,
       description,
       time: moment().utc().unix()
-    });
+    };
+    const res = await adsService.insertAds(ads);
 
     ctx.body = {
       success: true,
-      message: "Successfully Created."
+      message: "Successfully Created.",
+      ads: {
+        id: res.insertId,
+        ...ads,
+      }
     };
   } catch (error) {
     console.error(error.message);
