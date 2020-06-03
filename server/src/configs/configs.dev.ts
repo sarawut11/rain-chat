@@ -30,7 +30,7 @@ export default {
     ads_duration: 1000 * 20,        // 20s
     rain_time_interval: 1000 * 30,  // 30s
     cost_per_impression: 1 / 2000,  // $1 = 2000 impression
-    pop_rain_balance_limit: 100,    // 100 Vitae Token
+    pop_rain_balance_limit: 10,     // 100 Vitae Token
     pop_rain_last_post: 200,        // Last active 200 users
   },
   client_secret: "",
