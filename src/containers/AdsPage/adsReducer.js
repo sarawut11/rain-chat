@@ -1,4 +1,4 @@
-import { SET_ADS, CREATE_ADS } from './adsAction';
+import { SET_ADS, CREATE_ADS, UPDATE_ADS, DELETE_ADS } from './adsAction';
 
 const ADS = {
   ADSLIST: 'adsList',
@@ -15,6 +15,8 @@ const initialState = {
 const setAdsReducer = (previousState = initialState, action) => {
   switch (action.type) {
     case CREATE_ADS:
+    case UPDATE_ADS:
+    case DELETE_ADS:
     case SET_ADS:
       return { ...previousState, ...action.data };
     default:

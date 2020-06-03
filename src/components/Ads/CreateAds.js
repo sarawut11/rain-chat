@@ -10,6 +10,7 @@ const layout = {
   wrapperCol: { span: 19 },
 };
 const initialState = {
+  id: null,
   asset: null,
   link: '',
   button_name: '',
@@ -17,16 +18,45 @@ const initialState = {
   description: '',
   confirmLoading: false,
   fileList: [],
+  errorList: {},
 };
 export default class CreateAds extends Component {
   state = {
     ...initialState,
   };
 
+  componentDidMount() {
+    // console.log('create ads component did mount', this.props);
+    const { editingAds, editMode } = this.props;
+    if (editMode) {
+      this.setState({ ...editingAds });
+    }
+  }
+
   handleOk = async () => {
-    const { asset, link, button_name, title, description, confirmLoading } = this.state;
+    const { editMode } = this.props;
+    const { id, asset, asset_link, link, button_name, title, description } = this.state;
     const user_info = JSON.parse(localStorage.getItem('userInfo'));
     const { username } = user_info;
+
+    const newErrorList = {};
+    let isError = false;
+    if (!title) {
+      newErrorList.title = true;
+      isError = true;
+    }
+    if (!description) {
+      newErrorList.description = true;
+      isError = true;
+    }
+
+    this.setState({ errorList: { ...newErrorList } });
+    if (isError) {
+      notification.error({
+        message: 'Validation error',
+      });
+      return;
+    }
 
     this.setState({ confirmLoading: true });
 
@@ -37,11 +67,21 @@ export default class CreateAds extends Component {
       data.append('button_name', button_name);
       data.append('title', title);
       data.append('description', description);
-      data.append('confirmLoading', confirmLoading);
-      const res = await Request.axios('post', `/api/v1/ads/${username}/create`, data);
+
+      let res;
+      if (editMode) {
+        res = await Request.axios('put', `/api/v1/ads/${username}/${id}`, data);
+        // res.ads = { id, asset_link, link, button_name, title, description };
+      } else {
+        res = await Request.axios('post', `/api/v1/ads/${username}/create`, data);
+      }
 
       if (res && res.success) {
-        this.props.createAdsAction({ ...res.ads, adsState: this.props.ads });
+        if (editMode) {
+          this.props.editAdsAction({ ...res.ads, adsState: this.props.ads });
+        } else {
+          this.props.createAdsAction({ ...res.ads, adsState: this.props.ads });
+        }
         notification.success({
           message: res.message,
         });
@@ -54,7 +94,7 @@ export default class CreateAds extends Component {
     } catch (error) {
       console.log(error);
       notification.error({
-        message: 'Profile update failed.',
+        message: 'Failed.',
       });
     }
 
@@ -85,8 +125,21 @@ export default class CreateAds extends Component {
   };
 
   render() {
-    const { visible } = this.props;
-    const { asset, link, button_name, title, description, confirmLoading, fileList } = this.state;
+    const { visible, editMode } = this.props;
+    const {
+      asset,
+      link,
+      button_name,
+      title,
+      description,
+      confirmLoading,
+      fileList,
+      errorList,
+    } = this.state;
+
+    const uploadText = editMode
+      ? 'Click or drag new ads file to this area to update'
+      : 'Click or drag file to this area to upload';
 
     return (
       <div>
@@ -104,15 +157,25 @@ export default class CreateAds extends Component {
                 asset={asset}
                 fileList={fileList}
                 setFileList={this.setFileList}
+                uploadText={uploadText}
               />
             </Col>
 
             <Col span={24}>
               <Form {...layout}>
-                <Item label="Title">
+                <Item
+                  label="Title"
+                  help={errorList.title ? 'Title is required' : null}
+                  validateStatus={errorList.title ? 'error' : 'success'}
+                  rules={[{ required: true }]}
+                >
                   <Input name="title" value={title} onChange={this._onChange} />
                 </Item>
-                <Item label="Description">
+                <Item
+                  label="Description"
+                  help={errorList.description ? 'Description is required' : null}
+                  validateStatus={errorList.description ? 'error' : 'success'}
+                >
                   <TextArea name="description" value={description} onChange={this._onChange} />
                 </Item>
                 <Item label="Link">

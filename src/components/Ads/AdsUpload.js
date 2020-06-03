@@ -85,7 +85,7 @@ class Avatar extends React.Component {
   };
 
   render() {
-    const { asset } = this.props;
+    const { asset, uploadText } = this.props;
     const { fileList } = this.props;
     return (
       <Dragger
@@ -99,7 +99,7 @@ class Avatar extends React.Component {
         <p className="ant-upload-drag-icon">
           <InboxOutlined />
         </p>
-        <p className="ant-upload-text">Click or drag file to this area to upload</p>
+        <p className="ant-upload-text">{uploadText}</p>
       </Dragger>
     );
   }
