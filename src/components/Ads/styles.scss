@@ -1,0 +1,23 @@
+.ads-container {
+  padding: 40px;
+  width: 100%;
+}
+
+.ads-add-button {
+  float: right;
+}
+
+.ant-upload.ant-upload-drag {
+  height: auto !important;
+}
+
+.ads-card .ant-tag {
+  margin-top: -13px;
+  margin-bottom: 5px;
+}
+
+@media screen and (max-width: 768px) {
+  .ads-container {
+    padding: 20px;
+  }
+}

@@ -3,6 +3,14 @@ import React, { Component } from 'react';
 import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import './style.scss';
+import {
+  SettingFilled,
+  SettingOutlined,
+  MessageFilled,
+  MessageOutlined,
+  LikeFilled,
+  LikeOutlined,
+} from '@ant-design/icons';
 import MyInfo from '../MyInfo';
 import { initAppOnce } from './help';
 
@@ -22,16 +30,29 @@ class Tabs extends Component {
         <MyInfo />
         <div className="tab">
           <Link to="/">
-            <svg className="icon " aria-hidden="true">
-              <use xlinkHref={showMessageIcon ? '#icon-message-copy' : '#icon-message'} />
-            </svg>
+            {pathname === '/' ? (
+              <MessageFilled className="icon" />
+            ) : (
+              <MessageOutlined className="icon" />
+            )}
           </Link>
         </div>
         <div className="tab">
           <Link to="/setting">
-            <svg className="icon " aria-hidden="true">
-              <use xlinkHref={pathname === '/setting' ? '#icon-setting-copy' : '#icon-setting'} />
-            </svg>
+            {pathname === '/setting' ? (
+              <SettingFilled className="icon" />
+            ) : (
+              <SettingOutlined className="icon" />
+            )}
+          </Link>
+        </div>
+        <div className="tab">
+          <Link to="/ads">
+            {pathname === '/ads' ? (
+              <LikeFilled className="icon" />
+            ) : (
+              <LikeOutlined className="icon" />
+            )}
           </Link>
         </div>
       </div>

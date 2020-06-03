@@ -10,6 +10,7 @@ import { shareReducer } from './reducers/shareReducer';
 import { fetchAllGroupChatsReducer } from '../containers/GroupChatPage/groupChatReducer';
 import { fetchAllPrivateChatsReducer } from '../containers/PrivateChatPage/privateChatReducer';
 import { setGlobalSettingsReducer } from '../containers/SettingPage/settingReducer';
+import { setAdsReducer } from '../containers/AdsPage/adsReducer';
 
 export default combineReducers({
   robotState: robotReducer,
@@ -20,4 +21,5 @@ export default combineReducers({
   initAppState: initAppReducer,
   shareState: shareReducer,
   globalSettingsState: setGlobalSettingsReducer,
+  adsState: setAdsReducer,
 });
