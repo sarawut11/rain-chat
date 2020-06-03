@@ -17,6 +17,7 @@ import {
   Menu,
   Dropdown,
   InputNumber,
+  Tag,
 } from 'antd';
 import {
   EditOutlined,
@@ -176,9 +177,11 @@ class Ads extends Component {
 
   renderItem = item => {
     const { user_info } = this.state;
+    const { status } = item;
     return (
       <List.Item>
         <Card
+          className="ads-card"
           cover={<img alt="example" src={item.asset_link} />}
           actions={[
             <Dropdown overlay={this.renderMenu(item)} placement="bottomCenter">
@@ -188,6 +191,11 @@ class Ads extends Component {
             <DeleteOutlined key="delete" onClick={this.showConfirm(item)} />,
           ]}
         >
+          <Row justify="end">
+            {status === 2 && <Tag color="#87d068">approved</Tag>}
+            {status === 1 && <Tag color="#f50">pending</Tag>}
+            {status === 0 && <Tag color="#108ee9">created</Tag>}
+          </Row>
           <Meta
             avatar={<UserAvatar name={user_info.name} src={user_info.avatar} size="36" />}
             title={item.title}
