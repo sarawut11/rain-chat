@@ -26,34 +26,13 @@ class Ads extends Component {
 
     this.state = {
       user_info: {},
-      loadingAds: false,
-      adsList: [],
       createAdsVisible: false,
     };
   }
 
-  async componentDidMount(props) {
+  componentDidMount() {
     const user_info = JSON.parse(localStorage.getItem('userInfo'));
-    this.setState({ user_info, loadingAds: true });
-
-    try {
-      let res = null;
-      if (user_info.username) {
-        res = await Request.axios('get', `/api/v1/ads/${user_info.username}`);
-      }
-
-      if (res && res.success) {
-        if (res.ads) {
-          this.setState({ adsList: res.ads });
-        }
-      } else {
-        notification(res.message, 'error');
-      }
-    } catch (error) {
-      notification(error, 'error');
-    }
-
-    this.setState({ loadingAds: false });
+    this.setState({ user_info });
   }
 
   hideCreateAdsModal = () => {
@@ -65,16 +44,18 @@ class Ads extends Component {
   };
 
   render() {
-    const { loadingAds, adsList, user_info, createAdsVisible } = this.state;
-    console.log('ads component', this);
+    const { user_info, createAdsVisible } = this.state;
+    const { ads, createAdsAction } = this.props;
+
     return (
       <div className="ads-container">
-        <CreateAds visible={createAdsVisible} hideModal={this.hideCreateAdsModal} />
-        {loadingAds ? (
-          <Space size="middle">
-            <Spin size="large" />
-          </Space>
-        ) : (
+        <CreateAds
+          visible={createAdsVisible}
+          hideModal={this.hideCreateAdsModal}
+          createAdsAction={createAdsAction}
+          ads={this.props.ads}
+        />
+        {ads && ads.adsList ? (
           <Row gutter={[0, 16]}>
             <Col span={24}>
               <Button
@@ -97,7 +78,7 @@ class Ads extends Component {
                   xl: 3,
                   xxl: 3,
                 }}
-                dataSource={adsList}
+                dataSource={ads.adsList}
                 renderItem={item => (
                   <List.Item>
                     <Card
@@ -121,6 +102,10 @@ class Ads extends Component {
               />
             </Col>
           </Row>
+        ) : (
+          <Space size="middle">
+            <Spin size="large" />
+          </Space>
         )}
       </div>
     );

@@ -66,7 +66,6 @@ class userInfoRender extends Component {
   };
 
   onAvatarImageChange = file => {
-    console.log('onavatar image change', file);
     this.setState({ avatar: file, updateAvailable: true });
   };
 

@@ -47,7 +47,6 @@ class Avatar extends React.Component {
   };
 
   handleUploadImageAction = file => {
-    console.log('handleUploadImageAction');
     const fr = new FileReader();
     const scope = this;
 
@@ -61,7 +60,6 @@ class Avatar extends React.Component {
         },
       });
       const myFile = new File([file], 'my-avatar.png');
-      console.log('myFile', myFile);
       scope.props.onChange(myFile);
     };
 

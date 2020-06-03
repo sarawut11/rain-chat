@@ -2,7 +2,7 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Ads from '../../components/Ads';
 import { initAppAction } from '../../redux/actions/initAppAction';
-import { setAdsAction } from './adsAction';
+import { setAdsAction, createAdsAction } from './adsAction';
 
 const mapStateToProps = state => ({
   ads: state.adsState,
@@ -14,6 +14,9 @@ const mapDispatchToProps = dispatch => ({
   },
   setAds(arg) {
     dispatch(setAdsAction(arg));
+  },
+  createAdsAction(arg) {
+    dispatch(createAdsAction(arg));
   },
 });
 

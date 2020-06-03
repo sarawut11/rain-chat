@@ -7,6 +7,10 @@
   float: right;
 }
 
+.ant-upload.ant-upload-drag {
+  height: auto !important;
+}
+
 @media screen and (max-width: 768px) {
   .ads-container {
     padding: 20px;
