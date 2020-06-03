@@ -70,19 +70,23 @@ class Ads extends Component {
 
   showImpressionsInput = item => async () => {
     const pointer = this;
-    const { impressions } = this.state;
+    this.setState({ impressions: 0 });
     confirm({
       title: 'Please input impressions',
       icon: <ExclamationCircleOutlined />,
       content: (
         <InputNumber
-          value={impressions}
+          value={pointer.state.impressions}
           name="impressions"
           onChange={pointer.onImpressionsChange}
         />
       ),
       async onOk() {
         await pointer.onRequest(item);
+        pointer.setState({ impressions: 0 });
+      },
+      onCancel() {
+        pointer.setState({ impressions: 0 });
       },
     });
   };
