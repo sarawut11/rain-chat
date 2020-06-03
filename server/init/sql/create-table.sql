@@ -122,7 +122,7 @@ CREATE TABLE `ads_info` (
   `button_name` varchar(20) DEFAULT '',
   `title` varchar(50) DEFAULT '',
   `description` varchar(200) DEFAULT '',
-  `approved` tinyint(1) NOT NULL DEFAULT '0',
+  `status` tinyint(1) NOT NULL DEFAULT '0',
   `last_time` int(11) DEFAULT 0,
   `time` int(11) NOT NULL,
   PRIMARY KEY (`id`)

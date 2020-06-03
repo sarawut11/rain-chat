@@ -52,6 +52,7 @@
 ## 1.2 Referral / Sponsor
 ### /ref/generate (POST)
   Generate referral code
+
   ***Request Body***
   | Fields  | Description        |
   | ------- | ------------------ |
@@ -66,6 +67,7 @@
   ```
 ### /ref/validate (POST)
   Validate sponsor's referral code.
+
   ***Request Body***
   | Fields  | Description             |
   | ------- | ----------------------- |
@@ -80,6 +82,7 @@
 ## 1.3 Profile
 ### /user/:username (GET)
   Get profile info of user with username.
+
   ***Response***
   ```
   {
@@ -100,6 +103,7 @@
   ```
 ### /user/:username (PUT)
   Update profile info of user with username.
+
   ***Request Body (Form-Data)***
   | Fields | Description       |
   | ------ | ----------------- |
@@ -122,15 +126,15 @@
 ## 1.4 Ads
 ### /ads/:username/create (POST)
   Register ads
+
   ***Request Body (Form-Data)***
-  | Fields      | Description                       |
-  | ----------- | --------------------------------- |
-  | asset       | Content of Ads - Image or Video   |
-  | impressions | Number of impressions to campaign |
-  | link        | Link to the Ads Product           |
-  | button_name | Name of the button to ads link    |
-  | title       | Title of Ads                      |
-  | description | Description of Ads                |
+  | Fields      | Description                     |
+  | ----------- | ------------------------------- |
+  | asset       | Content of Ads - Image or Video |
+  | link        | Link to the Ads Product         |
+  | button_name | Name of the button to ads link  |
+  | title       | Title of Ads                    |
+  | description | Description of Ads              |
   ***Response***
   ```
   {
@@ -140,6 +144,7 @@
   ```
 ### /ads/:username (GET)
   Get all ads created by user with username
+
   ***Response***
   ```
   {
@@ -155,7 +160,7 @@
         button_name,
         title,
         description,
-        approved,     // 0: Pending | 1: approved
+        status,     // 0: Created | 1: Pending | 2: Approved
         last_time,    // Last advertised time - Unix timestamp in UTC
         time,         // Registration Time - Unix timestamp in UTC
       },
@@ -165,6 +170,7 @@
   ```
 ### /ads/:username/:id (GET)
   Get ads details created by username with id.
+
   ***Response***
   ```
   {
@@ -179,7 +185,7 @@
       button_name,
       title,
       description,
-      approved,     // 0: Pending | 1: approved
+      status,     // 0: Created | 1: Pending | 2: Approved
       last_time,    // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
     }
@@ -187,15 +193,15 @@
   ```
 ### /ads/:username/:id (PUT)
   Update ads created by username with id
+
   ***Request Body (Form-Data)***
-  | Fields      | Description                       |
-  | ----------- | --------------------------------- |
-  | asset       | Content of Ads - Image or Video   |
-  | impressions | Number of impressions to campaign |
-  | link        | Link to the Ads Product           |
-  | button_name | Name of the button to ads link    |
-  | title       | Title of Ads                      |
-  | description | Description of Ads                |
+  | Fields      | Description                     |
+  | ----------- | ------------------------------- |
+  | asset       | Content of Ads - Image or Video |
+  | link        | Link to the Ads Product         |
+  | button_name | Name of the button to ads link  |
+  | title       | Title of Ads                    |
+  | description | Description of Ads              |
   ***Response***
   ```
   {
@@ -205,6 +211,21 @@
   ```
 ### /ads/:username/:id (DELETE)
   Delete ads created by username with id
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message"
+  }
+  ```
+### /ads/:username/:id/request (POST)
+  Request Ads for review
+
+  ***Request Body (Form-Data)***
+  | Fields      | Description              |
+  | ----------- | ------------------------ |
+  | impressions | Impressions for campaign |
   ***Response***
   ```
   {
@@ -219,11 +240,116 @@
 > - Server : Backend (Server) -> Frontend (Client)
 
 ## 2.1 Initialize Socket
-### initSocketSuccess (Server)
-### initSocket (Server)
 ### connect (Client)
 ### reconnect (Client)
 ### disconnect (Client)
+### initSocket (Server)
+### initSocketSuccess (Server)
+  Init socket succeed, send user's all info.
+  
+  ***Data***
+  ```
+  {
+    homePageList: [ // Contact list including Group Chat & Private Chat
+      {               // -- Group Chat Info --
+        to_group_id,  //    Group Id
+        name,         //    Group Name
+        create_time,  //    Created Time in UNIX timestamp
+        message:      //    Last message in this group
+        time:         //    Last message time
+        attachments: [],
+        unread,       //    Number of unread messages
+      }, ...
+      {               // -- Private Chat Info --
+        user_id,
+        username,
+        name,
+        avatar,
+        be_friend_time,
+        message,
+        time,
+        attachments: [],
+        unread
+      }, ...
+    ]
+    privateChat: [
+      [ 
+        2,                // Sender's user_id
+        {
+          messages: [
+            {
+              from_user,  // sender's user_id,
+              to_user,    // recipient's user_id,
+              message,
+              time,
+              avatar,     // sender's avatar
+              name,       // sender's name
+            }, ...
+          ],
+          userInfo: {     // recipient's userInfo
+            user_id,
+            username,
+            name,
+            avatar,
+            intro,
+          }
+        }
+      ], ...
+    ]
+    groupChat: [
+      [
+        '2dc...b09',      // Group Id
+        {
+          messages: [
+            {
+              message,
+              attachments: [],
+              time,
+              from_user,
+              to_group_id,
+              avatar,
+              name
+            }, ...
+          ],
+          groupInfo: {
+            to_group_id,
+            name,
+            group_notice,
+            creator_id,
+            create_time,
+            members: [
+              {
+                user_id,
+                socketid,
+                username,
+                name,
+                email,
+                avatar,
+                intro,
+                balance,
+              }, ...
+            ]
+          }
+        }
+      ], ...
+    ],
+    adsList: [
+      {
+        id,
+        user_id,
+        asset_link,
+        impressions,
+        link,
+        button_name,
+        title,
+        description,
+        status,
+        last_time,
+        time,
+      }, ...
+    ]
+  }
+  ```
 
 ## 2.2 Private Chat
 ### sendPrivateMsg (Client)
@@ -251,8 +377,16 @@
 ### getQiniuToken (Client)
 
 ## 2.5 Rain
+### rainComing (Server)
+  Notify users to be online to Vitae Rain Room - Rain is coming soon.
+
+  ***Data***
+  ```
+  No data
+  ```
 ### showAds (Server)
   Show Ads on frontend when this event is emitted.
+
   ***Data***
   ```
   {
@@ -268,6 +402,7 @@
   ```
 ### getRain (Server)
   Notify clients when they are getting rewards.
+
   ***Data***
   ```
   {
