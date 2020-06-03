@@ -1,4 +1,4 @@
-import { SET_ADS, CREATE_ADS, UPDATE_ADS, DELETE_ADS } from './adsAction';
+import { SET_ADS, CREATE_ADS, UPDATE_ADS, DELETE_ADS, REQUEST_ADS } from './adsAction';
 
 const ADS = {
   ADSLIST: 'adsList',
@@ -6,6 +6,9 @@ const ADS = {
 
 const initialState = {
   [ADS.ADSLIST]: [],
+  createdAdsList: [],
+  pendingAdsList: [],
+  approvedAdsList: [],
 };
 
 // const userInfo = JSON.parse(localStorage.getItem('userInfo'));
@@ -17,6 +20,7 @@ const setAdsReducer = (previousState = initialState, action) => {
     case CREATE_ADS:
     case UPDATE_ADS:
     case DELETE_ADS:
+    case REQUEST_ADS:
     case SET_ADS:
       return { ...previousState, ...action.data };
     default:

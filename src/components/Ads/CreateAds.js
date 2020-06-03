@@ -78,9 +78,9 @@ export default class CreateAds extends Component {
 
       if (res && res.success) {
         if (editMode) {
-          this.props.editAdsAction({ ...res.ads, adsState: this.props.ads });
+          this.props.editAdsAction({ ads: res.ads, adsState: this.props.ads });
         } else {
-          this.props.createAdsAction({ ...res.ads, adsState: this.props.ads });
+          this.props.createAdsAction({ ads: res.ads, adsState: this.props.ads });
         }
         notification.success({
           message: res.message,

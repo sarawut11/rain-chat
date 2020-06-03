@@ -2,24 +2,61 @@ const SET_ADS = 'SET_ADS';
 const CREATE_ADS = 'CREATE_ADS';
 const UPDATE_ADS = 'UPDATE_ADS';
 const DELETE_ADS = 'DELETE_ADS';
+const REQUEST_ADS = 'REQUEST_ADS';
 
-const setAdsAction = (ads = {}) => ({
-  type: SET_ADS,
-  data: { adsList: ads.data },
-});
+const setAdsAction = (ads = {}) => {
+  const adsList = [...ads.data];
+
+  let createdAdsList = [...adsList];
+  createdAdsList = createdAdsList.filter(item => {
+    return item.status === 0;
+  });
+
+  let pendingAdsList = [...adsList];
+  pendingAdsList = pendingAdsList.filter(item => {
+    return item.status === 1;
+  });
+
+  let approvedAdsList = [...adsList];
+  approvedAdsList = approvedAdsList.filter(item => {
+    return item.status === 2;
+  });
+
+  return {
+    type: SET_ADS,
+    data: { adsList: ads.data, createdAdsList, pendingAdsList, approvedAdsList },
+  };
+};
 
 const createAdsAction = ads => {
-  const { id, user_id, asset_link, link, button_name, title, description, time, adsState } = ads;
+  const { adsState } = ads;
   // const adsStateCopy = JSON.parse(JSON.stringify(adsState));
   // adsStateCopy.adsList = [
   //   ...adsStateCopy.adsList
   // ];
+  const adsList = [...adsState.adsList, { ...ads.ads }];
+
+  let createdAdsList = [...adsList];
+  createdAdsList = createdAdsList.filter(item => {
+    return item.status === 0;
+  });
+
+  let pendingAdsList = [...adsList];
+  pendingAdsList = pendingAdsList.filter(item => {
+    return item.status === 1;
+  });
+
+  let approvedAdsList = [...adsList];
+  approvedAdsList = approvedAdsList.filter(item => {
+    return item.status === 2;
+  });
+
   const adsStateCopy = {
     ...adsState,
-    adsList: [
-      ...adsState.adsList,
-      { id, user_id, asset_link, link, button_name, title, description, time },
-    ],
+    adsList,
+    createdAdsList,
+    pendingAdsList,
+    approvedAdsList,
   };
 
   return { type: CREATE_ADS, data: adsStateCopy };
@@ -27,16 +64,35 @@ const createAdsAction = ads => {
 
 const editAdsAction = ads => {
   console.log('edit ads action', ads);
-  const { id, user_id, asset_link, link, button_name, title, description, time, adsState } = ads;
+  const { adsState } = ads;
   const adsList = [...adsState.adsList];
   adsList.forEach((item, index) => {
-    if (item.id == id) {
-      adsList[index] = { id, user_id, asset_link, link, button_name, title, description, time };
+    if (item.id == ads.ads.id) {
+      adsList[index] = { ...ads.ads };
     }
   });
+
+  let createdAdsList = [...adsList];
+  createdAdsList = createdAdsList.filter(item => {
+    return item.status === 0;
+  });
+
+  let pendingAdsList = [...adsList];
+  pendingAdsList = pendingAdsList.filter(item => {
+    return item.status === 1;
+  });
+
+  let approvedAdsList = [...adsList];
+  approvedAdsList = approvedAdsList.filter(item => {
+    return item.status === 2;
+  });
+
   const adsStateCopy = {
     ...adsState,
-    adsList: [...adsList],
+    adsList,
+    createdAdsList,
+    pendingAdsList,
+    approvedAdsList,
   };
 
   return { type: UPDATE_ADS, data: adsStateCopy };
@@ -59,12 +115,65 @@ const deleteAdsAction = ads => {
     });
   }
 
+  let createdAdsList = [...adsList];
+  createdAdsList = createdAdsList.filter(item => {
+    return item.status === 0;
+  });
+
+  let pendingAdsList = [...adsList];
+  pendingAdsList = pendingAdsList.filter(item => {
+    return item.status === 1;
+  });
+
+  let approvedAdsList = [...adsList];
+  approvedAdsList = approvedAdsList.filter(item => {
+    return item.status === 2;
+  });
+
   const adsStateCopy = {
     ...adsState,
-    adsList: [...adsList],
+    adsList,
+    createdAdsList,
+    pendingAdsList,
+    approvedAdsList,
   };
 
-  return { type: UPDATE_ADS, data: adsStateCopy };
+  return { type: DELETE_ADS, data: adsStateCopy };
+};
+
+const requestAdsAction = ads => {
+  const { id, status, adsState } = ads;
+  const adsList = [...adsState.adsList];
+  adsList.forEach((item, index) => {
+    if (item.id == id) {
+      adsList[index].status = status;
+    }
+  });
+
+  let createdAdsList = [...adsList];
+  createdAdsList = createdAdsList.filter(item => {
+    return item.status === 0;
+  });
+
+  let pendingAdsList = [...adsList];
+  pendingAdsList = pendingAdsList.filter(item => {
+    return item.status === 1;
+  });
+
+  let approvedAdsList = [...adsList];
+  approvedAdsList = approvedAdsList.filter(item => {
+    return item.status === 2;
+  });
+
+  const adsStateCopy = {
+    ...adsState,
+    adsList,
+    createdAdsList,
+    pendingAdsList,
+    approvedAdsList,
+  };
+
+  return { type: REQUEST_ADS, data: adsStateCopy };
 };
 
 export {
@@ -72,8 +181,10 @@ export {
   CREATE_ADS,
   UPDATE_ADS,
   DELETE_ADS,
+  REQUEST_ADS,
   setAdsAction,
   createAdsAction,
   editAdsAction,
   deleteAdsAction,
+  requestAdsAction,
 };
