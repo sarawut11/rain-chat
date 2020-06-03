@@ -164,9 +164,12 @@ export class UserService {
     return query(_sql, limit);
   }
 
-  resetPopbalance() {
-    const _sql = "UPDATE user_info SET pop_balance = 0 WHERE pop_balance >= ?;";
-    return query(_sql, configs.rain.pop_rain_balance_limit);
+  resetPopbalance(userIds: String[]) {
+    let array = "";
+    userIds.forEach(id => array += "?,");
+    array = array.substring(0, array.length - 1);
+    const _sql = `UPDATE user_info SET pop_balance = 0 WHERE id IN (${array})`;
+    return query(_sql, userIds);
   }
 
   rainUser(username, reward) {

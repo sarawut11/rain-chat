@@ -27,7 +27,7 @@ export class RainContext {
     const rain_time_interval = configs.rain.rain_time_interval / 1000;
     RainContext.rainJob = new CronJob(`*/${rain_time_interval} * * * * *`, async () => {
       try {
-        const { adsService, userService } = ServicesContext.getInstance();
+        const { adsService } = ServicesContext.getInstance();
         const RowDataPacket = await adsService.findAdsToRain();
         if (RowDataPacket.length <= 0) {
           console.log("No Ads to rain");
@@ -94,17 +94,24 @@ export class RainContext {
   async popRain() {
     const { userService } = ServicesContext.getInstance();
     const users = await userService.getUsersByPopLimited();
-    await userService.resetPopbalance();
     if (users.length == 0) {
       console.log("No users with limited pop balance");
       return;
     }
+
+    // Reset Pop Balance
+    const userIds = [];
     let popReward = 0;
-    const socketIds = [];
-    users.forEach(user => popReward += Number(user.pop_balance));
+    users.forEach(user => {
+      userIds.push(user.id);
+      popReward += Number(user.pop_balance);
+    });
+    await userService.resetPopbalance(userIds);
+
+    // Get Last Active Users
     const lastActiveUsers = await userService.getUsersByLastActivity(configs.rain.pop_rain_last_post);
-    console.log(lastActiveUsers.length, popReward);
     popReward /= lastActiveUsers.length;
+    const socketIds = [];
     lastActiveUsers.forEach(user => socketIds.push(user.socketid.split(",")));
     console.log(`Pop rain ${lastActiveUsers.length} users with ${popReward} rewards`);
     this.rainUsers(socketIds, popReward);
