@@ -282,7 +282,7 @@ class Ads extends Component {
                     md: 2,
                     lg: 3,
                     xl: 3,
-                    xxl: 3,
+                    xxl: 4,
                   }}
                   dataSource={ads.approvedAdsList}
                   renderItem={this.renderItem}
@@ -303,7 +303,7 @@ class Ads extends Component {
                     md: 2,
                     lg: 3,
                     xl: 3,
-                    xxl: 3,
+                    xxl: 4,
                   }}
                   dataSource={ads.pendingAdsList}
                   renderItem={this.renderItem}
@@ -324,7 +324,7 @@ class Ads extends Component {
                     md: 2,
                     lg: 3,
                     xl: 3,
-                    xxl: 3,
+                    xxl: 4,
                   }}
                   dataSource={ads.createdAdsList}
                   renderItem={this.renderItem}
