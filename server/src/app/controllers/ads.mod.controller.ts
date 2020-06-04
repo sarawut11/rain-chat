@@ -1,5 +1,5 @@
 import { ServicesContext } from "../context";
-import { UserService } from "../services";
+import { UserService, AdsService } from "../services";
 
 export const getAllAds = async (ctx, next) => {
   try {
@@ -33,9 +33,24 @@ export const rejectAds = async (ctx, next) => {
     const { adsId } = ctx.request.body;
     const { adsService } = ServicesContext.getInstance();
 
-    const checkResult = await checkUserRole(username);
+    const checkResult = await checkUserRole(username, adsId);
     if (checkResult.success === false) {
       ctx.body = checkResult;
+      return;
+    }
+    const { userInfo, existingAds } = checkResult;
+    if (existingAds.status === AdsService.AdsStatus.Approved) {
+      ctx.body = {
+        success: false,
+        message: "This ads is already approved."
+      };
+      return;
+    }
+    if (existingAds.status !== AdsService.AdsStatus.Pending) {
+      ctx.body = {
+        success: false,
+        message: "This ads is not in pending."
+      };
       return;
     }
 
@@ -61,9 +76,24 @@ export const approveAds = async (ctx, next) => {
     const { adsId } = ctx.request.body;
     const { adsService } = ServicesContext.getInstance();
 
-    const checkResult = await checkUserRole(username);
+    const checkResult = await checkUserRole(username, adsId);
     if (checkResult.success === false) {
       ctx.body = checkResult;
+      return;
+    }
+    const { userInfo, existingAds } = checkResult;
+    if (existingAds.status === AdsService.AdsStatus.Approved) {
+      ctx.body = {
+        success: false,
+        message: "This ads is already approved."
+      };
+      return;
+    }
+    if (existingAds.status !== AdsService.AdsStatus.Pending) {
+      ctx.body = {
+        success: false,
+        message: "This ads is not in pending."
+      };
       return;
     }
 
@@ -84,7 +114,7 @@ export const approveAds = async (ctx, next) => {
 };
 
 const checkUserRole = (username, ads_id?): Promise<any> => new Promise(async (resolve, reject) => {
-  const { userService } = ServicesContext.getInstance();
+  const { adsService, userService } = ServicesContext.getInstance();
   const RowDataPacket = await userService.getUserInfoByUsername(username);
   if (RowDataPacket.length <= 0) {
     resolve({
@@ -101,7 +131,24 @@ const checkUserRole = (username, ads_id?): Promise<any> => new Promise(async (re
     });
     return;
   }
+  if (ads_id === undefined) {
+    resolve({
+      success: true,
+      userInfo
+    });
+    return;
+  }
+  const existingAds = await adsService.findAdsById(ads_id);
+  if (existingAds.length == 0) {
+    resolve({
+      success: false,
+      message: "Ads doesn't exist"
+    });
+    return;
+  }
   resolve({
     success: true,
+    userInfo,
+    existingAds: existingAds[0]
   });
 });

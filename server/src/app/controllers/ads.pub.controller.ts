@@ -2,7 +2,7 @@ import * as mime from "mime-types";
 import * as moment from "moment";
 import * as aws from "../utils/aws";
 import { ServicesContext } from "../context";
-import { UserService } from "../services";
+import { UserService, AdsService } from "../services";
 
 export const registerAds = async (ctx, next) => {
   try {
@@ -212,6 +212,20 @@ export const requestAds = async (ctx, next) => {
     }
 
     const { userInfo, existingAds } = checkResult;
+    if (existingAds.status === AdsService.AdsStatus.Pending) {
+      ctx.body = {
+        success: false,
+        message: "This ads is already in pending."
+      };
+      return;
+    }
+    if (existingAds.status === AdsService.AdsStatus.Approved) {
+      ctx.body = {
+        success: false,
+        message: "This ads is already approved."
+      };
+      return;
+    }
     await adsService.requestAds(id, userInfo.user_id, impressions);
     const updatedAds = await adsService.findAdsById(id);
     ctx.body = {
@@ -240,6 +254,13 @@ export const cancelAds = async (ctx, next) => {
     }
 
     const { userInfo, existingAds } = checkResult;
+    if (existingAds.status !== AdsService.AdsStatus.Pending) {
+      ctx.body = {
+        success: false,
+        message: "This ads is not in pending."
+      };
+    }
+
     await adsService.cancelAds(id, userInfo.user_id);
     const updatedAds = await adsService.findAdsById(id);
     ctx.body = {
