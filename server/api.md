@@ -248,7 +248,7 @@
 ### /ads/:username/:id/request (POST)
   Request Ads for review
 
-  ***Request Body (Form-Data)***
+  ***Request Body***
   | Fields      | Description              |
   | ----------- | ------------------------ |
   | impressions | Impressions for campaign |
@@ -325,7 +325,7 @@
 ### /ads/mod/:username/reject (POST)
   Reject requested ads.
 
-  ***Request Body (Form-Data)***
+  ***Request Body***
   | Fields | Description         |
   | ------ | ------------------- |
   | adsId  | Id of ads to reject |
@@ -352,7 +352,7 @@
 ### /ads/mod/:username/approve (POST)
   Approve requested ads.
 
-  ***Request Body (Form-Data)***
+  ***Request Body***
   | Fields | Description          |
   | ------ | -------------------- |
   | adsId  | Id of ads to approve |
