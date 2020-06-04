@@ -325,6 +325,10 @@
 ### /ads/mod/:username/reject (POST)
   Reject requested ads.
 
+  ***Request Body (Form-Data)***
+  | Fields | Description         |
+  | ------ | ------------------- |
+  | adsId  | Id of ads to reject |
   ***Response***
   ```
   {
@@ -348,6 +352,10 @@
 ### /ads/mod/:username/approve (POST)
   Approve requested ads.
 
+  ***Request Body (Form-Data)***
+  | Fields | Description          |
+  | ------ | -------------------- |
+  | adsId  | Id of ads to approve |
   ***Response***
   ```
   {
