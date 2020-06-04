@@ -3,6 +3,14 @@ import configs from "@configs";
 import { isNullOrUndefined } from "util";
 
 export class UserService {
+
+  public static readonly Role = {
+    OWNER: "OWNER",
+    MODERATOR: "MODERATOR",
+    FREE: "FREE",
+    UPGRADED_USER: "UPGRADED",
+  };
+
   // Fuzzy matching users
   fuzzyMatchUsers(link) {
     const _sql = `
@@ -13,7 +21,7 @@ export class UserService {
 
   // Register User
   insertUser(value) {
-    const _sql = "insert into user_info(name,email,username,password,sponsor,userid) values(?,?,?,?,?,?);";
+    const _sql = "insert into user_info(name,email,username,password,sponsor,refcode) values(?,?,?,?,?,?);";
     return query(_sql, value);
   }
 
@@ -32,9 +40,9 @@ export class UserService {
     return query(_sql, email);
   }
 
-  findUserByUserId(userid) {
-    const _sql = "SELECT * FROM user_info WHERE userid = ?;";
-    return query(_sql, userid);
+  findUserByRefcode(refcode) {
+    const _sql = "SELECT * FROM user_info WHERE refcode = ?;";
+    return query(_sql, refcode);
   }
 
   findUserByEmailOrUsername(email, username) {
@@ -42,24 +50,18 @@ export class UserService {
     return query(_sql, [email, username]);
   }
 
-  getUserId(username) {
-    const _sql = "SELECT userid FROM user_info WHERE username = ?;";
+  getRefcode(username) {
+    const _sql = "SELECT refcode FROM user_info WHERE username = ?;";
     return query(_sql, username);
   }
 
-  setUserId(username, userid) {
-    const data = [userid, username];
-    const _sql = "UPDATE user_info SET userid = ? WHERE username = ? limit 1 ; ";
-    return query(_sql, data);
-  }
-
-  getId(username) {
-    const _sql = "SELECT id FROM user_info WHERE username = ?;";
-    return query(_sql, username);
+  setRefcode(username, refcode) {
+    const _sql = "UPDATE user_info SET refcode = ? WHERE username = ? limit 1 ; ";
+    return query(_sql, [refcode, username]);
   }
 
   // Find user information by user id user_info includes user name, avatar, last login time, status, etc. excluding password
-  getUserInfo(user_id) {
+  getUserInfoById(user_id) {
     const _sql =
       "SELECT id AS user_id, username, name, avatar, intro FROM user_info WHERE user_info.id =? ";
     return query(_sql, [user_id]);
@@ -84,6 +86,11 @@ export class UserService {
   setAvatar(username, avatar) {
     const _sql = "UPDATE user_info SET avatar = ? WHERE username = ? limit 1 ; ";
     return query(_sql, [avatar, username]);
+  }
+
+  updateRole(username, role) {
+    const _sql = "UPDATE user_info SET role = ? WHERE username = ? limit 1 ; ";
+    return query(_sql, [role, username]);
   }
 
   // Check if the user id is a friend of the local user by checking the user id. If yes, return user_id and remark.

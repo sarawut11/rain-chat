@@ -4,7 +4,7 @@ export const getPrivateMsg = async ({ toUser, user_id, start = 1, count = 20 }) 
   const { userService, chatService } = ServicesContext.getInstance();
 
   const RowDataPacket1 = await chatService.getPrivateDetail(user_id, toUser, start - 1, count);
-  const RowDataPacket2 = await userService.getUserInfo(toUser);
+  const RowDataPacket2 = await userService.getUserInfoById(toUser);
   const messages = JSON.parse(JSON.stringify(RowDataPacket1));
   const userInfo = JSON.parse(JSON.stringify(RowDataPacket2));
   return {

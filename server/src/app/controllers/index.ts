@@ -5,4 +5,5 @@ export * from "./login.controller";
 export * from "./register.controller";
 export * from "./referral.controller";
 export * from "./user.controller";
-export * from "./ads.controller";
+export * from "./ads.pub.controller";
+export * from "./ads.mod.controller";

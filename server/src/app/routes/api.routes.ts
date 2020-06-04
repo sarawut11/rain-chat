@@ -20,4 +20,9 @@ export const apiRoutes = new Router()
   .get("/ads/:username/:id", APIController.getAds)
   .put("/ads/:username/:id", APIController.updateAds)
   .delete("/ads/:username/:id", APIController.deleteAds)
-  .post("/ads/:username/:id/request", APIController.requestAds);
+  .post("/ads/:username/:id/request", APIController.requestAds)
+  .post("/ads/:username/:id/cancel", APIController.cancelAds)
+
+  .get("/ads/mod/:username/all", APIController.getAllAds)
+  .post("/ads/mod/:username/reject", APIController.rejectAds)
+  .post("/ads/mod/:username/approve", APIController.approveAds);

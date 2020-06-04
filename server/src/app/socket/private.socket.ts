@@ -60,7 +60,7 @@ export const addAsTheContact = async (io, socket, data, cbFn) => {
     const { userService } = ServicesContext.getInstance();
     const time = Date.now() / 1000;
     await userService.addFriendEachOther(user_id, from_user, time);
-    const userInfo = await userService.getUserInfo(from_user);
+    const userInfo = await userService.getUserInfoById(from_user);
     console.log("addAsTheContact data=>", data, "time=>", new Date().toLocaleString());
     cbFn(userInfo[0]);
   } catch (error) {
@@ -72,7 +72,7 @@ export const addAsTheContact = async (io, socket, data, cbFn) => {
 export const getUserInfo = async (io, socket, user_id, cbFn) => {
   try {
     const { userService } = ServicesContext.getInstance();
-    const userInfo = await userService.getUserInfo(user_id);
+    const userInfo = await userService.getUserInfoById(user_id);
     console.log("getUserInfo user_id=>", user_id, "time=>", new Date().toLocaleString());
     cbFn(userInfo[0]);
   } catch (error) {

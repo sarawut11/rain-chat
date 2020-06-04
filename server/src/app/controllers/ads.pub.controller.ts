@@ -2,6 +2,7 @@ import * as mime from "mime-types";
 import * as moment from "moment";
 import * as aws from "../utils/aws";
 import { ServicesContext } from "../context";
+import { UserService } from "../services";
 
 export const registerAds = async (ctx, next) => {
   try {
@@ -38,7 +39,7 @@ export const registerAds = async (ctx, next) => {
     });
 
     // Register DB
-    const ads = {
+    const res = await adsService.insertAds({
       user_id: userInfo.user_id,
       asset_link: url,
       link,
@@ -46,16 +47,12 @@ export const registerAds = async (ctx, next) => {
       title,
       description,
       time: moment().utc().unix()
-    };
-    const res = await adsService.insertAds(ads);
-
+    });
+    const insertAds = await adsService.findAdsById(res.insertId);
     ctx.body = {
       success: true,
       message: "Successfully Created.",
-      ads: {
-        id: res.insertId,
-        ...ads,
-      }
+      ads: insertAds[0]
     };
   } catch (error) {
     console.error(error.message);
@@ -97,51 +94,22 @@ export const getAdsByUsername = async (ctx, next) => {
   }
 };
 
-export const getAllAds = async (ctx, next) => {
-  try {
-    const { adsService } = ServicesContext.getInstance();
-    const result = await adsService.findAllAds();
-    ctx.body = {
-      success: true,
-      message: "Success",
-      ads: result
-    };
-  } catch (error) {
-    console.error(error.message);
-    ctx.body = {
-      success: false,
-      message: "Failed"
-    };
-  }
-};
-
 export const getAds = async (ctx, next) => {
   try {
     const { username, id } = ctx.params;
-    const { adsService, userService } = ServicesContext.getInstance();
 
-    const RowDataPacket = await adsService.findAdsById(id);
-    if (RowDataPacket.length == 0) {
-      ctx.body = {
-        success: false,
-        message: "Ads doesn't exist"
-      };
+    const checkResult = await checkAdsId(username, id);
+    if (checkResult.success === false) {
+      ctx.body = checkResult;
       return;
     }
-    const ads = RowDataPacket[0];
-    const userInfo = (await userService.getUserInfoByUsername(username))[0];
-    console.log(ads.user_id, userInfo.user_id);
-    if (ads.user_id !== userInfo.user_id) {
-      ctx.body = {
-        success: false,
-        message: "This ads belongs to another user"
-      };
-      return;
-    }
+
+    const { userInfo, existingAds } = checkResult;
+
     ctx.body = {
       success: true,
       message: "Success",
-      ads
+      ads: existingAds,
     };
   } catch (error) {
     console.error(error.message);
@@ -159,23 +127,13 @@ export const updateAds = async (ctx, next) => {
     const { link, buttonName, title, description } = ctx.request.body;
     const { adsService, userService } = ServicesContext.getInstance();
 
-    const RowDataPacket = await adsService.findAdsById(id);
-    if (RowDataPacket.length == 0) {
-      ctx.body = {
-        success: false,
-        message: "Ads doesn't exist"
-      };
+    const checkResult = await checkAdsId(username, id);
+    if (checkResult.success === false) {
+      ctx.body = checkResult;
       return;
     }
-    const existingAds = RowDataPacket[0];
-    const userInfo = (await userService.getUserInfoByUsername(username))[0];
-    if (existingAds.user_id !== userInfo.user_id) {
-      ctx.body = {
-        success: false,
-        message: "This ads belongs to another user"
-      };
-      return;
-    }
+
+    const { userInfo, existingAds } = checkResult;
 
     // Delete existing asset and upload new asset
     let asset_link: string;
@@ -188,7 +146,7 @@ export const updateAds = async (ctx, next) => {
       });
       asset_link = url;
     } else {
-      asset_link = undefined;
+      asset_link = existingAds.asset_link;
     }
 
     // Register DB
@@ -199,9 +157,11 @@ export const updateAds = async (ctx, next) => {
       title,
       description
     });
+    const updatedAds = await adsService.findAdsById(id);
     ctx.body = {
       success: true,
-      message: "Successfully Updated."
+      message: "Successfully Updated.",
+      ads: updatedAds[0],
     };
   } catch (error) {
     console.error(error.message);
@@ -215,26 +175,15 @@ export const updateAds = async (ctx, next) => {
 export const deleteAds = async (ctx, next) => {
   try {
     const { username, id } = ctx.params;
-    const { adsService, userService } = ServicesContext.getInstance();
+    const { adsService } = ServicesContext.getInstance();
 
-    const RowDataPacket = await adsService.findAdsById(id);
-    if (RowDataPacket.length == 0) {
-      ctx.body = {
-        success: false,
-        message: "Ads doesn't exist"
-      };
-      return;
-    }
-    const existingAds = RowDataPacket[0];
-    const userInfo = (await userService.getUserInfoByUsername(username))[0];
-    if (existingAds.user_id !== userInfo.user_id) {
-      ctx.body = {
-        success: false,
-        message: "This ads belongs to another user"
-      };
+    const checkResult = await checkAdsId(username, id);
+    if (checkResult.success === false) {
+      ctx.body = checkResult;
       return;
     }
 
+    const { userInfo, existingAds } = checkResult;
     await aws.deleteFile(existingAds.asset_link);
     await adsService.deleteAds(id);
     ctx.body = {
@@ -254,30 +203,21 @@ export const requestAds = async (ctx, next) => {
   try {
     const { username, id } = ctx.params;
     const { impressions } = ctx.request.body;
-    const { adsService, userService } = ServicesContext.getInstance();
+    const { adsService } = ServicesContext.getInstance();
 
-    const RowDataPacket = await adsService.findAdsById(id);
-    if (RowDataPacket.length == 0) {
-      ctx.body = {
-        success: false,
-        message: "Ads doesn't exist"
-      };
-      return;
-    }
-    const existingAds = RowDataPacket[0];
-    const userInfo = (await userService.getUserInfoByUsername(username))[0];
-    if (existingAds.user_id !== userInfo.user_id) {
-      ctx.body = {
-        success: false,
-        message: "This ads belongs to another user"
-      };
+    const checkResult = await checkAdsId(username, id);
+    if (checkResult.success === false) {
+      ctx.body = checkResult;
       return;
     }
 
+    const { userInfo, existingAds } = checkResult;
     await adsService.requestAds(id, userInfo.user_id, impressions);
+    const updatedAds = await adsService.findAdsById(id);
     ctx.body = {
       success: true,
-      message: "Successfully requested"
+      message: "Successfully requested",
+      ads: updatedAds[0],
     };
   } catch (error) {
     console.error(error.message);
@@ -287,6 +227,60 @@ export const requestAds = async (ctx, next) => {
     };
   }
 };
+
+export const cancelAds = async (ctx, next) => {
+  try {
+    const { username, id } = ctx.params;
+    const { adsService } = ServicesContext.getInstance();
+
+    const checkResult = await checkAdsId(username, id);
+    if (checkResult.success === false) {
+      ctx.body = checkResult;
+      return;
+    }
+
+    const { userInfo, existingAds } = checkResult;
+    await adsService.cancelAds(id, userInfo.user_id);
+    const updatedAds = await adsService.findAdsById(id);
+    ctx.body = {
+      success: true,
+      message: "Successfully canceled.",
+      ads: updatedAds[0]
+    };
+  } catch (error) {
+    console.error(error.message);
+    ctx.body = {
+      success: false,
+      message: "Failed"
+    };
+  }
+};
+
+const checkAdsId = (username, ads_id): Promise<any> => new Promise(async (resolve, reject) => {
+  const { adsService, userService } = ServicesContext.getInstance();
+  const RowDataPacket = await adsService.findAdsById(ads_id);
+  if (RowDataPacket.length == 0) {
+    resolve({
+      success: false,
+      message: "Ads doesn't exist"
+    });
+    return;
+  }
+  const existingAds = RowDataPacket[0];
+  const userInfo = (await userService.getUserInfoByUsername(username))[0];
+  if (existingAds.user_id !== userInfo.user_id) {
+    resolve({
+      success: false,
+      message: "This ads belongs to another user"
+    });
+    return;
+  }
+  resolve({
+    success: true,
+    userInfo,
+    existingAds,
+  });
+});
 
 const generateFileName = (username, fileType) => {
   return `ads/ads-${username}-${moment().utc().unix()}.${mime.extension(fileType)}`;

@@ -3,10 +3,11 @@ import configs from "@configs";
 import { isNullOrUndefined } from "util";
 
 export class AdsService {
-  public AdsStatus = {
+  public static readonly AdsStatus = {
     Created: 0,
     Pending: 1,
     Approved: 2,
+    Rejected: 3,
   };
 
   insertAds({ user_id, asset_link, link, button_name, title, description, time }) {
@@ -42,7 +43,22 @@ export class AdsService {
 
   requestAds(ads_id, user_id, impressions) {
     const _sql = "UPDATE ads_info SET impressions = ?, status = ? WHERE id = ? and user_id = ?;";
-    return query(_sql, [impressions, this.AdsStatus.Pending, ads_id, user_id]);
+    return query(_sql, [impressions, AdsService.AdsStatus.Pending, ads_id, user_id]);
+  }
+
+  cancelAds(ads_id, user_id) {
+    const _sql = "UPDATE ads_info SET status = ? WHERE id = ? and user_id = ?;";
+    return query(_sql, [AdsService.AdsStatus.Pending, ads_id, user_id]);
+  }
+
+  approveAds(ads_id) {
+    const _sql = "UPDATE ads_info SET status = ? WHERE id = ?;";
+    return query(_sql, [AdsService.AdsStatus.Approved, ads_id]);
+  }
+
+  rejectAds(ads_id) {
+    const _sql = "UPDATE ads_info SET status = ? WHERE id = ?;";
+    return query(_sql, [AdsService.AdsStatus.Rejected, ads_id]);
   }
 
   findAdsByUserId(user_id) {
@@ -57,12 +73,12 @@ export class AdsService {
 
   findApprovedAds() {
     const _sql = "SELECT * FROM ads_info WHERE status = ?;";
-    return query(_sql, [this.AdsStatus.Approved]);
+    return query(_sql, [AdsService.AdsStatus.Approved]);
   }
 
   findAdsToRain() {
     const _sql = "SELECT * FROM ads_info WHERE status = ? and impressions > 0 ORDER BY last_time ASC LIMIT 1;";
-    return query(_sql, [this.AdsStatus.Approved]);
+    return query(_sql, [AdsService.AdsStatus.Approved]);
   }
 
   rainAds(id, impression, last_time) {
