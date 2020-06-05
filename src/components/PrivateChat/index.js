@@ -47,7 +47,7 @@ export default class PrivateChat extends Component {
       // time: Date.parse(new Date()) / 1000 //
     };
     this._sendByMe = true;
-    const response = await request.socketEmitAndGetResponse('sendPrivateMsg', data, error => {
+    const response = await request.socketEmitAndGetResponse('sendPrivateMsg', data, () => {
       notification('Message failed to send', 'error', 2);
     });
     addPrivateChatMessages({
@@ -71,7 +71,7 @@ export default class PrivateChat extends Component {
     const data = await request.socketEmitAndGetResponse(
       'addAsTheContact',
       { user_id: this._userInfo.user_id, from_user: this.friendId },
-      error => {
+      () => {
         notification('Add failed! ', 'error', 1.5);
         this.setState({ disableJoinButton: false });
       },

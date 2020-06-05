@@ -85,7 +85,7 @@ class Avatar extends React.Component {
   };
 
   render() {
-    const { asset, uploadText } = this.props;
+    const { uploadText } = this.props;
     const { fileList } = this.props;
     return (
       <Dragger

@@ -11,6 +11,7 @@ import {
   addGroupMessageAndInfoAction,
   setAllGroupChatsAction,
 } from '../../containers/GroupChatPage/groupChatAction';
+import { setAdsAction } from '../../containers/AdsPage/adsAction';
 import {
   addPrivateChatMessagesAction,
   addPrivateChatMessageAndInfoAction,
@@ -157,9 +158,11 @@ class InitApp {
     window.socket.on('initSocketSuccess', allMessage => {
       const privateChat = new Map(allMessage.privateChat);
       const groupChat = new Map(allMessage.groupChat);
+      const { adsList } = allMessage;
       store.dispatch(setHomePageListAction(allMessage.homePageList));
       store.dispatch(setAllPrivateChatsAction({ data: privateChat }));
       store.dispatch(setAllGroupChatsAction({ data: groupChat }));
+      store.dispatch(setAdsAction({ data: adsList }));
       console.log('initMessage success. ', 'time=>', new Date().toLocaleString());
     });
     window.socket.on('initSocket', (socketId, fn) => {

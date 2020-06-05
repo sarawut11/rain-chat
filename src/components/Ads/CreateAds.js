@@ -35,7 +35,7 @@ export default class CreateAds extends Component {
 
   handleOk = async () => {
     const { editMode } = this.props;
-    const { id, asset, asset_link, link, button_name, title, description } = this.state;
+    const { id, asset, link, button_name, title, description } = this.state;
     const user_info = JSON.parse(localStorage.getItem('userInfo'));
     const { username } = user_info;
 

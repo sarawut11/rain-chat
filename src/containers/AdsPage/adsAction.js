@@ -67,7 +67,7 @@ const editAdsAction = ads => {
   const { adsState } = ads;
   const adsList = [...adsState.adsList];
   adsList.forEach((item, index) => {
-    if (item.id == ads.ads.id) {
+    if (item.id === ads.ads.id) {
       adsList[index] = { ...ads.ads };
     }
   });
@@ -103,7 +103,7 @@ const deleteAdsAction = ads => {
   let adsList = [...adsState.adsList];
   let deletedIndex = adsList.length;
   adsList.forEach((item, index) => {
-    if (item.id == id) {
+    if (item.id === id) {
       deletedIndex = index;
     }
   });
@@ -145,7 +145,7 @@ const requestAdsAction = ads => {
   const { id, status, adsState } = ads;
   const adsList = [...adsState.adsList];
   adsList.forEach((item, index) => {
-    if (item.id == id) {
+    if (item.id === id) {
       adsList[index].status = status;
     }
   });

@@ -64,7 +64,6 @@ function RightView(props) {
 
   return (
     <div className={RightViewClassName}>
-      <Route path="/robot_chat" component={loadable(() => import('../containers/RobotPage'))} />
       <Route
         path="/group_chat/:to_group_id"
         component={loadable(() => import('../containers/GroupChatPage'))}

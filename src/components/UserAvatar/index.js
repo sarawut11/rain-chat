@@ -28,7 +28,6 @@ export default function UserAvatar(props) {
   const {
     src,
     name,
-    username,
     isGray,
     color,
     colors = defaultColors,
@@ -93,7 +92,6 @@ export default function UserAvatar(props) {
 UserAvatar.propTypes = {
   src: PropTypes.string,
   name: PropTypes.string,
-  username: PropTypes.string,
   isGray: PropTypes.bool,
   color: PropTypes.string,
   colors: PropTypes.array,
@@ -107,7 +105,6 @@ UserAvatar.propTypes = {
 UserAvatar.defaultProps = {
   src: undefined,
   name: '?',
-  username: '?',
   isGray: false,
   color: undefined,
   colors: defaultColors,

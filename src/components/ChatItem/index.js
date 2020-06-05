@@ -24,7 +24,7 @@ class ChatItem extends Component {
   }
 
   sharePersonalCard = shareObj => {
-    const { name, avatar, user_id } = shareObj;
+    const { name, user_id } = shareObj;
     const redirectUrl = `/private_chat/${user_id}`;
     return (
       <div
@@ -94,7 +94,7 @@ class ChatItem extends Component {
               // eslint-disable-next-line no-useless-escape
               Rule: /(?:\:[^\:]+\:(?:\:skin-tone-(?:\d)\:)?)/gi,
             },
-            (Rule, ruleNumber) => (
+            Rule => (
               <Emoji
                 className="msg-render"
                 emoji={Rule}
@@ -140,7 +140,7 @@ class ChatItem extends Component {
     });
 
   render() {
-    const { me, img, time, name, username, msg, clickAvatar } = this.props;
+    const { me, img, time, name, msg, clickAvatar } = this.props;
     let attachments = this.props.attachments;
     if (typeof attachments === 'string') {
       attachments = JSON.parse(attachments);
@@ -180,7 +180,6 @@ ChatItem.propTypes = {
   me: PropTypes.bool,
   img: PropTypes.string,
   name: PropTypes.string,
-  username: PropTypes.string,
   time: PropTypes.string,
   msg: PropTypes.string,
   attachments: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
@@ -193,7 +192,6 @@ ChatItem.defaultProps = {
   me: undefined,
   img: undefined,
   name: '',
-  username: '',
   time: undefined,
   clickAvatar: undefined,
   msg: '',
