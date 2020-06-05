@@ -3,15 +3,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import classnames from 'classnames';
 import { Form, Input, Button, Row, notification as antNotification } from 'antd';
 import ModalBase from '../ModalBase';
-import UserAvatar from '../UserAvatar';
 import './styles.scss';
-import notification from '../Notification';
 import Request from '../../utils/request';
 import AvatarUpload from '../AvatarUpload';
-import { imageInfo } from 'qiniu-js';
 
 class userInfoRender extends Component {
   state = {
