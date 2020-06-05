@@ -24,7 +24,7 @@ export class RainContext {
     // | | hour
     // | minute
     // second ( optional )
-    let abc = 123
+    let abc = 123;
     const rainTimeInterval = configs.rain.rain_time_interval / 1000;
     RainContext.rainJob = new CronJob(`*/${rainTimeInterval} * * * * *`, async () => {
       try {
