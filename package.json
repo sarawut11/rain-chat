@@ -8,7 +8,7 @@
     "start": "webpack-dev-server --config webpack.dev.config.js --color  --hot",
     "build": "webpack --config webpack.dev.config.js",
     "build:prod": "webpack --config webpack.prod.config.js",
-    "eslint": "eslint src",
+    "lint": "eslint src",
     "prettier": "prettier --write \"**/*.{js,json,md,scss}\"",
     "lint-staged": "lint-staged"
   },
@@ -34,6 +34,12 @@
     ],
     "src/**/*.{js,jsx}": [
       "eslint"
+    ],
+    "server/src/**/*.{ts,tsx}": [
+      "tslint -c server/tslint.json"
+    ],
+    "server/init/**/*.{ts,tsx}": [
+      "tslint -c server/tslint.json"
     ]
   },
   "devDependencies": {
@@ -76,6 +82,7 @@
     "style-loader": "^0.21.0",
     "terser-webpack-plugin": "^2.3.5",
     "tslint": "^6.1.2",
+    "typescript": "^3.9.5",
     "url-loader": "^1.1.2",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10",
