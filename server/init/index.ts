@@ -22,7 +22,7 @@ const sqlContentMap = getSqlContentMap();
 const initDB = async () => {
   // Initialize DB Tables
   console.log("Initializing DB Tables");
-  for (const key in sqlContentMap) {
+  for (const key of Object.keys(sqlContentMap)) {
     const sqlShell = sqlContentMap[key];
     const sqlShellList = sqlShell.split(";");
 

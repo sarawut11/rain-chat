@@ -7,7 +7,7 @@ import { UserService, AdsService } from "../services";
 export const registerAds = async (ctx, next) => {
   try {
     const { username } = ctx.params;
-    const { link, buttonName, title, description } = ctx.request.body;
+    const { link, button_name: buttonName, title, description } = ctx.request.body;
     const asset = ctx.request.files.asset;
     const { userService, adsService } = ServicesContext.getInstance();
 
@@ -33,7 +33,7 @@ export const registerAds = async (ctx, next) => {
     // Upload Asset
     const fileName = generateFileName(username, asset.type);
     const { url } = await aws.uploadFile({
-      fileName: fileName,
+      fileName,
       filePath: asset.path,
       fileType: asset.type,
     });
@@ -124,7 +124,7 @@ export const updateAds = async (ctx, next) => {
   try {
     const { username, id } = ctx.params;
     const asset = ctx.request.files.asset;
-    const { link, buttonName, title, description } = ctx.request.body;
+    const { link, button_name: buttonName, title, description } = ctx.request.body;
     const { adsService, userService } = ServicesContext.getInstance();
 
     const checkResult = await checkAdsId(username, id);
@@ -136,7 +136,7 @@ export const updateAds = async (ctx, next) => {
     const { userInfo, existingAds } = checkResult;
 
     // Delete existing asset and upload new asset
-    let asset_link: string;
+    let assetLink: string;
     if (asset !== undefined) {
       await aws.deleteFile(existingAds.asset_link);
       const { url } = await aws.uploadFile({
@@ -144,14 +144,14 @@ export const updateAds = async (ctx, next) => {
         filePath: asset.path,
         fileType: asset.type,
       });
-      asset_link = url;
+      assetLink = url;
     } else {
-      asset_link = existingAds.asset_link;
+      assetLink = existingAds.asset_link;
     }
 
     // Register DB
     await adsService.updateAds(id, userInfo.user_id, {
-      asset_link,
+      asset_link: assetLink,
       link,
       button_name: buttonName,
       title,
@@ -277,10 +277,10 @@ export const cancelAds = async (ctx, next) => {
   }
 };
 
-const checkAdsId = (username, ads_id): Promise<any> => new Promise(async (resolve, reject) => {
+const checkAdsId = (username, adsId): Promise<any> => new Promise(async (resolve, reject) => {
   const { adsService, userService } = ServicesContext.getInstance();
-  const RowDataPacket = await adsService.findAdsById(ads_id);
-  if (RowDataPacket.length == 0) {
+  const RowDataPacket = await adsService.findAdsById(adsId);
+  if (RowDataPacket.length === 0) {
     resolve({
       success: false,
       message: "Ads doesn't exist"

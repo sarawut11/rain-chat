@@ -117,10 +117,10 @@ const isModerator = (username): Promise<any> => new Promise(async (resolve, reje
   });
 });
 
-const checkAdsStatus = (ads_id): Promise<any> => new Promise(async (resolve, reject) => {
+const checkAdsStatus = (adsId): Promise<any> => new Promise(async (resolve, reject) => {
   const { adsService } = ServicesContext.getInstance();
-  const RowDataPacket = await adsService.findAdsById(ads_id);
-  if (RowDataPacket.length == 0) {
+  const RowDataPacket = await adsService.findAdsById(adsId);
+  if (RowDataPacket.length === 0) {
     resolve({
       success: false,
       message: "Ads doesn't exist"
