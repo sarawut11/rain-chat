@@ -55,15 +55,15 @@ export const getOneGroupItem = async (io, socket, data, cbfn) => {
 export const createGroup = async (io, socket, data, cbfn) => {
   try {
     const { groupService } = ServicesContext.getInstance();
-    const to_group_id = uuid();
+    const toGroupId = uuid();
     data.create_time = Date.parse(new Date().toString()) / 1000;
     const { name, group_notice, creator_id, create_time } = data;
-    const arr = [to_group_id, name, group_notice, creator_id, create_time];
+    const arr = [toGroupId, name, group_notice, creator_id, create_time];
     await groupService.createGroup(arr);
-    await groupService.joinGroup(creator_id, to_group_id);
-    socket.join(to_group_id);
+    await groupService.joinGroup(creator_id, toGroupId);
+    socket.join(toGroupId);
     console.log("createGroup data=>", data, "time=>", new Date().toLocaleString());
-    cbfn({ to_group_id, ...data });
+    cbfn({ to_group_id: toGroupId, ...data });
   } catch (error) {
     console.log("error", error.message);
     io.to(socket.id).emit("error", { code: 500, message: error.message });

@@ -60,12 +60,14 @@ export class Server {
   }
 
   private static onError(server: http.Server, error: Error): void {
-    if (error["syscall"] !== "listen") {
+    const keySysCall = "syscall";
+    const code = "code";
+    if (error[keySysCall] !== "listen") {
       throw error;
     }
     const addr = server.address();
     // handle specific listen errors with friendly messages
-    switch (error["code"]) {
+    switch (error[code]) {
       case "EACCES":
         log.error(`${this.bind(addr)} requires elevated privileges`);
         process.exit(1);

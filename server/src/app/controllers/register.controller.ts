@@ -23,8 +23,8 @@ export const registerController = async (ctx, next) => {
     return;
   }
   // Check Referral Username
-  const sponsor_result = await userService.findUserByRefcode(sponsor);
-  if (!sponsor_result.length) {
+  const sponsorResult = await userService.findUserByRefcode(sponsor);
+  if (!sponsorResult.length) {
     ctx.body = {
       success: false,
       message: "Referral username is invalid",
@@ -40,7 +40,7 @@ export const registerController = async (ctx, next) => {
   } else {
     try {
       // Register DB
-      await userService.insertUser([name, email, username, md5(password), sponsor_result[0].id, uniqid()]);
+      await userService.insertUser([name, email, username, md5(password), sponsorResult[0].id, uniqid()]);
       // Join Rain Group & Broadcast
       const userInfo = (await userService.getUserInfoByUsername(username))[0];
       await groupService.joinGroup(userInfo.user_id, configs.rain.group_id);

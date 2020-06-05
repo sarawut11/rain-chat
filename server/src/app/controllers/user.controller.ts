@@ -39,22 +39,22 @@ export const updateProfileInfo = async (ctx, next) => {
     const { userService } = ServicesContext.getInstance();
 
     const fileName = `avatar/avatar-${username}`;
-    let avatar_url: string;
+    let avatarUrl: string;
     if (avatar !== undefined) {
       const { url } = await aws.uploadFile({
-        fileName: fileName,
+        fileName,
         filePath: avatar.path,
         fileType: avatar.type,
       });
-      avatar_url = url;
+      avatarUrl = url;
     } else {
-      avatar_url = undefined;
+      avatarUrl = undefined;
     }
 
-    await userService.setUserInfo(username, { name, intro, avatar: avatar_url });
+    await userService.setUserInfo(username, { name, intro, avatar: avatarUrl });
     const userInfo = {
       username,
-      avatar: avatar_url,
+      avatar: avatarUrl,
       name,
       intro,
     };
