@@ -1,4 +1,5 @@
 {
+  "extends": "tslint:recommended",
   "rules": {
     "class-name": true,
     "comment-format": [true, "check-space"],
@@ -37,6 +38,8 @@
     "no-trailing-whitespace": true,
     "no-null-keyword": true,
     "prefer-const": true,
-    "jsdoc-format": true
+    "jsdoc-format": true,
+    "no-console": false,
+    "no-shadowed-variable": false
   }
 }
