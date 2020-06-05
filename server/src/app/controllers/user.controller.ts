@@ -8,7 +8,7 @@ export const getProfileInfo = async (ctx, next) => {
 
   const res = await userService.findUserByUsername(username);
   if (res.length > 0) {
-    const { id, username, name, email, balance, intro, avatar, socketId, userid } = res[0];
+    const { id, username, name, email, balance, intro, avatar, socketId, refcode } = res[0];
     ctx.body = {
       success: true,
       userInfo: {
@@ -20,7 +20,7 @@ export const getProfileInfo = async (ctx, next) => {
         intro,
         avatar,
         socketId,
-        referral: userid
+        referral: refcode
       },
     };
   } else {
