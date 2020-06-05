@@ -1,18 +1,25 @@
 import { query } from "../utils/db";
 import configs from "@configs";
+import { isNullOrUndefined } from "util";
 
 export class UserService {
+
+  public static readonly Role = {
+    OWNER: "OWNER",
+    MODERATOR: "MODERATOR",
+    FREE: "FREE",
+    UPGRADED_USER: "UPGRADED",
+  };
+
   // Fuzzy matching users
   fuzzyMatchUsers(link) {
-    const _sql = `
-    SELECT * FROM user_info WHERE username LIKE ?;
-  `;
+    const _sql = "SELECT * FROM user_info WHERE username LIKE ?;";
     return query(_sql, link);
   }
 
   // Register User
   insertUser(value) {
-    const _sql = "insert into user_info(name,email,username,password,sponsor,userid) values(?,?,?,?,?,?);";
+    const _sql = "insert into user_info(name,email,username,password,sponsor,refcode) values(?,?,?,?,?,?);";
     return query(_sql, value);
   }
 
@@ -31,9 +38,9 @@ export class UserService {
     return query(_sql, email);
   }
 
-  findUserByUserId(userid) {
-    const _sql = "SELECT * FROM user_info WHERE userid = ?;";
-    return query(_sql, userid);
+  findUserByRefcode(refcode) {
+    const _sql = "SELECT * FROM user_info WHERE refcode = ?;";
+    return query(_sql, refcode);
   }
 
   findUserByEmailOrUsername(email, username) {
@@ -41,24 +48,18 @@ export class UserService {
     return query(_sql, [email, username]);
   }
 
-  getUserId(username) {
-    const _sql = "SELECT userid FROM user_info WHERE username = ?;";
+  getRefcode(username) {
+    const _sql = "SELECT refcode FROM user_info WHERE username = ?;";
     return query(_sql, username);
   }
 
-  setUserId(username, userid) {
-    const data = [userid, username];
-    const _sql = "UPDATE user_info SET userid = ? WHERE username = ? limit 1 ; ";
-    return query(_sql, data);
-  }
-
-  getId(username) {
-    const _sql = "SELECT id FROM user_info WHERE username = ?;";
-    return query(_sql, username);
+  setRefcode(username, refcode) {
+    const _sql = "UPDATE user_info SET refcode = ? WHERE username = ? limit 1 ; ";
+    return query(_sql, [refcode, username]);
   }
 
   // Find user information by user id user_info includes user name, avatar, last login time, status, etc. excluding password
-  getUserInfo(user_id) {
+  getUserInfoById(user_id) {
     const _sql =
       "SELECT id AS user_id, username, name, avatar, intro FROM user_info WHERE user_info.id =? ";
     return query(_sql, [user_id]);
@@ -71,13 +72,23 @@ export class UserService {
   }
 
   setUserInfo(username, { name, intro, avatar }) {
-    const _sql = "UPDATE user_info SET name = ?, intro = ?, avatar = ? WHERE username = ? limit 1 ; ";
-    return query(_sql, [name, intro, avatar, username]);
+    if (isNullOrUndefined(avatar)) {
+      const _sql = "UPDATE user_info SET name = ?, intro = ? WHERE username = ? limit 1 ; ";
+      return query(_sql, [name, intro, username]);
+    } else {
+      const _sql = "UPDATE user_info SET name = ?, intro = ?, avatar = ? WHERE username = ? limit 1 ; ";
+      return query(_sql, [name, intro, avatar, username]);
+    }
   }
 
   setAvatar(username, avatar) {
     const _sql = "UPDATE user_info SET avatar = ? WHERE username = ? limit 1 ; ";
     return query(_sql, [avatar, username]);
+  }
+
+  updateRole(username, role) {
+    const _sql = "UPDATE user_info SET role = ? WHERE username = ? limit 1 ; ";
+    return query(_sql, [role, username]);
   }
 
   // Check if the user id is a friend of the local user by checking the user id. If yes, return user_id and remark.
@@ -112,7 +123,7 @@ export class UserService {
     UNION
     ( SELECT i.to_group_id ,i.name , i.create_time, g.message, g.time, g.attachments
       FROM  group_info AS i INNER JOIN rain_group_msg as g on i.to_group_id = ? ORDER BY TIME DESC LIMIT 1 );`;
-    return query(_sql, [user_id, configs.rain_group_id, configs.rain_group_id]);
+    return query(_sql, [user_id, configs.rain.group_id, configs.rain.group_id]);
   }
 
   // Find homepage private chat list by user_id
@@ -128,13 +139,57 @@ export class UserService {
 
   saveUserSocketId(user_id, socketId) {
     const data = [socketId, user_id];
-    const _sql = " UPDATE  user_info SET socketid = ? WHERE id= ? limit 1 ; ";
+    const _sql = "UPDATE user_info SET socketid = ? WHERE id= ? limit 1 ; ";
     return query(_sql, data);
   }
 
   getUserSocketId(toUserId) {
-    const _sql = " SELECT socketid FROM user_info WHERE id=? limit 1 ;";
+    const _sql = "SELECT socketid FROM user_info WHERE id=? limit 1 ;";
     return query(_sql, [toUserId]);
+  }
+
+  getUserBySocketId(socketId) {
+    const _sql = "SELECT * FROM user_info WHERE socketid LIKE ? limit 1;";
+    return query(_sql, socketId);
+  }
+
+  getUsersByPopLimited() {
+    const limit = configs.rain.pop_rain_balance_limit;
+    const _sql = "SELECT * FROM user_info WHERE pop_balance >= ?;";
+    return query(_sql, limit);
+  }
+
+  getUsersByLastActivity(limit) {
+    const _sql = `
+    SELECT u.id as user_id, u.socketid
+    FROM rain_group_msg as rgm
+    JOIN user_info as u
+    ON rgm.from_user = u.id
+    ORDER BY rgm.time DESC LIMIT ?;`;
+    return query(_sql, limit);
+  }
+
+  resetPopbalance(userIds: String[]) {
+    let array = "";
+    userIds.forEach(id => array += "?,");
+    array = array.substring(0, array.length - 1);
+    const _sql = `UPDATE user_info SET pop_balance = 0 WHERE id IN (${array})`;
+    return query(_sql, userIds);
+  }
+
+  rainUser(username, reward) {
+    const _sql = "UPDATE user_info SET balance = balance + ?, pop_balance = pop_balance + ? WHERE username = ?;";
+    return query(_sql, [reward / 2, reward / 2, username]);
+  }
+
+  rainUsersBySocketId(socketIds, reward, pop_reward) {
+    let _sql = "";
+    const params = [];
+    socketIds.forEach(socketId => {
+      _sql += "UPDATE user_info SET balance = balance + ?, pop_balance = pop_balance + ? WHERE socketid LIKE ?;";
+      params.push(reward, pop_reward, socketId);
+    });
+    return query(_sql, params);
   }
 
   // Add as a friend unilaterally (may later add the function of turning on friend verification)

@@ -41,11 +41,11 @@ const initDB = async () => {
   console.log("Initializing Default Values");
   // Create Default Owner ( Admin )
   const admin = configs.default_admin;
-  let sql = "INSERT INTO user_info (id, username, password, name, role, userid) VALUES (?,?,?,?,?,?);";
+  let sql = "INSERT INTO user_info (id, username, password, name, role, refcode) VALUES (?,?,?,?,?,?);";
   await query(sql, [1, admin.username, md5(admin.password), admin.name, "OWNER", uniqid()]);
 
   // Create Vitae Rain Room
-  const rainGroupId = configs.rain_group_id;
+  const rainGroupId = configs.rain.group_id;
   sql = "INSERT INTO group_info (id,to_group_id,name,group_notice,creator_id,create_time) VALUES (?,?,?,?,?,?);";
   await query(sql, [1, rainGroupId, "Vitae Rain Room", "Vitae Rain Room", 1, moment().utc().unix()]);
 

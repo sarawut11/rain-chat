@@ -40,7 +40,7 @@
     "md5": "^2.2.1",
     "mime-types": "^2.1.27",
     "moment": "^2.26.0",
-    "mysql": "2.x",
+    "mysql": "^2.18.1",
     "qiniu": "^7.2.1",
     "request": "^2.87.0",
     "request-promise": "^4.2.2",

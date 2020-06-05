@@ -23,7 +23,7 @@ export const registerController = async (ctx, next) => {
     return;
   }
   // Check Referral Username
-  const sponsor_result = await userService.findUserByUserId(sponsor);
+  const sponsor_result = await userService.findUserByRefcode(sponsor);
   if (!sponsor_result.length) {
     ctx.body = {
       success: false,
@@ -43,11 +43,11 @@ export const registerController = async (ctx, next) => {
       await userService.insertUser([name, email, username, md5(password), sponsor_result[0].id, uniqid()]);
       // Join Rain Group & Broadcast
       const userInfo = (await userService.getUserInfoByUsername(username))[0];
-      await groupService.joinGroup(userInfo.user_id, configs.rain_group_id);
+      await groupService.joinGroup(userInfo.user_id, configs.rain.group_id);
       socketServer.broadcast("getGroupMsg", {
         ...userInfo,
         message: `${userInfo.name} joined a group chat`,
-        to_group_id: configs.rain_group_id,
+        to_group_id: configs.rain.group_id,
         tip: "joinGroup",
       }, error => console.log(error.message));
 

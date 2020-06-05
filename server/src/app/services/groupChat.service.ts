@@ -12,7 +12,7 @@ export class GroupChatService {
    */
   getGroupMsg(groupId, start, count) {
     const _sql =
-      `SELECT * FROM (SELECT g.message,g.attachments,g.time,g.from_user,g.to_group_id, i.avatar ,i.name FROM ${groupId === configs.rain_group_id ? "rain_group_msg" : "group_msg"}  As g inner join user_info AS i ON g.from_user = i.id  WHERE to_group_id = ? order by time desc limit ?,?) as n order by n.time;`;
+      `SELECT * FROM (SELECT g.message,g.attachments,g.time,g.from_user,g.to_group_id, i.avatar ,i.name FROM ${groupId === configs.rain.group_id ? "rain_group_msg" : "group_msg"}  As g inner join user_info AS i ON g.from_user = i.id  WHERE to_group_id = ? order by time desc limit ?,?) as n order by n.time;`;
     return query(_sql, [groupId, start, count]);
   }
 
@@ -51,7 +51,7 @@ export class GroupChatService {
   saveGroupMsg({ from_user, to_group_id, message, time, attachments }) {
     const data = [from_user, to_group_id, message, time, attachments];
     const _sql =
-      `INSERT INTO ${to_group_id === configs.rain_group_id ? "rain_group_msg" : "group_msg"}
+      `INSERT INTO ${to_group_id === configs.rain.group_id ? "rain_group_msg" : "group_msg"}
       (from_user,to_group_id,message ,time, attachments) VALUES(?,?,?,?,?); `;
     return query(_sql, data);
   }

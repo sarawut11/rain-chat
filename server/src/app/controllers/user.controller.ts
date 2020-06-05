@@ -39,16 +39,22 @@ export const updateProfileInfo = async (ctx, next) => {
     const { userService } = ServicesContext.getInstance();
 
     const fileName = `avatar/avatar-${username}`;
-    const { url } = await aws.uploadFile({
-      fileName: fileName,
-      filePath: avatar.path,
-      fileType: avatar.type,
-    });
+    let avatar_url: string;
+    if (avatar !== undefined) {
+      const { url } = await aws.uploadFile({
+        fileName: fileName,
+        filePath: avatar.path,
+        fileType: avatar.type,
+      });
+      avatar_url = url;
+    } else {
+      avatar_url = undefined;
+    }
 
-    await userService.setUserInfo(username, { name, intro, avatar: url });
+    await userService.setUserInfo(username, { name, intro, avatar: avatar_url });
     const userInfo = {
       username,
-      avatar: url,
+      avatar: avatar_url,
       name,
       intro,
     };
@@ -59,6 +65,7 @@ export const updateProfileInfo = async (ctx, next) => {
       userInfo,
     };
   } catch (error) {
+    console.log(error.message);
     ctx.body = {
       success: false,
       message: error.message

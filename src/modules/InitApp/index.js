@@ -171,12 +171,25 @@ class InitApp {
     });
   }
 
+  _listeningRain() {
+    window.socket.on('rainComing', () => {
+      console.log('Rain is coming soon');
+    });
+    window.socket.on('showAds', ({ ads }) => {
+      console.log('Show Ads', ads);
+    });
+    window.socket.on('getRain', ({ reward }) => {
+      console.log('Getting Reward:', reward);
+    });
+  }
+
   subscribeSocket() {
     window.socket.removeAllListeners();
     this._listeningInitMessage();
     this._listeningPrivateChatMsg();
     this._listeningGroupChatMsg();
     this._listeningBeDelete();
+    this._listeningRain();
     console.log('subscribeSocket success. ', 'time=>', new Date().toLocaleString());
   }
 
