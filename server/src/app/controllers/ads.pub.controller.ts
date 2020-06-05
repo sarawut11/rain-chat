@@ -304,5 +304,5 @@ const checkAdsId = (username, adsId): Promise<any> => new Promise(async (resolve
 });
 
 const generateFileName = (username, fileType) => {
-  return `ads/ads-${username}-${moment().utc().unix()}.${mime.extension(fileType)}`;
+  return `campaign/campaign-${username}-${moment().utc().unix()}.${mime.extension(fileType)}`;
 };
