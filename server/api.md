@@ -141,14 +141,17 @@
     success: true/false,
     message: "Success or Failed Message",
     ads: {
-      id,
-      user_id,
-      asset_link,
+      id,           // Ads Id
+      user_id,      // Advertiser's id
+      asset_link,   // Link to the ads content
+      impressions,
       link,
       button_name,
       title,
       description,
-      time,
+      status,     // 0: Created | 1: Pending | 2: Approved
+      last_time,    // Last advertised time - Unix timestamp in UTC
+      time,         // Registration Time - Unix timestamp in UTC
     }
   }
   ```
@@ -205,18 +208,31 @@
   Update ads created by username with id
 
   ***Request Body (Form-Data)***
-  | Fields      | Description                     |
-  | ----------- | ------------------------------- |
-  | asset       | Content of Ads - Image or Video |
-  | link        | Link to the Ads Product         |
-  | button_name | Name of the button to ads link  |
-  | title       | Title of Ads                    |
-  | description | Description of Ads              |
+  | Fields      | Description                                |
+  | ----------- | ------------------------------------------ |
+  | asset       | Content of Ads - Image or Video (Optional) |
+  | link        | Link to the Ads Product                    |
+  | button_name | Name of the button to ads link             |
+  | title       | Title of Ads                               |
+  | description | Description of Ads                         |
   ***Response***
   ```
   {
     success: true/false,
-    message: "Success or Failed Message"
+    message: "Success or Failed Message",
+    ads: {
+      id,           // Ads Id
+      user_id,      // Advertiser's id
+      asset_link,   // Link to the ads content
+      impressions,
+      link,
+      button_name,
+      title,
+      description,
+      status,     // 0: Created | 1: Pending | 2: Approved
+      last_time,    // Last advertised time - Unix timestamp in UTC
+      time,         // Registration Time - Unix timestamp in UTC
+    }
   }
   ```
 ### /ads/:username/:id (DELETE)
@@ -232,7 +248,7 @@
 ### /ads/:username/:id/request (POST)
   Request Ads for review
 
-  ***Request Body (Form-Data)***
+  ***Request Body***
   | Fields      | Description              |
   | ----------- | ------------------------ |
   | impressions | Impressions for campaign |
@@ -240,10 +256,126 @@
   ```
   {
     success: true/false,
-    message: "Success or Failed Message"
+    message: "Success or Failed Message",
+    ads: {
+      id,           // Ads Id
+      user_id,      // Advertiser's id
+      asset_link,   // Link to the ads content
+      impressions,
+      link,
+      button_name,
+      title,
+      description,
+      status,     // 0: Created | 1: Pending | 2: Approved
+      last_time,    // Last advertised time - Unix timestamp in UTC
+      time,         // Registration Time - Unix timestamp in UTC
+    }
   }
   ```
+### /ads/:username/:id/cancel (POST)
+  Cancel requested ads from review.
 
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    ads: {
+      id,           // Ads Id
+      user_id,      // Advertiser's id
+      asset_link,   // Link to the ads content
+      impressions,
+      link,
+      button_name,
+      title,
+      description,
+      status,     // 0: Created | 1: Pending | 2: Approved
+      last_time,    // Last advertised time - Unix timestamp in UTC
+      time,         // Registration Time - Unix timestamp in UTC
+    }
+  }
+  ```
+## 1.5 Moderator / Ads API
+### /ads/mod/:username/all (GET)
+  Get all ads
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    ads: [
+      {
+        id,           // Ads Id
+        user_id,      // Advertiser's id
+        asset_link,   // Link to the ads content
+        impressions,
+        link,
+        button_name,
+        title,
+        description,
+        status,     // 0: Created | 1: Pending | 2: Approved
+        last_time,    // Last advertised time - Unix timestamp in UTC
+        time,         // Registration Time - Unix timestamp in UTC
+      },
+      ...
+    ]
+  }
+  ```
+### /ads/mod/:username/reject (POST)
+  Reject requested ads.
+
+  ***Request Body***
+  | Fields | Description         |
+  | ------ | ------------------- |
+  | adsId  | Id of ads to reject |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    ads: {
+      id,           // Ads Id
+      user_id,      // Advertiser's id
+      asset_link,   // Link to the ads content
+      impressions,
+      link,
+      button_name,
+      title,
+      description,
+      status,     // 0: Created | 1: Pending | 2: Approved
+      last_time,    // Last advertised time - Unix timestamp in UTC
+      time,         // Registration Time - Unix timestamp in UTC
+    }
+  }
+  ```
+### /ads/mod/:username/approve (POST)
+  Approve requested ads.
+
+  ***Request Body***
+  | Fields | Description          |
+  | ------ | -------------------- |
+  | adsId  | Id of ads to approve |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    ads: {
+      id,           // Ads Id
+      user_id,      // Advertiser's id
+      asset_link,   // Link to the ads content
+      impressions,
+      link,
+      button_name,
+      title,
+      description,
+      status,     // 0: Created | 1: Pending | 2: Approved
+      last_time,    // Last advertised time - Unix timestamp in UTC
+      time,         // Registration Time - Unix timestamp in UTC
+    }
+  }
+  ```
 # 2. Socket Events
 > Note
 > - Client : Frontend (Client) -> Backend (Server)

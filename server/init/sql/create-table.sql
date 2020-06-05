@@ -21,7 +21,6 @@
 DROP TABLE IF EXISTS `user_info`;
 CREATE TABLE `user_info` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `userid` varchar(50) NOT NULL DEFAULT '',
   `username` varchar(50) NOT NULL DEFAULT 'NOT NULL',
   `password` varchar(40) DEFAULT NULL,
   `name` varchar(20) DEFAULT NULL,
@@ -33,6 +32,7 @@ CREATE TABLE `user_info` (
   `wallet_address` char(255) DEFAULT NULL,
   `balance` double DEFAULT 0,
   `pop_balance` double DEFAULT 0,
+  `refcode` varchar(50) NOT NULL DEFAULT '',
   `role` varchar(20) DEFAULT 'FREE',
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;

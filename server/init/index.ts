@@ -41,7 +41,7 @@ const initDB = async () => {
   console.log("Initializing Default Values");
   // Create Default Owner ( Admin )
   const admin = configs.default_admin;
-  let sql = "INSERT INTO user_info (id, username, password, name, role, userid) VALUES (?,?,?,?,?,?);";
+  let sql = "INSERT INTO user_info (id, username, password, name, role, refcode) VALUES (?,?,?,?,?,?);";
   await query(sql, [1, admin.username, md5(admin.password), admin.name, "OWNER", uniqid()]);
 
   // Create Vitae Rain Room

@@ -23,7 +23,7 @@ export const registerController = async (ctx, next) => {
     return;
   }
   // Check Referral Username
-  const sponsor_result = await userService.findUserByUserId(sponsor);
+  const sponsor_result = await userService.findUserByRefcode(sponsor);
   if (!sponsor_result.length) {
     ctx.body = {
       success: false,
