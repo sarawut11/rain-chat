@@ -6,9 +6,9 @@ export const getAllAds = async (ctx, next) => {
     const { username } = ctx.params;
     const { adsService } = ServicesContext.getInstance();
 
-    const checkResult = await checkUserRole(username);
-    if (checkResult.success === false) {
-      ctx.body = checkResult;
+    const checkRole = await isModerator(username);
+    if (checkRole.success === false) {
+      ctx.body = checkRole;
       return;
     }
 
@@ -33,24 +33,14 @@ export const rejectAds = async (ctx, next) => {
     const { adsId } = ctx.request.body;
     const { adsService } = ServicesContext.getInstance();
 
-    const checkResult = await checkUserRole(username, adsId);
-    if (checkResult.success === false) {
-      ctx.body = checkResult;
+    const checkRole = await isModerator(username);
+    if (checkRole.success === false) {
+      ctx.body = checkRole;
       return;
     }
-    const { userInfo, existingAds } = checkResult;
-    if (existingAds.status === AdsService.AdsStatus.Approved) {
-      ctx.body = {
-        success: false,
-        message: "This ads is already approved."
-      };
-      return;
-    }
-    if (existingAds.status !== AdsService.AdsStatus.Pending) {
-      ctx.body = {
-        success: false,
-        message: "This ads is not in pending."
-      };
+    const checkAds = await checkAdsStatus(adsId);
+    if (checkAds.success === false) {
+      ctx.body = checkAds;
       return;
     }
 
@@ -76,24 +66,14 @@ export const approveAds = async (ctx, next) => {
     const { adsId } = ctx.request.body;
     const { adsService } = ServicesContext.getInstance();
 
-    const checkResult = await checkUserRole(username, adsId);
-    if (checkResult.success === false) {
-      ctx.body = checkResult;
+    const checkRole = await isModerator(username);
+    if (checkRole.success === false) {
+      ctx.body = checkRole;
       return;
     }
-    const { userInfo, existingAds } = checkResult;
-    if (existingAds.status === AdsService.AdsStatus.Approved) {
-      ctx.body = {
-        success: false,
-        message: "This ads is already approved."
-      };
-      return;
-    }
-    if (existingAds.status !== AdsService.AdsStatus.Pending) {
-      ctx.body = {
-        success: false,
-        message: "This ads is not in pending."
-      };
+    const checkAds = await checkAdsStatus(adsId);
+    if (checkAds.success === false) {
+      ctx.body = checkAds;
       return;
     }
 
@@ -113,8 +93,8 @@ export const approveAds = async (ctx, next) => {
   }
 };
 
-const checkUserRole = (username, ads_id?): Promise<any> => new Promise(async (resolve, reject) => {
-  const { adsService, userService } = ServicesContext.getInstance();
+const isModerator = (username): Promise<any> => new Promise(async (resolve, reject) => {
+  const { userService } = ServicesContext.getInstance();
   const RowDataPacket = await userService.getUserInfoByUsername(username);
   if (RowDataPacket.length <= 0) {
     resolve({
@@ -131,24 +111,39 @@ const checkUserRole = (username, ads_id?): Promise<any> => new Promise(async (re
     });
     return;
   }
-  if (ads_id === undefined) {
-    resolve({
-      success: true,
-      userInfo
-    });
-    return;
-  }
-  const existingAds = await adsService.findAdsById(ads_id);
-  if (existingAds.length == 0) {
+  resolve({
+    success: true,
+    userInfo,
+  });
+});
+
+const checkAdsStatus = (ads_id): Promise<any> => new Promise(async (resolve, reject) => {
+  const { adsService } = ServicesContext.getInstance();
+  const RowDataPacket = await adsService.findAdsById(ads_id);
+  if (RowDataPacket.length == 0) {
     resolve({
       success: false,
       message: "Ads doesn't exist"
     });
     return;
   }
+  const existingAds = RowDataPacket[0];
+  if (existingAds.status === AdsService.AdsStatus.Approved) {
+    resolve({
+      success: false,
+      message: "This ads is already approved."
+    });
+    return;
+  }
+  if (existingAds.status !== AdsService.AdsStatus.Pending) {
+    resolve({
+      success: false,
+      message: "This ads is not in pending."
+    });
+    return;
+  }
   resolve({
     success: true,
-    userInfo,
     existingAds: existingAds[0]
   });
 });
