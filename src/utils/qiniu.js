@@ -1,9 +1,10 @@
+/* eslint-disable no-unused-vars */
 import * as qiniu from 'qiniu-js';
 
 export default async function upload(file, uploadToken, completeEvent) {
   // subscription.unsubscribe(); // Upload canceled
   const observer = {
-    next(res) {
+    next() {
       // console.log('qiniu observer next', res);
     },
     error(err) {

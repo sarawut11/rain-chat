@@ -23,8 +23,6 @@ class Tabs extends Component {
 
   render() {
     const { pathname } = this.props.location;
-    const showMessageIcon =
-      pathname === '/' || /\/group_chat|\/private_chat|\/robot_chat/.test(pathname);
     return (
       <div className="tabs-wrapper">
         <MyInfo />

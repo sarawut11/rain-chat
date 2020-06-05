@@ -48,7 +48,7 @@ class GroupChat extends Component {
       // time: Date.parse(new Date()) / 1000 // time
     };
     this._sendByMe = true;
-    const response = await request.socketEmitAndGetResponse('sendGroupMsg', data, error => {
+    const response = await request.socketEmitAndGetResponse('sendGroupMsg', data, () => {
       notification('Failed to send message', 'error', 2);
     });
     addGroupMessages({ allGroupChats, message: response, groupId: this.chatId });
@@ -62,7 +62,7 @@ class GroupChat extends Component {
     const response = await request.socketEmitAndGetResponse(
       'joinGroup',
       { userInfo: this._userInfo, toGroupId: this.chatId },
-      error => {
+      () => {
         notification('Add group failed', 'error', 1.5);
         this.setState({ disableJoinButton: false });
       },

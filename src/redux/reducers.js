@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux';
 
-import robotReducer from '../containers/RobotPage/robotReducer';
 import {
   getHomePageListReducer,
   relatedCurrentChatReducer,
@@ -13,7 +12,6 @@ import { setGlobalSettingsReducer } from '../containers/SettingPage/settingReduc
 import { setAdsReducer } from '../containers/AdsPage/adsReducer';
 
 export default combineReducers({
-  robotState: robotReducer,
   homePageListState: getHomePageListReducer,
   allGroupChatsState: fetchAllGroupChatsReducer,
   allPrivateChatsState: fetchAllPrivateChatsReducer,

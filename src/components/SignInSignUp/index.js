@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import './index.scss';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
-import Request from '../../utils/request';
 import Spinner from '../Spinner';
 import UserAvatar from '../UserAvatar';
 

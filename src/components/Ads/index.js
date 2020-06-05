@@ -231,7 +231,7 @@ class Ads extends Component {
   };
 
   render() {
-    const { user_info, createAdsVisible, editAdsVisible, editingAds } = this.state;
+    const { createAdsVisible, editAdsVisible, editingAds } = this.state;
     const { ads, createAdsAction, editAdsAction } = this.props;
 
     console.log('render', ads);
