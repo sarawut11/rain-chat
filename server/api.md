@@ -317,6 +317,12 @@
         status,     // 0: Created | 1: Pending | 2: Approved
         last_time,    // Last advertised time - Unix timestamp in UTC
         time,         // Registration Time - Unix timestamp in UTC
+        // Ads Creator's Info
+        username,
+        name,
+        email,
+        intro,
+        role,
       },
       ...
     ]
