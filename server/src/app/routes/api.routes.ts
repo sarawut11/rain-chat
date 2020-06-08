@@ -17,12 +17,12 @@ export const apiRoutes = new Router()
   // Ads
   .post("/campaign/pub/create", APIController.registerAds)
   .get("/campaign/pub/all", APIController.getAdsByUsername)
-  .get("/campaign/pub/:id", APIController.getAds)
-  .put("/campaign/pub/:id", APIController.updateAds)
-  .delete("/campaign/pub/:id", APIController.deleteAds)
-  .post("/campaign/pub/:id/request", APIController.requestAds)
-  .post("/campaign/pub/:id/cancel", APIController.cancelAds)
+  .get("/campaign/pub/:adsId", APIController.getAds)
+  .put("/campaign/pub/:adsId", APIController.updateAds)
+  .delete("/campaign/pub/:adsId", APIController.deleteAds)
+  .post("/campaign/pub/:adsId/request", APIController.requestAds)
+  .post("/campaign/pub/:adsId/cancel", APIController.cancelAds)
 
   .get("/campaign/mod/all", APIController.getAllAds)
-  .post("/campaign/mod/reject", APIController.rejectAds)
-  .put("/campaign/mod/approve", APIController.approveAds);
+  .post("/campaign/mod/:adsId/reject", APIController.rejectAds)
+  .post("/campaign/mod/:adsId/approve", APIController.approveAds);

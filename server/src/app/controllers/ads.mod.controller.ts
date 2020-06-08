@@ -3,7 +3,7 @@ import { UserService, AdsService } from "../services";
 
 export const getAllAds = async (ctx, next) => {
   try {
-    const { username } = ctx.params;
+    const { username } = ctx.state.user;
     const { adsService } = ServicesContext.getInstance();
 
     const checkRole = await isModerator(username);
@@ -29,8 +29,8 @@ export const getAllAds = async (ctx, next) => {
 
 export const rejectAds = async (ctx, next) => {
   try {
-    const { username } = ctx.params;
-    const { adsId } = ctx.request.body;
+    const { username } = ctx.state.user;
+    const { adsId } = ctx.params;
     const { adsService } = ServicesContext.getInstance();
 
     const checkRole = await isModerator(username);
@@ -62,8 +62,8 @@ export const rejectAds = async (ctx, next) => {
 
 export const approveAds = async (ctx, next) => {
   try {
-    const { username } = ctx.params;
-    const { adsId } = ctx.request.body;
+    const { username } = ctx.state.user;
+    const { adsId } = ctx.params;
     const { adsService } = ServicesContext.getInstance();
 
     const checkRole = await isModerator(username);
