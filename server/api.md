@@ -181,7 +181,7 @@
     ]
   }
   ```
-### /campaign/pub/:id (GET)
+### /campaign/pub/:adsId (GET)
   Get ads details created by username with id.
 
   ***Response***
@@ -204,7 +204,7 @@
     }
   }
   ```
-### /campaign/pub/:id (PUT)
+### /campaign/pub/:adsId (PUT)
   Update ads created by username with id
 
   ***Request Body (Form-Data)***
@@ -235,7 +235,7 @@
     }
   }
   ```
-### /campaign/pub/:id (DELETE)
+### /campaign/pub/:adsId (DELETE)
   Delete ads created by username with id
 
   ***Response***
@@ -245,7 +245,7 @@
     message: "Success or Failed Message"
   }
   ```
-### /campaign/pub/:id/request (POST)
+### /campaign/pub/:adsId/request (POST)
   Request Ads for review
 
   ***Request Body***
@@ -272,7 +272,7 @@
     }
   }
   ```
-### /campaign/pub/:id/cancel (POST)
+### /campaign/pub/:adsId/cancel (POST)
   Cancel requested ads from review.
 
   ***Response***
@@ -329,13 +329,9 @@
     ]
   }
   ```
-### /campaign/mod/reject (POST)
+### /campaign/mod/reject/:adsId (POST)
   Reject requested ads.
 
-  ***Request Body***
-  | Fields | Description         |
-  | ------ | ------------------- |
-  | adsId  | Id of ads to reject |
   ***Response***
   ```
   {
@@ -356,13 +352,9 @@
     }
   }
   ```
-### /campaign/mod/approve (POST)
+### /campaign/mod/approve/:adsId (POST)
   Approve requested ads.
 
-  ***Request Body***
-  | Fields | Description          |
-  | ------ | -------------------- |
-  | adsId  | Id of ads to approve |
   ***Response***
   ```
   {
