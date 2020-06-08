@@ -34,7 +34,10 @@ export default {
     pop_rain_last_post: 200,        // Last active 200 users
   },
   client_secret: "",
-  jwt_secret: "chat-sec",
+  token: {
+    jwt_secret: "chat-sec",
+    expireIn: 60 * 60 * 1 // One hour
+  },
   crypto_key: "VITAE-RAIN-CHAT",
   qiniu: {
     accessKey: "",

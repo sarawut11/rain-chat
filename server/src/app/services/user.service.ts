@@ -61,13 +61,13 @@ export class UserService {
   // Find user information by user id user_info includes user name, avatar, last login time, status, etc. excluding password
   getUserInfoById(userId) {
     const _sql =
-      "SELECT id AS user_id, username, name, avatar, intro FROM user_info WHERE user_info.id =? ";
+      "SELECT id AS user_id, username, name, avatar, intro, role FROM user_info WHERE user_info.id =? ";
     return query(_sql, [userId]);
   }
 
   getUserInfoByUsername(username) {
     const _sql =
-      "SELECT id AS user_id, username, name, avatar, intro FROM user_info WHERE user_info.username =? ";
+      "SELECT id AS user_id, username, name, avatar, intro, role FROM user_info WHERE user_info.username =? ";
     return query(_sql, [username]);
   }
 

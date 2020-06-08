@@ -42,8 +42,6 @@ function emitAsync(socket, emitName, data, callback) {
 const initServer = server => {
   const {
     userService,
-    chatService,
-    groupChatService,
     groupService,
   } = ServicesContext.getInstance();
 

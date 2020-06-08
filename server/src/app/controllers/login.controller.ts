@@ -20,7 +20,7 @@ export const loginController = async (ctx, next) => {
     //   After the verification is successful, the server will issue a Token, and then send the Token to the client
     if (md5(password) === res[0].password) {
       const { id, name, email, balance, username, intro, avatar, socketId, refcode, role } = res[0];
-      const token = generateToken({ id });
+      const token = generateToken({ id, username });
       ctx.body = {
         success: true,
         message: "Login Successful",

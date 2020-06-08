@@ -3,7 +3,7 @@ import { UserService, AdsService } from "../services";
 
 export const getAllAds = async (ctx, next) => {
   try {
-    const { username } = ctx.params;
+    const { username } = ctx.state.user;
     const { adsService } = ServicesContext.getInstance();
 
     const checkRole = await isModerator(username);
@@ -29,8 +29,8 @@ export const getAllAds = async (ctx, next) => {
 
 export const rejectAds = async (ctx, next) => {
   try {
-    const { username } = ctx.params;
-    const { adsId } = ctx.request.body;
+    const { username } = ctx.state.user;
+    const { adsId } = ctx.params;
     const { adsService } = ServicesContext.getInstance();
 
     const checkRole = await isModerator(username);
@@ -62,8 +62,8 @@ export const rejectAds = async (ctx, next) => {
 
 export const approveAds = async (ctx, next) => {
   try {
-    const { username } = ctx.params;
-    const { adsId } = ctx.request.body;
+    const { username } = ctx.state.user;
+    const { adsId } = ctx.params;
     const { adsService } = ServicesContext.getInstance();
 
     const checkRole = await isModerator(username);
@@ -81,7 +81,7 @@ export const approveAds = async (ctx, next) => {
     const ads = await adsService.findAdsById(adsId);
     ctx.body = {
       success: true,
-      message: "Successfully Rejected",
+      message: "Successfully Approved",
       ads: ads[0],
     };
   } catch (error) {
@@ -118,6 +118,13 @@ const isModerator = (username): Promise<any> => new Promise(async (resolve, reje
 });
 
 const checkAdsStatus = (adsId): Promise<any> => new Promise(async (resolve, reject) => {
+  if (adsId === undefined) {
+    resolve({
+      success: false,
+      message: "Can't find adsId field."
+    });
+    return;
+  }
   const { adsService } = ServicesContext.getInstance();
   const RowDataPacket = await adsService.findAdsById(adsId);
   if (RowDataPacket.length === 0) {
