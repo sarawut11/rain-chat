@@ -1,6 +1,7 @@
 # API / Socket Documentation
 > **Note**
 > - All Date / Time formats are in unix timestamp format in UTC timezone
+> - All apis requires JWT token in the authorization header request except *login*, *register*, *ref/validate* apis.
 
 # 1. API Endpoints
 ## 1.1 Authentication
@@ -149,7 +150,7 @@
       button_name,
       title,
       description,
-      status,     // 0: Created | 1: Pending | 2: Approved
+      status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
       last_time,    // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
     }
@@ -173,7 +174,7 @@
         button_name,
         title,
         description,
-        status,     // 0: Created | 1: Pending | 2: Approved
+        status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
         last_time,    // Last advertised time - Unix timestamp in UTC
         time,         // Registration Time - Unix timestamp in UTC
       },
@@ -198,7 +199,7 @@
       button_name,
       title,
       description,
-      status,     // 0: Created | 1: Pending | 2: Approved
+      status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
       last_time,    // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
     }
@@ -229,7 +230,7 @@
       button_name,
       title,
       description,
-      status,     // 0: Created | 1: Pending | 2: Approved
+      status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
       last_time,    // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
     }
@@ -266,7 +267,7 @@
       button_name,
       title,
       description,
-      status,     // 0: Created | 1: Pending | 2: Approved
+      status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
       last_time,    // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
     }
@@ -289,7 +290,7 @@
       button_name,
       title,
       description,
-      status,     // 0: Created | 1: Pending | 2: Approved
+      status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
       last_time,    // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
     }
@@ -314,7 +315,7 @@
         button_name,
         title,
         description,
-        status,     // 0: Created | 1: Pending | 2: Approved
+        status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
         last_time,    // Last advertised time - Unix timestamp in UTC
         time,         // Registration Time - Unix timestamp in UTC
         // Ads Creator's Info
@@ -346,7 +347,7 @@
       button_name,
       title,
       description,
-      status,     // 0: Created | 1: Pending | 2: Approved
+      status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
       last_time,    // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
     }
@@ -369,7 +370,7 @@
       button_name,
       title,
       description,
-      status,     // 0: Created | 1: Pending | 2: Approved
+      status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
       last_time,    // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
     }
