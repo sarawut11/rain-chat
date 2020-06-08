@@ -68,7 +68,7 @@ export class AdsService {
 
   findAllAds() {
     const _sql =
-      `SELECT ads.*, user.username, user.name, user.email, user.intro, user.role
+      `SELECT ads.*, user.username, user.name, user.avatar, user.email, user.intro, user.role
       FROM ads_info AS ads JOIN user_info as user ON ads.user_id = user.id;`;
     return query(_sql);
   }

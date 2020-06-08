@@ -124,7 +124,7 @@
   }
   ```
 ## 1.4 Ads
-### /campaign/:username/create (POST)
+### /campaign/pub/create (POST)
   Register ads
 
   ***Request Body (Form-Data)***
@@ -155,7 +155,7 @@
     }
   }
   ```
-### /campaign/:username (GET)
+### /campaign/pub/all (GET)
   Get all ads created by user with username
 
   ***Response***
@@ -181,7 +181,7 @@
     ]
   }
   ```
-### /campaign/:username/:id (GET)
+### /campaign/pub/:id (GET)
   Get ads details created by username with id.
 
   ***Response***
@@ -204,7 +204,7 @@
     }
   }
   ```
-### /campaign/:username/:id (PUT)
+### /campaign/pub/:id (PUT)
   Update ads created by username with id
 
   ***Request Body (Form-Data)***
@@ -235,7 +235,7 @@
     }
   }
   ```
-### /campaign/:username/:id (DELETE)
+### /campaign/pub/:id (DELETE)
   Delete ads created by username with id
 
   ***Response***
@@ -245,7 +245,7 @@
     message: "Success or Failed Message"
   }
   ```
-### /campaign/:username/:id/request (POST)
+### /campaign/pub/:id/request (POST)
   Request Ads for review
 
   ***Request Body***
@@ -272,7 +272,7 @@
     }
   }
   ```
-### /campaign/:username/:id/cancel (POST)
+### /campaign/pub/:id/cancel (POST)
   Cancel requested ads from review.
 
   ***Response***
@@ -296,7 +296,7 @@
   }
   ```
 ## 1.5 Moderator / Ads API
-### /campaign/mod/:username/all (GET)
+### /campaign/mod/all (GET)
   Get all ads
 
   ***Response***
@@ -320,6 +320,7 @@
         // Ads Creator's Info
         username,
         name,
+        avatar,
         email,
         intro,
         role,
@@ -328,7 +329,7 @@
     ]
   }
   ```
-### /campaign/mod/:username/reject (POST)
+### /campaign/mod/reject (POST)
   Reject requested ads.
 
   ***Request Body***
@@ -355,7 +356,7 @@
     }
   }
   ```
-### /campaign/mod/:username/approve (POST)
+### /campaign/mod/approve (POST)
   Approve requested ads.
 
   ***Request Body***
