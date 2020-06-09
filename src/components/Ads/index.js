@@ -270,7 +270,7 @@ class Ads extends Component {
 
   renderItem = item => {
     const { user_info } = this.state;
-    const { status, username, name, email, intro } = item;
+    const { status } = item;
     let actions = [];
     const { role } = user_info;
 
