@@ -162,8 +162,8 @@ class InitApp {
       store.dispatch(setHomePageListAction(allMessage.homePageList));
       store.dispatch(setAllPrivateChatsAction({ data: privateChat }));
       store.dispatch(setAllGroupChatsAction({ data: groupChat }));
-      store.dispatch(setAdsAction({ data: adsList }));
-      console.log('initMessage success. ', 'time=>', new Date().toLocaleString());
+      if (this._userInfo.role !== 'MODERATOR') store.dispatch(setAdsAction({ data: adsList }));
+      console.log('initMessage success. ', 'time=>', new Date().toLocaleString(), this._userInfo);
     });
     window.socket.on('initSocket', (socketId, fn) => {
       const clientHomePageList = JSON.parse(localStorage.getItem(`homePageList-${this.user_id}`));
