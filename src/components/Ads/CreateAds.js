@@ -70,10 +70,10 @@ export default class CreateAds extends Component {
 
       let res;
       if (editMode) {
-        res = await Request.axios('put', `/api/v1/ads/${username}/${id}`, data);
+        res = await Request.axios('put', `/api/v1/campaign/pub/${id}`, data);
         // res.ads = { id, asset_link, link, button_name, title, description };
       } else {
-        res = await Request.axios('post', `/api/v1/ads/${username}/create`, data);
+        res = await Request.axios('post', `/api/v1/campaign/pub/create`, data);
       }
 
       if (res && res.success) {

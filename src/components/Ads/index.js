@@ -146,10 +146,9 @@ class Ads extends Component {
   };
 
   onDeleteAds = async item => {
-    const { username } = this.state.user_info;
     const { id } = item;
     try {
-      const res = await Request.axios('delete', `/api/v1/campaign/${username}/${id}`);
+      const res = await Request.axios('delete', `/api/v1/campaign/pub/${id}`);
 
       if (res && res.success) {
         this.props.deleteAdsAction({ id, adsState: this.props.ads });
@@ -170,14 +169,12 @@ class Ads extends Component {
   };
 
   onRequest = async item => {
-    console.log('onRequest', item);
-    const { username } = this.state.user_info;
     const { id } = item;
     const { impressions } = this.state;
     try {
       const data = new FormData();
       data.append('impressions', impressions);
-      const res = await Request.axios('post', `/api/v1/campaign/${username}/${id}/request`, data);
+      const res = await Request.axios('post', `/api/v1/campaign/pub/${id}/request`, data);
 
       if (res && res.success) {
         this.props.requestAdsAction({ id, status: 1, adsState: this.props.ads });
@@ -276,7 +273,7 @@ class Ads extends Component {
       ];
     }
     return (
-      <List.Item>
+      <List.Item className="ads-list-item">
         <Card
           className="ads-card"
           cover={<img alt="example" src={item.asset_link} />}

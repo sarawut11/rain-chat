@@ -21,3 +21,23 @@
     padding: 20px;
   }
 }
+
+@media screen and (min-width: 570px) {
+  .ads-list-item {
+    height: calc(100% - 16px);
+
+    .ads-card {
+      height: 100%;
+
+      .ant-card-body {
+        margin-bottom: 48px;
+      }
+    }
+
+    ul.ant-card-actions {
+      position: absolute;
+      width: 100%;
+      bottom: 0;
+    }
+  }
+}
