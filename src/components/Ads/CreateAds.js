@@ -36,8 +36,6 @@ export default class CreateAds extends Component {
   handleOk = async () => {
     const { editMode } = this.props;
     const { id, asset, link, button_name, title, description } = this.state;
-    const user_info = JSON.parse(localStorage.getItem('userInfo'));
-    const { username } = user_info;
 
     const newErrorList = {};
     let isError = false;
@@ -70,10 +68,10 @@ export default class CreateAds extends Component {
 
       let res;
       if (editMode) {
-        res = await Request.axios('put', `/api/v1/ads/${username}/${id}`, data);
+        res = await Request.axios('put', `/api/v1/campaign/pub/${id}`, data);
         // res.ads = { id, asset_link, link, button_name, title, description };
       } else {
-        res = await Request.axios('post', `/api/v1/ads/${username}/create`, data);
+        res = await Request.axios('post', `/api/v1/campaign/pub/create`, data);
       }
 
       if (res && res.success) {

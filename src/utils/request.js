@@ -1,5 +1,6 @@
 /* eslint-disable no-sequences */
 import axios from 'axios';
+import { notification } from 'antd';
 
 export default class Request {
   static axiosConfigInit() {
@@ -10,15 +11,38 @@ export default class Request {
 
   static async axios(method = 'get', url, params) {
     const handleMethod = method === 'get' && params ? { params } : params;
+
+    const user_info = JSON.parse(localStorage.getItem('userInfo'));
+    let token = '';
+
+    if (user_info) {
+      token = user_info.token;
+    }
+
+    const axiosConfig = {
+      ...handleMethod,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
     return new Promise((resolve, reject) => {
       // eslint-disable-next-line no-unused-expressions
-      axios[method](url, handleMethod)
+      axios[method](url, axiosConfig)
         .then(res => {
           const response = typeof res.data === 'object' ? res.data : JSON.parse(res.data);
           resolve(response);
         })
         .catch(error => {
-          reject(error.response ? error.response.data : error);
+          console.log('request error', error, error.response);
+          if (error.response.status === 401) {
+            window.socket.disconnect();
+            localStorage.removeItem('userInfo');
+            window.location.href = '/login';
+            notification.error('Token expired or unauthorized.');
+          } else {
+            reject(error.response ? error.response.data : error);
+          }
         });
     });
   }

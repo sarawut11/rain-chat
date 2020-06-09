@@ -4,9 +4,7 @@ const UPDATE_ADS = 'UPDATE_ADS';
 const DELETE_ADS = 'DELETE_ADS';
 const REQUEST_ADS = 'REQUEST_ADS';
 
-const setAdsAction = (ads = {}) => {
-  const adsList = [...ads.data];
-
+const formatAdsList = adsList => {
   let createdAdsList = [...adsList];
   createdAdsList = createdAdsList.filter(item => {
     return item.status === 0;
@@ -22,9 +20,21 @@ const setAdsAction = (ads = {}) => {
     return item.status === 2;
   });
 
+  let rejectedAdsList = [...adsList];
+  rejectedAdsList = rejectedAdsList.filter(item => {
+    return item.status === 3;
+  });
+
+  return { createdAdsList, pendingAdsList, approvedAdsList, rejectedAdsList };
+};
+
+const setAdsAction = (ads = {}) => {
+  console.log('\n---    set ads action   ---\n', ads);
+  const adsList = [...ads.data];
+
   return {
     type: SET_ADS,
-    data: { adsList: ads.data, createdAdsList, pendingAdsList, approvedAdsList },
+    data: { adsList: ads.data, ...formatAdsList(adsList) },
   };
 };
 
@@ -36,27 +46,10 @@ const createAdsAction = ads => {
   // ];
   const adsList = [...adsState.adsList, { ...ads.ads }];
 
-  let createdAdsList = [...adsList];
-  createdAdsList = createdAdsList.filter(item => {
-    return item.status === 0;
-  });
-
-  let pendingAdsList = [...adsList];
-  pendingAdsList = pendingAdsList.filter(item => {
-    return item.status === 1;
-  });
-
-  let approvedAdsList = [...adsList];
-  approvedAdsList = approvedAdsList.filter(item => {
-    return item.status === 2;
-  });
-
   const adsStateCopy = {
     ...adsState,
     adsList,
-    createdAdsList,
-    pendingAdsList,
-    approvedAdsList,
+    ...formatAdsList(adsList),
   };
 
   return { type: CREATE_ADS, data: adsStateCopy };
@@ -72,27 +65,10 @@ const editAdsAction = ads => {
     }
   });
 
-  let createdAdsList = [...adsList];
-  createdAdsList = createdAdsList.filter(item => {
-    return item.status === 0;
-  });
-
-  let pendingAdsList = [...adsList];
-  pendingAdsList = pendingAdsList.filter(item => {
-    return item.status === 1;
-  });
-
-  let approvedAdsList = [...adsList];
-  approvedAdsList = approvedAdsList.filter(item => {
-    return item.status === 2;
-  });
-
   const adsStateCopy = {
     ...adsState,
     adsList,
-    createdAdsList,
-    pendingAdsList,
-    approvedAdsList,
+    ...formatAdsList(adsList),
   };
 
   return { type: UPDATE_ADS, data: adsStateCopy };
@@ -115,27 +91,10 @@ const deleteAdsAction = ads => {
     });
   }
 
-  let createdAdsList = [...adsList];
-  createdAdsList = createdAdsList.filter(item => {
-    return item.status === 0;
-  });
-
-  let pendingAdsList = [...adsList];
-  pendingAdsList = pendingAdsList.filter(item => {
-    return item.status === 1;
-  });
-
-  let approvedAdsList = [...adsList];
-  approvedAdsList = approvedAdsList.filter(item => {
-    return item.status === 2;
-  });
-
   const adsStateCopy = {
     ...adsState,
     adsList,
-    createdAdsList,
-    pendingAdsList,
-    approvedAdsList,
+    ...formatAdsList(adsList),
   };
 
   return { type: DELETE_ADS, data: adsStateCopy };
@@ -150,27 +109,10 @@ const requestAdsAction = ads => {
     }
   });
 
-  let createdAdsList = [...adsList];
-  createdAdsList = createdAdsList.filter(item => {
-    return item.status === 0;
-  });
-
-  let pendingAdsList = [...adsList];
-  pendingAdsList = pendingAdsList.filter(item => {
-    return item.status === 1;
-  });
-
-  let approvedAdsList = [...adsList];
-  approvedAdsList = approvedAdsList.filter(item => {
-    return item.status === 2;
-  });
-
   const adsStateCopy = {
     ...adsState,
     adsList,
-    createdAdsList,
-    pendingAdsList,
-    approvedAdsList,
+    ...formatAdsList(adsList),
   };
 
   return { type: REQUEST_ADS, data: adsStateCopy };
