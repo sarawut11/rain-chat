@@ -194,8 +194,28 @@ class Ads extends Component {
     }
   };
 
-  onCancelRequest = item => () => {
+  onCancelRequest = item => async () => {
     console.log('onCancelRequest', item);
+    const { id } = item;
+    try {
+      const res = await Request.axios('post', `/api/v1/campaign/pub/${id}/cancel`);
+
+      if (res && res.success) {
+        this.props.requestAdsAction({ id, status: 0, adsState: this.props.ads });
+        notification.success({
+          message: res.message,
+        });
+      } else {
+        notification.error({
+          message: res.message,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      notification.error({
+        message: 'Cancel request failed.',
+      });
+    }
   };
 
   onApproveAds = item => async () => {
@@ -281,12 +301,18 @@ class Ads extends Component {
         >
           <Row justify="end">
             {status === 2 && <Tag color="#87d068">approved</Tag>}
-            {status === 1 && <Tag color="#f50">pending</Tag>}
-            {status === 0 && <Tag color="#108ee9">created</Tag>}
-            {status === 3 && <Tag color="#108ee9">created</Tag>}
+            {status === 1 && <Tag color="#2db7f5">pending</Tag>}
+            {status === 0 && <Tag color="geekblue">created</Tag>}
+            {status === 3 && <Tag color="#f50">rejected</Tag>}
           </Row>
           <Meta
-            avatar={<UserAvatar name={item.username} src={item.avatar} size="36" />}
+            avatar={
+              <UserAvatar
+                name={item.username ? item.username : this.state.user_info.username}
+                src={item.avatar ? item.avatar : this.state.user_info.avatar}
+                size="36"
+              />
+            }
             title={item.title}
             description={
               <div>
