@@ -19,7 +19,7 @@ export const uploadFile = ({ fileName, filePath, fileType }): Promise<any> =>
       Body: fileContent,
       Key: fileName,
       ContentType: fileType,
-    }, function (err, data) {
+    }, (err, data) => {
       if (err) {
         console.error(err);
         reject(err);
@@ -37,7 +37,7 @@ export const deleteFile = (filePath): Promise<any> =>
     s3.deleteObject({
       Bucket: bucket,
       Key: getKeyFromPath(filePath)
-    }, function (err, data) {
+    }, (err, data) => {
       if (err) {
         console.error(err);
         reject(err);

@@ -1,6 +1,7 @@
 # API / Socket Documentation
 > **Note**
 > - All Date / Time formats are in unix timestamp format in UTC timezone
+> - All apis requires JWT token in the authorization header request except *login*, *register*, *ref/validate* apis.
 
 # 1. API Endpoints
 ## 1.1 Authentication
@@ -124,7 +125,7 @@
   }
   ```
 ## 1.4 Ads
-### /ads/:username/create (POST)
+### /campaign/pub/create (POST)
   Register ads
 
   ***Request Body (Form-Data)***
@@ -149,13 +150,13 @@
       button_name,
       title,
       description,
-      status,     // 0: Created | 1: Pending | 2: Approved
+      status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
       last_time,    // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
     }
   }
   ```
-### /ads/:username (GET)
+### /campaign/pub/all (GET)
   Get all ads created by user with username
 
   ***Response***
@@ -173,7 +174,7 @@
         button_name,
         title,
         description,
-        status,     // 0: Created | 1: Pending | 2: Approved
+        status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
         last_time,    // Last advertised time - Unix timestamp in UTC
         time,         // Registration Time - Unix timestamp in UTC
       },
@@ -181,7 +182,7 @@
     ]
   }
   ```
-### /ads/:username/:id (GET)
+### /campaign/pub/:adsId (GET)
   Get ads details created by username with id.
 
   ***Response***
@@ -198,13 +199,13 @@
       button_name,
       title,
       description,
-      status,     // 0: Created | 1: Pending | 2: Approved
+      status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
       last_time,    // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
     }
   }
   ```
-### /ads/:username/:id (PUT)
+### /campaign/pub/:adsId (PUT)
   Update ads created by username with id
 
   ***Request Body (Form-Data)***
@@ -229,13 +230,13 @@
       button_name,
       title,
       description,
-      status,     // 0: Created | 1: Pending | 2: Approved
+      status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
       last_time,    // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
     }
   }
   ```
-### /ads/:username/:id (DELETE)
+### /campaign/pub/:adsId (DELETE)
   Delete ads created by username with id
 
   ***Response***
@@ -245,7 +246,7 @@
     message: "Success or Failed Message"
   }
   ```
-### /ads/:username/:id/request (POST)
+### /campaign/pub/:adsId/request (POST)
   Request Ads for review
 
   ***Request Body***
@@ -266,13 +267,13 @@
       button_name,
       title,
       description,
-      status,     // 0: Created | 1: Pending | 2: Approved
+      status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
       last_time,    // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
     }
   }
   ```
-### /ads/:username/:id/cancel (POST)
+### /campaign/pub/:adsId/cancel (POST)
   Cancel requested ads from review.
 
   ***Response***
@@ -289,14 +290,14 @@
       button_name,
       title,
       description,
-      status,     // 0: Created | 1: Pending | 2: Approved
+      status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
       last_time,    // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
     }
   }
   ```
 ## 1.5 Moderator / Ads API
-### /ads/mod/:username/all (GET)
+### /campaign/mod/all (GET)
   Get all ads
 
   ***Response***
@@ -314,21 +315,24 @@
         button_name,
         title,
         description,
-        status,     // 0: Created | 1: Pending | 2: Approved
+        status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
         last_time,    // Last advertised time - Unix timestamp in UTC
         time,         // Registration Time - Unix timestamp in UTC
+        // Ads Creator's Info
+        username,
+        name,
+        avatar,
+        email,
+        intro,
+        role,
       },
       ...
     ]
   }
   ```
-### /ads/mod/:username/reject (POST)
+### /campaign/mod/reject/:adsId (POST)
   Reject requested ads.
 
-  ***Request Body***
-  | Fields | Description         |
-  | ------ | ------------------- |
-  | adsId  | Id of ads to reject |
   ***Response***
   ```
   {
@@ -343,19 +347,15 @@
       button_name,
       title,
       description,
-      status,     // 0: Created | 1: Pending | 2: Approved
+      status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
       last_time,    // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
     }
   }
   ```
-### /ads/mod/:username/approve (POST)
+### /campaign/mod/approve/:adsId (POST)
   Approve requested ads.
 
-  ***Request Body***
-  | Fields | Description          |
-  | ------ | -------------------- |
-  | adsId  | Id of ads to approve |
   ***Response***
   ```
   {
@@ -370,7 +370,7 @@
       button_name,
       title,
       description,
-      status,     // 0: Created | 1: Pending | 2: Approved
+      status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
       last_time,    // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
     }

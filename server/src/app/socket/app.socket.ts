@@ -42,8 +42,6 @@ function emitAsync(socket, emitName, data, callback) {
 const initServer = server => {
   const {
     userService,
-    chatService,
-    groupChatService,
     groupService,
   } = ServicesContext.getInstance();
 
@@ -59,19 +57,19 @@ const initServer = server => {
 
   io.on("connection", async socket => {
     const socketId = socket.id;
-    let user_id;
+    let userId;
     let clientHomePageList;
     console.log("connection socketId=>", socketId, "time=>", new Date().toLocaleString());
 
     // Get data for group chats and private chats
-    await emitAsync(socket, "initSocket", socketId, (userId, homePageList) => {
-      console.log("userId", userId);
-      user_id = userId;
+    await emitAsync(socket, "initSocket", socketId, (userID, homePageList) => {
+      console.log("userId", userID);
+      userId = userID;
       clientHomePageList = homePageList;
     });
-    const allMessage = await getAllMessage({ user_id, clientHomePageList });
+    const allMessage = await getAllMessage({ user_id: userId, clientHomePageList });
     socket.emit("initSocketSuccess", allMessage);
-    console.log("initSocketSuccess user_id=>", user_id, "time=>", new Date().toLocaleString());
+    console.log("initSocketSuccess user_id=>", userId, "time=>", new Date().toLocaleString());
 
     socket.use((packet, next) => {
       if (!requestFrequency(socketId)) return next();
@@ -79,20 +77,20 @@ const initServer = server => {
     });
 
     // init socket
-    const arr = await userService.getUserSocketId(user_id);
+    const arr = await userService.getUserSocketId(userId);
     const existSocketIdStr = getSocketIdHandle(arr);
     const newSocketIdStr = existSocketIdStr ? `${existSocketIdStr},${socketId}` : socketId;
     // await userService.saveUserSocketId(user_id, newSocketIdStr); // TOO LONG DB EXCEPTION in dev mode
-    await userService.saveUserSocketId(user_id, socketId);
-    console.log("initSocket user_id=>", user_id, "time=>", new Date().toLocaleString());
+    await userService.saveUserSocketId(userId, socketId);
+    console.log("initSocket user_id=>", userId, "time=>", new Date().toLocaleString());
 
     // init GroupChat
-    const result = await userService.getGroupList(user_id);
+    const result = await userService.getGroupList(userId);
     const groupList = JSON.parse(JSON.stringify(result));
     for (const item of groupList) {
       socket.join(item.to_group_id);
     }
-    console.log("initGroupChat user_id=>", user_id, "time=>", new Date().toLocaleString());
+    console.log("initGroupChat user_id=>", userId, "time=>", new Date().toLocaleString());
 
     socket
       // Private message
@@ -105,8 +103,8 @@ const initServer = server => {
       .on("addAsTheContact", async (data, fn) => {
         privateSockets.addAsTheContact(io, socket, data, fn);
       })
-      .on("getUserInfo", async (user_id, fn) => {
-        await privateSockets.getUserInfo(io, socket, user_id, fn);
+      .on("getUserInfo", async (userID, fn) => {
+        await privateSockets.getUserInfo(io, socket, userID, fn);
       })
       .on("deleteContact", async ({ from_user, to_user }, fn) => {
         await privateSockets.deleteContact(io, socket, { from_user, to_user }, fn);
@@ -169,7 +167,7 @@ const initServer = server => {
 
     socket.on("disconnect", async reason => {
       try {
-        const arr = await userService.getUserSocketId(user_id);
+        const arr = await userService.getUserSocketId(userId);
         const existSocketIdStr = getSocketIdHandle(arr);
         const toUserSocketIds = (existSocketIdStr && existSocketIdStr.split(",")) || [];
         const index = toUserSocketIds.indexOf(socketId);
@@ -178,7 +176,7 @@ const initServer = server => {
           toUserSocketIds.splice(index, 1);
         }
 
-        await userService.saveUserSocketId(user_id, toUserSocketIds.join(","));
+        await userService.saveUserSocketId(userId, toUserSocketIds.join(","));
 
         // if (toUserSocketIds.length) {
         //   await userService.saveUserSocketId(_userId, toUserSocketIds.join(','));
@@ -193,7 +191,7 @@ const initServer = server => {
           "disconnect.=>reason",
           reason,
           "user_id=>",
-          user_id,
+          userId,
           "socket.id=>",
           socket.id,
           "time=>",
@@ -217,9 +215,9 @@ const broadcast = (emitName, data, onError) => {
   }
 };
 
-const emitTo = (to_socket_id, emitName, data, onError) => {
+const emitTo = (toSocketId, emitName, data, onError) => {
   try {
-    io.to(to_socket_id).emit(emitName, data);
+    io.to(toSocketId).emit(emitName, data);
   } catch (error) {
     if (onError)
       onError(error);

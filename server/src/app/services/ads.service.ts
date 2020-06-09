@@ -15,13 +15,13 @@ export class AdsService {
     return query(_sql, [user_id, asset_link, link, button_name, title, description, time]);
   }
 
-  findAdsById(ads_id) {
+  findAdsById(adsId) {
     const _sql = "SELECT * FROM ads_info WHERE id = ?;";
-    return query(_sql, ads_id);
+    return query(_sql, adsId);
   }
 
-  updateAds(ads_id, user_id, { asset_link, link, button_name, title, description }) {
-    let params = [link, button_name, title, description, ads_id, user_id];
+  updateAds(adsId, userId, { asset_link, link, button_name, title, description }) {
+    let params = [link, button_name, title, description, adsId, userId];
     if (!isNullOrUndefined(asset_link))
       params = [asset_link, ...params];
     const _sql = `
@@ -36,38 +36,40 @@ export class AdsService {
     return query(_sql, params);
   }
 
-  deleteAds(ads_id) {
+  deleteAds(adsId) {
     const _sql = "DELETE FROM ads_info WHERE id = ?;";
-    return query(_sql, ads_id);
+    return query(_sql, adsId);
   }
 
-  requestAds(ads_id, user_id, impressions) {
+  requestAds(adsId, userId, impressions) {
     const _sql = "UPDATE ads_info SET impressions = ?, status = ? WHERE id = ? and user_id = ?;";
-    return query(_sql, [impressions, AdsService.AdsStatus.Pending, ads_id, user_id]);
+    return query(_sql, [impressions, AdsService.AdsStatus.Pending, adsId, userId]);
   }
 
-  cancelAds(ads_id, user_id) {
+  cancelAds(adsId, userId) {
     const _sql = "UPDATE ads_info SET status = ? WHERE id = ? and user_id = ?;";
-    return query(_sql, [AdsService.AdsStatus.Pending, ads_id, user_id]);
+    return query(_sql, [AdsService.AdsStatus.Pending, adsId, userId]);
   }
 
-  approveAds(ads_id) {
+  approveAds(adsId) {
     const _sql = "UPDATE ads_info SET status = ? WHERE id = ?;";
-    return query(_sql, [AdsService.AdsStatus.Approved, ads_id]);
+    return query(_sql, [AdsService.AdsStatus.Approved, adsId]);
   }
 
-  rejectAds(ads_id) {
+  rejectAds(adsId) {
     const _sql = "UPDATE ads_info SET status = ? WHERE id = ?;";
-    return query(_sql, [AdsService.AdsStatus.Rejected, ads_id]);
+    return query(_sql, [AdsService.AdsStatus.Rejected, adsId]);
   }
 
-  findAdsByUserId(user_id) {
+  findAdsByUserId(userId) {
     const _sql = "SELECT * FROM ads_info WHERE user_id = ?;";
-    return query(_sql, user_id);
+    return query(_sql, userId);
   }
 
   findAllAds() {
-    const _sql = "SELECT * FROM ads_info";
+    const _sql =
+      `SELECT ads.*, user.username, user.name, user.avatar, user.email, user.intro, user.role
+      FROM ads_info AS ads JOIN user_info as user ON ads.user_id = user.id;`;
     return query(_sql);
   }
 
@@ -81,8 +83,8 @@ export class AdsService {
     return query(_sql, [AdsService.AdsStatus.Approved]);
   }
 
-  rainAds(id, impression, last_time) {
+  rainAds(id, impression, lastTime) {
     const _sql = "UPDATE ads_info SET impressions = ?, last_time = ? WHERE id = ?;";
-    return query(_sql, [impression, last_time, id]);
+    return query(_sql, [impression, lastTime, id]);
   }
 }

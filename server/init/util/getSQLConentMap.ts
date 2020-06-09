@@ -21,7 +21,7 @@ function getSqlContent(fileName: string, path: string) {
 export function getSqlContentMap(): object {
   const sqlMap = getSqlMap();
   // eslint-disable-next-line guard-for-in
-  for (const key in sqlMap) {
+  for (const key of Object.keys(sqlMap)) {
     getSqlContent(key, sqlMap[key]);
   }
 

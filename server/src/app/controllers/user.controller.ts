@@ -8,7 +8,7 @@ export const getProfileInfo = async (ctx, next) => {
 
   const res = await userService.findUserByUsername(username);
   if (res.length > 0) {
-    const { id, username, name, email, balance, intro, avatar, socketId, userid } = res[0];
+    const { id, username, name, email, balance, intro, avatar, socketId, refcode } = res[0];
     ctx.body = {
       success: true,
       userInfo: {
@@ -20,7 +20,7 @@ export const getProfileInfo = async (ctx, next) => {
         intro,
         avatar,
         socketId,
-        referral: userid
+        referral: refcode
       },
     };
   } else {
@@ -39,22 +39,22 @@ export const updateProfileInfo = async (ctx, next) => {
     const { userService } = ServicesContext.getInstance();
 
     const fileName = `avatar/avatar-${username}`;
-    let avatar_url: string;
+    let avatarUrl: string;
     if (avatar !== undefined) {
       const { url } = await aws.uploadFile({
-        fileName: fileName,
+        fileName,
         filePath: avatar.path,
         fileType: avatar.type,
       });
-      avatar_url = url;
+      avatarUrl = url;
     } else {
-      avatar_url = undefined;
+      avatarUrl = undefined;
     }
 
-    await userService.setUserInfo(username, { name, intro, avatar: avatar_url });
+    await userService.setUserInfo(username, { name, intro, avatar: avatarUrl });
     const userInfo = {
       username,
-      avatar: avatar_url,
+      avatar: avatarUrl,
       name,
       intro,
     };

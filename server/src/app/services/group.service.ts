@@ -10,15 +10,15 @@ export class GroupService {
   }
 
   // Join the group
-  joinGroup(user_id, to_group_id) {
+  joinGroup(userId, toGroupId) {
     const _sql = "INSERT INTO group_user_relation(user_id,to_group_id) VALUES(?,?);";
-    return query(_sql, [user_id, to_group_id]);
+    return query(_sql, [userId, toGroupId]);
   }
 
   // See if a user is in a group
-  isInGroup(user_id, to_group_id) {
+  isInGroup(userId, toGroupId) {
     const _sql = "SELECT * FROM group_user_relation WHERE user_id = ? AND to_group_id = ?;";
-    return query(_sql, [user_id, to_group_id]);
+    return query(_sql, [userId, toGroupId]);
   }
 
   // Create New Group
@@ -35,8 +35,8 @@ export class GroupService {
   }
 
   // Leave
-  leaveGroup(user_id, to_group_id) {
+  leaveGroup(userId, toGroupId) {
     const _sql = "DELETE FROM group_user_relation WHERE user_id = ? AND to_group_id = ? ;";
-    return query(_sql, [user_id, to_group_id]);
+    return query(_sql, [userId, toGroupId]);
   }
 }

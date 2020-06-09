@@ -24,8 +24,8 @@ export class RainContext {
     // | | hour
     // | minute
     // second ( optional )
-    const rain_time_interval = configs.rain.rain_time_interval / 1000;
-    RainContext.rainJob = new CronJob(`*/${rain_time_interval} * * * * *`, async () => {
+    const rainTimeInterval = configs.rain.rain_time_interval / 1000;
+    RainContext.rainJob = new CronJob(`*/${rainTimeInterval} * * * * *`, async () => {
       try {
         const { adsService } = ServicesContext.getInstance();
         const RowDataPacket = await adsService.findAdsToRain();
@@ -94,7 +94,7 @@ export class RainContext {
   async popRain() {
     const { userService } = ServicesContext.getInstance();
     const users = await userService.getUsersByPopLimited();
-    if (users.length == 0) {
+    if (users.length === 0) {
       console.log("No users with limited pop balance");
       return;
     }

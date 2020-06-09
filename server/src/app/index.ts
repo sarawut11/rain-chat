@@ -1,6 +1,7 @@
 import * as compress from "koa-compress";
 import * as koaBody from "koa-body";
 import * as cors from "@koa/cors";
+import * as jwt from "koa-jwt";
 import configs from "@configs";
 
 import { ServicesContext, RainContext } from "./context";
@@ -14,6 +15,9 @@ export const App = Server.init(app => {
   app
     .use(compress())
     .use(cors(corsArgs))
+    .use(jwt({ secret: configs.token.jwt_secret }).unless({
+      path: [/\/login/g, /\/register/g, /\/ref\/validate/g]
+    }))
     .use(koaBody({ multipart: true }))
     .use(appRoutes.routes())
     .use(appRoutes.allowedMethods());

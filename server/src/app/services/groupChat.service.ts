@@ -62,8 +62,8 @@ export class GroupChatService {
    * @param   groupId   Group Id
    * @return
    */
-  addGroupUserRelation(user_id, groupId) {
-    const data = [groupId, user_id];
+  addGroupUserRelation(userId, groupId) {
+    const data = [groupId, userId];
     const _sql = " INSERT INTO  group_user_relation(to_group_id,user_id) VALUES(?,?); ";
     return query(_sql, data);
   }

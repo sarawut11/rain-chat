@@ -15,14 +15,14 @@ export const apiRoutes = new Router()
   .put("/user/:username", APIController.updateProfileInfo)
 
   // Ads
-  .post("/ads/:username/create", APIController.registerAds)
-  .get("/ads/:username", APIController.getAdsByUsername)
-  .get("/ads/:username/:id", APIController.getAds)
-  .put("/ads/:username/:id", APIController.updateAds)
-  .delete("/ads/:username/:id", APIController.deleteAds)
-  .post("/ads/:username/:id/request", APIController.requestAds)
-  .post("/ads/:username/:id/cancel", APIController.cancelAds)
+  .post("/campaign/pub/create", APIController.registerAds)
+  .get("/campaign/pub/all", APIController.getAdsByUsername)
+  .get("/campaign/pub/:adsId", APIController.getAds)
+  .put("/campaign/pub/:adsId", APIController.updateAds)
+  .delete("/campaign/pub/:adsId", APIController.deleteAds)
+  .post("/campaign/pub/:adsId/request", APIController.requestAds)
+  .post("/campaign/pub/:adsId/cancel", APIController.cancelAds)
 
-  .get("/ads/mod/:username/all", APIController.getAllAds)
-  .post("/ads/mod/:username/reject", APIController.rejectAds)
-  .post("/ads/mod/:username/approve", APIController.approveAds);
+  .get("/campaign/mod/all", APIController.getAllAds)
+  .post("/campaign/mod/:adsId/reject", APIController.rejectAds)
+  .post("/campaign/mod/:adsId/approve", APIController.approveAds);

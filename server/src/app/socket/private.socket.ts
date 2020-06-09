@@ -69,11 +69,11 @@ export const addAsTheContact = async (io, socket, data, cbFn) => {
   }
 };
 
-export const getUserInfo = async (io, socket, user_id, cbFn) => {
+export const getUserInfo = async (io, socket, userId, cbFn) => {
   try {
     const { userService } = ServicesContext.getInstance();
-    const userInfo = await userService.getUserInfoById(user_id);
-    console.log("getUserInfo user_id=>", user_id, "time=>", new Date().toLocaleString());
+    const userInfo = await userService.getUserInfoById(userId);
+    console.log("getUserInfo user_id=>", userId, "time=>", new Date().toLocaleString());
     cbFn(userInfo[0]);
   } catch (error) {
     console.log("error", error.message);

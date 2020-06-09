@@ -15,7 +15,7 @@ export const generateReferral = async (ctx, next) => {
 
   const RowDataPacket = await userService.findUserByUsername(sponsor);
   const res = JSON.parse(JSON.stringify(RowDataPacket));
-  let refcode = res[0].userid;
+  let refcode = res[0].refcode;
   if (refcode === "" || !refcode) {
     refcode = uniqid();
     await userService.setRefcode(sponsor, refcode);

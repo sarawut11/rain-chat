@@ -59,15 +59,15 @@ export class UserService {
   }
 
   // Find user information by user id user_info includes user name, avatar, last login time, status, etc. excluding password
-  getUserInfoById(user_id) {
+  getUserInfoById(userId) {
     const _sql =
-      "SELECT id AS user_id, username, name, avatar, intro FROM user_info WHERE user_info.id =? ";
-    return query(_sql, [user_id]);
+      "SELECT id AS user_id, username, name, avatar, intro, role FROM user_info WHERE user_info.id =? ";
+    return query(_sql, [userId]);
   }
 
   getUserInfoByUsername(username) {
     const _sql =
-      "SELECT id AS user_id, username, name, avatar, intro FROM user_info WHERE user_info.username =? ";
+      "SELECT id AS user_id, username, name, avatar, intro, role FROM user_info WHERE user_info.username =? ";
     return query(_sql, [username]);
   }
 
@@ -92,28 +92,28 @@ export class UserService {
   }
 
   // Check if the user id is a friend of the local user by checking the user id. If yes, return user_id and remark.
-  isFriend(user_id, from_user) {
+  isFriend(userId, fromUser) {
     const _sql =
       "SELECT * FROM user_user_relation AS u WHERE u.user_id = ? AND u.from_user = ? ";
-    return query(_sql, [user_id, from_user]);
+    return query(_sql, [userId, fromUser]);
   }
 
   // Add each other as friends
-  addFriendEachOther(user_id, from_user, time) {
+  addFriendEachOther(userId, fromUser, time) {
     const _sql = "INSERT INTO user_user_relation(user_id,from_user,time) VALUES (?,?,?), (?,?,?)";
-    return query(_sql, [user_id, from_user, time, from_user, user_id, time]);
+    return query(_sql, [userId, fromUser, time, fromUser, userId, time]);
   }
 
   // Delete contact
-  deleteContact(user_id, from_user) {
+  deleteContact(userId, fromUser) {
     const _sql =
       "DELETE FROM  user_user_relation WHERE (user_id = ? AND from_user = ?) or (user_id = ? AND from_user = ?)";
-    return query(_sql, [user_id, from_user, from_user, user_id]);
+    return query(_sql, [userId, fromUser, fromUser, userId]);
   }
 
   // Find home page group list by user_id
   // TODO: Optimize SQL statement
-  getGroupList(user_id) {
+  getGroupList(userId) {
     const _sql = `
     ( SELECT r.to_group_id ,i.name , i.create_time,
       (SELECT g.message  FROM group_msg AS g  WHERE g.to_group_id = r.to_group_id  ORDER BY TIME DESC   LIMIT 1 )  AS message ,
@@ -123,22 +123,22 @@ export class UserService {
     UNION
     ( SELECT i.to_group_id ,i.name , i.create_time, g.message, g.time, g.attachments
       FROM  group_info AS i INNER JOIN rain_group_msg as g on i.to_group_id = ? ORDER BY TIME DESC LIMIT 1 );`;
-    return query(_sql, [user_id, configs.rain.group_id, configs.rain.group_id]);
+    return query(_sql, [userId, configs.rain.group_id, configs.rain.group_id]);
   }
 
   // Find homepage private chat list by user_id
   // TODO: Optimize SQL statement
-  getPrivateList(user_id) {
+  getPrivateList(userId) {
     const _sql = ` SELECT r.from_user as user_id, i.username, i.name, i.avatar, r.time as be_friend_time,
       (SELECT p.message FROM private_msg AS p WHERE (p.to_user = r.from_user and p.from_user = r.user_id) or (p.from_user = r.from_user and p.to_user = r.user_id) ORDER BY p.time DESC   LIMIT 1 )  AS message ,
       (SELECT p.time FROM private_msg AS p WHERE (p.to_user = r.from_user and p.from_user = r.user_id) or (p.from_user = r.from_user and p.to_user = r.user_id) ORDER BY p.time DESC   LIMIT 1 )  AS time,
       (SELECT p.attachments FROM private_msg AS p WHERE (p.to_user = r.from_user and p.from_user = r.user_id) or (p.from_user = r.from_user and p.to_user = r.user_id) ORDER BY p.time DESC   LIMIT 1 )  AS attachments
       FROM  user_user_relation AS r inner join user_info AS i on r.from_user  = i.id WHERE r.user_id = ? ;`;
-    return query(_sql, user_id);
+    return query(_sql, userId);
   }
 
-  saveUserSocketId(user_id, socketId) {
-    const data = [socketId, user_id];
+  saveUserSocketId(userId, socketId) {
+    const data = [socketId, userId];
     const _sql = "UPDATE user_info SET socketid = ? WHERE id= ? limit 1 ; ";
     return query(_sql, data);
   }
@@ -169,7 +169,7 @@ export class UserService {
     return query(_sql, limit);
   }
 
-  resetPopbalance(userIds: String[]) {
+  resetPopbalance(userIds: string[]) {
     let array = "";
     userIds.forEach(id => array += "?,");
     array = array.substring(0, array.length - 1);
@@ -182,12 +182,12 @@ export class UserService {
     return query(_sql, [reward / 2, reward / 2, username]);
   }
 
-  rainUsersBySocketId(socketIds, reward, pop_reward) {
+  rainUsersBySocketId(socketIds, reward, popReward) {
     let _sql = "";
     const params = [];
     socketIds.forEach(socketId => {
       _sql += "UPDATE user_info SET balance = balance + ?, pop_balance = pop_balance + ? WHERE socketid LIKE ?;";
-      params.push(reward, pop_reward, socketId);
+      params.push(reward, popReward, socketId);
     });
     return query(_sql, params);
   }
