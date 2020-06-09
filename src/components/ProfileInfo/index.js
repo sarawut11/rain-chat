@@ -17,6 +17,7 @@ class userInfoRender extends Component {
     name: '',
     referral: '',
     username: '',
+    role: '',
     updateAvailable: false,
     updating: false,
   };
@@ -73,6 +74,7 @@ class userInfoRender extends Component {
       avatar,
       referral,
       email,
+      role,
       updateAvailable,
       updating,
     } = this.state;
@@ -99,6 +101,7 @@ class userInfoRender extends Component {
           </Form.Item>
           <Form.Item label="Email">{email}</Form.Item>
           <Form.Item label="Referral link">{`${window.location.origin}/register?ref=${referral}`}</Form.Item>
+          <Form.Item label="Role">{role}</Form.Item>
           <Row justify="center" align="middle">
             <Button
               type="primary"

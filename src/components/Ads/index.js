@@ -24,6 +24,8 @@ import {
   DeleteOutlined,
   SettingOutlined,
   ExclamationCircleOutlined,
+  CheckOutlined,
+  CloseOutlined,
 } from '@ant-design/icons';
 import './styles.scss';
 import UserAvatar from '../UserAvatar';
@@ -43,17 +45,41 @@ class Ads extends Component {
       editingAds: {},
       editAdsVisible: false,
       impressions: 0,
+      loading: false,
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const user_info = JSON.parse(localStorage.getItem('userInfo'));
     this.setState({ user_info });
+
+    if (user_info.role === 'MODERATOR') {
+      this.setState({ loading: true });
+
+      try {
+        const res = await Request.axios('get', `/api/v1/campaign/mod/all`);
+
+        if (res && res.success) {
+          this.props.setAds({ data: res.ads });
+        } else {
+          notification.error({
+            message: res.message,
+          });
+        }
+      } catch (error) {
+        console.log(error);
+        notification.error({
+          message: 'Failed to get all ads.',
+        });
+      }
+
+      this.setState({ loading: false });
+    }
   }
 
   showConfirm = item => async () => {
     const pointer = this;
-    if (item.status === 0) {
+    if (item.status === 0 || item.status === 3 || this.state.user_info.role === 'MODERATOR') {
       confirm({
         title: 'Do you Want to delete this ads?',
         icon: <ExclamationCircleOutlined />,
@@ -64,7 +90,7 @@ class Ads extends Component {
       });
     } else {
       warning({
-        title: `You can't edit or delete a pending ads.`,
+        title: `You can't edit or delete a pending or approved ads.`,
       });
     }
   };
@@ -110,9 +136,9 @@ class Ads extends Component {
 
   onEditAds = item => () => {
     console.log('edit ads');
-    if (item.status > 0) {
+    if (item.status === 1 || item.status === 2) {
       warning({
-        title: `You can't edit or delete a pending ads.`,
+        title: `You can't edit or delete a pending or approved ads.`,
       });
     } else {
       this.setState({ editingAds: item, editAdsVisible: true });
@@ -123,7 +149,7 @@ class Ads extends Component {
     const { username } = this.state.user_info;
     const { id } = item;
     try {
-      const res = await Request.axios('delete', `/api/v1/ads/${username}/${id}`);
+      const res = await Request.axios('delete', `/api/v1/campaign/${username}/${id}`);
 
       if (res && res.success) {
         this.props.deleteAdsAction({ id, adsState: this.props.ads });
@@ -151,7 +177,7 @@ class Ads extends Component {
     try {
       const data = new FormData();
       data.append('impressions', impressions);
-      const res = await Request.axios('post', `/api/v1/ads/${username}/${id}/request`, data);
+      const res = await Request.axios('post', `/api/v1/campaign/${username}/${id}/request`, data);
 
       if (res && res.success) {
         this.props.requestAdsAction({ id, status: 1, adsState: this.props.ads });
@@ -175,32 +201,103 @@ class Ads extends Component {
     console.log('onCancelRequest', item);
   };
 
+  onApproveAds = item => async () => {
+    const { id } = item;
+    try {
+      const data = new FormData();
+      data.append('adsId', id);
+      const res = await Request.axios('post', `/api/v1/campaign/mod/${id}/approve`);
+
+      if (res && res.success) {
+        this.props.requestAdsAction({ id, status: 2, adsState: this.props.ads });
+        notification.success({
+          message: res.message,
+        });
+      } else {
+        notification.error({
+          message: res.message,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      notification.error({
+        message: 'Failed to approve.',
+      });
+    }
+  };
+
+  onRejectAds = item => async () => {
+    console.log('onRejectAds', item);
+
+    const { id } = item;
+    try {
+      const res = await Request.axios('post', `/api/v1/campaign/mod/${id}/reject`);
+
+      if (res && res.success) {
+        this.props.requestAdsAction({ id, status: 3, adsState: this.props.ads });
+        notification.success({
+          message: res.message,
+        });
+      } else {
+        notification.error({
+          message: res.message,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      notification.error({
+        message: 'Failed to approve.',
+      });
+    }
+  };
+
   renderItem = item => {
     const { user_info } = this.state;
-    const { status } = item;
+    const { status, username, name, email, intro } = item;
+    let actions = [];
+    const { role } = user_info;
+
+    if (role === 'MODERATOR' && status === 1) {
+      actions = [
+        <span key="approve" onClick={this.onApproveAds(item)} style={{ color: 'green' }}>
+          <CheckOutlined /> Approve
+        </span>,
+        <span key="reject" onClick={this.onRejectAds(item)} style={{ color: 'red' }}>
+          <CloseOutlined /> Reject
+        </span>,
+      ];
+    } else {
+      actions = [
+        <Dropdown overlay={this.renderMenu(item)} placement="bottomCenter">
+          <SettingOutlined key="setting" />
+        </Dropdown>,
+        <EditOutlined key="edit" onClick={this.onEditAds(item)} />,
+        <DeleteOutlined key="delete" onClick={this.showConfirm(item)} />,
+      ];
+    }
     return (
       <List.Item>
         <Card
           className="ads-card"
           cover={<img alt="example" src={item.asset_link} />}
-          actions={[
-            <Dropdown overlay={this.renderMenu(item)} placement="bottomCenter">
-              <SettingOutlined key="setting" />
-            </Dropdown>,
-            <EditOutlined key="edit" onClick={this.onEditAds(item)} />,
-            <DeleteOutlined key="delete" onClick={this.showConfirm(item)} />,
-          ]}
+          actions={actions}
         >
           <Row justify="end">
             {status === 2 && <Tag color="#87d068">approved</Tag>}
             {status === 1 && <Tag color="#f50">pending</Tag>}
             {status === 0 && <Tag color="#108ee9">created</Tag>}
+            {status === 3 && <Tag color="#108ee9">created</Tag>}
           </Row>
           <Meta
-            avatar={<UserAvatar name={user_info.name} src={user_info.avatar} size="36" />}
+            avatar={<UserAvatar name={item.username} src={item.avatar} size="36" />}
             title={item.title}
             description={
               <div>
+                {item.username && (
+                  <p>
+                    Advertiser: <b>{item.username}</b>
+                  </p>
+                )}
                 <p>
                   Description: <b>{item.description}</b>
                 </p>
@@ -210,6 +307,13 @@ class Ads extends Component {
                 <p>
                   Link: <b>{item.link}</b>
                 </p>
+                {item.impressions ? (
+                  <p>
+                    Impressions: <b>{item.impressions}</b>
+                  </p>
+                ) : (
+                  ''
+                )}
               </div>
             }
           />
@@ -231,8 +335,10 @@ class Ads extends Component {
   };
 
   render() {
-    const { createAdsVisible, editAdsVisible, editingAds } = this.state;
+    const { createAdsVisible, editAdsVisible, editingAds, loading, user_info } = this.state;
     const { ads, createAdsAction, editAdsAction } = this.props;
+
+    const isModerator = user_info.role === 'MODERATOR';
 
     console.log('render', ads);
 
@@ -256,18 +362,20 @@ class Ads extends Component {
           />
         )}
 
-        {ads && ads.adsList ? (
+        {ads && ads.adsList && !loading ? (
           <Row gutter={[0, 16]}>
-            <Col span={24}>
-              <Button
-                className="ads-add-button"
-                type="primary"
-                onClick={this.onCreateAdsClick}
-                size="large"
-              >
-                Create ads
-              </Button>
-            </Col>
+            {!isModerator && (
+              <Col span={24}>
+                <Button
+                  className="ads-add-button"
+                  type="primary"
+                  onClick={this.onCreateAdsClick}
+                  size="large"
+                >
+                  Create ads
+                </Button>
+              </Col>
+            )}
 
             {ads.approvedAdsList && ads.approvedAdsList.length > 0 && (
               <Col span={24}>
@@ -311,7 +419,7 @@ class Ads extends Component {
               </Col>
             )}
 
-            {ads.createdAdsList && ads.createdAdsList.length > 0 && (
+            {ads.createdAdsList && ads.createdAdsList.length > 0 && !isModerator && (
               <Col span={24}>
                 <Divider orientation="left" plain>
                   <h3>Created ads</h3>
@@ -327,6 +435,27 @@ class Ads extends Component {
                     xxl: 4,
                   }}
                   dataSource={ads.createdAdsList}
+                  renderItem={this.renderItem}
+                />
+              </Col>
+            )}
+
+            {ads.rejectedAdsList && ads.rejectedAdsList.length > 0 && (
+              <Col span={24}>
+                <Divider orientation="left" plain>
+                  <h3>Rejected ads</h3>
+                </Divider>
+                <List
+                  grid={{
+                    gutter: 16,
+                    xs: 1,
+                    sm: 2,
+                    md: 2,
+                    lg: 3,
+                    xl: 3,
+                    xxl: 4,
+                  }}
+                  dataSource={ads.rejectedAdsList}
                   renderItem={this.renderItem}
                 />
               </Col>
