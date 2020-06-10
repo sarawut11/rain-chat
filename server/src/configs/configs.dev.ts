@@ -43,5 +43,14 @@ export default {
     accessKey: "",
     secretKey: "",
     bucket: "",
+  },
+  wallet: {
+    rpc_port: 8764,
+    rpc_user: "rpcuser",
+    rpc_password: "rpcpassword"
+  },
+  cmc: {
+    api_key: "6325368a-751f-45c0-bf8a-5f6afacfa81e",
+    polling_interval_seconds: 5
   }
 };

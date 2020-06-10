@@ -25,4 +25,7 @@ export const apiRoutes = new Router()
 
   .get("/campaign/mod/all", APIController.getAllAds)
   .post("/campaign/mod/:adsId/reject", APIController.rejectAds)
-  .post("/campaign/mod/:adsId/approve", APIController.approveAds);
+  .post("/campaign/mod/:adsId/approve", APIController.approveAds)
+
+  // Wallet
+  .post("/walletnotify", APIController.walletNotify);
