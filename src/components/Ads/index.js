@@ -348,7 +348,7 @@ class Ads extends Component {
   renderMenu = item => {
     return (
       <Menu>
-        {item.status === 0 ? (
+        {item.status === 0 || item.status === 3 ? (
           <Menu.Item onClick={this.showImpressionsInput(item)}>Request ads</Menu.Item>
         ) : (
           <Menu.Item onClick={this.onCancelRequest(item)}>Cancel request</Menu.Item>
