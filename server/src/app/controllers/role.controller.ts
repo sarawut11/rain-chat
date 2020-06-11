@@ -10,7 +10,7 @@ export const getAllUsers = async (ctx, next) => {
       return;
     }
 
-    const { role, start, count } = ctx.request.query;
+    const { role, page, count } = ctx.request.query;
     if (role === undefined) { // Get All Users
       const owners = await getUsersByRole(UserService.Role.OWNER);
       const moderators = await getUsersByRole(UserService.Role.MODERATOR);
@@ -24,7 +24,7 @@ export const getAllUsers = async (ctx, next) => {
         freeUsers
       };
     } else {
-      const users = await getUsersByRole(role, start, count);
+      const users = await getUsersByRole(role, page, count);
       ctx.body = {
         success: true,
         users
@@ -106,6 +106,12 @@ const checkUserInfo = (username, role?): Promise<any> => new Promise(async (reso
     return;
   }
   const userInfo = RowDataPacket[0];
+  if (userInfo.user_id === 1) { // Default Admin
+    resolve({
+      success: false,
+      message: "Can't modify this user's info"
+    });
+  }
   if (role === undefined) {
     resolve({
       success: true,
@@ -128,8 +134,9 @@ const checkUserInfo = (username, role?): Promise<any> => new Promise(async (reso
   }
 });
 
-const getUsersByRole = (role = UserService.Role.FREE, start = 1, count = 10): Promise<any> => new Promise(async (resolve, reject) => {
+const getUsersByRole = (role = UserService.Role.FREE, page = 0, count = 10): Promise<any> => new Promise(async (resolve, reject) => {
+  if (count === 0) return ([]);
   const { userService } = ServicesContext.getInstance();
-  const users = await userService.getUsersByRole(role, start - 1, count);
+  const users = await userService.getUsersByRole(role, page * count, count);
   resolve(users);
 });

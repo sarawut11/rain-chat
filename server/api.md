@@ -376,6 +376,55 @@
     }
   }
   ```
+## 1.6 Role Management API
+### /membership/role/users (GET)
+  Get first 10 users for each role
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    owners: [],
+    moderators: [],
+    members: [],
+    freeUsers: []
+  }
+  ```
+### /membership/role/users?role=x&page=y&count=z (GET)
+  Get users by role with pagination.
+  
+  ***Parameters***
+  | Fields | Description                    |
+  | ------ | ------------------------------ |
+  | role   | OWNER, MODERATOR, FREE, MEMBER |
+  | page   | default = 0                    |
+  | count  | default = 10                   |
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    users: []
+  }
+  ```
+### /membership/role/update (POST)
+  Update user's role by username
+
+  ***Request Body***
+  | Fields   | Description                    |
+  | -------- | ------------------------------ |
+  | username | username of the user to update |
+  | role     | OWNER, MODERATOR, FREE, MEMBER |
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message,
+    userInfo: { // updated user info when success == true
+    }
+  }
+  ```
 # 2. Socket Events
 > Note
 > - Client : Frontend (Client) -> Backend (Server)
@@ -542,7 +591,7 @@
     }
   }
   ```
-### subscribeAdsReward (Socket)
+### subscribeAdsReward (Client)
   Subscribe to get a reward from the ads currently watching.
   ***Data***
   ```

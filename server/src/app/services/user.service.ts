@@ -91,9 +91,9 @@ export class UserService {
     return query(_sql, [role, username]);
   }
 
-  getUsersByRole(role, start, count) {
-    const _sql = "SELECT * FROM user_info WHERE role = ? LIMIT ?,?;";
-    return query(_sql, [role, start, count]);
+  getUsersByRole(role: string, start: number, count: number) {
+    const _sql = `SELECT * FROM user_info WHERE role = ? LIMIT ${start}, ${count};`;
+    return query(_sql, role);
   }
 
   // Check if the user id is a friend of the local user by checking the user id. If yes, return user_id and remark.
