@@ -15,7 +15,7 @@ export function showAds(ads) {
   }
 
   try {
-    const user_info = localStorage.getItem('userInfo');
+    const user_info = JSON.parse(localStorage.getItem('userInfo'));
     const { token } = user_info;
 
     window.socket.emit('subscribeAdsReward', { token });
