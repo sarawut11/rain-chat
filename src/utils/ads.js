@@ -10,6 +10,19 @@ export function showAds(ads) {
       <img src={asset_link} alt="ads" />
     </div>
   );
+  if (!window.location.pathname.includes('vitae-rain-group')) {
+    return;
+  }
+
+  try {
+    const user_info = localStorage.getItem('userInfo');
+    const { token } = user_info;
+
+    window.socket.emit('subscribeAdsReward', { token });
+  } catch (e) {
+    console.log(e);
+    return;
+  }
   const modal = Modal.success({
     // title: 'This is a notification message',
     content,
