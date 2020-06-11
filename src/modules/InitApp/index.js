@@ -21,6 +21,7 @@ import {
 import notification from '../../components/Notification';
 import BrowserNotification from '../BrowserNotification';
 import Chat from '../Chat';
+import { showAds, notifyRainComing, notifyRainReward } from '../../utils/ads';
 
 class InitApp {
   constructor(props) {
@@ -174,12 +175,15 @@ class InitApp {
   _listeningRain() {
     window.socket.on('rainComing', () => {
       console.log('Rain is coming soon');
+      notifyRainComing();
     });
     window.socket.on('showAds', ({ ads }) => {
       console.log('Show Ads', ads);
+      showAds(ads);
     });
     window.socket.on('getRain', ({ reward }) => {
       console.log('Getting Reward:', reward);
+      notifyRainReward(reward);
     });
   }
 
