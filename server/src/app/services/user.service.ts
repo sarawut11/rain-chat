@@ -91,6 +91,11 @@ export class UserService {
     return query(_sql, [role, username]);
   }
 
+  getUsersByRole(role: string, start: number, count: number) {
+    const _sql = `SELECT * FROM user_info WHERE role = ? LIMIT ${start}, ${count};`;
+    return query(_sql, role);
+  }
+
   // Check if the user id is a friend of the local user by checking the user id. If yes, return user_id and remark.
   isFriend(userId, fromUser) {
     const _sql =
@@ -143,6 +148,15 @@ export class UserService {
     return query(_sql, data);
   }
 
+  getSocketIdsByUserids(userIds: string[]) {
+    if (userIds.length === 0) {
+      return [];
+    }
+    const array = getInArraySQL(userIds);
+    const _sql = `SELECT socketid FROM user_info WHERE id IN (${array})`;
+    return query(_sql);
+  }
+
   getUserSocketId(toUserId) {
     const _sql = "SELECT socketid FROM user_info WHERE id=? limit 1 ;";
     return query(_sql, [toUserId]);
@@ -170,9 +184,7 @@ export class UserService {
   }
 
   resetPopbalance(userIds: string[]) {
-    let array = "";
-    userIds.forEach(id => array += "?,");
-    array = array.substring(0, array.length - 1);
+    const array = getInArraySQL(userIds);
     const _sql = `UPDATE user_info SET pop_balance = 0 WHERE id IN (${array})`;
     return query(_sql, userIds);
   }
@@ -183,13 +195,9 @@ export class UserService {
   }
 
   rainUsersBySocketId(socketIds, reward, popReward) {
-    let _sql = "";
-    const params = [];
-    socketIds.forEach(socketId => {
-      _sql += "UPDATE user_info SET balance = balance + ?, pop_balance = pop_balance + ? WHERE socketid LIKE ?;";
-      params.push(reward, popReward, socketId);
-    });
-    return query(_sql, params);
+    const array = getInArraySQL(socketIds);
+    const _sql = `UPDATE user_info SET balance = balance + ?, pop_balance = pop_balance + ? WHERE socketid IN (${array});`;
+    return query(_sql, [reward, popReward]);
   }
 
   // Add as a friend unilaterally (may later add the function of turning on friend verification)
@@ -222,3 +230,10 @@ export class UserService {
   //   return query(_sql, [userid]);
   // };
 }
+
+const getInArraySQL = array => {
+  let res = "";
+  array.forEach(element => res += "?,");
+  res = res.substring(0, res.length - 1);
+  return res;
+};
