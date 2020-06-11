@@ -65,7 +65,10 @@ export class RainContext {
       }
       console.log("Ads Rain Reward:", rainReward);
 
-      const socketIds = await userService.getSocketIdsByUserids(RainContext.usersToRainAds);
+      const socketIdData = await userService.getSocketIdsByUserids(RainContext.usersToRainAds);
+      const socketIds: string[] = [];
+      socketIdData.forEach(element => socketIds.push(element.socketid));
+
       await RainContext.instance.rainUsers(socketIds, rainReward);
       await adsService.rainAds(ads.id, impressions - RainContext.usersToRainAds.length, moment().utc().unix());
     } catch (error) {
@@ -73,7 +76,7 @@ export class RainContext {
     }
   }
 
-  async rainUsers(clients, rainReward) {
+  async rainUsers(clients: string[], rainReward: number) {
     if (clients.length === 0) {
       console.log("No clients to rain");
       return;
@@ -99,7 +102,7 @@ export class RainContext {
     }
 
     // Reset Pop Balance
-    const userIds = [];
+    const userIds: string[] = [];
     let popReward = 0;
     users.forEach(user => {
       userIds.push(user.id);

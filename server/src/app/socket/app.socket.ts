@@ -138,8 +138,8 @@ const initServer = server => {
       })
 
       // Rain Sockets
-      .on("subscribeAdsReward", async ({ userId }) => {
-        rainSockets.subscribeAdsReward(userId);
+      .on("subscribeAdsReward", async ({ token }) => {
+        rainSockets.subscribeAdsReward(token);
       });
 
     //  Fuzzy match users or groups

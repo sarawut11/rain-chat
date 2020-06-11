@@ -1,8 +1,13 @@
 import { socketServer } from "./app.socket";
 import { ServicesContext, RainContext } from "../context";
+import { authVerify } from "../middlewares/verify";
 
-export const subscribeAdsReward = (userId) => {
+export const subscribeAdsReward = (token) => {
+  const userInfo = authVerify(token);
+  if (userInfo === false) {
+    return;
+  }
   const rainContext = RainContext.getInstance();
-
-  rainContext.addUserToRainAds(userId);
+  const { id, username } = userInfo;
+  rainContext.addUserToRainAds(id);
 };

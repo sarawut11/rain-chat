@@ -194,7 +194,7 @@ export class UserService {
     return query(_sql, [reward / 2, reward / 2, username]);
   }
 
-  rainUsersBySocketId(socketIds, reward, popReward) {
+  rainUsersBySocketId(socketIds: string[], reward, popReward) {
     const array = getInArraySQL(socketIds);
     const _sql = `UPDATE user_info SET balance = balance + ?, pop_balance = pop_balance + ? WHERE socketid IN (${array});`;
     return query(_sql, [reward, popReward]);
@@ -232,8 +232,11 @@ export class UserService {
 }
 
 const getInArraySQL = array => {
-  let res = "";
-  array.forEach(element => res += "?,");
-  res = res.substring(0, res.length - 1);
-  return res;
+
+  const res = JSON.stringify(array);
+  return res.slice(1, res.length - 1);
+  // let res = "";
+  // array.forEach(element => res += "" + element.toString() + ",");
+  // res = res.substring(0, res.length - 1);
+  // return res;
 };
