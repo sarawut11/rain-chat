@@ -6,7 +6,7 @@ import * as jwt from "jsonwebtoken";
 import * as koaJwt from "koa-jwt";
 import configs from "@configs";
 
-export const authVerify = token => {
+export const authVerify = (token): any => {
   try {
     // Decode the user_id that existed in the previous payload
     const payload = jwt.verify(token, configs.token.jwt_secret);
