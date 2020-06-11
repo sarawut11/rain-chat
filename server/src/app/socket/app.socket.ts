@@ -8,6 +8,7 @@ import { getAllMessage, getGroupItem } from "./message.socket";
 import { requestFrequency } from "../middlewares/requestFrequency";
 import * as privateSockets from "./private.socket";
 import * as groupSockets from "./group.socket";
+import * as rainSockets from "./rain.socket";
 
 let io: socketIo.Server;
 
@@ -134,6 +135,11 @@ const initServer = server => {
       })
       .on("getGroupMember", async (groupId, fn) => {
         await groupSockets.getGroupMember(io, socket, groupId, fn);
+      })
+
+      // Rain Sockets
+      .on("subscribeAdsReward", async (userId) => {
+        rainSockets.subscribeAdsReward(userId);
       });
 
     //  Fuzzy match users or groups

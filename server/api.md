@@ -330,7 +330,7 @@
     ]
   }
   ```
-### /campaign/mod/reject/:adsId (POST)
+### /campaign/mod/:adsId/reject (POST)
   Reject requested ads.
 
   ***Response***
@@ -353,7 +353,7 @@
     }
   }
   ```
-### /campaign/mod/approve/:adsId (POST)
+### /campaign/mod/:adsId/approve (POST)
   Approve requested ads.
 
   ***Response***
@@ -540,6 +540,14 @@
       link,
       button_name,
     }
+  }
+  ```
+### subscribeAdsReward (Socket)
+  Subscribe to get a reward from the ads currently watching.
+  ***Data***
+  ```
+  {
+    userId: // id of the user.
   }
   ```
 ### getRain (Server)
