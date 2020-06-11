@@ -42,6 +42,7 @@ export class RainContext {
 
       // Show Ads First
       console.log("Raining - id:", ads.id);
+      RainContext.usersToRainAds = [];
       socketServer.broadcast("showAds", {
         ads: {
           id: ads.id,

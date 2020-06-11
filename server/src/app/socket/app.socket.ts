@@ -138,7 +138,7 @@ const initServer = server => {
       })
 
       // Rain Sockets
-      .on("subscribeAdsReward", async (userId) => {
+      .on("subscribeAdsReward", async ({ userId }) => {
         rainSockets.subscribeAdsReward(userId);
       });
 
