@@ -45,6 +45,9 @@ ul {
   width: 100%;
 }
 
+.ant-list-item-meta {
+  font-size: unset !important;
+}
 
 @media screen and (max-width: 647px) {
     .layout-wrapper{
