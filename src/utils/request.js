@@ -19,16 +19,13 @@ export default class Request {
       token = user_info.token;
     }
 
-    const axiosConfig = {
-      ...handleMethod,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
+    if (token && token.length > 0 && !url.contains('login') && !url.contains('register')) {
+      axios.defaults.headers.Authorization = `Bearer ${token}`;
+    }
 
     return new Promise((resolve, reject) => {
       // eslint-disable-next-line no-unused-expressions
-      axios[method](url, axiosConfig)
+      axios[method](url, handleMethod)
         .then(res => {
           const response = typeof res.data === 'object' ? res.data : JSON.parse(res.data);
           resolve(response);
@@ -38,8 +35,8 @@ export default class Request {
           if (error.response.status === 401) {
             window.socket.disconnect();
             localStorage.removeItem('userInfo');
-            window.location.href = '/login';
             notification.error('Token expired or unauthorized.');
+            window.location.href = '/login';
           } else {
             reject(error.response ? error.response.data : error);
           }
