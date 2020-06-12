@@ -3,11 +3,11 @@ import * as socketIo from "socket.io";
 
 import { ServicesContext } from "../context";
 import { authVerify } from "../middlewares/verify";
-import { getUploadToken } from "../utils/qiniu";
 import { getAllMessage, getGroupItem } from "./message.socket";
 import { requestFrequency } from "../middlewares/requestFrequency";
 import * as privateSockets from "./private.socket";
 import * as groupSockets from "./group.socket";
+import * as rainSockets from "./rain.socket";
 
 let io: socketIo.Server;
 
@@ -134,6 +134,11 @@ const initServer = server => {
       })
       .on("getGroupMember", async (groupId, fn) => {
         await groupSockets.getGroupMember(io, socket, groupId, fn);
+      })
+
+      // Rain Sockets
+      .on("subscribeAdsReward", async ({ token }) => {
+        rainSockets.subscribeAdsReward(token);
       });
 
     //  Fuzzy match users or groups
@@ -147,18 +152,6 @@ const initServer = server => {
           fuzzyMatchResult = await groupService.fuzzyMatchGroups(field);
         }
         fn({ fuzzyMatchResult, searchUser: data.searchUser });
-      } catch (error) {
-        console.log("error", error.message);
-        io.to(socketId).emit("error", { code: 500, message: error.message });
-      }
-    });
-
-    // qiniu token
-    socket.on("getQiniuToken", async (data, fn) => {
-      try {
-        const uploadToken = await getUploadToken();
-        console.log("getQiniuToken data=>", data, "time=>", new Date().toLocaleString());
-        return fn(uploadToken);
       } catch (error) {
         console.log("error", error.message);
         io.to(socketId).emit("error", { code: 500, message: error.message });

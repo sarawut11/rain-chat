@@ -330,7 +330,7 @@
     ]
   }
   ```
-### /campaign/mod/reject/:adsId (POST)
+### /campaign/mod/:adsId/reject (POST)
   Reject requested ads.
 
   ***Response***
@@ -353,7 +353,7 @@
     }
   }
   ```
-### /campaign/mod/approve/:adsId (POST)
+### /campaign/mod/:adsId/approve (POST)
   Approve requested ads.
 
   ***Response***
@@ -373,6 +373,46 @@
       status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
       last_time,    // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
+    }
+  }
+  ```
+## 1.6 Role Management API
+### /membership/role/users (GET)
+  Get users with pagination.
+  
+  ***Parameters***
+  | Fields   | Description                    |
+  | -------- | ------------------------------ |
+  | role     | OWNER, MODERATOR, FREE, MEMBER |
+  | name     | name of the user to search     |
+  | username | username of the user to search |
+  | email    | email of the user to search    |
+  | page     | default = 0                    |
+  | count    | default = 10                   |
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    totalCount,
+    users: []
+  }
+  ```
+### /membership/role/update (POST)
+  Update user's role by username
+
+  ***Request Body***
+  | Fields   | Description                    |
+  | -------- | ------------------------------ |
+  | username | username of the user to update |
+  | role     | OWNER, MODERATOR, FREE, MEMBER |
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message,
+    userInfo: { // updated user info when success == true
     }
   }
   ```
@@ -540,6 +580,14 @@
       link,
       button_name,
     }
+  }
+  ```
+### subscribeAdsReward (Client)
+  Subscribe to get a reward from the ads currently watching.
+  ***Data***
+  ```
+  {
+    userId: // id of the user.
   }
   ```
 ### getRain (Server)

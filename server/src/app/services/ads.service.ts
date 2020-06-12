@@ -48,7 +48,7 @@ export class AdsService {
 
   cancelAds(adsId, userId) {
     const _sql = "UPDATE ads_info SET status = ? WHERE id = ? and user_id = ?;";
-    return query(_sql, [AdsService.AdsStatus.Pending, adsId, userId]);
+    return query(_sql, [AdsService.AdsStatus.Created, adsId, userId]);
   }
 
   approveAds(adsId) {

@@ -25,4 +25,7 @@ export const apiRoutes = new Router()
 
   .get("/campaign/mod/all", APIController.getAllAds)
   .post("/campaign/mod/:adsId/reject", APIController.rejectAds)
-  .post("/campaign/mod/:adsId/approve", APIController.approveAds);
+  .post("/campaign/mod/:adsId/approve", APIController.approveAds)
+
+  .get("/membership/role/users", APIController.getAllUsers)
+  .post("/membership/role/update", APIController.setUserRole);
