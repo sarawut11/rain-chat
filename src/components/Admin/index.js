@@ -3,7 +3,7 @@
 /* eslint-disable react/jsx-wrap-multilines */
 /* eslint-disable react/prefer-stateless-function */
 import React, { Component } from 'react';
-import { List, notification, Switch, Row, Col } from 'antd';
+import { List, notification, Switch } from 'antd';
 import UserAvatar from '../UserAvatar';
 import Request from '../../utils/request';
 
