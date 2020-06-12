@@ -126,6 +126,31 @@ CREATE TABLE `ads_info` (
   `time` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+# Dump of table membership_info
+# ------------------------------------------------------------
+DROP TABLE IF EXISTS `membership_info`;
+CREATE TABLE `membership_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `transaction_id` varchar(200) DEFAULT '',
+  `status` tinyint(1) NOT NULL,
+  `confirm_time` int(11) DEFAULT 0,
+  `time` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+# Dump of table membership_info
+# ------------------------------------------------------------
+DROP TABLE IF EXISTS `transaction_info`;
+CREATE TABLE `transaction_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `transaction_refid` varchar(200) DEFAULT '',
+  `type` varchar(200) NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT '0',
+  `confirm_time` int(11) DEFAULT 0,
+  `time` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

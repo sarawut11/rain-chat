@@ -91,20 +91,24 @@ export class UserService {
     return query(_sql, [role, username]);
   }
 
-  getUsers({ start, count, name, username, role, email }) {
+  getUsers({ start, count, name, username, role, email, searchString }) {
     if (role === undefined) role = "";
     if (name === undefined) name = "";
     if (username === undefined) username = "";
     if (email === undefined) email = "";
+    if (searchString === undefined) searchString = "";
     const _sql = `
       SELECT *, COUNT(*) OVER() as totalCount FROM user_info
       WHERE
-        role LIKE '%${role}%' AND
+        (role LIKE '%${role}%' AND
         username LIKE '%${username}%' AND
         name LIKE '%${name}%' AND
-        email LIKE '%${email}%'
+        email LIKE '%${email}%') AND
+        (role LIKE '%${searchString}%' OR
+        username LIKE '%${searchString}%' OR
+        name LIKE '%${searchString}%' OR
+        email LIKE '%${searchString}%')
       LIMIT ${start}, ${count};`;
-    console.log(_sql);
     return query(_sql);
   }
 

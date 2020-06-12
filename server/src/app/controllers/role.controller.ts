@@ -10,8 +10,8 @@ export const getAllUsers = async (ctx, next) => {
       return;
     }
 
-    const { role, name, email, username: searchUsername, page, count } = ctx.request.query;
-    const users = await getUsersByRole(page, count, role, name, searchUsername, email);
+    const { role, name, email, username: searchUsername, searchString, page, count } = ctx.request.query;
+    const users = await getUsersByRole(page, count, role, name, searchUsername, email, searchString);
     const totalCount = users.length === 0 ? 0 : users[0].totalCount;
     ctx.body = {
       success: true,
@@ -50,6 +50,67 @@ export const setUserRole = async (ctx, next) => {
       message: "Successfully Updated",
       userInfo: user[0],
     };
+  } catch (error) {
+    console.log(error.message);
+    ctx.body = {
+      success: false,
+      message: error.message
+    };
+  }
+};
+
+export const upgradeMembership = async (ctx, next) => {
+  try {
+    const { username } = ctx.state.user;
+    const { userService, membershipService } = ServicesContext.getInstance();
+
+    const checkUser = await checkUserInfo(username);
+    if (checkUser.success === false) {
+      ctx.body = checkUser;
+      return;
+    }
+    const { userInfo } = checkUser;
+    if (userInfo.role === UserService.Role.OWNER || userInfo.role === UserService.Role.MODERATOR) {
+      ctx.body = {
+        success: false,
+        message: "You can't upgrade your membership."
+      };
+    }
+
+    await membershipService.insertMembershipInfo(userInfo.user_id);
+    ctx.body = {
+      success: true,
+      message: "Your membership request is in pending."
+    };
+  } catch (error) {
+    console.log(error.message);
+    ctx.body = {
+      success: false,
+      message: error.message
+    };
+  }
+};
+
+export const confirmMembership = async (ctx, next) => {
+  try {
+    const { username } = ctx.state.user;
+    const { userService, membershipService } = ServicesContext.getInstance();
+
+    const checkUser = await checkUserInfo(username);
+    if (checkUser.success === false) {
+      ctx.body = checkUser;
+      return;
+    }
+    const { userInfo } = checkUser;
+    if (userInfo.role !== UserService.Role.MODERATOR) {
+      ctx.body = {
+        success: false,
+        message: "Invalid Role"
+      };
+      return;
+    }
+
+
   } catch (error) {
     console.log(error.message);
     ctx.body = {
@@ -122,12 +183,12 @@ const checkUserInfo = (username, role?): Promise<any> => new Promise(async (reso
   }
 });
 
-const getUsersByRole = (page = 0, count = 10, role?, name?, username?, email?): Promise<any> => new Promise(async (resolve, reject) => {
+const getUsersByRole = (page = 0, count = 10, role?, name?, username?, email?, searchString?): Promise<any> => new Promise(async (resolve, reject) => {
   if (count === 0) return ([]);
   const { userService } = ServicesContext.getInstance();
   const users = await userService.getUsers({
     start: page * count, count,
-    role, name, username, email
+    role, name, username, email, searchString
   });
   resolve(users);
 });
