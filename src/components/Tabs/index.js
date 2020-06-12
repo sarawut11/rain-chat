@@ -10,6 +10,8 @@ import {
   MessageOutlined,
   LikeFilled,
   LikeOutlined,
+  DashboardFilled,
+  DashboardOutlined,
 } from '@ant-design/icons';
 import MyInfo from '../MyInfo';
 import { initAppOnce } from './help';
@@ -53,6 +55,17 @@ class Tabs extends Component {
             )}
           </Link>
         </div>
+        {this._userInfo && this._userInfo.role && this._userInfo.role === 'OWNER' ? (
+          <div className="tab">
+            <Link to="/admin">
+              {pathname === '/admin' ? (
+                <DashboardFilled className="icon" />
+              ) : (
+                <DashboardOutlined className="icon" />
+              )}
+            </Link>
+          </div>
+        ) : null}
       </div>
     );
   }
