@@ -10,14 +10,26 @@ export const getAllUsers = async (ctx, next) => {
       return;
     }
 
-    const { role, name, email, username: searchUsername, page, count } = ctx.request.query;
-    const users = await getUsersByRole(page, count, role, name, searchUsername, email);
-    const totalCount = users.length === 0 ? 0 : users[0].totalCount;
-    ctx.body = {
-      success: true,
-      totalCount,
-      users
-    };
+    const { role, page, count } = ctx.request.query;
+    if (role === undefined) { // Get All Users
+      const owners = await getUsersByRole(UserService.Role.OWNER);
+      const moderators = await getUsersByRole(UserService.Role.MODERATOR);
+      const members = await getUsersByRole(UserService.Role.UPGRADED_USER);
+      const freeUsers = await getUsersByRole(UserService.Role.FREE);
+      ctx.body = {
+        success: true,
+        owners,
+        moderators,
+        members,
+        freeUsers
+      };
+    } else {
+      const users = await getUsersByRole(role, page, count);
+      ctx.body = {
+        success: true,
+        users
+      };
+    }
   } catch (error) {
     console.error(error.message);
     ctx.body = {
@@ -122,12 +134,9 @@ const checkUserInfo = (username, role?): Promise<any> => new Promise(async (reso
   }
 });
 
-const getUsersByRole = (page = 0, count = 10, role?, name?, username?, email?): Promise<any> => new Promise(async (resolve, reject) => {
+const getUsersByRole = (role = UserService.Role.FREE, page = 0, count = 10): Promise<any> => new Promise(async (resolve, reject) => {
   if (count === 0) return ([]);
   const { userService } = ServicesContext.getInstance();
-  const users = await userService.getUsers({
-    start: page * count, count,
-    role, name, username, email
-  });
+  const users = await userService.getUsersByRole(role, page * count, count);
   resolve(users);
 });
