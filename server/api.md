@@ -378,32 +378,23 @@
   ```
 ## 1.6 Role Management API
 ### /membership/role/users (GET)
-  Get first 10 users for each role
-
-  ***Response***
-  ```
-  {
-    success: true/false,
-    owners: [],
-    moderators: [],
-    members: [],
-    freeUsers: []
-  }
-  ```
-### /membership/role/users?role=x&page=y&count=z (GET)
-  Get users by role with pagination.
+  Get users with pagination.
   
   ***Parameters***
-  | Fields | Description                    |
-  | ------ | ------------------------------ |
-  | role   | OWNER, MODERATOR, FREE, MEMBER |
-  | page   | default = 0                    |
-  | count  | default = 10                   |
+  | Fields   | Description                    |
+  | -------- | ------------------------------ |
+  | role     | OWNER, MODERATOR, FREE, MEMBER |
+  | name     | name of the user to search     |
+  | username | username of the user to search |
+  | email    | email of the user to search    |
+  | page     | default = 0                    |
+  | count    | default = 10                   |
 
   ***Response***
   ```
   {
     success: true/false,
+    totalCount,
     users: []
   }
   ```

@@ -91,9 +91,21 @@ export class UserService {
     return query(_sql, [role, username]);
   }
 
-  getUsersByRole(role: string, start: number, count: number) {
-    const _sql = `SELECT * FROM user_info WHERE role = ? LIMIT ${start}, ${count};`;
-    return query(_sql, role);
+  getUsers({ start, count, name, username, role, email }) {
+    if (role === undefined) role = "";
+    if (name === undefined) name = "";
+    if (username === undefined) username = "";
+    if (email === undefined) email = "";
+    const _sql = `
+      SELECT *, COUNT(*) OVER() as totalCount FROM user_info
+      WHERE
+        role LIKE '%${role}%' AND
+        username LIKE '%${username}%' AND
+        name LIKE '%${name}%' AND
+        email LIKE '%${email}%'
+      LIMIT ${start}, ${count};`;
+    console.log(_sql);
+    return query(_sql);
   }
 
   // Check if the user id is a friend of the local user by checking the user id. If yes, return user_id and remark.
@@ -232,11 +244,8 @@ export class UserService {
 }
 
 const getInArraySQL = array => {
-
-  const res = JSON.stringify(array);
-  return res.slice(1, res.length - 1);
-  // let res = "";
-  // array.forEach(element => res += "" + element.toString() + ",");
-  // res = res.substring(0, res.length - 1);
-  // return res;
+  let res = "";
+  array.forEach(element => res += `'${element}',`);
+  res = res.substring(0, res.length - 1);
+  return res;
 };
