@@ -9,6 +9,7 @@ const FUNCTION_ROUTERS = [
   '/private_chat/:user_id',
   '/setting',
   '/ads',
+  '/admin',
 ];
 const AUTH_ROUTERS = ['/login', '/register'];
 
@@ -26,7 +27,7 @@ function MainView(props) {
     MainViewClassName = 'layout-left-mobile';
   }
 
-  if (pathname === '/ads') {
+  if (pathname === '/ads' || pathname === '/admin') {
     MainViewClassName = 'layout-left layout-all-left';
   }
 
@@ -44,6 +45,7 @@ function MainView(props) {
         component={loadable(() => import('../containers/SettingPage'))}
       />
       <Route path="/ads" exact component={loadable(() => import('../containers/AdsPage'))} />
+      <Route path="/admin" exact component={loadable(() => import('../containers/AdminPage'))} />
     </div>
   );
 }
@@ -58,7 +60,7 @@ function RightView(props) {
     RightViewClassName = 'layout-right';
   }
 
-  if (pathname === '/ads') {
+  if (pathname === '/ads' || pathname === '/admin') {
     RightViewClassName = 'layout-no-right';
   }
 

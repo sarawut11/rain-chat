@@ -10,6 +10,7 @@ export default class Request {
   }
 
   static async axios(method = 'get', url, params) {
+    console.log('request', url);
     const handleMethod = method === 'get' && params ? { params } : params;
 
     const user_info = JSON.parse(localStorage.getItem('userInfo'));
@@ -19,7 +20,7 @@ export default class Request {
       token = user_info.token;
     }
 
-    if (token && token.length > 0 && !url.contains('login') && !url.contains('register')) {
+    if (token && token.length > 0 && !url.includes('login') && !url.includes('register')) {
       axios.defaults.headers.Authorization = `Bearer ${token}`;
     }
 
