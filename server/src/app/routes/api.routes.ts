@@ -3,8 +3,8 @@ import * as APIController from "../controllers";
 
 export const apiRoutes = new Router()
   // Authentication
-  .post("/register", APIController.registerController)
-  .post("/login", APIController.loginController)
+  .post("/register", APIController.registerUser)
+  .post("/login", APIController.loginUser)
 
   // Referral
   .post("/ref/generate", APIController.generateReferral)
@@ -27,5 +27,8 @@ export const apiRoutes = new Router()
   .post("/campaign/mod/:adsId/reject", APIController.rejectAds)
   .post("/campaign/mod/:adsId/approve", APIController.approveAds)
 
+  // Membership
   .get("/membership/role/users", APIController.getAllUsers)
-  .post("/membership/role/update", APIController.setUserRole);
+  .post("/membership/role/update", APIController.setUserRole)
+  .post("/membership/role/upgrade/request", APIController.upgradeMembership)
+  .post("/membership/role/upgrade/confirm", APIController.confirmMembership);

@@ -394,11 +394,15 @@
   Get users by role with pagination.
   
   ***Parameters***
-  | Fields | Description                    |
-  | ------ | ------------------------------ |
-  | role   | OWNER, MODERATOR, FREE, MEMBER |
-  | page   | default = 0                    |
-  | count  | default = 10                   |
+  | Fields       | Description                    |
+  | ------------ | ------------------------------ |
+  | role         | OWNER, MODERATOR, FREE, MEMBER |
+  | name         | name of the user to search     |
+  | username     | username of the user to search |
+  | email        | email of the user to search    |
+  | searchString | string to search               |
+  | page         | default = 0                    |
+  | count        | default = 10                   |
 
   ***Response***
   ```

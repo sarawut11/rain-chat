@@ -3,7 +3,8 @@ import {
   GroupChatService,
   GroupService,
   UserService,
-  AdsService
+  AdsService,
+  MembershipService
 } from "./../services";
 
 export class ServicesContext {
@@ -63,6 +64,16 @@ export class ServicesContext {
   }
   public setAdsService(service: AdsService): ServicesContext {
     this._adsService = service;
+    return this;
+  }
+
+  // membership
+  private _membershipService: MembershipService;
+  public get membershipService() {
+    return this._membershipService;
+  }
+  public setMembershipService(service: MembershipService): ServicesContext {
+    this._membershipService = service;
     return this;
   }
 }
