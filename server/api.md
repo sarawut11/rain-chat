@@ -49,6 +49,18 @@
     message: "Success or Failed Message"
   }
   ```
+### /token/validate (POST)
+  ***Request Body***
+  | Fields | Description       |
+  | ------ | ----------------- |
+  | token  | Token to validate |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Valid or Invalid Message"
+  }
+  ```
 
 ## 1.2 Referral / Sponsor
 ### /ref/generate (POST)

@@ -44,6 +44,7 @@ export class UserService {
   }
 
   findUserByEmailOrUsername(email, username) {
+    if (email === "") email = undefined;
     const _sql = "SELECT * FROM user_info WHERE email = ? OR username = ?;";
     return query(_sql, [email, username]);
   }

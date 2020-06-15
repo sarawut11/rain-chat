@@ -17,8 +17,7 @@ export const loginUser = async (ctx, next) => {
     };
     return;
   }
-  console.log(username, email, password);
-  const RowDataPacket = await userService.findUserByUsername(username);
+  const RowDataPacket = await userService.findUserByEmailOrUsername(email, username);
   const res = JSON.parse(JSON.stringify(RowDataPacket));
   if (res.length > 0) {
     //   After the verification is successful, the server will issue a Token, and then send the Token to the client
@@ -133,16 +132,24 @@ export const validateToken = async (ctx, next) => {
     }
 
     const { username, id } = checkResult;
-    // const checkUser = await checkUserInfo(username);
-    // if (checkUser.success === false) {
-    //   ctx.body = checkUser;
-    //   return;
-    // }
+    const { userService } = ServicesContext.getInstance();
+    const RowDataPacket = await userService.getUserInfoByUsername(username);
+    if (RowDataPacket.length <= 0) {
+      ctx.body = {
+        success: false,
+        message: "Invalid Username."
+      };
+      return;
+    }
+    ctx.body = {
+      success: true,
+      message: "Valid"
+    };
   } catch (error) {
     console.log(error.message);
     ctx.body = {
       success: false,
-      message: "Registration failed!",
+      message: "Invalid Username.",
     };
   }
 };

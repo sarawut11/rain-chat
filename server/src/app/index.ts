@@ -16,7 +16,7 @@ export const App = Server.init(app => {
     .use(compress())
     .use(cors(corsArgs))
     .use(jwt({ secret: configs.token.jwt_secret }).unless({
-      path: [/\/login/g, /\/register/g, /\/ref\/validate/g]
+      path: [/\/login/g, /\/register/g, /\/ref\/validate/g, /\/token\/validate/g]
     }))
     .use(koaBody({ multipart: true }))
     .use(appRoutes.routes())

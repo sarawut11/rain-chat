@@ -24,7 +24,7 @@ CREATE TABLE `user_info` (
   `username` varchar(50) NOT NULL DEFAULT 'NOT NULL',
   `password` varchar(40) DEFAULT NULL,
   `name` varchar(20) DEFAULT NULL,
-  `email` varchar(40) DEFAULT '',
+  `email` varchar(40) NOT NULL DEFAULT '',
   `avatar` varchar(250) DEFAULT '',
   `intro` varchar(100) DEFAULT NULL,
   `socketid` char(255) DEFAULT NULL,
