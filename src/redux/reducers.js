@@ -10,6 +10,7 @@ import { fetchAllGroupChatsReducer } from '../containers/GroupChatPage/groupChat
 import { fetchAllPrivateChatsReducer } from '../containers/PrivateChatPage/privateChatReducer';
 import { setGlobalSettingsReducer } from '../containers/SettingPage/settingReducer';
 import { setAdsReducer } from '../containers/AdsPage/adsReducer';
+import { setAdminReducer } from '../containers/AdminPage/adminReducer';
 
 export default combineReducers({
   homePageListState: getHomePageListReducer,
@@ -20,4 +21,5 @@ export default combineReducers({
   shareState: shareReducer,
   globalSettingsState: setGlobalSettingsReducer,
   adsState: setAdsReducer,
+  adminState: setAdminReducer,
 });

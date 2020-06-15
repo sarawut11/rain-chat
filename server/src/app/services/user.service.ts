@@ -91,6 +91,27 @@ export class UserService {
     return query(_sql, [role, username]);
   }
 
+  getUsers({ start, count, name, username, role, email, searchString }) {
+    if (role === undefined) role = "";
+    if (name === undefined) name = "";
+    if (username === undefined) username = "";
+    if (email === undefined) email = "";
+    if (searchString === undefined) searchString = "";
+    const _sql = `
+      SELECT *, COUNT(*) OVER() as totalCount FROM user_info
+      WHERE
+        (role LIKE '%${role}%' AND
+        username LIKE '%${username}%' AND
+        name LIKE '%${name}%' AND
+        email LIKE '%${email}%') AND
+        (role LIKE '%${searchString}%' OR
+        username LIKE '%${searchString}%' OR
+        name LIKE '%${searchString}%' OR
+        email LIKE '%${searchString}%')
+      LIMIT ${start}, ${count};`;
+    return query(_sql);
+  }
+
   // Check if the user id is a friend of the local user by checking the user id. If yes, return user_id and remark.
   isFriend(userId, fromUser) {
     const _sql =
@@ -143,6 +164,15 @@ export class UserService {
     return query(_sql, data);
   }
 
+  getSocketIdsByUserids(userIds: string[]) {
+    if (userIds.length === 0) {
+      return [];
+    }
+    const array = getInArraySQL(userIds);
+    const _sql = `SELECT socketid FROM user_info WHERE id IN (${array})`;
+    return query(_sql);
+  }
+
   getUserSocketId(toUserId) {
     const _sql = "SELECT socketid FROM user_info WHERE id=? limit 1 ;";
     return query(_sql, [toUserId]);
@@ -170,9 +200,7 @@ export class UserService {
   }
 
   resetPopbalance(userIds: string[]) {
-    let array = "";
-    userIds.forEach(id => array += "?,");
-    array = array.substring(0, array.length - 1);
+    const array = getInArraySQL(userIds);
     const _sql = `UPDATE user_info SET pop_balance = 0 WHERE id IN (${array})`;
     return query(_sql, userIds);
   }
@@ -182,14 +210,10 @@ export class UserService {
     return query(_sql, [reward / 2, reward / 2, username]);
   }
 
-  rainUsersBySocketId(socketIds, reward, popReward) {
-    let _sql = "";
-    const params = [];
-    socketIds.forEach(socketId => {
-      _sql += "UPDATE user_info SET balance = balance + ?, pop_balance = pop_balance + ? WHERE socketid LIKE ?;";
-      params.push(reward, popReward, socketId);
-    });
-    return query(_sql, params);
+  rainUsersBySocketId(socketIds: string[], reward, popReward) {
+    const array = getInArraySQL(socketIds);
+    const _sql = `UPDATE user_info SET balance = balance + ?, pop_balance = pop_balance + ? WHERE socketid IN (${array});`;
+    return query(_sql, [reward, popReward]);
   }
 
   // Add as a friend unilaterally (may later add the function of turning on friend verification)
@@ -222,3 +246,13 @@ export class UserService {
   //   return query(_sql, [userid]);
   // };
 }
+
+const getInArraySQL = array => {
+
+  const res = JSON.stringify(array);
+  return res.slice(1, res.length - 1);
+  // let res = "";
+  // array.forEach(element => res += "" + element.toString() + ",");
+  // res = res.substring(0, res.length - 1);
+  // return res;
+};

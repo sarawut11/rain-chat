@@ -7,7 +7,7 @@ import configs from "@configs";
 import { ServicesContext, RainContext, CMCContext } from "./context";
 import { appRoutes } from "./routes";
 import { Server } from "./server";
-import { ChatService, GroupChatService, GroupService, UserService, AdsService } from "./services";
+import { ChatService, GroupChatService, GroupService, UserService, AdsService, MembershipService } from "./services";
 
 const corsArgs = configs.production ? { origin: "https://production_link" } : {};
 
@@ -30,7 +30,8 @@ export const App = Server.init(app => {
       .setGroupService(new GroupService())
       .setChatService(new ChatService())
       .setGroupChatService(new GroupChatService())
-      .setAdsService(new AdsService());
+      .setAdsService(new AdsService())
+      .setMembershipService(new MembershipService());
     RainContext.getInstance();
     CMCContext.getInstance();
     Server.run(configs.port);

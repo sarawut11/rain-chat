@@ -1,0 +1,22 @@
+.ads-view-modal {
+  width: 50% !important;
+  img {
+    width: 100%;
+  }
+
+  .ant-modal-confirm-btns {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .ads-view-modal {
+    width: 100% !important;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .ads-view-modal {
+    width: 600px !important;
+  }
+}
