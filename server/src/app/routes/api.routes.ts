@@ -5,6 +5,7 @@ export const apiRoutes = new Router()
   // Authentication
   .post("/register", APIController.registerUser)
   .post("/login", APIController.loginUser)
+  .post("/token/validate", APIController.validateToken)
 
   // Referral
   .post("/ref/generate", APIController.generateReferral)
