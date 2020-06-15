@@ -39,4 +39,9 @@ export default {
     expireIn: 60 * 60 * 1 // One hour
   },
   crypto_key: "VITAE-RAIN-CHAT",
+  qiniu: {
+    accessKey: "",
+    secretKey: "",
+    bucket: "",
+  }
 };

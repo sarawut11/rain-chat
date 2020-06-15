@@ -249,8 +249,11 @@ export class UserService {
 }
 
 const getInArraySQL = array => {
-  let res = "";
-  array.forEach(element => res += `'${element}',`);
-  res = res.substring(0, res.length - 1);
-  return res;
+
+  const res = JSON.stringify(array);
+  return res.slice(1, res.length - 1);
+  // let res = "";
+  // array.forEach(element => res += "" + element.toString() + ",");
+  // res = res.substring(0, res.length - 1);
+  // return res;
 };
