@@ -31,7 +31,7 @@ export const getAllUsers = async (ctx, next) => {
 export const setUserRole = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
-    const { username: assigneeUsername, role } = ctx.request.body;
+    const { username: assigneeUsername } = ctx.request.body;
     const { userService } = ServicesContext.getInstance();
 
     const checkRole = await isOwner(username);
@@ -39,12 +39,13 @@ export const setUserRole = async (ctx, next) => {
       ctx.body = checkRole;
       return;
     }
-    const checkUser = await checkUserInfo(assigneeUsername, role);
+    const checkUser = await checkUserInfo(assigneeUsername);
     if (checkUser.success === false) {
       ctx.body = checkUser;
       return;
     }
-    await userService.updateRole(assigneeUsername, role);
+    const { userInfo } = checkUser;
+    await userService.updateMembership(userInfo.user_id, UserService.Role.MODERATOR);
     const user = await userService.findUserByUsername(username);
     ctx.body = {
       success: true,
@@ -125,7 +126,7 @@ export const confirmMembership = async (ctx, next) => {
     const userInfo = RowDataPacket[0];
 
     // Update UserInfo & Transaction Info
-    await userService.updateRole(username, UserService.Role.UPGRADED_USER);
+    await userService.updateMembership(userId, UserService.Role.UPGRADED_USER);
     await transactionService.confirmMembershipRequest(userId, amount);
 
     // Revenue Share Model

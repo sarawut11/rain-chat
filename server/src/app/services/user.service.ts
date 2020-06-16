@@ -1,3 +1,4 @@
+import * as moment from "moment";
 import { query } from "../utils/db";
 import configs from "@configs";
 import { isNullOrUndefined } from "util";
@@ -27,6 +28,7 @@ export class UserService {
     popBalance: "pop_balance",
     refcode: "refcode",
     role: "role",
+    lastUpgradeTime: "last_upgrade_time",
   };
 
   // Fuzzy matching users
@@ -254,6 +256,34 @@ export class UserService {
       ) as b
       SET a.${this.columns.balance} = a.${this.columns.balance} + ? / b.total;`;
     return query(_sql, [role, amount]);
+  }
+
+  updateMembership(userId, role) {
+    const _sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET
+        ${this.columns.role} = ?
+        ${this.columns.lastUpgradeTime} = ?
+      WHERE ${this.columns.id} = ?;
+    `;
+    return query(_sql, [role, moment().utc().unix(), userId]);
+  }
+
+  getUsersByExpired(role, expireTime) {
+    const _sql = `
+      SELECT * FROM ${this.TABLE_NAME}
+      WHERE ${this.columns.role} = ? AND ${this.columns.lastUpgradeTime} < ?;
+    `;
+    return query(_sql, [role, expireTime]);
+  }
+
+  resetExpiredRole(role, expireTime) {
+    const _sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET ${this.columns.role} = ?
+      WHERE ${this.columns.role} = ? AND ${this.columns.lastUpgradeTime} < ?;
+    `;
+    return query(_sql, [UserService.Role.FREE, role, expireTime]);
   }
 
   // Add as a friend unilaterally (may later add the function of turning on friend verification)

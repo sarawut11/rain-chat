@@ -4,7 +4,7 @@ import * as cors from "@koa/cors";
 import * as jwt from "koa-jwt";
 import configs from "@configs";
 
-import { ServicesContext, RainContext, CMCContext } from "./context";
+import { ServicesContext, RainContext, CMCContext, DailyContext } from "./context";
 import { appRoutes } from "./routes";
 import { Server } from "./server";
 import {
@@ -40,6 +40,7 @@ export const App = Server.init(app => {
       .setAdsService(new AdsService())
       .setTransactionService(new TransactionService());
     RainContext.getInstance();
+    DailyContext.getInstance();
     CMCContext.getInstance();
     Server.run(configs.port);
   });

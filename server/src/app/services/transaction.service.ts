@@ -46,8 +46,9 @@ export class TransactionService {
     UPDATE ${this.TABLE_NAME}
     SET
       ${this.columns.status} = ?,
-      ${this.columns.paidAmount} = ?
+      ${this.columns.paidAmount} = ?,
+      ${this.columns.confirmTime} = ?
     WHERE user_id = ?;`;
-    return query(_sql, [TransactionService.STATUS.CONFIRMED, amount, userId]);
+    return query(_sql, [TransactionService.STATUS.CONFIRMED, amount, userId, moment().utc().unix()]);
   }
 }
