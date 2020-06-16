@@ -262,7 +262,7 @@ export class UserService {
     const _sql = `
       UPDATE ${this.TABLE_NAME}
       SET
-        ${this.columns.role} = ?
+        ${this.columns.role} = ?,
         ${this.columns.lastUpgradeTime} = ?
       WHERE ${this.columns.id} = ?;
     `;
@@ -318,11 +318,12 @@ export class UserService {
 }
 
 const getInArraySQL = array => {
-
-  const res = JSON.stringify(array);
-  return res.slice(1, res.length - 1);
-  // let res = "";
-  // array.forEach(element => res += "" + element.toString() + ",");
-  // res = res.substring(0, res.length - 1);
-  // return res;
+  let res = "";
+  array.forEach(element => {
+    if (element !== null && element !== undefined && element !== "") {
+      res += "'" + element.toString() + "',";
+    }
+  });
+  res = res.substring(0, res.length - 1);
+  return res;
 };

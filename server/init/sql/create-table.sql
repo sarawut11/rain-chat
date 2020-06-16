@@ -34,7 +34,7 @@ CREATE TABLE `user_info` (
   `pop_balance` double DEFAULT 0,
   `refcode` varchar(50) NOT NULL DEFAULT '',
   `role` varchar(20) DEFAULT 'FREE',
-  `last_upgrade_time` int(11) NOT NULL,
+  `last_upgrade_time` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 # Dump of table group_info

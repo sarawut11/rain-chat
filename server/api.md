@@ -423,14 +423,13 @@
     users: []
   }
   ```
-### /membership/role/update (POST)
-  Update user's role by username
+### /membership/role/update/moderator (POST)
+  Update role to Moderator
 
   ***Request Body***
-  | Fields   | Description                      |
-  | -------- | -------------------------------- |
-  | username | username of the user to update   |
-  | role     | OWNER, MODERATOR, FREE, UPGRADED |
+  | Fields   | Description                    |
+  | -------- | ------------------------------ |
+  | username | username of the user to update |
 
   ***Response***
   ```
@@ -439,6 +438,17 @@
     message,
     userInfo: { // updated user info when success == true
     }
+  }
+  ```
+
+### /membership/role/upgrade/request (POST)
+  Upgrade Membership
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message,
   }
   ```
 # 2. Socket Events

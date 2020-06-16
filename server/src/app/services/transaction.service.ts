@@ -41,7 +41,7 @@ export class TransactionService {
     return query(_sql, [userId, TransactionService.TYPE.MEMBERSHIP, TransactionService.STATUS.REQUESTED, expectAmount, moment().utc().unix()]);
   }
 
-  confirmMembershipRequest(userId: string, amount: number) {
+  confirmMembershipRequest(userId: string, amount: number, confirmTime: number) {
     const _sql = `
     UPDATE ${this.TABLE_NAME}
     SET
@@ -49,6 +49,6 @@ export class TransactionService {
       ${this.columns.paidAmount} = ?,
       ${this.columns.confirmTime} = ?
     WHERE user_id = ?;`;
-    return query(_sql, [TransactionService.STATUS.CONFIRMED, amount, userId, moment().utc().unix()]);
+    return query(_sql, [TransactionService.STATUS.CONFIRMED, amount, confirmTime, userId]);
   }
 }

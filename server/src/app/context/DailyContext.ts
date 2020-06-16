@@ -26,6 +26,7 @@ export class DailyContext {
     // second ( optional )
     DailyContext.membershipJob = new CronJob("0 0 * * *", async () => {
       try {
+        console.log("Checking Membership Expiration");
         const { userService } = ServicesContext.getInstance();
         const expireTime = moment().utc().subtract(1, "months").unix();
         const expiredUsers = await userService.getUsersByExpired(UserService.Role.UPGRADED_USER, expireTime);
@@ -34,6 +35,6 @@ export class DailyContext {
       } catch (error) {
         console.log(error.message);
       }
-    });
+    }, undefined, true, "UTC");
   }
 }

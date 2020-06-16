@@ -31,9 +31,8 @@ export const apiRoutes = new Router()
   // Membership
   .get("/membership/price", APIController.getMembershipPrice)
   .get("/membership/role/users", APIController.getAllUsers)
-  .post("/membership/role/update", APIController.setUserRole)
+  .post("/membership/role/update/moderator", APIController.setModerator)
   .post("/membership/role/upgrade/request", APIController.upgradeMembership)
-  .post("/membership/role/upgrade/confirm", APIController.confirmMembership)
 
   // Wallet
   .post("/walletnotify", APIController.walletNotify);

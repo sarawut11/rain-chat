@@ -15,7 +15,7 @@ export const authVerify = (token): any => {
     return payload;
   } catch (err) {
     // ctx.throw(401, err);
-    console.error(err);
+    console.error(err.message);
     return false;
   }
 };
