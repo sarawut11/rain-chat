@@ -111,15 +111,20 @@ export class RainContext {
     await userService.resetPopbalance(userIds);
 
     // Get Last Active Users
-    const lastActiveUsers = await userService.getUsersByLastActivity(configs.rain.pop_rain_last_post);
-    popReward /= lastActiveUsers.length;
-    const socketIds = [];
-    lastActiveUsers.forEach(user => socketIds.push(user.socketid.split(",")));
-    console.log(`Pop rain ${lastActiveUsers.length} users with ${popReward} rewards`);
-    this.rainUsers(socketIds, popReward);
+    this.rainUsersByLastActivity(popReward);
   }
 
-  public addUserToRainAds(userId: string): void {
+  async rainUsersByLastActivity(amount) {
+    const { userService } = ServicesContext.getInstance();
+    const lastActiveUsers = await userService.getUsersByLastActivity(configs.rain.pop_rain_last_post);
+    amount /= lastActiveUsers.length;
+    const socketIds = [];
+    lastActiveUsers.forEach(user => socketIds.push(user.socketid.split(",")));
+    console.log(`Rain ${lastActiveUsers.length} users with ${amount} rewards for each`);
+    this.rainUsers(socketIds, amount);
+  }
+
+  addUserToRainAds(userId: string): void {
     RainContext.usersToRainAds.push(userId);
   }
 }

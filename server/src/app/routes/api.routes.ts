@@ -29,6 +29,7 @@ export const apiRoutes = new Router()
   .post("/campaign/mod/:adsId/approve", APIController.approveAds)
 
   // Membership
+  .get("/membership/price", APIController.getMembershipPrice)
   .get("/membership/role/users", APIController.getAllUsers)
   .post("/membership/role/update", APIController.setUserRole)
   .post("/membership/role/upgrade/request", APIController.upgradeMembership)

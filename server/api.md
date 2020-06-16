@@ -406,15 +406,15 @@
   Get users by role with pagination.
   
   ***Parameters***
-  | Fields       | Description                    |
-  | ------------ | ------------------------------ |
-  | role         | OWNER, MODERATOR, FREE, MEMBER |
-  | name         | name of the user to search     |
-  | username     | username of the user to search |
-  | email        | email of the user to search    |
-  | searchString | string to search               |
-  | page         | default = 0                    |
-  | count        | default = 10                   |
+  | Fields       | Description                      |
+  | ------------ | -------------------------------- |
+  | role         | OWNER, MODERATOR, FREE, UPGRADED |
+  | name         | name of the user to search       |
+  | username     | username of the user to search   |
+  | email        | email of the user to search      |
+  | searchString | string to search                 |
+  | page         | default = 0                      |
+  | count        | default = 10                     |
 
   ***Response***
   ```
@@ -427,10 +427,10 @@
   Update user's role by username
 
   ***Request Body***
-  | Fields   | Description                    |
-  | -------- | ------------------------------ |
-  | username | username of the user to update |
-  | role     | OWNER, MODERATOR, FREE, MEMBER |
+  | Fields   | Description                      |
+  | -------- | -------------------------------- |
+  | username | username of the user to update   |
+  | role     | OWNER, MODERATOR, FREE, UPGRADED |
 
   ***Response***
   ```
@@ -581,7 +581,6 @@
 
 ## 2.4 Search / Contact
 ### fuzzyMatch (Client)
-### getQiniuToken (Client)
 
 ## 2.5 Rain
 ### rainComing (Server)

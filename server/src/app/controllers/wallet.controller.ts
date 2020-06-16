@@ -1,10 +1,14 @@
 import { rpcInterface } from "../utils/wallet/RpcInterface";
+import { ServicesContext } from "../context";
 
 export const walletNotify = async (ctx, next) => {
   try {
     const { txid } = ctx.request.body;
+    const { transactionService } = ServicesContext.getInstance();
+
     const txInfo = await rpcInterface.getTransaction(txid);
     console.log("Tx Info: ", txInfo);
+    // ====== Update Transaction Info =====
     // amount: txInfo.amount
     // confirmations: txInfo.confirmations
     // category: txInfo.details[0].category => "send" | "receive"
@@ -16,6 +20,10 @@ export const walletNotify = async (ctx, next) => {
     // Compare purchase amount and actual amount
     // If actual amount >= purchase amount, update db and transaction table according to the purchase type
     // If actual amount < purchase amount, update proper transaction table record to show "insufficient tokens, contact support" in frontend
+
+    // ===== Confrim Transaction =====
+    // Copy role.controller.ts -> confirmMembership func body
+
     ctx.body = {
       success: true,
       message: "Success",

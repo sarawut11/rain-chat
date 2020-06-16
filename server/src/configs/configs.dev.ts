@@ -11,18 +11,24 @@ export default {
     user: "root",
     password: "vitae-rain-chat",
   },
-  default_admin: {
-    username: "admin",
-    password: "123",
-    name: "Vitae Admin",
-    intro: "Workspace Admin"
-  },
   aws_bucket: {
     access_key: "AKIA5ACID4V6ZD55XEGT",
     secret_access_key: "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",
     bucket_endpoint: "https://s3.us-east-2.amazonaws.com",
     bucket_name: "vitae-rain-chat",
     bucket_region: "us-east-2"
+  },
+  client_secret: "",
+  token: {
+    jwt_secret: "chat-sec",
+    expireIn: 60 * 60 * 1 // One hour
+  },
+  crypto_key: "VITAE-RAIN-CHAT",
+  default_admin: {
+    username: "admin",
+    password: "123",
+    name: "Vitae Admin",
+    intro: "Workspace Admin"
   },
   rain: {
     group_id: "vitae-rain-group",
@@ -33,16 +39,15 @@ export default {
     pop_rain_balance_limit: 10,     // 100 Vitae Token
     pop_rain_last_post: 200,        // Last active 200 users
   },
-  client_secret: "",
-  token: {
-    jwt_secret: "chat-sec",
-    expireIn: 60 * 60 * 1 // One hour
+  membership: {
+    price: 10 // in USD - $10
   },
-  crypto_key: "VITAE-RAIN-CHAT",
-  qiniu: {
-    accessKey: "",
-    secretKey: "",
-    bucket: "",
+  revenue: {
+    sponsor: 0.1,
+    company_revenue: 0.25,
+    company_expenses: 0.2,
+    owner_share: 0.3,
+    moderator_share: 0.5
   },
   wallet: {
     rpc_port: 8764,

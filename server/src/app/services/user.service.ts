@@ -11,6 +11,24 @@ export class UserService {
     UPGRADED_USER: "UPGRADED",
   };
 
+  readonly TABLE_NAME = "user_info";
+  readonly columns = {
+    id: "id",
+    username: "username",
+    password: "password",
+    name: "name",
+    email: "email",
+    avatar: "avatar",
+    intro: "intro",
+    socketId: "socketid",
+    sponsorId: "sponsor",
+    walletAddress: "wallet_address",
+    balance: "balance",
+    popBalance: "pop_balance",
+    refcode: "refcode",
+    role: "role",
+  };
+
   // Fuzzy matching users
   fuzzyMatchUsers(link) {
     const _sql = "SELECT * FROM user_info WHERE username LIKE ?;";
@@ -215,6 +233,27 @@ export class UserService {
     const array = getInArraySQL(socketIds);
     const _sql = `UPDATE user_info SET balance = balance + ?, pop_balance = pop_balance + ? WHERE socketid IN (${array});`;
     return query(_sql, [reward, popReward]);
+  }
+
+  // Membership Revenue
+  addBalance(userId: number, amount: number) {
+    const _sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET
+        ${this.columns.balance} = ${this.columns.balance} + ?
+      WHERE ${this.columns.id} = ?;`;
+    return query(_sql, [amount, userId]);
+  }
+
+  shareRevenue(amount: number, role: string) {
+    const _sql = `
+      UPDATE ${this.TABLE_NAME} as a
+      INNER JOIN (
+        SELECT COUNT(*) OVER() as total
+        FROM ${this.TABLE_NAME} WHERE ${this.columns.role} = ?
+      ) as b
+      SET a.${this.columns.balance} = a.${this.columns.balance} + ? / b.total;`;
+    return query(_sql, [role, amount]);
   }
 
   // Add as a friend unilaterally (may later add the function of turning on friend verification)
