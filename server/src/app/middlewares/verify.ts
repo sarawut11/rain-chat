@@ -9,17 +9,19 @@ import configs from "@configs";
 export const authVerify = (token): any => {
   try {
     // Decode the user_id that existed in the previous payload
-    const payload = jwt.verify(token, configs.token.jwt_secret);
+    const payload = jwt.verify(token, configs.token.jwt_secret, {
+      ignoreExpiration: false
+    });
     return payload;
   } catch (err) {
     // ctx.throw(401, err);
-    console.error(err);
+    console.error(err.message);
     return false;
   }
 };
 
 export const generateToken = payload => {
   return jwt.sign(payload, configs.token.jwt_secret, {
-    expiresIn: Math.floor(Date.now() / 1000) + configs.token.expireIn,
+    expiresIn: configs.token.expireIn,
   });
 };

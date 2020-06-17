@@ -1,11 +1,13 @@
 import * as Router from "koa-router";
 import * as APIController from "../controllers";
 
-export const apiRoutes = new Router()
+const auth = new Router()
   // Authentication
   .post("/register", APIController.registerUser)
   .post("/login", APIController.loginUser)
+  .post("/token/validate", APIController.validateToken);
 
+const api = new Router()
   // Referral
   .post("/ref/generate", APIController.generateReferral)
   .post("/ref/validate", APIController.validateReferral)
@@ -28,10 +30,16 @@ export const apiRoutes = new Router()
   .post("/campaign/mod/:adsId/approve", APIController.approveAds)
 
   // Membership
+  .get("/membership/price", APIController.getMembershipPrice)
   .get("/membership/role/users", APIController.getAllUsers)
-  .post("/membership/role/update", APIController.setUserRole)
+  .post("/membership/role/update/moderator", APIController.setModerator)
   .post("/membership/role/upgrade/request", APIController.upgradeMembership)
-  .post("/membership/role/upgrade/confirm", APIController.confirmMembership)
 
   // Wallet
   .post("/walletnotify", APIController.walletNotify);
+
+export const apiRoutes = new Router()
+  .use("/api/v1", api.routes());
+
+export const authRoutes = new Router()
+  .use("/api/v1", auth.routes());

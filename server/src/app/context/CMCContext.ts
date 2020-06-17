@@ -7,7 +7,7 @@ export class CMCContext {
 
   static getInstance(): CMCContext {
     if (!CMCContext.instance) {
-        CMCContext.instance = new CMCContext();
+      CMCContext.instance = new CMCContext();
     }
     return CMCContext.instance;
   }
@@ -18,6 +18,7 @@ export class CMCContext {
   }
 
   public vitaePriceUSD(): number {
-    return this.CMC.vitaePriceUSD();
+    // return this.CMC.vitaePriceUSD();
+    return 1; // placeholder : 1 vitae === 1 usd
   }
 }

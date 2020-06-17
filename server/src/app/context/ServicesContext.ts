@@ -4,7 +4,7 @@ import {
   GroupService,
   UserService,
   AdsService,
-  MembershipService
+  TransactionService
 } from "./../services";
 
 export class ServicesContext {
@@ -67,13 +67,13 @@ export class ServicesContext {
     return this;
   }
 
-  // membership
-  private _membershipService: MembershipService;
-  public get membershipService() {
-    return this._membershipService;
+  // transaction
+  private _transactionService: TransactionService;
+  public get transactionService() {
+    return this._transactionService;
   }
-  public setMembershipService(service: MembershipService): ServicesContext {
-    this._membershipService = service;
+  public setTransactionService(service: TransactionService): ServicesContext {
+    this._transactionService = service;
     return this;
   }
 }

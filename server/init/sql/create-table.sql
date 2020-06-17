@@ -24,7 +24,7 @@ CREATE TABLE `user_info` (
   `username` varchar(50) NOT NULL DEFAULT 'NOT NULL',
   `password` varchar(40) DEFAULT NULL,
   `name` varchar(20) DEFAULT NULL,
-  `email` varchar(40) DEFAULT NULL,
+  `email` varchar(40) NOT NULL DEFAULT '',
   `avatar` varchar(250) DEFAULT '',
   `intro` varchar(100) DEFAULT NULL,
   `socketid` char(255) DEFAULT NULL,
@@ -34,6 +34,7 @@ CREATE TABLE `user_info` (
   `pop_balance` double DEFAULT 0,
   `refcode` varchar(50) NOT NULL DEFAULT '',
   `role` varchar(20) DEFAULT 'FREE',
+  `last_upgrade_time` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 # Dump of table group_info
@@ -126,27 +127,17 @@ CREATE TABLE `ads_info` (
   `time` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
-# Dump of table membership_info
-# ------------------------------------------------------------
-DROP TABLE IF EXISTS `membership_info`;
-CREATE TABLE `membership_info` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `transaction_id` varchar(200) DEFAULT '',
-  `status` tinyint(1) NOT NULL,
-  `confirm_time` int(11) DEFAULT 0,
-  `time` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE = InnoDB DEFAULT CHARSET = utf8;
-# Dump of table membership_info
+# Dump of table transaction_info
 # ------------------------------------------------------------
 DROP TABLE IF EXISTS `transaction_info`;
 CREATE TABLE `transaction_info` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
-  `transaction_refid` varchar(200) DEFAULT '',
-  `type` varchar(200) NOT NULL,
-  `status` tinyint(1) NOT NULL DEFAULT '0',
+  `transaction_id` varchar(200) DEFAULT '',
+  `type` tinyint(1) NOT NULL DEFAULT 0,
+  `status` tinyint(1) NOT NULL DEFAULT 0,
+  `paid_amount` int(11) NOT NULL DEFAULT 0,
+  `expect_amount` int(11) NOT NULL DEFAULT 0,
   `confirm_time` int(11) DEFAULT 0,
   `time` int(11) NOT NULL,
   PRIMARY KEY (`id`)

@@ -1,5 +1,7 @@
-import { ServicesContext } from "../context";
+import { ServicesContext, CMCContext, RainContext } from "../context";
 import { UserService } from "../services";
+import configs from "@configs";
+import * as moment from "moment";
 
 export const getAllUsers = async (ctx, next) => {
   try {
@@ -27,10 +29,10 @@ export const getAllUsers = async (ctx, next) => {
   }
 };
 
-export const setUserRole = async (ctx, next) => {
+export const setModerator = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
-    const { username: assigneeUsername, role } = ctx.request.body;
+    const { username: assigneeUsername } = ctx.request.body;
     const { userService } = ServicesContext.getInstance();
 
     const checkRole = await isOwner(username);
@@ -38,12 +40,13 @@ export const setUserRole = async (ctx, next) => {
       ctx.body = checkRole;
       return;
     }
-    const checkUser = await checkUserInfo(assigneeUsername, role);
+    const checkUser = await checkUserInfo(assigneeUsername);
     if (checkUser.success === false) {
       ctx.body = checkUser;
       return;
     }
-    await userService.updateRole(assigneeUsername, role);
+    const { userInfo } = checkUser;
+    await userService.updateMembership(userInfo.user_id, UserService.Role.MODERATOR);
     const user = await userService.findUserByUsername(username);
     ctx.body = {
       success: true,
@@ -59,10 +62,26 @@ export const setUserRole = async (ctx, next) => {
   }
 };
 
+export const getMembershipPrice = async (ctx, next) => {
+  try {
+    const price = _getMembershipPrice();
+    ctx.body = {
+      success: true,
+      price
+    };
+  } catch (error) {
+    console.log(error.message);
+    ctx.body = {
+      success: false,
+      message: error.message
+    };
+  }
+};
+
 export const upgradeMembership = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
-    const { userService, membershipService } = ServicesContext.getInstance();
+    const { userService, transactionService } = ServicesContext.getInstance();
 
     const checkUser = await checkUserInfo(username);
     if (checkUser.success === false) {
@@ -77,7 +96,10 @@ export const upgradeMembership = async (ctx, next) => {
       };
     }
 
-    await membershipService.insertMembershipInfo(userInfo.user_id);
+    const expectAmount = _getMembershipPrice();
+    await transactionService.createMembershipRequest(userInfo.user_id, expectAmount);
+    // Test call
+    await confirmMembership(userInfo.user_id, expectAmount, moment().utc().unix());
     ctx.body = {
       success: true,
       message: "Your membership request is in pending."
@@ -91,33 +113,28 @@ export const upgradeMembership = async (ctx, next) => {
   }
 };
 
-export const confirmMembership = async (ctx, next) => {
-  try {
-    const { username } = ctx.state.user;
-    const { userService, membershipService } = ServicesContext.getInstance();
+const confirmMembership = async (userId, amount, confirmTime) => {
+  const { userService, transactionService } = ServicesContext.getInstance();
 
-    const checkUser = await checkUserInfo(username);
-    if (checkUser.success === false) {
-      ctx.body = checkUser;
-      return;
-    }
-    const { userInfo } = checkUser;
-    if (userInfo.role !== UserService.Role.MODERATOR) {
-      ctx.body = {
-        success: false,
-        message: "Invalid Role"
-      };
-      return;
-    }
+  const RowDataPacket = await userService.findUserById(userId);
+  const userInfo = RowDataPacket[0];
 
+  // Update UserInfo & Transaction Info
+  await userService.updateMembership(userId, UserService.Role.UPGRADED_USER);
+  await transactionService.confirmMembershipRequest(userId, amount, confirmTime);
 
-  } catch (error) {
-    console.log(error.message);
-    ctx.body = {
-      success: false,
-      message: error.message
-    };
-  }
+  // Revenue Share Model
+  const sponsorRevenue = amount * configs.revenue.sponsor;
+  const companyRevenue = amount * (1 - configs.revenue.sponsor) * configs.revenue.company_revenue;
+  const companyExpenses = companyRevenue * configs.revenue.company_expenses;
+  const ownerShare = companyRevenue * configs.revenue.owner_share;
+  const moderatorShare = companyRevenue * configs.revenue.moderator_share;
+  const restShare = amount - sponsorRevenue - companyRevenue;
+
+  await userService.addBalance(userInfo.sponsor, sponsorRevenue);
+  await userService.shareRevenue(ownerShare, UserService.Role.OWNER);
+  await userService.shareRevenue(moderatorShare, UserService.Role.MODERATOR);
+  RainContext.getInstance().rainUsersByLastActivity(restShare);
 };
 
 const isOwner = (username): Promise<any> => new Promise(async (resolve, reject) => {
@@ -192,3 +209,7 @@ const getUsersByRole = (page = 0, count = 10, role?, name?, username?, email?, s
   });
   resolve(users);
 });
+
+const _getMembershipPrice = () => {
+  return configs.membership.price / CMCContext.getInstance().vitaePriceUSD();
+};

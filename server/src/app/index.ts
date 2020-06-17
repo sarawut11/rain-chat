@@ -4,10 +4,17 @@ import * as cors from "@koa/cors";
 import * as jwt from "koa-jwt";
 import configs from "@configs";
 
-import { ServicesContext, RainContext, CMCContext } from "./context";
-import { appRoutes } from "./routes";
+import { ServicesContext, RainContext, CMCContext, DailyContext } from "./context";
+import { appRoutes, apiRoutes, authRoutes } from "./routes";
 import { Server } from "./server";
-import { ChatService, GroupChatService, GroupService, UserService, AdsService, MembershipService } from "./services";
+import {
+  ChatService,
+  GroupChatService,
+  GroupService,
+  UserService,
+  AdsService,
+  TransactionService
+} from "./services";
 
 const corsArgs = configs.production ? { origin: "https://production_link" } : {};
 
@@ -15,11 +22,13 @@ export const App = Server.init(app => {
   app
     .use(compress())
     .use(cors(corsArgs))
-    .use(jwt({ secret: configs.token.jwt_secret }).unless({
-      path: [/\/login/g, /\/register/g, /\/ref\/validate/g]
-    }))
     .use(koaBody({ multipart: true }))
+    .use(authRoutes.routes())
+    .use(jwt({
+      secret: configs.token.jwt_secret,
+    }))
     .use(appRoutes.routes())
+    .use(apiRoutes.routes())
     .use(appRoutes.allowedMethods());
 })
   .createServer()
@@ -31,8 +40,9 @@ export const App = Server.init(app => {
       .setChatService(new ChatService())
       .setGroupChatService(new GroupChatService())
       .setAdsService(new AdsService())
-      .setMembershipService(new MembershipService());
+      .setTransactionService(new TransactionService());
     RainContext.getInstance();
+    DailyContext.getInstance();
     CMCContext.getInstance();
     Server.run(configs.port);
   });

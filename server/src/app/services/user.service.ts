@@ -1,3 +1,4 @@
+import * as moment from "moment";
 import { query } from "../utils/db";
 import configs from "@configs";
 import { isNullOrUndefined } from "util";
@@ -9,6 +10,25 @@ export class UserService {
     MODERATOR: "MODERATOR",
     FREE: "FREE",
     UPGRADED_USER: "UPGRADED",
+  };
+
+  readonly TABLE_NAME = "user_info";
+  readonly columns = {
+    id: "id",
+    username: "username",
+    password: "password",
+    name: "name",
+    email: "email",
+    avatar: "avatar",
+    intro: "intro",
+    socketId: "socketid",
+    sponsorId: "sponsor",
+    walletAddress: "wallet_address",
+    balance: "balance",
+    popBalance: "pop_balance",
+    refcode: "refcode",
+    role: "role",
+    lastUpgradeTime: "last_upgrade_time",
   };
 
   // Fuzzy matching users
@@ -44,6 +64,7 @@ export class UserService {
   }
 
   findUserByEmailOrUsername(email, username) {
+    if (email === "") email = undefined;
     const _sql = "SELECT * FROM user_info WHERE email = ? OR username = ?;";
     return query(_sql, [email, username]);
   }
@@ -216,6 +237,55 @@ export class UserService {
     return query(_sql, [reward, popReward]);
   }
 
+  // Membership Revenue
+  addBalance(userId: number, amount: number) {
+    const _sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET
+        ${this.columns.balance} = ${this.columns.balance} + ?
+      WHERE ${this.columns.id} = ?;`;
+    return query(_sql, [amount, userId]);
+  }
+
+  shareRevenue(amount: number, role: string) {
+    const _sql = `
+      UPDATE ${this.TABLE_NAME} as a
+      INNER JOIN (
+        SELECT COUNT(*) OVER() as total
+        FROM ${this.TABLE_NAME} WHERE ${this.columns.role} = ?
+      ) as b
+      SET a.${this.columns.balance} = a.${this.columns.balance} + ? / b.total;`;
+    return query(_sql, [role, amount]);
+  }
+
+  updateMembership(userId, role) {
+    const _sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET
+        ${this.columns.role} = ?,
+        ${this.columns.lastUpgradeTime} = ?
+      WHERE ${this.columns.id} = ?;
+    `;
+    return query(_sql, [role, moment().utc().unix(), userId]);
+  }
+
+  getUsersByExpired(role, expireTime) {
+    const _sql = `
+      SELECT * FROM ${this.TABLE_NAME}
+      WHERE ${this.columns.role} = ? AND ${this.columns.lastUpgradeTime} < ?;
+    `;
+    return query(_sql, [role, expireTime]);
+  }
+
+  resetExpiredRole(role, expireTime) {
+    const _sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET ${this.columns.role} = ?
+      WHERE ${this.columns.role} = ? AND ${this.columns.lastUpgradeTime} < ?;
+    `;
+    return query(_sql, [UserService.Role.FREE, role, expireTime]);
+  }
+
   // Add as a friend unilaterally (may later add the function of turning on friend verification)
   // const addAsFriend = (user_id, from_user, time) {
   //   const _sql = 'INSERT INTO user_user_relation(user_id,from_user,time) VALUES (?,?,?)';
@@ -248,11 +318,12 @@ export class UserService {
 }
 
 const getInArraySQL = array => {
-
-  const res = JSON.stringify(array);
-  return res.slice(1, res.length - 1);
-  // let res = "";
-  // array.forEach(element => res += "" + element.toString() + ",");
-  // res = res.substring(0, res.length - 1);
-  // return res;
+  let res = "";
+  array.forEach(element => {
+    if (element !== null && element !== undefined && element !== "") {
+      res += "'" + element.toString() + "',";
+    }
+  });
+  res = res.substring(0, res.length - 1);
+  return res;
 };

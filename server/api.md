@@ -49,6 +49,20 @@
     message: "Success or Failed Message"
   }
   ```
+### /token/validate (POST)
+  ***Request Body***
+  | Fields | Description       |
+  | ------ | ----------------- |
+  | token  | Token to validate |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Valid or Invalid Message",
+    userInfo: {
+    }
+  }
+  ```
 
 ## 1.2 Referral / Sponsor
 ### /ref/generate (POST)
@@ -394,15 +408,15 @@
   Get users by role with pagination.
   
   ***Parameters***
-  | Fields       | Description                    |
-  | ------------ | ------------------------------ |
-  | role         | OWNER, MODERATOR, FREE, MEMBER |
-  | name         | name of the user to search     |
-  | username     | username of the user to search |
-  | email        | email of the user to search    |
-  | searchString | string to search               |
-  | page         | default = 0                    |
-  | count        | default = 10                   |
+  | Fields       | Description                      |
+  | ------------ | -------------------------------- |
+  | role         | OWNER, MODERATOR, FREE, UPGRADED |
+  | name         | name of the user to search       |
+  | username     | username of the user to search   |
+  | email        | email of the user to search      |
+  | searchString | string to search                 |
+  | page         | default = 0                      |
+  | count        | default = 10                     |
 
   ***Response***
   ```
@@ -411,14 +425,13 @@
     users: []
   }
   ```
-### /membership/role/update (POST)
-  Update user's role by username
+### /membership/role/update/moderator (POST)
+  Update role to Moderator
 
   ***Request Body***
   | Fields   | Description                    |
   | -------- | ------------------------------ |
   | username | username of the user to update |
-  | role     | OWNER, MODERATOR, FREE, MEMBER |
 
   ***Response***
   ```
@@ -427,6 +440,17 @@
     message,
     userInfo: { // updated user info when success == true
     }
+  }
+  ```
+
+### /membership/role/upgrade/request (POST)
+  Upgrade Membership
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message,
   }
   ```
 # 2. Socket Events
@@ -569,7 +593,6 @@
 
 ## 2.4 Search / Contact
 ### fuzzyMatch (Client)
-### getQiniuToken (Client)
 
 ## 2.5 Rain
 ### rainComing (Server)
