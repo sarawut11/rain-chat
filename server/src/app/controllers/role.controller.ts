@@ -124,16 +124,43 @@ const confirmMembership = async (userId, amount, confirmTime) => {
   await transactionService.confirmMembershipRequest(userId, amount, confirmTime);
 
   // Revenue Share Model
-  const sponsorRevenue = amount * configs.revenue.sponsor;
-  const companyRevenue = amount * (1 - configs.revenue.sponsor) * configs.revenue.company_revenue;
-  const companyExpenses = companyRevenue * configs.revenue.company_expenses;
-  const ownerShare = companyRevenue * configs.revenue.owner_share;
-  const moderatorShare = companyRevenue * configs.revenue.moderator_share;
-  const restShare = amount - sponsorRevenue - companyRevenue;
+  // ===== Company Share ===== //
+  // 14.99 -> 4.99 | Company Revenue
+  // ---------------------------------
+  // 20% -----> Company Expenses
+  // 30% -----> Owner Share
+  // 25% -----> Moderator Share
+  // 25% -----> Membership Users Share
+  const companyRevenue = amount * configs.membership.revenue.company_revenue;
+  const ownerShare = companyRevenue * configs.membership.revenue.owner_share;
+  const moderatorShare = companyRevenue * configs.membership.revenue.moderator_share;
+  const membersShare = companyRevenue * configs.membership.revenue.membership_share;
 
-  await userService.addBalance(userInfo.sponsor, sponsorRevenue);
   await userService.shareRevenue(ownerShare, UserService.Role.OWNER);
   await userService.shareRevenue(moderatorShare, UserService.Role.MODERATOR);
+  await userService.shareRevenue(membersShare, UserService.Role.UPGRADED_USER);
+
+  // ====== Sponsor Share ===== //
+  // 14.99 -> 5 | Sponsor Revenue
+  // ---------------------------------
+  // 50% -----> First Sponsor
+  // 25% -----> Second Sponsor (first sponsor's sponsor)
+  // 25% -----> Third Sponsor (second sponsor's sponsor)
+  const sponsorRevenue = amount * configs.membership.revenue.sponsor_revenue;
+  const firstSponsorShare = sponsorRevenue * configs.membership.revenue.sponsor_1_rate;
+  const secondSponsorShare = sponsorRevenue * configs.membership.revenue.sponsor_2_rate;
+  const thirdSponsorShare = sponsorRevenue * configs.membership.revenue.sponsor_3_rate;
+
+  const firstSponsorId = userInfo.sponsor;
+  const secondSponsorId = (await userService.findUserById(firstSponsorId))[0].sponsor;
+  const thirdSponsorId = (await userService.findUserById(secondSponsorId))[0].sponsor;
+  await userService.addBalance(firstSponsorId, firstSponsorShare);
+  await userService.addBalance(secondSponsorId, secondSponsorShare);
+  await userService.addBalance(thirdSponsorId, thirdSponsorShare);
+
+  // ===== Rain Rest ===== //
+  // 14.99 -> 5 | Rain Last 200 Users
+  const restShare = amount - sponsorRevenue - companyRevenue;
   RainContext.getInstance().rainUsersByLastActivity(restShare);
 };
 
