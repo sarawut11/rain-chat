@@ -109,6 +109,8 @@ export default class GroupChatInfo extends Component {
   render() {
     const { groupMember, onlineNumber, modalVisible, justShowOnlineMember } = this.state;
     const { groupInfo, leaveGroup } = this.props;
+    const { role } = this.userInfo;
+
     return (
       <div className="chatInformation">
         <CreateGroupModal
@@ -124,7 +126,7 @@ export default class GroupChatInfo extends Component {
         <div className="info">
           <p className="noticeTitle">
             Group announcement
-            {this._isCreator && (
+            {(this._isCreator || role === 'OWNER' || role === 'MODERATOR') && (
               <svg
                 onClick={this._openEditorInfoModal}
                 className="icon iconEditor"

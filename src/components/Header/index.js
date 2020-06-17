@@ -72,15 +72,19 @@ export default class Header extends Component {
 
   render() {
     const { isSearching, searchFieldChange } = this.props;
+    const { role } = this._userInfo;
     return (
       <div className="header-wrapper">
         <MyInfo />
         <SearchBox searchFieldChange={searchFieldChange} isSearching={isSearching} />
-        <span className="add" onClick={this.openModal}>
-          <svg className="icon" aria-hidden="true">
-            <use xlinkHref="#icon-add" />
-          </svg>
-        </span>
+        {(role === 'UPGRADED' || role === 'OWNER') && (
+          <span className="add" onClick={this.openModal}>
+            <svg className="icon" aria-hidden="true">
+              <use xlinkHref="#icon-add" />
+            </svg>
+          </span>
+        )}
+        {role !== 'UPGRADED' && role !== 'OWNER' && <span />}
         <CreateGroupModal
           title="Create Group"
           modalVisible={this.state.showGroupModal}
