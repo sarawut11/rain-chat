@@ -54,16 +54,23 @@ export const getOneGroupItem = async (io, socket, data, cbfn) => {
 
 export const createGroup = async (io, socket, data, cbfn) => {
   try {
-    const { groupService } = ServicesContext.getInstance();
+    const { groupService, userService } = ServicesContext.getInstance();
     const toGroupId = uuid();
     data.create_time = Date.parse(new Date().toString()) / 1000;
     const { name, group_notice, creator_id, create_time } = data;
-    const arr = [toGroupId, name, group_notice, creator_id, create_time];
-    await groupService.createGroup(arr);
-    await groupService.joinGroup(creator_id, toGroupId);
-    socket.join(toGroupId);
-    console.log("createGroup data=>", data, "time=>", new Date().toLocaleString());
-    cbfn({ to_group_id: toGroupId, ...data });
+    const RowDataPacket = await userService.getUserInfoById(creator_id);
+    const userInfo = RowDataPacket[0];
+    if (userInfo.role !== "OWNER" && userInfo.role !== "UPGRADED") {
+      console.log("Free Members can't create a group");
+      io.to(socket.id).emit("error", { code: 500, message: "Free Members can't create a group" });
+    } else {
+      const arr = [toGroupId, name, group_notice, creator_id, create_time];
+      await groupService.createGroup(arr);
+      await groupService.joinGroup(creator_id, toGroupId);
+      socket.join(toGroupId);
+      console.log("createGroup data=>", data, "time=>", new Date().toLocaleString());
+      cbfn({ to_group_id: toGroupId, ...data });
+    }
   } catch (error) {
     console.log("error", error.message);
     io.to(socket.id).emit("error", { code: 500, message: error.message });

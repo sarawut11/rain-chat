@@ -11,15 +11,8 @@ import debounce from '../../utils/debounce';
 import { shareAction } from '../../redux/actions/shareAction';
 import store from '../../redux/store';
 
-function getPlaceholder(isRobotChat) {
-  switch (true) {
-    case /group_chat/.test(window.location.href):
-      return 'Hit Enter to send messages / Paste to send pictures / @ Other people';
-    case isRobotChat:
-      return 'Hit Enter to send messages';
-    default:
-      return 'Hit Enter to send messages / Paste to send pictures';
-  }
+function getPlaceholder() {
+  return 'Hit Enter to send messages';
 }
 
 export default class InputArea extends Component {
@@ -31,8 +24,8 @@ export default class InputArea extends Component {
       relatedMembers: [],
     };
     this._uploadToken = null;
-    this._onPaste = props.isRobotChat ? () => {} : debounce(this._paste, 2000, true);
-    this._placeHolder = getPlaceholder(props.isRobotChat);
+    this._onPaste = debounce(this._paste, 2000, true);
+    this._placeHolder = getPlaceholder();
   }
 
   _sendMessage = ({ attachments = [], message }) => {
