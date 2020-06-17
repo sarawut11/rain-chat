@@ -40,14 +40,18 @@ export default {
     pop_rain_last_post: 200,        // Last active 200 users
   },
   membership: {
-    price: 10 // in USD - $10
-  },
-  revenue: {
-    sponsor: 0.1,
-    company_revenue: 0.25,
-    company_expenses: 0.2,
-    owner_share: 0.3,
-    moderator_share: 0.5
+    price: 14.99, // in USD - $14.99
+    revenue: {
+      company_revenue: 4.99 / 14.99,
+      company_expenses: 0.2,
+      owner_share: 0.3,
+      moderator_share: 0.25,
+      membership_share: 0.25,
+      sponsor_revenue: 5 / 14.99,
+      sponsor_1_rate: 0.5,
+      sponsor_2_rate: 0.25,
+      sponsor_3_rate: 0.25,
+    }
   },
   wallet: {
     rpc_port: 8764,
