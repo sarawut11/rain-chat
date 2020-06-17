@@ -346,6 +346,7 @@ const checkAdsId = (username, adsId): Promise<{
 
 const confirmAds = async (adsId: number, amount: number, type: number) => {
   const { adsService, userService } = ServicesContext.getInstance();
+  await adsService.updateStatus(adsId, Ads.STATUS.Paid);
 
   // Revenue Share Model
   // ===== Company Share ===== //
