@@ -2,6 +2,7 @@ import * as moment from "moment";
 import { socketServer } from "../socket/app.socket";
 import { ServicesContext } from "./ServicesContext";
 import configs from "@configs";
+import { Ads } from "../models";
 
 export class RainContext {
   static instance: RainContext;
@@ -17,14 +18,14 @@ export class RainContext {
 
   constructor() {
     // Ads Rain
-    const adsTimeInterval = configs.rain.ads_time_interval + configs.rain.ads_duration;
+    const adsTimeInterval = configs.ads.ads_time_interval + configs.ads.ads_duration;
     setInterval(() => this.adsRain(), adsTimeInterval);
   }
 
   async adsRain() {
     try {
       const { userService, adsService } = ServicesContext.getInstance();
-      const RowDataPacket = await adsService.findAdsToRain();
+      const RowDataPacket: Ads[] = await adsService.findAdsToRain();
       if (RowDataPacket.length <= 0) {
         console.log("No Ads to rain");
         return;
@@ -38,7 +39,7 @@ export class RainContext {
       // Broadcast RainComing event
       console.log("Rain is coming");
       socketServer.broadcast("rainComing", {}, error => console.log("showAds Error:", error.message));
-      await delay(configs.rain.rain_coming_delay);
+      await delay(configs.ads.rain_coming_delay);
 
       // Show Ads First
       console.log("Raining - id:", ads.id);
@@ -46,22 +47,22 @@ export class RainContext {
       socketServer.broadcast("showAds", {
         ads: {
           id: ads.id,
-          asset_link: ads.asset_link,
+          assetLink: ads.assetLink,
           title: ads.title,
           description: ads.description,
           link: ads.link,
-          button_name: ads.button_name
+          buttonLabel: ads.buttonLabel
         }
       }, error => console.log("showAds Error:", error.message));
-      await delay(configs.rain.ads_duration);
+      await delay(configs.ads.ads_duration);
 
       // Rain Rewards after ads duration
       const impressions = ads.impressions;
       let rainReward = 0;
       if (impressions > RainContext.usersToRainAds.length) { // Enough impressions
-        rainReward = configs.rain.cost_per_impression;
+        rainReward = configs.ads.cost_per_impression_rain;
       } else { // Insufficient impressions
-        rainReward = configs.rain.cost_per_impression * impressions / RainContext.usersToRainAds.length;
+        rainReward = configs.ads.cost_per_impression_rain * impressions / RainContext.usersToRainAds.length;
       }
       console.log("Ads Rain Reward:", rainReward);
 

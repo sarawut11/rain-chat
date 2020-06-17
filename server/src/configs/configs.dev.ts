@@ -32,21 +32,30 @@ export default {
   },
   rain: {
     group_id: "vitae-rain-group",
+    pop_rain_balance_limit: 10,     // 100 Vitae Token
+    pop_rain_last_post: 200,        // Last active 200 users
+  },
+  company_revenue: {
+    company_expenses: 0.2,
+    owner_share: 0.3,
+    moderator_share: 0.25,
+    membership_share: 0.25,
+  },
+  ads: {
     rain_coming_delay: 1000 * 5,    // 5s
     ads_duration: 1000 * 20,        // 20s
     ads_time_interval: 1000 * 30,  // 30s
-    cost_per_impression: 1 / 2000,  // $1 = 2000 impression
-    pop_rain_balance_limit: 10,     // 100 Vitae Token
-    pop_rain_last_post: 200,        // Last active 200 users
+    cost_per_impression_rain: 1 / 2000,
+    cost_per_impression_static: 1 / 1000,
+    revenue: {
+      company_revenue: 0.25,
+      imp_revenue: 0.75
+    },
   },
   membership: {
     price: 14.99, // in USD - $14.99
     revenue: {
       company_revenue: 4.99 / 14.99,
-      company_expenses: 0.2,
-      owner_share: 0.3,
-      moderator_share: 0.25,
-      membership_share: 0.25,
       sponsor_revenue: 5 / 14.99,
       sponsor_1_rate: 0.5,
       sponsor_2_rate: 0.25,

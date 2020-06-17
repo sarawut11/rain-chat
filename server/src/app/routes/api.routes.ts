@@ -17,6 +17,8 @@ const api = new Router()
   .put("/user/:username", APIController.updateProfileInfo)
 
   // Ads
+  .get("/campaign/impcost", APIController.getCostPerImpression)
+
   .post("/campaign/pub/create", APIController.registerAds)
   .get("/campaign/pub/all", APIController.getAdsByUsername)
   .get("/campaign/pub/:adsId", APIController.getAds)

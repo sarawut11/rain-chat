@@ -14,7 +14,7 @@ export class CMCContext {
 
   constructor() {
     this.CMC = new CMCManager();
-    this.CMC.start(configs.cmc.api_key, configs.cmc.polling_interval_seconds);
+    // this.CMC.start(configs.cmc.api_key, configs.cmc.polling_interval_seconds);
   }
 
   public vitaePriceUSD(): number {

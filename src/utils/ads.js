@@ -3,11 +3,11 @@ import { Modal, notification, Row, Col, Button } from 'antd';
 import './ads.scss';
 
 export function showAds(ads) {
-  const { title, description, link, asset_link, button_name } = ads;
+  const { title, description, link, assetLink, buttonLabel } = ads;
   const secondsToGo = 20;
   const content = (
     <div>
-      <img src={asset_link} alt="ads" />
+      <img src={assetLink} alt="ads" />
     </div>
   );
   if (!window.location.pathname.includes('vitae-rain-group')) {
@@ -42,14 +42,14 @@ export function showAds(ads) {
               size="large"
               style={{ width: '100%' }}
             >
-              {button_name || 'Buy Now'}
+              {buttonLabel || 'Buy Now'}
             </Button>
           </Col>
         </Row>
       </div>
     ),
     className: 'ads-view-modal',
-    okText: button_name,
+    okText: buttonLabel,
   });
   // const timer = setInterval(() => {
   //   secondsToGo -= 1;

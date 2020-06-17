@@ -1,13 +1,15 @@
 import * as mime from "mime-types";
 import * as moment from "moment";
 import * as aws from "../utils/aws";
-import { ServicesContext } from "../context";
-import { UserService, AdsService } from "../services";
+import { ParameterizedContext } from "koa";
+import { ServicesContext, CMCContext, RainContext } from "../context";
+import { Ads, User } from "../models";
+import configs from "@configs";
 
 export const registerAds = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
-    const { link, button_name: buttonName, title, description } = ctx.request.body;
+    const { link, buttonLabel, title, description, type } = ctx.request.body;
     const asset = ctx.request.files.asset;
     const { userService, adsService } = ServicesContext.getInstance();
 
@@ -20,7 +22,7 @@ export const registerAds = async (ctx, next) => {
     }
 
     // Check Username
-    const RowDataPacket = await userService.getUserInfoByUsername(username);
+    const RowDataPacket: User[] = await userService.findUserByUsername(username);
     if (RowDataPacket.length <= 0) {
       ctx.body = {
         success: false,
@@ -40,15 +42,16 @@ export const registerAds = async (ctx, next) => {
 
     // Register DB
     const res = await adsService.insertAds({
-      user_id: userInfo.user_id,
-      asset_link: url,
+      userId: userInfo.id,
+      assetLink: url,
       link,
-      button_name: buttonName,
+      buttonLabel,
       title,
       description,
+      type,
       time: moment().utc().unix()
     });
-    const insertAds = await adsService.findAdsById(res.insertId);
+    const insertAds: Ads[] = await adsService.findAdsById(res.insertId);
     ctx.body = {
       success: true,
       message: "Successfully Created.",
@@ -69,7 +72,7 @@ export const getAdsByUsername = async (ctx, next) => {
     const { userService, adsService } = ServicesContext.getInstance();
 
     // Check Username
-    const RowDataPacket = await userService.getUserInfoByUsername(username);
+    const RowDataPacket: User[] = await userService.findUserByUsername(username);
     if (RowDataPacket.length <= 0) {
       ctx.body = {
         success: false,
@@ -79,7 +82,7 @@ export const getAdsByUsername = async (ctx, next) => {
     }
     const userInfo = RowDataPacket[0];
 
-    const result = await adsService.findAdsByUserId(userInfo.user_id);
+    const result: Ads[] = await adsService.findAdsByUserId(userInfo.id);
     ctx.body = {
       success: true,
       message: "Success",
@@ -126,7 +129,7 @@ export const updateAds = async (ctx, next) => {
     const { username } = ctx.state.user;
     const { adsId } = ctx.params;
     const asset = ctx.request.files.asset;
-    const { link, button_name: buttonName, title, description } = ctx.request.body;
+    const { link, buttonLabel, title, description } = ctx.request.body;
     const { adsService, userService } = ServicesContext.getInstance();
 
     const checkResult = await checkAdsId(username, adsId);
@@ -140,7 +143,7 @@ export const updateAds = async (ctx, next) => {
     // Delete existing asset and upload new asset
     let assetLink: string;
     if (asset !== undefined) {
-      await aws.deleteFile(existingAds.asset_link);
+      await aws.deleteFile(existingAds.assetLink);
       const { url } = await aws.uploadFile({
         fileName: generateFileName(username, asset.type),
         filePath: asset.path,
@@ -148,18 +151,18 @@ export const updateAds = async (ctx, next) => {
       });
       assetLink = url;
     } else {
-      assetLink = existingAds.asset_link;
+      assetLink = existingAds.assetLink;
     }
 
     // Register DB
-    await adsService.updateAds(adsId, userInfo.user_id, {
-      asset_link: assetLink,
+    await adsService.updateAds(adsId, userInfo.id, {
+      assetLink,
       link,
-      button_name: buttonName,
+      buttonLabel,
       title,
       description
     });
-    const updatedAds = await adsService.findAdsById(adsId);
+    const updatedAds: Ads[] = await adsService.findAdsById(adsId);
     ctx.body = {
       success: true,
       message: "Successfully Updated.",
@@ -187,7 +190,7 @@ export const deleteAds = async (ctx, next) => {
     }
 
     const { userInfo, existingAds } = checkResult;
-    await aws.deleteFile(existingAds.asset_link);
+    await aws.deleteFile(existingAds.assetLink);
     await adsService.deleteAds(adsId);
     ctx.body = {
       success: true,
@@ -206,7 +209,7 @@ export const requestAds = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
     const { adsId } = ctx.params;
-    const { impressions } = ctx.request.body;
+    const { impressions, costPerImp } = ctx.request.body;
     const { adsService } = ServicesContext.getInstance();
 
     const checkResult = await checkAdsId(username, adsId);
@@ -216,22 +219,26 @@ export const requestAds = async (ctx, next) => {
     }
 
     const { userInfo, existingAds } = checkResult;
-    if (existingAds.status === AdsService.AdsStatus.Pending) {
+    if (existingAds.status === Ads.STATUS.Pending) {
       ctx.body = {
         success: false,
         message: "This ads is already in pending."
       };
       return;
     }
-    if (existingAds.status === AdsService.AdsStatus.Approved) {
+    if (existingAds.status === Ads.STATUS.Approved) {
       ctx.body = {
         success: false,
         message: "This ads is already approved."
       };
       return;
     }
-    await adsService.requestAds(adsId, userInfo.user_id, impressions);
-    const updatedAds = await adsService.findAdsById(adsId);
+
+    const realCostPerImp = configs.ads.revenue.imp_revenue * costPerImp;
+    await adsService.requestAds(adsId, userInfo.id, impressions, realCostPerImp);
+    const updatedAds: Ads[] = await adsService.findAdsById(adsId);
+    // Test -> Share revenue at this point | Move to wallet controller later
+    await confirmAds(adsId, impressions, impressions * costPerImp);
     ctx.body = {
       success: true,
       message: "Successfully requested",
@@ -259,15 +266,15 @@ export const cancelAds = async (ctx, next) => {
     }
 
     const { userInfo, existingAds } = checkResult;
-    if (existingAds.status !== AdsService.AdsStatus.Pending) {
+    if (existingAds.status !== Ads.STATUS.Pending) {
       ctx.body = {
         success: false,
         message: "This ads is not in pending."
       };
     }
 
-    await adsService.cancelAds(adsId, userInfo.user_id);
-    const updatedAds = await adsService.findAdsById(adsId);
+    await adsService.cancelAds(adsId, userInfo.id);
+    const updatedAds: Ads[] = await adsService.findAdsById(adsId);
     ctx.body = {
       success: true,
       message: "Successfully canceled.",
@@ -282,9 +289,38 @@ export const cancelAds = async (ctx, next) => {
   }
 };
 
-const checkAdsId = (username, adsId): Promise<any> => new Promise(async (resolve, reject) => {
+export const getCostPerImpression = async (ctx: ParameterizedContext, next) => {
+  try {
+    const { type } = ctx.request.query;
+
+    // $1 === 2000 | 1000 impressions
+    // 25% -> Company Revenue
+    // 75% -> Buy Impressions
+    const vitaePrice = CMCContext.getInstance().vitaePriceUSD();
+    const usdPerImp = type === Ads.TYPE.RainRoomAds ? configs.ads.cost_per_impression_rain : configs.ads.cost_per_impression_static;
+    const vitaePerImp = (usdPerImp / vitaePrice) * (1 / configs.ads.revenue.imp_revenue);
+    ctx.body = {
+      success: true,
+      message: "Success",
+      price: vitaePerImp
+    };
+  } catch (error) {
+    console.error(error.message);
+    ctx.body = {
+      success: false,
+      message: "Failed"
+    };
+  }
+};
+
+const checkAdsId = (username, adsId): Promise<{
+  success: boolean,
+  message?: string,
+  userInfo?: User,
+  existingAds?: Ads
+}> => new Promise(async (resolve, reject) => {
   const { adsService, userService } = ServicesContext.getInstance();
-  const RowDataPacket = await adsService.findAdsById(adsId);
+  const RowDataPacket: Ads[] = await adsService.findAdsById(adsId);
   if (RowDataPacket.length === 0) {
     resolve({
       success: false,
@@ -293,8 +329,8 @@ const checkAdsId = (username, adsId): Promise<any> => new Promise(async (resolve
     return;
   }
   const existingAds = RowDataPacket[0];
-  const userInfo = (await userService.getUserInfoByUsername(username))[0];
-  if (existingAds.user_id !== userInfo.user_id) {
+  const userInfo: User = (await userService.findUserByUsername(username))[0];
+  if (existingAds.userId !== userInfo.id) {
     resolve({
       success: false,
       message: "This ads belongs to another user"
@@ -307,6 +343,37 @@ const checkAdsId = (username, adsId): Promise<any> => new Promise(async (resolve
     existingAds,
   });
 });
+
+const confirmAds = async (adsId: number, amount: number, type: number) => {
+  const { adsService, userService } = ServicesContext.getInstance();
+
+  // Revenue Share Model
+  // ===== Company Share ===== //
+  // 25% | Company Revenue
+  // ---------------------------------
+  // 20% -----> Company Expenses
+  // 30% -----> Owner Share
+  // 25% -----> Moderator Share
+  // 25% -----> Membership Users Share
+  const companyRevenue = amount * configs.ads.revenue.company_revenue;
+  const ownerShare = companyRevenue * configs.company_revenue.owner_share;
+  const moderatorShare = companyRevenue * configs.company_revenue.moderator_share;
+  const membersShare = companyRevenue * configs.company_revenue.membership_share;
+
+  await userService.shareRevenue(ownerShare, User.ROLE.OWNER);
+  await userService.shareRevenue(moderatorShare, User.ROLE.MODERATOR);
+  await userService.shareRevenue(membersShare, User.ROLE.UPGRADED_USER);
+
+  // ===== Rain Rest ===== //
+  // 75% | Ads Operation
+  // ---------------------------------
+  // Rain Room Ads -> buy impressions
+  // Static Ads -> Rain Last 200 Users
+  if (type === Ads.TYPE.StaticAds) {
+    const restShare = amount - companyRevenue;
+    RainContext.getInstance().rainUsersByLastActivity(restShare);
+  }
+};
 
 const generateFileName = (username, fileType) => {
   return `campaign/campaign-${username}-${moment().utc().unix()}.${mime.extension(fileType)}`;

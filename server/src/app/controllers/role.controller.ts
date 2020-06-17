@@ -2,6 +2,7 @@ import { ServicesContext, CMCContext, RainContext } from "../context";
 import { UserService } from "../services";
 import configs from "@configs";
 import * as moment from "moment";
+import { User } from "../models";
 
 export const getAllUsers = async (ctx, next) => {
   try {
@@ -132,9 +133,9 @@ const confirmMembership = async (userId, amount, confirmTime) => {
   // 25% -----> Moderator Share
   // 25% -----> Membership Users Share
   const companyRevenue = amount * configs.membership.revenue.company_revenue;
-  const ownerShare = companyRevenue * configs.membership.revenue.owner_share;
-  const moderatorShare = companyRevenue * configs.membership.revenue.moderator_share;
-  const membersShare = companyRevenue * configs.membership.revenue.membership_share;
+  const ownerShare = companyRevenue * configs.company_revenue.owner_share;
+  const moderatorShare = companyRevenue * configs.company_revenue.moderator_share;
+  const membersShare = companyRevenue * configs.company_revenue.membership_share;
 
   await userService.shareRevenue(ownerShare, UserService.Role.OWNER);
   await userService.shareRevenue(moderatorShare, UserService.Role.MODERATOR);
@@ -166,7 +167,7 @@ const confirmMembership = async (userId, amount, confirmTime) => {
 
 const isOwner = (username): Promise<any> => new Promise(async (resolve, reject) => {
   const { userService } = ServicesContext.getInstance();
-  const RowDataPacket = await userService.getUserInfoByUsername(username);
+  const RowDataPacket: User[] = await userService.getUserInfoByUsername(username);
   if (RowDataPacket.length <= 0) {
     resolve({
       success: false,
@@ -175,7 +176,7 @@ const isOwner = (username): Promise<any> => new Promise(async (resolve, reject) 
     return;
   }
   const userInfo = RowDataPacket[0];
-  if (userInfo.role !== UserService.Role.OWNER) {
+  if (userInfo.role !== User.ROLE.OWNER) {
     resolve({
       success: false,
       message: "You are not a Owner."
