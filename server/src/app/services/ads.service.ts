@@ -5,9 +5,14 @@ import { Ads } from "../models";
 
 export class AdsService {
 
-  insertAds({ userId, assetLink, link, buttonLabel, title, description, time }) {
-    const _sql = "insert into ads_info(userId,assetLink,link,buttonLabel,title,description,time) values(?,?,?,?,?,?,?);";
-    return query(_sql, [userId, assetLink, link, buttonLabel, title, description, time]);
+  readonly TABLE_NAME = "ads_info";
+
+  insertAds({ userId, assetLink, link, buttonLabel, title, description, type, time }) {
+    const _sql = `
+      INSERT INTO ${this.TABLE_NAME}(
+        userId,assetLink,link,buttonLabel,title,description,type,time
+      ) values(?,?,?,?,?,?,?,?);`;
+    return query(_sql, [userId, assetLink, link, buttonLabel, title, description, type, time]);
   }
 
   findAdsById(adsId) {
@@ -20,14 +25,14 @@ export class AdsService {
     if (!isNullOrUndefined(assetLink))
       params = [assetLink, ...params];
     const _sql = `
-    UPDATE ads_info
-    SET
-      ${isNullOrUndefined(assetLink) ? "" : "assetLink = ?,"}
-      link = ?,
-      buttonLabel = ?,
-      title = ?,
-      description = ?
-    WHERE id = ? and userId = ?;`;
+      UPDATE ${this.TABLE_NAME}
+      SET
+        ${isNullOrUndefined(assetLink) ? "" : "assetLink = ?,"}
+        link = ?,
+        buttonLabel = ?,
+        title = ?,
+        description = ?
+      WHERE id = ? and userId = ?;`;
     return query(_sql, params);
   }
 
@@ -36,9 +41,15 @@ export class AdsService {
     return query(_sql, adsId);
   }
 
-  requestAds(adsId, userId, impressions) {
-    const _sql = "UPDATE ads_info SET impressions = ?, status = ? WHERE id = ? and userId = ?;";
-    return query(_sql, [impressions, Ads.STATUS.Pending, adsId, userId]);
+  requestAds(adsId, userId, impressions, costPerImp) {
+    const _sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET
+        impressions = ?,
+        costPerImp = ?,
+        status = ?
+      WHERE id = ? AND userId = ?;`;
+    return query(_sql, [impressions, costPerImp, Ads.STATUS.Pending, adsId, userId]);
   }
 
   cancelAds(adsId, userId) {
@@ -74,8 +85,14 @@ export class AdsService {
   }
 
   findAdsToRain() {
-    const _sql = "SELECT * FROM ads_info WHERE status = ? and impressions > 0 ORDER BY lastTime ASC LIMIT 1;";
-    return query(_sql, [Ads.STATUS.Approved]);
+    const _sql = `
+      SELECT * FROM ${this.TABLE_NAME}
+      WHERE
+        type = ? AND
+        status = ? AND
+        impressions > 0
+      ORDER BY lastTime ASC LIMIT 1;`;
+    return query(_sql, [Ads.TYPE.RainRoomAds, Ads.STATUS.Approved]);
   }
 
   rainAds(id, impression, lastTime) {

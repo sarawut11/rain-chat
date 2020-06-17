@@ -1,13 +1,15 @@
 import * as mime from "mime-types";
 import * as moment from "moment";
 import * as aws from "../utils/aws";
-import { ServicesContext } from "../context";
+import { ParameterizedContext } from "koa";
+import { ServicesContext, CMCContext, RainContext } from "../context";
 import { Ads, User } from "../models";
+import configs from "@configs";
 
 export const registerAds = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
-    const { link, button_name: buttonName, title, description, type } = ctx.request.body;
+    const { link, buttonLabel, title, description, type } = ctx.request.body;
     const asset = ctx.request.files.asset;
     const { userService, adsService } = ServicesContext.getInstance();
 
@@ -43,12 +45,13 @@ export const registerAds = async (ctx, next) => {
       userId: userInfo.id,
       assetLink: url,
       link,
-      buttonLabel: buttonName,
+      buttonLabel,
       title,
       description,
+      type,
       time: moment().utc().unix()
     });
-    const insertAds = await adsService.findAdsById(res.insertId);
+    const insertAds: Ads[] = await adsService.findAdsById(res.insertId);
     ctx.body = {
       success: true,
       message: "Successfully Created.",
@@ -79,7 +82,7 @@ export const getAdsByUsername = async (ctx, next) => {
     }
     const userInfo = RowDataPacket[0];
 
-    const result = await adsService.findAdsByUserId(userInfo.id);
+    const result: Ads[] = await adsService.findAdsByUserId(userInfo.id);
     ctx.body = {
       success: true,
       message: "Success",
@@ -159,7 +162,7 @@ export const updateAds = async (ctx, next) => {
       title,
       description
     });
-    const updatedAds = await adsService.findAdsById(adsId);
+    const updatedAds: Ads[] = await adsService.findAdsById(adsId);
     ctx.body = {
       success: true,
       message: "Successfully Updated.",
@@ -206,7 +209,7 @@ export const requestAds = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
     const { adsId } = ctx.params;
-    const { impressions } = ctx.request.body;
+    const { impressions, costPerImp } = ctx.request.body;
     const { adsService } = ServicesContext.getInstance();
 
     const checkResult = await checkAdsId(username, adsId);
@@ -230,8 +233,12 @@ export const requestAds = async (ctx, next) => {
       };
       return;
     }
-    await adsService.requestAds(adsId, userInfo.id, impressions);
-    const updatedAds = await adsService.findAdsById(adsId);
+
+    const realCostPerImp = configs.ads.revenue.imp_revenue * costPerImp;
+    await adsService.requestAds(adsId, userInfo.id, impressions, realCostPerImp);
+    const updatedAds: Ads[] = await adsService.findAdsById(adsId);
+    // Test -> Share revenue at this point | Move to wallet controller later
+    await confirmAds(adsId, impressions, impressions * costPerImp);
     ctx.body = {
       success: true,
       message: "Successfully requested",
@@ -267,11 +274,35 @@ export const cancelAds = async (ctx, next) => {
     }
 
     await adsService.cancelAds(adsId, userInfo.id);
-    const updatedAds = await adsService.findAdsById(adsId);
+    const updatedAds: Ads[] = await adsService.findAdsById(adsId);
     ctx.body = {
       success: true,
       message: "Successfully canceled.",
       ads: updatedAds[0]
+    };
+  } catch (error) {
+    console.error(error.message);
+    ctx.body = {
+      success: false,
+      message: "Failed"
+    };
+  }
+};
+
+export const getCostPerImpression = async (ctx: ParameterizedContext, next) => {
+  try {
+    const { type } = ctx.request.query;
+
+    // $1 === 2000 | 1000 impressions
+    // 25% -> Company Revenue
+    // 75% -> Buy Impressions
+    const vitaePrice = CMCContext.getInstance().vitaePriceUSD();
+    const usdPerImp = type === Ads.TYPE.RainRoomAds ? configs.ads.cost_per_impression_rain : configs.ads.cost_per_impression_static;
+    const vitaePerImp = (usdPerImp / vitaePrice) * (1 / configs.ads.revenue.imp_revenue);
+    ctx.body = {
+      success: true,
+      message: "Success",
+      price: vitaePerImp
     };
   } catch (error) {
     console.error(error.message);
@@ -312,6 +343,37 @@ const checkAdsId = (username, adsId): Promise<{
     existingAds,
   });
 });
+
+const confirmAds = async (adsId: number, amount: number, type: number) => {
+  const { adsService, userService } = ServicesContext.getInstance();
+
+  // Revenue Share Model
+  // ===== Company Share ===== //
+  // 25% | Company Revenue
+  // ---------------------------------
+  // 20% -----> Company Expenses
+  // 30% -----> Owner Share
+  // 25% -----> Moderator Share
+  // 25% -----> Membership Users Share
+  const companyRevenue = amount * configs.ads.revenue.company_revenue;
+  const ownerShare = companyRevenue * configs.company_revenue.owner_share;
+  const moderatorShare = companyRevenue * configs.company_revenue.moderator_share;
+  const membersShare = companyRevenue * configs.company_revenue.membership_share;
+
+  await userService.shareRevenue(ownerShare, User.ROLE.OWNER);
+  await userService.shareRevenue(moderatorShare, User.ROLE.MODERATOR);
+  await userService.shareRevenue(membersShare, User.ROLE.UPGRADED_USER);
+
+  // ===== Rain Rest ===== //
+  // 75% | Ads Operation
+  // ---------------------------------
+  // Rain Room Ads -> buy impressions
+  // Static Ads -> Rain Last 200 Users
+  if (type === Ads.TYPE.StaticAds) {
+    const restShare = amount - companyRevenue;
+    RainContext.getInstance().rainUsersByLastActivity(restShare);
+  }
+};
 
 const generateFileName = (username, fileType) => {
   return `campaign/campaign-${username}-${moment().utc().unix()}.${mime.extension(fileType)}`;

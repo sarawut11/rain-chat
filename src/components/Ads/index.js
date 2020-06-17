@@ -325,7 +325,7 @@ class Ads extends Component {
                   Description: <b>{item.description}</b>
                 </p>
                 <p>
-                  Button Label: <b>{item.buttonName}</b>
+                  Button Label: <b>{item.buttonLabel}</b>
                 </p>
                 <p>
                   Link: <b>{item.link}</b>

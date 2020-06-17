@@ -13,7 +13,7 @@ const initialState = {
   id: null,
   asset: null,
   link: '',
-  buttonName: '',
+  buttonLabel: '',
   title: '',
   description: '',
   confirmLoading: false,
@@ -35,7 +35,7 @@ export default class CreateAds extends Component {
 
   handleOk = async () => {
     const { editMode } = this.props;
-    const { id, asset, link, buttonName, title, description } = this.state;
+    const { id, asset, link, buttonLabel, title, description } = this.state;
 
     const newErrorList = {};
     let isError = false;
@@ -62,14 +62,14 @@ export default class CreateAds extends Component {
       const data = new FormData();
       data.append('asset', asset);
       data.append('link', link);
-      data.append('buttonName', buttonName);
+      data.append('buttonLabel', buttonLabel);
       data.append('title', title);
       data.append('description', description);
 
       let res;
       if (editMode) {
         res = await Request.axios('put', `/api/v1/campaign/pub/${id}`, data);
-        // res.ads = { id, assetLink, link, buttonName, title, description };
+        // res.ads = { id, assetLink, link, buttonLabel, title, description };
       } else {
         res = await Request.axios('post', `/api/v1/campaign/pub/create`, data);
       }
@@ -127,7 +127,7 @@ export default class CreateAds extends Component {
     const {
       asset,
       link,
-      buttonName,
+      buttonLabel,
       title,
       description,
       confirmLoading,
@@ -180,7 +180,7 @@ export default class CreateAds extends Component {
                   <Input name="link" value={link} onChange={this._onChange} />
                 </Item>
                 <Item label="Button Label">
-                  <Input name="buttonName" value={buttonName} onChange={this._onChange} />
+                  <Input name="buttonLabel" value={buttonLabel} onChange={this._onChange} />
                 </Item>
               </Form>
             </Col>

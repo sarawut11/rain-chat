@@ -133,9 +133,9 @@ const confirmMembership = async (userId, amount, confirmTime) => {
   // 25% -----> Moderator Share
   // 25% -----> Membership Users Share
   const companyRevenue = amount * configs.membership.revenue.company_revenue;
-  const ownerShare = companyRevenue * configs.membership.revenue.owner_share;
-  const moderatorShare = companyRevenue * configs.membership.revenue.moderator_share;
-  const membersShare = companyRevenue * configs.membership.revenue.membership_share;
+  const ownerShare = companyRevenue * configs.company_revenue.owner_share;
+  const moderatorShare = companyRevenue * configs.company_revenue.moderator_share;
+  const membersShare = companyRevenue * configs.company_revenue.membership_share;
 
   await userService.shareRevenue(ownerShare, UserService.Role.OWNER);
   await userService.shareRevenue(moderatorShare, UserService.Role.MODERATOR);

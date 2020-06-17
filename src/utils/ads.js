@@ -3,7 +3,7 @@ import { Modal, notification, Row, Col, Button } from 'antd';
 import './ads.scss';
 
 export function showAds(ads) {
-  const { title, description, link, assetLink, buttonName } = ads;
+  const { title, description, link, assetLink, buttonLabel } = ads;
   const secondsToGo = 20;
   const content = (
     <div>
@@ -42,14 +42,14 @@ export function showAds(ads) {
               size="large"
               style={{ width: '100%' }}
             >
-              {buttonName || 'Buy Now'}
+              {buttonLabel || 'Buy Now'}
             </Button>
           </Col>
         </Row>
       </div>
     ),
     className: 'ads-view-modal',
-    okText: buttonName,
+    okText: buttonLabel,
   });
   // const timer = setInterval(() => {
   //   secondsToGo -= 1;

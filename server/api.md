@@ -150,6 +150,8 @@
   | buttonLabel | Name of the button to ads link  |
   | title       | Title of Ads                    |
   | description | Description of Ads              |
+  | type        | 0: RainRoomAds / 1: StaticAds   |
+
   ***Response***
   ```
   {
@@ -157,16 +159,17 @@
     message: "Success or Failed Message",
     ads: {
       id,           // Ads Id
-      userId,      // Advertiser's id
-      assetLink,   // Link to the ads content
+      userId,       // Advertiser's id
+      assetLink,    // Link to the ads content
       impressions,
       link,
       buttonLabel,
       title,
       description,
-      status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
-      lastTime,    // Last advertised time - Unix timestamp in UTC
+      status,       // 0: Created | 1: Pending | 2: Approved | 3: Rejected
+      lastTime,     // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
+      type,         // 0: RainRoomAds | 1: StaticAds
     }
   }
   ```
@@ -181,16 +184,17 @@
     ads: [
       {
         id,           // Ads Id
-        userId,      // Advertiser's id
-        assetLink,   // Link to the ads content
+        userId,       // Advertiser's id
+        assetLink,    // Link to the ads content
         impressions,
         link,
         buttonLabel,
         title,
         description,
-        status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
-        lastTime,    // Last advertised time - Unix timestamp in UTC
+        status,       // 0: Created | 1: Pending | 2: Approved | 3: Rejected
+        lastTime,     // Last advertised time - Unix timestamp in UTC
         time,         // Registration Time - Unix timestamp in UTC
+        type,         // 0: RainRoomAds | 1: StaticAds
       },
       ...
     ]
@@ -206,16 +210,17 @@
     message: "Success or Failed Message",
     ads: {
       id,           // Ads Id
-      userId,      // Advertiser's id
-      assetLink,   // Link to the ads content
+      userId,       // Advertiser's id
+      assetLink,    // Link to the ads content
       impressions,
       link,
       buttonLabel,
       title,
       description,
-      status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
-      lastTime,    // Last advertised time - Unix timestamp in UTC
+      status,       // 0: Created | 1: Pending | 2: Approved | 3: Rejected
+      lastTime,     // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
+      type,         // 0: RainRoomAds | 1: StaticAds
     }
   }
   ```
@@ -237,16 +242,17 @@
     message: "Success or Failed Message",
     ads: {
       id,           // Ads Id
-      userId,      // Advertiser's id
-      assetLink,   // Link to the ads content
+      userId,       // Advertiser's id
+      assetLink,    // Link to the ads content
       impressions,
       link,
       buttonLabel,
       title,
       description,
-      status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
-      lastTime,    // Last advertised time - Unix timestamp in UTC
+      status,       // 0: Created | 1: Pending | 2: Approved | 3: Rejected
+      lastTime,     // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
+      type,         // 0: RainRoomAds | 1: StaticAds
     }
   }
   ```
@@ -264,9 +270,10 @@
   Request Ads for review
 
   ***Request Body***
-  | Fields      | Description              |
-  | ----------- | ------------------------ |
-  | impressions | Impressions for campaign |
+  | Fields      | Description               |
+  | ----------- | ------------------------- |
+  | impressions | Impressions for campaign  |
+  | costPerImp  | vitae cost per impression |
   ***Response***
   ```
   {
@@ -274,16 +281,17 @@
     message: "Success or Failed Message",
     ads: {
       id,           // Ads Id
-      userId,      // Advertiser's id
-      assetLink,   // Link to the ads content
+      userId,       // Advertiser's id
+      assetLink,    // Link to the ads content
       impressions,
       link,
       buttonLabel,
       title,
       description,
-      status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
-      lastTime,    // Last advertised time - Unix timestamp in UTC
+      status,       // 0: Created | 1: Pending | 2: Approved | 3: Rejected
+      lastTime,     // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
+      type,         // 0: RainRoomAds | 1: StaticAds
     }
   }
   ```
@@ -297,17 +305,34 @@
     message: "Success or Failed Message",
     ads: {
       id,           // Ads Id
-      userId,      // Advertiser's id
-      assetLink,   // Link to the ads content
+      userId,       // Advertiser's id
+      assetLink,    // Link to the ads content
       impressions,
       link,
       buttonLabel,
       title,
       description,
-      status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
-      lastTime,    // Last advertised time - Unix timestamp in UTC
+      status,       // 0: Created | 1: Pending | 2: Approved | 3: Rejected
+      lastTime,     // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
+      type,         // 0: RainRoomAds | 1: StaticAds
     }
+  }
+  ```
+### /campaign/impcost?type=x (GET)
+  Get the cost per impressions by Vitae Token
+
+  ***Paramters***
+  | Fields | Description      |
+  | ------ | ---------------- |
+  | type   | 0 -> RainRoomAds |
+  |        | 1 -> Static Ads  |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    price: // vitae token cost per impression
   }
   ```
 ## 1.5 Moderator / Ads API
@@ -322,16 +347,17 @@
     ads: [
       {
         id,           // Ads Id
-        userId,      // Advertiser's id
-        assetLink,   // Link to the ads content
+        userId,       // Advertiser's id
+        assetLink,    // Link to the ads content
         impressions,
         link,
         buttonLabel,
         title,
         description,
-        status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
-        lastTime,    // Last advertised time - Unix timestamp in UTC
+        status,       // 0: Created | 1: Pending | 2: Approved | 3: Rejected
+        lastTime,     // Last advertised time - Unix timestamp in UTC
         time,         // Registration Time - Unix timestamp in UTC
+        type,         // 0: RainRoomAds | 1: StaticAds
         // Ads Creator's Info
         username,
         name,
@@ -354,16 +380,17 @@
     message: "Success or Failed Message",
     ads: {
       id,           // Ads Id
-      userId,      // Advertiser's id
-      assetLink,   // Link to the ads content
+      userId,       // Advertiser's id
+      assetLink,    // Link to the ads content
       impressions,
       link,
       buttonLabel,
       title,
       description,
-      status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
-      lastTime,    // Last advertised time - Unix timestamp in UTC
+      status,       // 0: Created | 1: Pending | 2: Approved | 3: Rejected
+      lastTime,     // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
+      type,         // 0: RainRoomAds | 1: StaticAds
     }
   }
   ```
@@ -377,16 +404,17 @@
     message: "Success or Failed Message",
     ads: {
       id,           // Ads Id
-      userId,      // Advertiser's id
-      assetLink,   // Link to the ads content
+      userId,       // Advertiser's id
+      assetLink,    // Link to the ads content
       impressions,
       link,
       buttonLabel,
       title,
       description,
-      status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
-      lastTime,    // Last advertised time - Unix timestamp in UTC
+      status,       // 0: Created | 1: Pending | 2: Approved | 3: Rejected
+      lastTime,     // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
+      type,         // 0: RainRoomAds | 1: StaticAds
     }
   }
   ```
@@ -554,17 +582,18 @@
     ],
     adsList: [
       {
-        id,
-        user_id,
-        assetLink,
+        id,           // Ads Id
+        userId,       // Advertiser's id
+        assetLink,    // Link to the ads content
         impressions,
         link,
         buttonLabel,
         title,
         description,
-        status,
-        lastTime,
-        time,
+        status,       // 0: Created | 1: Pending | 2: Approved | 3: Rejected
+        lastTime,     // Last advertised time - Unix timestamp in UTC
+        time,         // Registration Time - Unix timestamp in UTC
+        type,         // 0: RainRoomAds | 1: StaticAds
       }, ...
     ]
   }
