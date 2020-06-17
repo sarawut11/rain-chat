@@ -5,7 +5,7 @@ import * as jwt from "koa-jwt";
 import configs from "@configs";
 
 import { ServicesContext, RainContext, CMCContext, DailyContext } from "./context";
-import { appRoutes } from "./routes";
+import { appRoutes, apiRoutes, authRoutes } from "./routes";
 import { Server } from "./server";
 import {
   ChatService,
@@ -22,11 +22,13 @@ export const App = Server.init(app => {
   app
     .use(compress())
     .use(cors(corsArgs))
-    .use(jwt({ secret: configs.token.jwt_secret }).unless({
-      path: [/\/login/g, /\/register/g, /\/ref\/validate/g, /\/token\/validate/g]
-    }))
     .use(koaBody({ multipart: true }))
+    .use(authRoutes.routes())
+    .use(jwt({
+      secret: configs.token.jwt_secret,
+    }))
     .use(appRoutes.routes())
+    .use(apiRoutes.routes())
     .use(appRoutes.allowedMethods());
 })
   .createServer()

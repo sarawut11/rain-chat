@@ -23,7 +23,6 @@ export const loginUser = async (ctx, next) => {
     //   After the verification is successful, the server will issue a Token, and then send the Token to the client
     if (md5(password) === res[0].password) {
       const { id, name, email, balance, username, intro, avatar, socketId, refcode, role } = res[0];
-      console.log(res[0]);
       const token = generateToken({ id, username });
       ctx.body = {
         success: true,
@@ -141,9 +140,11 @@ export const validateToken = async (ctx, next) => {
       };
       return;
     }
+    const userInfo = RowDataPacket[0];
     ctx.body = {
       success: true,
-      message: "Valid"
+      message: "Valid",
+      userInfo,
     };
   } catch (error) {
     console.log(error.message);

@@ -58,7 +58,9 @@
   ```
   {
     success: true/false,
-    message: "Valid or Invalid Message"
+    message: "Valid or Invalid Message",
+    userInfo: {
+    }
   }
   ```
 
