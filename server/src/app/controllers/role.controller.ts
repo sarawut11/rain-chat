@@ -2,6 +2,7 @@ import { ServicesContext, CMCContext, RainContext } from "../context";
 import { UserService } from "../services";
 import configs from "@configs";
 import * as moment from "moment";
+import { User } from "../models";
 
 export const getAllUsers = async (ctx, next) => {
   try {
@@ -166,7 +167,7 @@ const confirmMembership = async (userId, amount, confirmTime) => {
 
 const isOwner = (username): Promise<any> => new Promise(async (resolve, reject) => {
   const { userService } = ServicesContext.getInstance();
-  const RowDataPacket = await userService.getUserInfoByUsername(username);
+  const RowDataPacket: User[] = await userService.getUserInfoByUsername(username);
   if (RowDataPacket.length <= 0) {
     resolve({
       success: false,
@@ -175,7 +176,7 @@ const isOwner = (username): Promise<any> => new Promise(async (resolve, reject) 
     return;
   }
   const userInfo = RowDataPacket[0];
-  if (userInfo.role !== UserService.Role.OWNER) {
+  if (userInfo.role !== User.ROLE.OWNER) {
     resolve({
       success: false,
       message: "You are not a Owner."

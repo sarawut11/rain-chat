@@ -115,15 +115,16 @@ CREATE TABLE `user_user_relation` (
 DROP TABLE IF EXISTS `ads_info`;
 CREATE TABLE `ads_info` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `asset_link` varchar(200) DEFAULT '',
+  `userId` int(11) NOT NULL,
+  `type` tinyint(1) NOT NULL DEFAULT '0',
+  `status` tinyint(1) NOT NULL DEFAULT '0',
   `impressions` int(11) DEFAULT 0,
-  `link` varchar(200) DEFAULT '',
-  `button_name` varchar(20) DEFAULT '',
   `title` varchar(50) DEFAULT '',
   `description` varchar(200) DEFAULT '',
-  `status` tinyint(1) NOT NULL DEFAULT '0',
-  `last_time` int(11) DEFAULT 0,
+  `buttonLabel` varchar(20) DEFAULT '',
+  `assetLink` varchar(200) DEFAULT '',
+  `link` varchar(200) DEFAULT '',
+  `lastTime` int(11) DEFAULT 0,
   `time` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;

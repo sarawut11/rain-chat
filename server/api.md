@@ -147,7 +147,7 @@
   | ----------- | ------------------------------- |
   | asset       | Content of Ads - Image or Video |
   | link        | Link to the Ads Product         |
-  | button_name | Name of the button to ads link  |
+  | buttonLabel | Name of the button to ads link  |
   | title       | Title of Ads                    |
   | description | Description of Ads              |
   ***Response***
@@ -157,15 +157,15 @@
     message: "Success or Failed Message",
     ads: {
       id,           // Ads Id
-      user_id,      // Advertiser's id
-      asset_link,   // Link to the ads content
+      userId,      // Advertiser's id
+      assetLink,   // Link to the ads content
       impressions,
       link,
-      button_name,
+      buttonLabel,
       title,
       description,
       status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
-      last_time,    // Last advertised time - Unix timestamp in UTC
+      lastTime,    // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
     }
   }
@@ -181,15 +181,15 @@
     ads: [
       {
         id,           // Ads Id
-        user_id,      // Advertiser's id
-        asset_link,   // Link to the ads content
+        userId,      // Advertiser's id
+        assetLink,   // Link to the ads content
         impressions,
         link,
-        button_name,
+        buttonLabel,
         title,
         description,
         status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
-        last_time,    // Last advertised time - Unix timestamp in UTC
+        lastTime,    // Last advertised time - Unix timestamp in UTC
         time,         // Registration Time - Unix timestamp in UTC
       },
       ...
@@ -206,15 +206,15 @@
     message: "Success or Failed Message",
     ads: {
       id,           // Ads Id
-      user_id,      // Advertiser's id
-      asset_link,   // Link to the ads content
+      userId,      // Advertiser's id
+      assetLink,   // Link to the ads content
       impressions,
       link,
-      button_name,
+      buttonLabel,
       title,
       description,
       status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
-      last_time,    // Last advertised time - Unix timestamp in UTC
+      lastTime,    // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
     }
   }
@@ -227,7 +227,7 @@
   | ----------- | ------------------------------------------ |
   | asset       | Content of Ads - Image or Video (Optional) |
   | link        | Link to the Ads Product                    |
-  | button_name | Name of the button to ads link             |
+  | buttonLabel | Name of the button to ads link             |
   | title       | Title of Ads                               |
   | description | Description of Ads                         |
   ***Response***
@@ -237,15 +237,15 @@
     message: "Success or Failed Message",
     ads: {
       id,           // Ads Id
-      user_id,      // Advertiser's id
-      asset_link,   // Link to the ads content
+      userId,      // Advertiser's id
+      assetLink,   // Link to the ads content
       impressions,
       link,
-      button_name,
+      buttonLabel,
       title,
       description,
       status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
-      last_time,    // Last advertised time - Unix timestamp in UTC
+      lastTime,    // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
     }
   }
@@ -274,15 +274,15 @@
     message: "Success or Failed Message",
     ads: {
       id,           // Ads Id
-      user_id,      // Advertiser's id
-      asset_link,   // Link to the ads content
+      userId,      // Advertiser's id
+      assetLink,   // Link to the ads content
       impressions,
       link,
-      button_name,
+      buttonLabel,
       title,
       description,
       status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
-      last_time,    // Last advertised time - Unix timestamp in UTC
+      lastTime,    // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
     }
   }
@@ -297,15 +297,15 @@
     message: "Success or Failed Message",
     ads: {
       id,           // Ads Id
-      user_id,      // Advertiser's id
-      asset_link,   // Link to the ads content
+      userId,      // Advertiser's id
+      assetLink,   // Link to the ads content
       impressions,
       link,
-      button_name,
+      buttonLabel,
       title,
       description,
       status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
-      last_time,    // Last advertised time - Unix timestamp in UTC
+      lastTime,    // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
     }
   }
@@ -322,15 +322,15 @@
     ads: [
       {
         id,           // Ads Id
-        user_id,      // Advertiser's id
-        asset_link,   // Link to the ads content
+        userId,      // Advertiser's id
+        assetLink,   // Link to the ads content
         impressions,
         link,
-        button_name,
+        buttonLabel,
         title,
         description,
         status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
-        last_time,    // Last advertised time - Unix timestamp in UTC
+        lastTime,    // Last advertised time - Unix timestamp in UTC
         time,         // Registration Time - Unix timestamp in UTC
         // Ads Creator's Info
         username,
@@ -354,15 +354,15 @@
     message: "Success or Failed Message",
     ads: {
       id,           // Ads Id
-      user_id,      // Advertiser's id
-      asset_link,   // Link to the ads content
+      userId,      // Advertiser's id
+      assetLink,   // Link to the ads content
       impressions,
       link,
-      button_name,
+      buttonLabel,
       title,
       description,
       status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
-      last_time,    // Last advertised time - Unix timestamp in UTC
+      lastTime,    // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
     }
   }
@@ -377,15 +377,15 @@
     message: "Success or Failed Message",
     ads: {
       id,           // Ads Id
-      user_id,      // Advertiser's id
-      asset_link,   // Link to the ads content
+      userId,      // Advertiser's id
+      assetLink,   // Link to the ads content
       impressions,
       link,
-      button_name,
+      buttonLabel,
       title,
       description,
       status,     // 0: Created | 1: Pending | 2: Approved | 3: Rejected
-      last_time,    // Last advertised time - Unix timestamp in UTC
+      lastTime,    // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
     }
   }
@@ -556,14 +556,14 @@
       {
         id,
         user_id,
-        asset_link,
+        assetLink,
         impressions,
         link,
-        button_name,
+        buttonLabel,
         title,
         description,
         status,
-        last_time,
+        lastTime,
         time,
       }, ...
     ]
@@ -610,11 +610,11 @@
   {
     ads: {
       id,
-      asset_link,
+      assetLink,
       title,
       description,
       link,
-      button_name,
+      buttonLabel,
     }
   }
   ```

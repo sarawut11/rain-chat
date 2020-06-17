@@ -1,5 +1,6 @@
 import { ServicesContext } from "../context";
 import { UserService, AdsService } from "../services";
+import { Ads, User } from "../models";
 
 export const getAllAds = async (ctx, next) => {
   try {
@@ -117,7 +118,11 @@ const isModerator = (username): Promise<any> => new Promise(async (resolve, reje
   });
 });
 
-const checkAdsStatus = (adsId): Promise<any> => new Promise(async (resolve, reject) => {
+const checkAdsStatus = (adsId): Promise<{
+  success: boolean,
+  message?: string,
+  existingAds?: Ads
+}> => new Promise(async (resolve, reject) => {
   if (adsId === undefined) {
     resolve({
       success: false,
@@ -135,14 +140,14 @@ const checkAdsStatus = (adsId): Promise<any> => new Promise(async (resolve, reje
     return;
   }
   const existingAds = RowDataPacket[0];
-  if (existingAds.status === AdsService.AdsStatus.Approved) {
+  if (existingAds.status === Ads.STATUS.Approved) {
     resolve({
       success: false,
       message: "This ads is already approved."
     });
     return;
   }
-  if (existingAds.status !== AdsService.AdsStatus.Pending) {
+  if (existingAds.status !== Ads.STATUS.Pending) {
     resolve({
       success: false,
       message: "This ads is not in pending."

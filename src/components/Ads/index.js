@@ -296,7 +296,7 @@ class Ads extends Component {
       <List.Item className="ads-list-item">
         <Card
           className="ads-card"
-          cover={<img alt="example" src={item.asset_link} />}
+          cover={<img alt="example" src={item.assetLink} />}
           actions={actions}
         >
           <Row justify="end">
@@ -325,7 +325,7 @@ class Ads extends Component {
                   Description: <b>{item.description}</b>
                 </p>
                 <p>
-                  Button Label: <b>{item.button_name}</b>
+                  Button Label: <b>{item.buttonName}</b>
                 </p>
                 <p>
                   Link: <b>{item.link}</b>

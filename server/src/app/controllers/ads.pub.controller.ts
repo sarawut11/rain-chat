@@ -2,12 +2,12 @@ import * as mime from "mime-types";
 import * as moment from "moment";
 import * as aws from "../utils/aws";
 import { ServicesContext } from "../context";
-import { UserService, AdsService } from "../services";
+import { Ads, User } from "../models";
 
 export const registerAds = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
-    const { link, button_name: buttonName, title, description } = ctx.request.body;
+    const { link, button_name: buttonName, title, description, type } = ctx.request.body;
     const asset = ctx.request.files.asset;
     const { userService, adsService } = ServicesContext.getInstance();
 
@@ -20,7 +20,7 @@ export const registerAds = async (ctx, next) => {
     }
 
     // Check Username
-    const RowDataPacket = await userService.getUserInfoByUsername(username);
+    const RowDataPacket: User[] = await userService.findUserByUsername(username);
     if (RowDataPacket.length <= 0) {
       ctx.body = {
         success: false,
@@ -40,10 +40,10 @@ export const registerAds = async (ctx, next) => {
 
     // Register DB
     const res = await adsService.insertAds({
-      user_id: userInfo.user_id,
-      asset_link: url,
+      userId: userInfo.id,
+      assetLink: url,
       link,
-      button_name: buttonName,
+      buttonLabel: buttonName,
       title,
       description,
       time: moment().utc().unix()
@@ -69,7 +69,7 @@ export const getAdsByUsername = async (ctx, next) => {
     const { userService, adsService } = ServicesContext.getInstance();
 
     // Check Username
-    const RowDataPacket = await userService.getUserInfoByUsername(username);
+    const RowDataPacket: User[] = await userService.findUserByUsername(username);
     if (RowDataPacket.length <= 0) {
       ctx.body = {
         success: false,
@@ -79,7 +79,7 @@ export const getAdsByUsername = async (ctx, next) => {
     }
     const userInfo = RowDataPacket[0];
 
-    const result = await adsService.findAdsByUserId(userInfo.user_id);
+    const result = await adsService.findAdsByUserId(userInfo.id);
     ctx.body = {
       success: true,
       message: "Success",
@@ -126,7 +126,7 @@ export const updateAds = async (ctx, next) => {
     const { username } = ctx.state.user;
     const { adsId } = ctx.params;
     const asset = ctx.request.files.asset;
-    const { link, button_name: buttonName, title, description } = ctx.request.body;
+    const { link, buttonLabel, title, description } = ctx.request.body;
     const { adsService, userService } = ServicesContext.getInstance();
 
     const checkResult = await checkAdsId(username, adsId);
@@ -140,7 +140,7 @@ export const updateAds = async (ctx, next) => {
     // Delete existing asset and upload new asset
     let assetLink: string;
     if (asset !== undefined) {
-      await aws.deleteFile(existingAds.asset_link);
+      await aws.deleteFile(existingAds.assetLink);
       const { url } = await aws.uploadFile({
         fileName: generateFileName(username, asset.type),
         filePath: asset.path,
@@ -148,14 +148,14 @@ export const updateAds = async (ctx, next) => {
       });
       assetLink = url;
     } else {
-      assetLink = existingAds.asset_link;
+      assetLink = existingAds.assetLink;
     }
 
     // Register DB
-    await adsService.updateAds(adsId, userInfo.user_id, {
-      asset_link: assetLink,
+    await adsService.updateAds(adsId, userInfo.id, {
+      assetLink,
       link,
-      button_name: buttonName,
+      buttonLabel,
       title,
       description
     });
@@ -187,7 +187,7 @@ export const deleteAds = async (ctx, next) => {
     }
 
     const { userInfo, existingAds } = checkResult;
-    await aws.deleteFile(existingAds.asset_link);
+    await aws.deleteFile(existingAds.assetLink);
     await adsService.deleteAds(adsId);
     ctx.body = {
       success: true,
@@ -216,21 +216,21 @@ export const requestAds = async (ctx, next) => {
     }
 
     const { userInfo, existingAds } = checkResult;
-    if (existingAds.status === AdsService.AdsStatus.Pending) {
+    if (existingAds.status === Ads.STATUS.Pending) {
       ctx.body = {
         success: false,
         message: "This ads is already in pending."
       };
       return;
     }
-    if (existingAds.status === AdsService.AdsStatus.Approved) {
+    if (existingAds.status === Ads.STATUS.Approved) {
       ctx.body = {
         success: false,
         message: "This ads is already approved."
       };
       return;
     }
-    await adsService.requestAds(adsId, userInfo.user_id, impressions);
+    await adsService.requestAds(adsId, userInfo.id, impressions);
     const updatedAds = await adsService.findAdsById(adsId);
     ctx.body = {
       success: true,
@@ -259,14 +259,14 @@ export const cancelAds = async (ctx, next) => {
     }
 
     const { userInfo, existingAds } = checkResult;
-    if (existingAds.status !== AdsService.AdsStatus.Pending) {
+    if (existingAds.status !== Ads.STATUS.Pending) {
       ctx.body = {
         success: false,
         message: "This ads is not in pending."
       };
     }
 
-    await adsService.cancelAds(adsId, userInfo.user_id);
+    await adsService.cancelAds(adsId, userInfo.id);
     const updatedAds = await adsService.findAdsById(adsId);
     ctx.body = {
       success: true,
@@ -282,9 +282,14 @@ export const cancelAds = async (ctx, next) => {
   }
 };
 
-const checkAdsId = (username, adsId): Promise<any> => new Promise(async (resolve, reject) => {
+const checkAdsId = (username, adsId): Promise<{
+  success: boolean,
+  message?: string,
+  userInfo?: User,
+  existingAds?: Ads
+}> => new Promise(async (resolve, reject) => {
   const { adsService, userService } = ServicesContext.getInstance();
-  const RowDataPacket = await adsService.findAdsById(adsId);
+  const RowDataPacket: Ads[] = await adsService.findAdsById(adsId);
   if (RowDataPacket.length === 0) {
     resolve({
       success: false,
@@ -293,8 +298,8 @@ const checkAdsId = (username, adsId): Promise<any> => new Promise(async (resolve
     return;
   }
   const existingAds = RowDataPacket[0];
-  const userInfo = (await userService.getUserInfoByUsername(username))[0];
-  if (existingAds.user_id !== userInfo.user_id) {
+  const userInfo: User = (await userService.findUserByUsername(username))[0];
+  if (existingAds.userId !== userInfo.id) {
     resolve({
       success: false,
       message: "This ads belongs to another user"
