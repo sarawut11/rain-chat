@@ -1,6 +1,7 @@
 import * as uuid from "uuid/v1";
 import { ServicesContext } from "../context";
 import { getAllMessage, getGroupItem } from "./message.socket";
+import { UserService } from "../services";
 
 export const sendGroupMsg = async (io, socket, data, cbFn) => {
   try {
@@ -60,7 +61,7 @@ export const createGroup = async (io, socket, data, cbfn) => {
     const { name, group_notice, creator_id, create_time } = data;
     const RowDataPacket = await userService.getUserInfoById(creator_id);
     const userInfo = RowDataPacket[0];
-    if (userInfo.role !== "OWNER" && userInfo.role !== "UPGRADED") {
+    if (userInfo.role !== UserService.Role.OWNER && userInfo.role !== UserService.Role.UPGRADED_USER) {
       console.log("Free Members can't create a group");
       io.to(socket.id).emit("error", { code: 500, message: "Free Members can't create a group" });
     } else {
