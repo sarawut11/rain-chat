@@ -25,7 +25,7 @@
     margin-right: 10px;
   }
   .dialogRender {
-    /*在IE10+浏览器中, 使用css即可隐藏input文本输入框右侧的叉号*/
+    /*In IE10+ browser, use CSS to hide the cross on the right side of the input text input box*/
     ::-ms-reveal,
     input[type='text']::-ms-clear {
       display: none;
