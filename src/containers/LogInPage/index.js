@@ -77,7 +77,7 @@ class LogIn extends Component {
       window.location.href = originalLink;
       return;
     }
-    window.location.href = '/';
+    window.location.href = '/group_chat/vitae-rain-group';
   };
 
   render() {

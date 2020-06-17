@@ -106,7 +106,7 @@ ul {
     min-width: 100%;
     .layout-left,
     .layout-left-mobile {
-      width: 40%;
+      width: 450px;
       display: flex;
       flex-wrap: nowrap;
       .tabs-wrapper {
@@ -126,7 +126,7 @@ ul {
         border-right: 1px solid $border;
       }
       .home-page-list-wrapper {
-        width: calc(100% - 53px);
+        width: 100%;
         .home-page-list-content {
           height: calc(100% - 50px);
         }
@@ -134,7 +134,7 @@ ul {
     }
     .layout-right,
     .layout-right-mobile {
-      width: 60%;
+      width: 100%;
     }
     .layout-all-left {
       width: 100%;
@@ -150,11 +150,11 @@ ul {
     min-width: 100%;
     .layout-left,
     .layout-left-mobile {
-      width: 30%;
+      width: 450px;
     }
     .layout-right,
     .layout-right-mobile {
-      width: 70%;
+      width: 100%;
     }
     .layout-all-left {
       width: 100%;
@@ -169,10 +169,10 @@ ul {
   .layout-wrapper {
     min-width: 100%;
     .layout-left {
-      width: 25%;
+      width: 450px;
     }
     .layout-right {
-      width: 75%;
+      width: 100%;
     }
     .layout-all-left {
       width: 100%;
@@ -187,10 +187,10 @@ ul {
   .layout-wrapper {
     min-width: 100%;
     .layout-left {
-      width: 20%;
+      width: 450px;
     }
     .layout-right {
-      width: 80%;
+      width: 100%;
     }
     .layout-all-left {
       width: 100%;
