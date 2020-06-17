@@ -2,16 +2,9 @@ import * as moment from "moment";
 import { query } from "../utils/db";
 import configs from "@configs";
 import { isNullOrUndefined } from "util";
+import { User } from "../models";
 
 export class UserService {
-
-  public static readonly Role = {
-    OWNER: "OWNER",
-    MODERATOR: "MODERATOR",
-    FREE: "FREE",
-    UPGRADED_USER: "UPGRADED",
-  };
-
   readonly TABLE_NAME = "user_info";
   readonly columns = {
     id: "id",
@@ -283,7 +276,7 @@ export class UserService {
       SET ${this.columns.role} = ?
       WHERE ${this.columns.role} = ? AND ${this.columns.lastUpgradeTime} < ?;
     `;
-    return query(_sql, [UserService.Role.FREE, role, expireTime]);
+    return query(_sql, [User.ROLE.FREE, role, expireTime]);
   }
 
   // Add as a friend unilaterally (may later add the function of turning on friend verification)

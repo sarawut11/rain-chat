@@ -3,6 +3,7 @@ export class User {
   public role: string;
 
   public static readonly ROLE = {
+    COMPANY: "COMPANY",
     OWNER: "OWNER",
     MODERATOR: "MODERATOR",
     FREE: "FREE",

@@ -5,6 +5,7 @@ import * as moment from "moment";
 import { getSqlContentMap } from "./util/getSQLConentMap";
 import { query } from "./db";
 import configs from "../src/configs/configs.dev";
+import { User } from "../src/app/models";
 
 // Print script execution log
 const eventLog = (err, sqlFile, index) => {
@@ -41,8 +42,9 @@ const initDB = async () => {
   console.log("Initializing Default Values");
   // Create Default Owner ( Admin )
   const admin = configs.default_admin;
-  let sql = "INSERT INTO user_info (id, username, email, password, name, role, refcode) VALUES (?,?,?,?,?,?,?);";
-  await query(sql, [1, admin.username, "admin@vitae.com", md5(admin.password), admin.name, "OWNER", uniqid()]);
+  let sql = "INSERT INTO user_info (username, email, password, name, role, refcode) VALUES (?,?,?,?,?,?);";
+  await query(sql, ["COMPANY", "company@wallet.com", md5(uniqid()), "Company Wallet", User.ROLE.COMPANY, uniqid()]);
+  await query(sql, [admin.username, "admin@vitae.com", md5(admin.password), admin.name, User.ROLE.OWNER, uniqid()]);
 
   // Create Vitae Rain Room
   const rainGroupId = configs.rain.group_id;

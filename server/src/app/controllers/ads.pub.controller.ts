@@ -238,7 +238,7 @@ export const requestAds = async (ctx, next) => {
     await adsService.requestAds(adsId, userInfo.id, impressions, realCostPerImp);
     const updatedAds: Ads[] = await adsService.findAdsById(adsId);
     // Test -> Share revenue at this point | Move to wallet controller later
-    await confirmAds(adsId, impressions, impressions * costPerImp);
+    await confirmAds(adsId, impressions * costPerImp, updatedAds[0].type);
     ctx.body = {
       success: true,
       message: "Successfully requested",
@@ -356,10 +356,12 @@ const confirmAds = async (adsId: number, amount: number, type: number) => {
   // 25% -----> Moderator Share
   // 25% -----> Membership Users Share
   const companyRevenue = amount * configs.ads.revenue.company_revenue;
+  const companyExpense = companyRevenue * configs.company_revenue.company_expenses;
   const ownerShare = companyRevenue * configs.company_revenue.owner_share;
   const moderatorShare = companyRevenue * configs.company_revenue.moderator_share;
   const membersShare = companyRevenue * configs.company_revenue.membership_share;
 
+  await userService.shareRevenue(companyExpense, User.ROLE.COMPANY);
   await userService.shareRevenue(ownerShare, User.ROLE.OWNER);
   await userService.shareRevenue(moderatorShare, User.ROLE.MODERATOR);
   await userService.shareRevenue(membersShare, User.ROLE.UPGRADED_USER);

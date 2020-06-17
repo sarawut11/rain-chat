@@ -2,7 +2,7 @@ import * as moment from "moment";
 import { CronJob } from "cron";
 import configs from "@configs";
 import { ServicesContext } from "./ServicesContext";
-import { UserService } from "../services";
+import { User } from "../models";
 
 export class DailyContext {
   static instance: DailyContext;
@@ -29,8 +29,8 @@ export class DailyContext {
         console.log("Checking Membership Expiration");
         const { userService } = ServicesContext.getInstance();
         const expireTime = moment().utc().subtract(1, "months").unix();
-        const expiredUsers = await userService.getUsersByExpired(UserService.Role.UPGRADED_USER, expireTime);
-        await userService.resetExpiredRole(UserService.Role.UPGRADED_USER, expireTime);
+        const expiredUsers = await userService.getUsersByExpired(User.ROLE.UPGRADED_USER, expireTime);
+        await userService.resetExpiredRole(User.ROLE.UPGRADED_USER, expireTime);
         console.log(`${expiredUsers.length} users' membership have been expired`);
       } catch (error) {
         console.log(error.message);

@@ -105,7 +105,7 @@ const isModerator = (username): Promise<any> => new Promise(async (resolve, reje
     return;
   }
   const userInfo = RowDataPacket[0];
-  if (userInfo.role !== UserService.Role.MODERATOR) {
+  if (userInfo.role !== User.ROLE.MODERATOR) {
     resolve({
       success: false,
       message: "You are not a Moderator."
