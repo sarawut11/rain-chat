@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Modal from '../Modal';
+// import Modal from '../Modal';
 import './styles.scss';
+import { Form, Input, Modal } from 'antd';
 import notification from '../Notification';
 
 export default class GroupModal extends Component {
@@ -41,13 +42,36 @@ export default class GroupModal extends Component {
       <Modal
         title={title}
         visible={modalVisible}
-        confirm={this._confirm}
+        onOk={this._confirm}
         hasCancel
         hasConfirm
-        cancel={cancel}
+        onCancel={cancel}
       >
-        <div className="groupModalContent">
-          <div>
+        <div>
+          <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
+            <Form.Item label="Group Name">
+              <Input
+                name="groupName"
+                value={groupName}
+                onChange={this.handleChange}
+                type="text"
+                placeholder="Less than 12 letters"
+                maxLength="12"
+              />
+            </Form.Item>
+            <Form.Item label="Group Description">
+              <Input.TextArea
+                name="groupNotice"
+                value={groupNotice}
+                onChange={this.handleChange}
+                rows="3"
+                type="text"
+                placeholder="Less than 60 letters"
+                maxLength="60"
+              />
+            </Form.Item>
+          </Form>
+          {/* <div>
             <span>Group name:</span>
             <input
               name="groupName"
@@ -69,7 +93,7 @@ export default class GroupModal extends Component {
               placeholder="Less than 60 letters"
               maxLength="60"
             />
-          </div>
+          </div> */}
         </div>
       </Modal>
     );
