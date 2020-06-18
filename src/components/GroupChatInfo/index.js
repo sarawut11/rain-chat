@@ -117,8 +117,6 @@ export default class GroupChatInfo extends Component {
           title="Modify group information"
           modalVisible={modalVisible}
           confirm={args => this._confirm(args)}
-          hasCancel
-          hasConfirm
           cancel={this._closeModal}
           defaultGroupName={groupInfo.name}
           defaultGroupNotice={groupInfo.group_notice}

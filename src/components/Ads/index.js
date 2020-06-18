@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-target-blank */
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable no-plusplus */
 /* eslint-disable import/no-extraneous-dependencies */
@@ -21,6 +22,7 @@ import {
   Tag,
   Form,
   Input,
+  Timeline,
 } from 'antd';
 import {
   EditOutlined,
@@ -54,10 +56,9 @@ class ImpressionsContent extends Component {
     const { pointer } = this.props;
     return (
       <div>
-        <Form style={{ marginTop: '20px' }}>
+        <Form style={{ marginTop: '20px' }} labelCol={{ span: 7 }} wrapperCol={{ span: 17 }}>
           <Form.Item label="Impressions" name="impression-form">
             <InputNumber
-              // value={pointer.state.impressions}
               name="impressions"
               onChange={this.onImpressionsChange}
               style={{ width: '100%' }}
@@ -358,11 +359,12 @@ class Ads extends Component {
             {status === 1 && <Tag color="#2db7f5">pending</Tag>}
             {status === 0 && <Tag color="geekblue">created</Tag>}
             {status === 3 && <Tag color="#f50">rejected</Tag>}
+            {status === 4 && <Tag color="#87d068">paid</Tag>}
           </Row>
           <Meta
             avatar={
               <UserAvatar
-                name={item.username ? item.username : this.state.user_info.username}
+                name={item.name ? item.name : this.state.user_info.name}
                 src={item.avatar ? item.avatar : this.state.user_info.avatar}
                 size="36"
               />
@@ -375,39 +377,64 @@ class Ads extends Component {
                     Advertiser: <b>{item.username}</b>
                   </p>
                 )}
-                <p>
-                  Description: <b>{item.description}</b>
-                </p>
-                <p>
-                  Button Label: <b>{item.buttonLabel}</b>
-                </p>
-                <p>
-                  Link: <b>{item.link}</b>
-                </p>
-                {item.type ? (
-                  <p>
-                    Type: <b>{item.type === 0 ? 'Rain Room Ads' : 'Static Ads'}</b>
-                  </p>
-                ) : (
-                  ''
-                )}
-                {item.impressions ? (
-                  <p>
-                    Impressions: <b>{item.impressions}</b>
-                  </p>
-                ) : (
-                  ''
-                )}
-                {item.costPerImp ? (
-                  <p>
-                    CostPerImp: <b>{item.costPerImp}</b>
-                  </p>
-                ) : (
-                  ''
-                )}
               </div>
             }
           />
+
+          <Timeline className="camp-item-timeline">
+            {item.description && (
+              <Timeline.Item color="green">
+                <p>
+                  <b>Description:</b>
+                </p>
+                <p>{item.description}</p>
+              </Timeline.Item>
+            )}
+            {item.buttonLabel && (
+              <Timeline.Item color="green">
+                <p>
+                  <b>Button Label: </b>
+                  {item.buttonLabel}
+                </p>
+              </Timeline.Item>
+            )}
+            {item.link && (
+              <Timeline.Item color="green">
+                <p>
+                  <b>Link:</b>
+                </p>
+                <p>
+                  <a href={item.link} target="_blank">
+                    {item.link}
+                  </a>
+                </p>
+              </Timeline.Item>
+            )}
+            {item.type && (
+              <Timeline.Item color="green">
+                <p>
+                  <b>Type: </b>
+                  {item.type}
+                </p>
+              </Timeline.Item>
+            )}
+            {item.impressions && (
+              <Timeline.Item color="green">
+                <p>
+                  <b>Impressions: </b>
+                  {item.impressions}
+                </p>
+              </Timeline.Item>
+            )}
+            {item.costPerImp && (
+              <Timeline.Item color="green">
+                <p>
+                  <b>Cost per impression:</b>
+                </p>
+                <p>{item.costPerImp}</p>
+              </Timeline.Item>
+            )}
+          </Timeline>
         </Card>
       </List.Item>
     );

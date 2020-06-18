@@ -21,7 +21,7 @@
     border-top: 1px solid white;
     text-align: center;
     z-index: 999;
-    .xIcon{
+    .xIcon {
       font-size: 18px;
       line-height: 18px;
       padding: 6px 12px;
@@ -38,4 +38,16 @@
 
 .hideModalBase {
   display: none;
+}
+
+@media screen and (max-width: 1000px) {
+  .modalWrapper {
+    width: 70%;
+  }
+}
+
+@media screen and (max-width: 647px) {
+  .modalWrapper {
+    width: 90%;
+  }
 }

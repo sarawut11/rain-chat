@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { Modal } from 'antd';
 import { withRouter } from 'react-router-dom';
 import './styles.scss';
 import CustomButton from '../Button';
-import Modal from '../Modal';
 
 function Setting({ initApp, history }) {
-  const [logoutModalVisible, setLogoutModalVisible] = useState(false);
-
   const logout = () => {
     window.socket.disconnect();
     localStorage.removeItem('userInfo');
@@ -15,17 +13,16 @@ function Setting({ initApp, history }) {
     history.push('/login');
   };
 
+  const showLogoutModal = () => {
+    Modal.confirm({
+      onOk: logout,
+      title: 'Are you sure to exit?',
+    });
+  };
+
   return (
     <div className="setting">
-      <Modal
-        title="Are you sure to exit?"
-        visible={logoutModalVisible}
-        confirm={logout}
-        hasCancel
-        hasConfirm
-        cancel={() => setLogoutModalVisible(false)}
-      />
-      <CustomButton clickFn={() => setLogoutModalVisible(true)} value="Sign out" />
+      <CustomButton clickFn={showLogoutModal} value="Sign out" />
     </div>
   );
 }

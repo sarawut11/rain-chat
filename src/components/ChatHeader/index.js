@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import { Button, Tooltip } from 'antd';
+import { SendOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import './style.scss';
-import { Button } from 'antd';
 
 class ChatHeader extends Component {
   clickToBack = () => {
@@ -38,7 +39,11 @@ class ChatHeader extends Component {
           {title}
         </div>
         {groupId && groupId === 'vitae-rain-group' ? (
-          <Button type="primary">Send Vitae to Rain</Button>
+          <Tooltip title="Send Vitae to Rain" color="green" key="send-vitae-btn">
+            <Button type="primary">
+              <SendOutlined />
+            </Button>
+          </Tooltip>
         ) : (
           showShareIcon && (
             <svg onClick={this._showShareModal} className="icon shareIcon" aria-hidden="true">

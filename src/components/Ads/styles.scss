@@ -1,6 +1,18 @@
 .campaign-container {
   padding: 40px;
   width: 100%;
+
+  .ant-card-body {
+    padding-bottom: 0px;
+  }
+
+  .camp-item-timeline {
+    margin-top: 20px;
+    margin-left: 5px;
+    .ant-timeline-item {
+      padding-bottom: 5px;
+    }
+  }
 }
 
 .camp-add-button {

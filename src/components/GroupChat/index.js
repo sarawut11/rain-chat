@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { Modal } from 'antd';
 import ChatHeader from '../ChatHeader';
 import InputArea from '../InputArea';
 import ChatContentList from '../ChatContentList';
 import GroupChatInfo from '../GroupChatInfo';
-import Modal from '../Modal';
+// import Modal from '../Modal';
 import ShareModal from '../ShareModal';
 import PersonalInfo from '../PersonalInfo';
 import notification from '../Notification';
@@ -25,7 +26,6 @@ class GroupChat extends Component {
       showGroupChatInfo: false,
       showPersonalInfo: false,
       personalInfo: {},
-      showLeaveGroupModal: false,
       showShareModal: false,
       disableJoinButton: false,
     };
@@ -84,7 +84,10 @@ class GroupChat extends Component {
   };
 
   _showLeaveModal = () => {
-    this.setState(state => ({ showLeaveGroupModal: !state.showLeaveGroupModal }));
+    Modal.confirm({
+      title: 'Are you sure you want to leave this group?',
+      onOk: this.leaveGroup,
+    });
   };
 
   leaveGroup = () => {
@@ -107,11 +110,10 @@ class GroupChat extends Component {
       return true;
     }
 
-    const { showGroupChatInfo, showPersonalInfo, showLeaveGroupModal } = nextState;
+    const { showGroupChatInfo, showPersonalInfo } = nextState;
     if (
       showGroupChatInfo !== this.state.showGroupChatInfo ||
-      showPersonalInfo !== this.state.showPersonalInfo ||
-      showLeaveGroupModal !== this.state.showLeaveGroupModal
+      showPersonalInfo !== this.state.showPersonalInfo
     )
       return true;
 
@@ -172,7 +174,6 @@ class GroupChat extends Component {
     const {
       groupMsgAndInfo,
       showGroupChatInfo,
-      showLeaveGroupModal,
       personalInfo,
       showPersonalInfo,
       showShareModal,
@@ -193,14 +194,6 @@ class GroupChat extends Component {
           showShareModal={this._showShareModal}
           showGroupChatInfo={value => this._showGroupChatInfo(value)}
           showShareIcon={!!chatItem}
-        />
-        <Modal
-          title="Are you sure you want to leave this group?"
-          visible={showLeaveGroupModal}
-          confirm={this.leaveGroup}
-          hasCancel
-          hasConfirm
-          cancel={this._showLeaveModal}
         />
         <ShareModal
           title="Share this group to"

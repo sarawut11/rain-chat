@@ -1,10 +1,14 @@
-@import "../../assets/base.scss";
+@import '../../assets/base.scss';
 
 .userInfo {
   padding: 20px 20px;
   p {
     font-size: 12px;
     padding: 10px 0px;
+    text-align: center;
+  }
+  .ant-form-item {
+    margin-bottom: 10px;
   }
   .name {
     font-size: 16px;
@@ -15,7 +19,8 @@
     padding-top: 10px;
     cursor: pointer;
   }
-  .website, .github {
+  .website,
+  .github {
     cursor: pointer;
   }
   .personalInfoBtn {
@@ -24,5 +29,13 @@
   }
   .deleteBtn {
     background-color: $warnRed;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .userInfo {
+    .ant-form-item-label {
+      padding-bottom: 0px;
+    }
   }
 }
