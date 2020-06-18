@@ -54,10 +54,9 @@ class ImpressionsContent extends Component {
     const { pointer } = this.props;
     return (
       <div>
-        <Form style={{ marginTop: '20px' }}>
+        <Form style={{ marginTop: '20px' }} labelCol={{ span: 7 }} wrapperCol={{ span: 17 }}>
           <Form.Item label="Impressions" name="impression-form">
             <InputNumber
-              // value={pointer.state.impressions}
               name="impressions"
               onChange={this.onImpressionsChange}
               style={{ width: '100%' }}
@@ -358,6 +357,7 @@ class Ads extends Component {
             {status === 1 && <Tag color="#2db7f5">pending</Tag>}
             {status === 0 && <Tag color="geekblue">created</Tag>}
             {status === 3 && <Tag color="#f50">rejected</Tag>}
+            {status === 4 && <Tag color="#87d068">paid</Tag>}
           </Row>
           <Meta
             avatar={
