@@ -394,6 +394,8 @@ class Ads extends Component {
         <EditOutlined key="edit" onClick={this.onEditAds(item)} />,
         <DeleteOutlined key="delete" onClick={this.showConfirm(item)} />,
       ];
+    } else if (status >= ADS_PENDING_PURCHASE) {
+      actions = [<DeleteOutlined key="delete" onClick={this.showConfirm(item)} />];
     } else {
       actions = [
         <Dropdown overlay={this.renderMenu(item)} placement="bottomCenter">
@@ -415,9 +417,9 @@ class Ads extends Component {
             {status === ADS_PENDING && <Tag color="#2db7f5">pending</Tag>}
             {status === ADS_CREATED && <Tag color="geekblue">created</Tag>}
             {status === ADS_REJECTED && <Tag color="#f50">rejected</Tag>}
-            {status === ADS_PAID && <Tag color="#87d068">paid</Tag>}
-            {status === ADS_PENDING_PURCHASE && <Tag color="#2db7f5">pending purchase</Tag>}
-            {status === ADS_PENDING_CONFIRM && <Tag color="#2db7f5">pending confirm</Tag>}
+            {status === ADS_PAID && <Tag color="#87d068">purchased</Tag>}
+            {status === ADS_PENDING_PURCHASE && <Tag color="#2db7f5">awaiting deposit</Tag>}
+            {status === ADS_PENDING_CONFIRM && <Tag color="#2db7f5">pending deposit</Tag>}
           </Row>
           <Meta
             avatar={
@@ -561,7 +563,7 @@ class Ads extends Component {
             {ads.paidAdsList && ads.paidAdsList.length > 0 && (
               <Col span={24}>
                 <Divider orientation="left" plain>
-                  <h3>Paid ads</h3>
+                  <h3>Purchased ads</h3>
                 </Divider>
                 <List
                   grid={{
@@ -579,10 +581,10 @@ class Ads extends Component {
               </Col>
             )}
 
-            {ads.pendingPurchaseAds && ads.pendingPurchaseAds.length > 0 && (
+            {ads.pendingPurchaseAdsList && ads.pendingPurchaseAdsList.length > 0 && (
               <Col span={24}>
                 <Divider orientation="left" plain>
-                  <h3>Pending purchase ads</h3>
+                  <h3>Awaiting deposit ads</h3>
                 </Divider>
                 <List
                   grid={{
@@ -594,7 +596,7 @@ class Ads extends Component {
                     xl: 3,
                     xxl: 4,
                   }}
-                  dataSource={ads.pendingPurchaseAds}
+                  dataSource={ads.pendingPurchaseAdsList}
                   renderItem={this.renderItem}
                 />
               </Col>
