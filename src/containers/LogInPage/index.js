@@ -83,10 +83,6 @@ class LogIn extends Component {
     } = landingDescription;
     return (
       <div className="login">
-        {/* <Modal title="Alert" visible={visible} confirm={this.confirm} hasConfirm>
-          <p className="content">You have successfully logged in</p>
-        </Modal> */}
-
         <Row className="login-container">
           <Col xs={24} sm={24} md={24} lg={10} className="login-form-container">
             <Row justify="center" align="middle" style={{ height: '100%' }}>
