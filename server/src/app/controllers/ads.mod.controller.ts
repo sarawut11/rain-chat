@@ -196,6 +196,6 @@ const checkAdsStatus = (adsId): Promise<{
   }
   resolve({
     success: true,
-    existingAds: existingAds[0]
+    existingAds
   });
 });
