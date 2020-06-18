@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-target-blank */
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable no-plusplus */
 /* eslint-disable import/no-extraneous-dependencies */
@@ -403,7 +404,9 @@ class Ads extends Component {
                   <b>Link:</b>
                 </p>
                 <p>
-                  <a>{item.link}</a>
+                  <a href={item.link} target="_blank">
+                    {item.link}
+                  </a>
                 </p>
               </Timeline.Item>
             )}
