@@ -362,7 +362,7 @@ class Ads extends Component {
           <Meta
             avatar={
               <UserAvatar
-                name={item.username ? item.username : this.state.user_info.username}
+                name={item.name ? item.name : this.state.user_info.name}
                 src={item.avatar ? item.avatar : this.state.user_info.avatar}
                 size="36"
               />
