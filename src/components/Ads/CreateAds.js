@@ -17,7 +17,7 @@ const initialState = {
   buttonLabel: '',
   title: '',
   description: '',
-  type: '0',
+  type: '1',
   confirmLoading: false,
   fileList: [],
   errorList: {},
@@ -185,9 +185,9 @@ export default class CreateAds extends Component {
                   <TextArea name="description" value={description} onChange={this._onChange} />
                 </Item>
                 <Item label="Type">
-                  <Select value={type} onChange={this.onTypeChange}>
-                    <Option value="0">Rain Room Ads</Option>
-                    <Option value="1">Static Ads</Option>
+                  <Select value={type.toString()} onChange={this.onTypeChange}>
+                    <Option value="1">Rain Room Ads</Option>
+                    <Option value="2">Static Ads</Option>
                   </Select>
                 </Item>
                 <Item label="Link">
