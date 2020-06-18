@@ -8,12 +8,12 @@ export class AdsService {
 
   readonly TABLE_NAME = "ads_info";
 
-  insertAds({ userId, assetLink, link, buttonLabel, title, description, time }) {
+  insertAds({ userId, assetLink, link, buttonLabel, title, description, time, type }) {
     const _sql = `
       INSERT INTO ${this.TABLE_NAME}(
         userId,assetLink,link,buttonLabel,title,description,type,time
       ) values(?,?,?,?,?,?,?,?);`;
-    return query(_sql, [userId, assetLink, link, buttonLabel, title, description, Ads.TYPE.None, time]);
+    return query(_sql, [userId, assetLink, link, buttonLabel, title, description, type, time]);
   }
 
   findAdsById(adsId) {
@@ -42,16 +42,15 @@ export class AdsService {
     return query(_sql, adsId);
   }
 
-  setImpressions(adsId, userId, impressions, costPerImp, type) {
+  setImpressions(adsId, userId, impressions, costPerImp) {
     const _sql = `
       UPDATE ${this.TABLE_NAME}
       SET
         impressions = ?,
         costPerImp = ?,
         status = ?,
-        type = ?
       WHERE id = ? AND userId = ?;`;
-    return query(_sql, [impressions, costPerImp, Ads.STATUS.PendingPurchase, type, adsId, userId]);
+    return query(_sql, [impressions, costPerImp, Ads.STATUS.PendingPurchase, adsId, userId]);
   }
 
   cancelAds(adsId, userId) {

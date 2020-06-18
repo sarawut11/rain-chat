@@ -164,7 +164,7 @@
   | buttonLabel | Name of the button to ads link  |
   | title       | Title of Ads                    |
   | description | Description of Ads              |
-
+  | type        | Type of ads                     |
   ***Response***
   ```
   {
@@ -336,7 +336,6 @@
   | impressions | Impressions for campaign  |
   | costPerImp  | vitae cost per impression |
   | amount      | Total vitae amount        |
-  | type        | Type of ads               |
   ***Response***
   ```
   {

@@ -9,7 +9,7 @@ import configs from "@configs";
 export const registerAds = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
-    const { link, buttonLabel, title, description } = ctx.request.body;
+    const { link, buttonLabel, title, description, type } = ctx.request.body;
     const asset = ctx.request.files.asset;
     const { userService, adsService } = ServicesContext.getInstance();
 
@@ -48,7 +48,8 @@ export const registerAds = async (ctx, next) => {
       buttonLabel,
       title,
       description,
-      time: moment().utc().unix()
+      time: moment().utc().unix(),
+      type
     });
     const insertAds: Ads[] = await adsService.findAdsById(res.insertId);
     ctx.body = {
@@ -289,7 +290,7 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
     const { username } = ctx.state.user;
     const { adsId } = ctx.params;
     const { adsService } = ServicesContext.getInstance();
-    const { impressions, costPerImp, amount, type } = ctx.request.body;
+    const { impressions, costPerImp, amount } = ctx.request.body;
 
     const checkResult = await checkAdsId(username, adsId);
     if (checkResult.success === false) {
@@ -307,7 +308,7 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
     }
 
     const realCostPerImp = configs.ads.revenue.imp_revenue * costPerImp;
-    await adsService.setImpressions(adsId, userInfo.id, impressions, realCostPerImp, type);
+    await adsService.setImpressions(adsId, userInfo.id, impressions, realCostPerImp);
 
     // Expire ads after 5 mins when it is still in pending purchase
     setTimeout(async () => {
