@@ -10,6 +10,7 @@ const initialState = {
   pendingAdsList: [],
   approvedAdsList: [],
   rejectedAdsList: [],
+  paidAdsList: [],
 };
 
 // const userInfo = JSON.parse(localStorage.getItem('userInfo'));

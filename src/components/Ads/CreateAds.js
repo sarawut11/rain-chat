@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { Modal, Form, Input, notification, Row, Col } from 'antd';
+import { Modal, Form, Input, notification, Row, Col, Select } from 'antd';
 import Request from '../../utils/request';
 import AdsUpload from './AdsUpload';
 
 const { Item } = Form;
 const { TextArea } = Input;
+const { Option } = Select;
 const layout = {
   labelCol: { span: 5 },
   wrapperCol: { span: 19 },
@@ -16,6 +17,7 @@ const initialState = {
   buttonLabel: '',
   title: '',
   description: '',
+  type: '0',
   confirmLoading: false,
   fileList: [],
   errorList: {},
@@ -35,7 +37,7 @@ export default class CreateAds extends Component {
 
   handleOk = async () => {
     const { editMode } = this.props;
-    const { id, asset, link, buttonLabel, title, description } = this.state;
+    const { id, asset, link, buttonLabel, title, description, type } = this.state;
 
     const newErrorList = {};
     let isError = false;
@@ -65,6 +67,7 @@ export default class CreateAds extends Component {
       data.append('buttonLabel', buttonLabel);
       data.append('title', title);
       data.append('description', description);
+      data.append('type', type);
 
       let res;
       if (editMode) {
@@ -109,6 +112,10 @@ export default class CreateAds extends Component {
     this.setState({ [name]: value });
   };
 
+  onTypeChange = value => {
+    this.setState({ type: value });
+  };
+
   onAdsFileChange = file => {
     this.setState({ asset: file });
   };
@@ -133,6 +140,7 @@ export default class CreateAds extends Component {
       confirmLoading,
       fileList,
       errorList,
+      type,
     } = this.state;
 
     const uploadText = editMode
@@ -175,6 +183,12 @@ export default class CreateAds extends Component {
                   validateStatus={errorList.description ? 'error' : 'success'}
                 >
                   <TextArea name="description" value={description} onChange={this._onChange} />
+                </Item>
+                <Item label="Type">
+                  <Select value={type} onChange={this.onTypeChange}>
+                    <Option value="0">Rain Room Ads</Option>
+                    <Option value="1">Static Ads</Option>
+                  </Select>
                 </Item>
                 <Item label="Link">
                   <Input name="link" value={link} onChange={this._onChange} />

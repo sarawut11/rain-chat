@@ -1,4 +1,4 @@
-.ads-view-modal {
+.campaign-view-modal {
   width: 50% !important;
   img {
     width: 100%;
@@ -10,13 +10,13 @@
 }
 
 @media screen and (max-width: 768px) {
-  .ads-view-modal {
+  .campaign-view-modal {
     width: 100% !important;
   }
 }
 
 @media screen and (min-width: 1200px) {
-  .ads-view-modal {
+  .campaign-view-modal {
     width: 600px !important;
   }
 }

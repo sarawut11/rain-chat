@@ -25,7 +25,12 @@ const formatAdsList = adsList => {
     return item.status === 3;
   });
 
-  return { createdAdsList, pendingAdsList, approvedAdsList, rejectedAdsList };
+  let paidAdsList = [...adsList];
+  paidAdsList = paidAdsList.filter(item => {
+    return item.status === 4;
+  });
+
+  return { createdAdsList, pendingAdsList, approvedAdsList, rejectedAdsList, paidAdsList };
 };
 
 const setAdsAction = (ads = {}) => {

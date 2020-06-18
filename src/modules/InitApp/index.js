@@ -214,7 +214,11 @@ class InitApp {
       console.log('initialized');
       let afterReconnecting = false;
       window.socket.on('error', error => {
+        console.log('window.socket on error', error);
         notification(error, 'error');
+        if (error.includes('Authentication error')) {
+          window.location.href = '/login';
+        }
       });
       window.socket.on('reconnect', attemptNumber => {
         if (!afterReconnecting) {

@@ -48,7 +48,7 @@ export function showAds(ads) {
         </Row>
       </div>
     ),
-    className: 'ads-view-modal',
+    className: 'campaign-view-modal',
     okText: buttonLabel,
   });
   // const timer = setInterval(() => {
