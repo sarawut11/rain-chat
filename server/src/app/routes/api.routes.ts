@@ -28,6 +28,8 @@ const api = new Router()
   .post("/campaign/mod/:adsId/reject", APIController.rejectAds)
   .post("/campaign/mod/:adsId/approve", APIController.approveAds)
 
+  .get("/campaign/static", APIController.getStaticAds)
+
   // Membership
   .get("/membership/price", APIController.getMembershipPrice)
   .get("/membership/role/users", APIController.getAllUsers)

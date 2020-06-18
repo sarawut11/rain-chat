@@ -1,3 +1,4 @@
+import * as moment from "moment";
 import { query } from "../utils/db";
 import configs from "@configs";
 import { isNullOrUndefined } from "util";
@@ -74,7 +75,7 @@ export class AdsService {
     return query(_sql, [status, id]);
   }
 
-  findAdsToRain() {
+  findAdsToCampaign(type) {
     const _sql = `
       SELECT * FROM ${this.TABLE_NAME}
       WHERE
@@ -82,11 +83,16 @@ export class AdsService {
         status = ? AND
         impressions > 0
       ORDER BY lastTime ASC LIMIT 1;`;
-    return query(_sql, [Ads.TYPE.RainRoomAds, Ads.STATUS.Paid]);
+    return query(_sql, [type, Ads.STATUS.Paid]);
   }
 
-  rainAds(id, impression, lastTime) {
-    const _sql = "UPDATE ads_info SET impressions = ?, lastTime = ? WHERE id = ?;";
-    return query(_sql, [impression, lastTime, id]);
+  campaignAds(id, impression) {
+    const _sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET
+        impressions = impressions - ?,
+        lastTime = ?
+      WHERE id = ?;`;
+    return query(_sql, [impression, moment().utc().unix(), id]);
   }
 }

@@ -25,7 +25,7 @@ export class RainContext {
   async adsRain() {
     try {
       const { userService, adsService } = ServicesContext.getInstance();
-      const RowDataPacket: Ads[] = await adsService.findAdsToRain();
+      const RowDataPacket: Ads[] = await adsService.findAdsToCampaign(Ads.TYPE.RainRoomAds);
       if (RowDataPacket.length <= 0) {
         console.log("No Ads to rain");
         return;
@@ -51,7 +51,8 @@ export class RainContext {
           title: ads.title,
           description: ads.description,
           link: ads.link,
-          buttonLabel: ads.buttonLabel
+          buttonLabel: ads.buttonLabel,
+          type: ads.type,
         }
       }, error => console.log("showAds Error:", error.message));
       await delay(configs.ads.ads_duration);
@@ -71,7 +72,7 @@ export class RainContext {
       socketIdData.forEach(element => socketIds.push(element.socketid));
 
       await RainContext.instance.rainUsers(socketIds, rainReward);
-      await adsService.rainAds(ads.id, impressions - RainContext.usersToRainAds.length, moment().utc().unix());
+      await adsService.campaignAds(ads.id, RainContext.usersToRainAds.length);
     } catch (error) {
       console.log("Rain Failed, ", error.message);
     }

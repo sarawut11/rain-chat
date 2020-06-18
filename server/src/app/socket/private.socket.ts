@@ -1,26 +1,25 @@
+import * as socketIo from "socket.io";
 import { socketServer } from "./app.socket";
 import { ServicesContext } from "../context";
+import { User } from "../models";
 
-export const sendPrivateMsg = async (io, socket, data, cbFn) => {
+export const sendPrivateMsg = async (io, socket: socketIo.Socket, data, cbFn) => {
   try {
     const { chatService, userService } = ServicesContext.getInstance();
 
     if (!data) return;
     data.time = Date.parse(new Date().toString()) / 1000;
-    await Promise.all([
-      chatService.savePrivateMsg({
-        ...data,
-        attachments: JSON.stringify(data.attachments),
-      }),
-      userService.getUserSocketId(data.to_user).then(arr => {
-        const existSocketIdStr = socketServer.getSocketIdHandle(arr);
-        const toUserSocketIds = (existSocketIdStr && existSocketIdStr.split(",")) || [];
+    await chatService.savePrivateMsg({
+      ...data,
+      attachments: JSON.stringify(data.attachments),
+    });
 
-        toUserSocketIds.forEach(e => {
-          io.to(e).emit("getPrivateMsg", data);
-        });
-      }),
-    ]);
+    const user: User[] = await userService.getUserBySocketId(data.to_user);
+    const existSocketIdStr = socketServer.getSocketIdHandle(user[0].socketid);
+    const toUserSocketIds = (existSocketIdStr && existSocketIdStr.split(",")) || [];
+    toUserSocketIds.forEach(e => {
+      io.to(e).emit("getPrivateMsg", data);
+    });
     console.log("sendPrivateMsg data=>", data, "time=>", new Date().toLocaleString());
     cbFn(data);
   } catch (error) {
