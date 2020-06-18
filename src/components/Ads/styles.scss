@@ -1,9 +1,9 @@
-.ads-container {
+.campaign-container {
   padding: 40px;
   width: 100%;
 }
 
-.ads-add-button {
+.camp-add-button {
   float: right;
 }
 
@@ -11,22 +11,22 @@
   height: auto !important;
 }
 
-.ads-card .ant-tag {
+.campaign-card .ant-tag {
   margin-top: -13px;
   margin-bottom: 5px;
 }
 
 @media screen and (max-width: 768px) {
-  .ads-container {
+  .campaign-container {
     padding: 20px;
   }
 }
 
 @media screen and (min-width: 570px) {
-  .ads-list-item {
+  .campaign-list-item {
     height: calc(100% - 16px);
 
-    .ads-card {
+    .campaign-card {
       height: 100%;
 
       .ant-card-body {

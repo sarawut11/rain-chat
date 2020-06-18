@@ -347,9 +347,9 @@ class Ads extends Component {
       ];
     }
     return (
-      <List.Item className="ads-list-item">
+      <List.Item className="campaign-list-item">
         <Card
-          className="ads-card"
+          className="campaign-card"
           cover={<img alt="example" src={item.assetLink} />}
           actions={actions}
         >
@@ -434,7 +434,7 @@ class Ads extends Component {
     console.log('Ads render', this);
 
     return (
-      <div className="ads-container">
+      <div className="campaign-container">
         <CreateAds
           visible={createAdsVisible}
           hideModal={this.hideCreateAdsModal}
@@ -458,7 +458,7 @@ class Ads extends Component {
             {!isModerator && (
               <Col span={24}>
                 <Button
-                  className="ads-add-button"
+                  className="camp-add-button"
                   type="primary"
                   onClick={this.onCreateAdsClick}
                   size="large"
