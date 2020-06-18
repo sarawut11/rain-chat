@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp */
 /* eslint-disable no-plusplus */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable react/jsx-wrap-multilines */
@@ -18,6 +19,8 @@ import {
   Dropdown,
   InputNumber,
   Tag,
+  Form,
+  Input,
 } from 'antd';
 import {
   EditOutlined,
@@ -35,6 +38,40 @@ import Request from '../../utils/request';
 const { Meta } = Card;
 const { confirm, warning } = Modal;
 
+class ImpressionsContent extends Component {
+  state = {
+    impressions: 0,
+  };
+
+  onImpressionsChange = value => {
+    const { pointer } = this.props;
+    this.setState({ impressions: value });
+    pointer.onImpressionsChange(value);
+  };
+
+  render() {
+    console.log('ImpressionsContent', this);
+    const { pointer } = this.props;
+    return (
+      <div>
+        <Form style={{ marginTop: '20px' }}>
+          <Form.Item label="Impressions" name="impression-form">
+            <InputNumber
+              // value={pointer.state.impressions}
+              name="impressions"
+              onChange={this.onImpressionsChange}
+              style={{ width: '100%' }}
+            />
+          </Form.Item>
+
+          <Form.Item label="Amount">
+            <Input value={Number(this.state.impressions) * pointer.state.price} disabled />
+          </Form.Item>
+        </Form>
+      </div>
+    );
+  }
+}
 class Ads extends Component {
   constructor(props) {
     super(props);
@@ -45,6 +82,7 @@ class Ads extends Component {
       editingAds: {},
       editAdsVisible: false,
       impressions: 0,
+      price: 0,
       loading: false,
     };
   }
@@ -97,17 +135,15 @@ class Ads extends Component {
 
   showImpressionsInput = item => async () => {
     const pointer = this;
-    this.setState({ impressions: 0 });
+    this.setState({ impressions: 0, price: 0 });
+    const { price, impressions } = this.state;
+    const amount = Number(impressions) * price;
+    console.log('amount', amount, impressions, price);
+    await this.getImpcost(item);
     confirm({
       title: 'Please input impressions',
       icon: <ExclamationCircleOutlined />,
-      content: (
-        <InputNumber
-          value={pointer.state.impressions}
-          name="impressions"
-          onChange={pointer.onImpressionsChange}
-        />
-      ),
+      content: <ImpressionsContent pointer={pointer} />,
       async onOk() {
         await pointer.onRequest(item);
         pointer.setState({ impressions: 0 });
@@ -170,10 +206,11 @@ class Ads extends Component {
 
   onRequest = async item => {
     const { id } = item;
-    const { impressions } = this.state;
+    const { impressions, price } = this.state;
     try {
       const data = new FormData();
       data.append('impressions', impressions);
+      data.append('costPerImp', price);
       const res = await Request.axios('post', `/api/v1/campaign/pub/${id}/request`, data);
 
       if (res && res.success) {
@@ -191,6 +228,23 @@ class Ads extends Component {
       notification.error({
         message: 'Request failed.',
       });
+    }
+  };
+
+  getImpcost = async item => {
+    const { type } = item;
+    try {
+      const res = await Request.axios('get', `/api/v1/campaign/impcost?type=${type}`);
+
+      if (res && res.success) {
+        this.setState({ price: res.price });
+      } else {
+        notification.error({
+          message: res.message,
+        });
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -330,9 +384,23 @@ class Ads extends Component {
                 <p>
                   Link: <b>{item.link}</b>
                 </p>
+                {item.type ? (
+                  <p>
+                    Type: <b>{item.type === 0 ? 'Rain Room Ads' : 'Static Ads'}</b>
+                  </p>
+                ) : (
+                  ''
+                )}
                 {item.impressions ? (
                   <p>
                     Impressions: <b>{item.impressions}</b>
+                  </p>
+                ) : (
+                  ''
+                )}
+                {item.costPerImp ? (
+                  <p>
+                    CostPerImp: <b>{item.costPerImp}</b>
                   </p>
                 ) : (
                   ''
@@ -363,7 +431,7 @@ class Ads extends Component {
 
     const isModerator = user_info.role === 'MODERATOR';
 
-    console.log('render', ads);
+    console.log('Ads render', this);
 
     return (
       <div className="ads-container">
@@ -397,6 +465,27 @@ class Ads extends Component {
                 >
                   Create ads
                 </Button>
+              </Col>
+            )}
+
+            {ads.paidAdsList && ads.paidAdsList.length > 0 && (
+              <Col span={24}>
+                <Divider orientation="left" plain>
+                  <h3>Paid ads</h3>
+                </Divider>
+                <List
+                  grid={{
+                    gutter: 16,
+                    xs: 1,
+                    sm: 2,
+                    md: 2,
+                    lg: 3,
+                    xl: 3,
+                    xxl: 4,
+                  }}
+                  dataSource={ads.paidAdsList}
+                  renderItem={this.renderItem}
+                />
               </Col>
             )}
 
