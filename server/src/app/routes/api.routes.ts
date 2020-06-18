@@ -5,13 +5,10 @@ const auth = new Router()
   // Authentication
   .post("/register", APIController.registerUser)
   .post("/login", APIController.loginUser)
-  .post("/token/validate", APIController.validateToken);
+  .post("/token/validate", APIController.validateToken)
+  .post("/ref/validate", APIController.validateReferral);
 
 const api = new Router()
-  // Referral
-  .post("/ref/generate", APIController.generateReferral)
-  .post("/ref/validate", APIController.validateReferral)
-
   // Profile
   .get("/user/:username", APIController.getProfileInfo)
   .put("/user/:username", APIController.updateProfileInfo)
