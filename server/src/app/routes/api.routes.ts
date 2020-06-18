@@ -23,6 +23,7 @@ const api = new Router()
   .delete("/campaign/pub/:adsId", APIController.deleteAds)
   .post("/campaign/pub/:adsId/request", APIController.requestAds)
   .post("/campaign/pub/:adsId/cancel", APIController.cancelAds)
+  .post("/campaign/pub/:adsId/purchase", APIController.purchaseAds)
 
   .get("/campaign/mod/all", APIController.getAllAds)
   .post("/campaign/mod/:adsId/reject", APIController.rejectAds)

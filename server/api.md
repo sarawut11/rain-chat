@@ -139,6 +139,20 @@
   }
   ```
 ## 1.4 Ads
+> **Ads Status**
+> - 0: Created
+> - 1: Pending
+> - 2: Approved
+> - 3: Rejected
+> - 4: PendingPurchase
+> - 5: PendingConfirm
+> - 6: Paid
+> 
+> **Ads Type**
+> - 0: None
+> - 1: Rain Room Ads
+> - 2: Static Ads
+> 
 ### /campaign/pub/create (POST)
   Register ads
 
@@ -150,7 +164,6 @@
   | buttonLabel | Name of the button to ads link  |
   | title       | Title of Ads                    |
   | description | Description of Ads              |
-  | type        | 0: RainRoomAds / 1: StaticAds   |
 
   ***Response***
   ```
@@ -166,10 +179,10 @@
       buttonLabel,
       title,
       description,
-      status,       // 0: Created | 1: Pending | 2: Approved | 3: Rejected
+      status,       
       lastTime,     // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
-      type,         // 0: RainRoomAds | 1: StaticAds
+      type,         
     }
   }
   ```
@@ -191,10 +204,10 @@
         buttonLabel,
         title,
         description,
-        status,       // 0: Created | 1: Pending | 2: Approved | 3: Rejected
+        status,       
         lastTime,     // Last advertised time - Unix timestamp in UTC
         time,         // Registration Time - Unix timestamp in UTC
-        type,         // 0: RainRoomAds | 1: StaticAds
+        type,         
       },
       ...
     ]
@@ -217,10 +230,10 @@
       buttonLabel,
       title,
       description,
-      status,       // 0: Created | 1: Pending | 2: Approved | 3: Rejected
+      status,       
       lastTime,     // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
-      type,         // 0: RainRoomAds | 1: StaticAds
+      type,         
     }
   }
   ```
@@ -249,10 +262,10 @@
       buttonLabel,
       title,
       description,
-      status,       // 0: Created | 1: Pending | 2: Approved | 3: Rejected
+      status,       
       lastTime,     // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
-      type,         // 0: RainRoomAds | 1: StaticAds
+      type,         
     }
   }
   ```
@@ -269,11 +282,6 @@
 ### /campaign/pub/:adsId/request (POST)
   Request Ads for review
 
-  ***Request Body***
-  | Fields      | Description               |
-  | ----------- | ------------------------- |
-  | impressions | Impressions for campaign  |
-  | costPerImp  | vitae cost per impression |
   ***Response***
   ```
   {
@@ -288,10 +296,10 @@
       buttonLabel,
       title,
       description,
-      status,       // 0: Created | 1: Pending | 2: Approved | 3: Rejected
+      status,       
       lastTime,     // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
-      type,         // 0: RainRoomAds | 1: StaticAds
+      type,         
     }
   }
   ```
@@ -312,13 +320,45 @@
       buttonLabel,
       title,
       description,
-      status,       // 0: Created | 1: Pending | 2: Approved | 3: Rejected
+      status,       
       lastTime,     // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
-      type,         // 0: RainRoomAds | 1: StaticAds
+      type,         
     }
   }
   ```
+### /campaign/pub/:adsId/purchase (POST)
+  Request Ads Purchase
+
+  ***Request Body***
+  | Fields      | Description               |
+  | ----------- | ------------------------- |
+  | impressions | Impressions for campaign  |
+  | costPerImp  | vitae cost per impression |
+  | amount      | Total vitae amount        |
+  | type        | Type of ads               |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    ads: {
+      id,           // Ads Id
+      userId,       // Advertiser's id
+      assetLink,    // Link to the ads content
+      impressions,
+      link,
+      buttonLabel,
+      title,
+      description,
+      status,       
+      lastTime,     // Last advertised time - Unix timestamp in UTC
+      time,         // Registration Time - Unix timestamp in UTC
+      type,         
+    }
+  }
+  ```
+
 ### /campaign/impcost?type=x (GET)
   Get the cost per impressions by Vitae Token
 
@@ -352,12 +392,13 @@
       buttonLabel,
       title,
       description,
-      status,       // 0: Created | 1: Pending | 2: Approved | 3: Rejected
+      status,       
       lastTime,     // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
-      type,         // 0: RainRoomAds | 1: StaticAds
+      type,         
     }
   }
+  ```
 ## 1.5 Moderator / Ads API
 ### /campaign/mod/all (GET)
   Get all ads
@@ -377,10 +418,10 @@
         buttonLabel,
         title,
         description,
-        status,       // 0: Created | 1: Pending | 2: Approved | 3: Rejected
+        status,       
         lastTime,     // Last advertised time - Unix timestamp in UTC
         time,         // Registration Time - Unix timestamp in UTC
-        type,         // 0: RainRoomAds | 1: StaticAds
+        type,         
         // Ads Creator's Info
         username,
         name,
@@ -410,10 +451,10 @@
       buttonLabel,
       title,
       description,
-      status,       // 0: Created | 1: Pending | 2: Approved | 3: Rejected
+      status,       
       lastTime,     // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
-      type,         // 0: RainRoomAds | 1: StaticAds
+      type,         
     }
   }
   ```
@@ -434,10 +475,10 @@
       buttonLabel,
       title,
       description,
-      status,       // 0: Created | 1: Pending | 2: Approved | 3: Rejected
+      status,       
       lastTime,     // Last advertised time - Unix timestamp in UTC
       time,         // Registration Time - Unix timestamp in UTC
-      type,         // 0: RainRoomAds | 1: StaticAds
+      type,         
     }
   }
   ```
@@ -613,10 +654,10 @@
         buttonLabel,
         title,
         description,
-        status,       // 0: Created | 1: Pending | 2: Approved | 3: Rejected
+        status,       
         lastTime,     // Last advertised time - Unix timestamp in UTC
         time,         // Registration Time - Unix timestamp in UTC
-        type,         // 0: RainRoomAds | 1: StaticAds
+        type,         
       }, ...
     ]
   }

@@ -14,14 +14,17 @@ export class Ads {
   public time: number;
 
   public static readonly TYPE = {
-    RainRoomAds: 0,
-    StaticAds: 1,
+    None: 0,
+    RainRoomAds: 1,
+    StaticAds: 2,
   };
   public static readonly STATUS = {
     Created: 0,
     Pending: 1,
     Approved: 2,
     Rejected: 3,
-    Paid: 4,
+    PendingPurchase: 4,
+    PendingConfirm: 5,
+    Paid: 6,
   };
 }

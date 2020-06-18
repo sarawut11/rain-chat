@@ -9,7 +9,7 @@ import configs from "@configs";
 export const registerAds = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
-    const { link, buttonLabel, title, description, type } = ctx.request.body;
+    const { link, buttonLabel, title, description } = ctx.request.body;
     const asset = ctx.request.files.asset;
     const { userService, adsService } = ServicesContext.getInstance();
 
@@ -48,7 +48,6 @@ export const registerAds = async (ctx, next) => {
       buttonLabel,
       title,
       description,
-      type,
       time: moment().utc().unix()
     });
     const insertAds: Ads[] = await adsService.findAdsById(res.insertId);
@@ -209,7 +208,6 @@ export const requestAds = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
     const { adsId } = ctx.params;
-    const { impressions, costPerImp } = ctx.request.body;
     const { adsService } = ServicesContext.getInstance();
 
     const checkResult = await checkAdsId(username, adsId);
@@ -234,8 +232,7 @@ export const requestAds = async (ctx, next) => {
       return;
     }
 
-    const realCostPerImp = configs.ads.revenue.imp_revenue * costPerImp;
-    await adsService.requestAds(adsId, userInfo.id, impressions, realCostPerImp);
+    await adsService.updateStatus(adsId, Ads.STATUS.Pending);
     const updatedAds: Ads[] = await adsService.findAdsById(adsId);
     ctx.body = {
       success: true,
@@ -276,6 +273,57 @@ export const cancelAds = async (ctx, next) => {
     ctx.body = {
       success: true,
       message: "Successfully canceled.",
+      ads: updatedAds[0]
+    };
+  } catch (error) {
+    console.error(error.message);
+    ctx.body = {
+      success: false,
+      message: "Failed"
+    };
+  }
+};
+
+export const purchaseAds = async (ctx: ParameterizedContext, next) => {
+  try {
+    const { username } = ctx.state.user;
+    const { adsId } = ctx.params;
+    const { adsService } = ServicesContext.getInstance();
+    const { impressions, costPerImp, amount, type } = ctx.request.body;
+
+    const checkResult = await checkAdsId(username, adsId);
+    if (checkResult.success === false) {
+      ctx.body = checkResult;
+      return;
+    }
+
+    const { userInfo, existingAds } = checkResult;
+    if (existingAds.status !== Ads.STATUS.Approved) {
+      ctx.body = {
+        success: false,
+        message: "This ads is not approved."
+      };
+      return;
+    }
+
+    const realCostPerImp = configs.ads.revenue.imp_revenue * costPerImp;
+    await adsService.setImpressions(adsId, userInfo.id, impressions, realCostPerImp, type);
+
+    // Expire ads after 5 mins when it is still in pending purchase
+    setTimeout(async () => {
+      const ads: Ads[] = await adsService.findAdsById(adsId);
+      if (ads[0].status === Ads.STATUS.PendingPurchase) {
+        await adsService.updateStatus(adsId, Ads.STATUS.Approved);
+      }
+    }, 1000 * 60 * 5); // 5 mins
+
+    // Save transaction info
+    // =====================
+
+    const updatedAds: Ads[] = await adsService.findAdsById(adsId);
+    ctx.body = {
+      success: true,
+      message: "Successfully requested.",
       ads: updatedAds[0]
     };
   } catch (error) {
