@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { Row, Col } from 'antd';
+import { Row, Col, Modal } from 'antd';
 import Request from '../../utils/request';
-import Modal from '../../components/Modal';
 import notification from '../../components/Notification';
 import SignInSignUp from '../../components/SignInSignUp';
 import { landingDescription } from '../../constants/login';
@@ -15,9 +14,6 @@ class LogIn extends Component {
       email: '',
       username: '',
       password: '',
-      modal: {
-        visible: false,
-      },
     };
   }
 
@@ -44,10 +40,9 @@ class LogIn extends Component {
       if (res && res.success) {
         localStorage.setItem('userInfo', JSON.stringify(res.userInfo));
         // Popup
-        this.setState({
-          modal: {
-            visible: true,
-          },
+        Modal.success({
+          title: 'You have successfully logged in',
+          onOk: this.confirm,
         });
       } else {
         notification(res.message, 'error');
@@ -65,11 +60,6 @@ class LogIn extends Component {
   };
 
   confirm = () => {
-    this.setState({
-      modal: {
-        visible: true,
-      },
-    });
     window.location.reload();
     const originalLink = sessionStorage.getItem('originalLink');
     if (originalLink) {
@@ -81,7 +71,6 @@ class LogIn extends Component {
   };
 
   render() {
-    const { visible } = this.state.modal;
     const {
       welcomeTitle,
       welcomeText,
@@ -94,9 +83,9 @@ class LogIn extends Component {
     } = landingDescription;
     return (
       <div className="login">
-        <Modal title="Alert" visible={visible} confirm={this.confirm} hasConfirm>
+        {/* <Modal title="Alert" visible={visible} confirm={this.confirm} hasConfirm>
           <p className="content">You have successfully logged in</p>
-        </Modal>
+        </Modal> */}
 
         <Row className="login-container">
           <Col xs={24} sm={24} md={24} lg={10} className="login-form-container">

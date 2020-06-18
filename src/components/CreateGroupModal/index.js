@@ -39,14 +39,7 @@ export default class GroupModal extends Component {
     const { modalVisible, cancel, title } = this.props;
     const { groupName, groupNotice } = this.state;
     return (
-      <Modal
-        title={title}
-        visible={modalVisible}
-        onOk={this._confirm}
-        hasCancel
-        hasConfirm
-        onCancel={cancel}
-      >
+      <Modal title={title} visible={modalVisible} onOk={this._confirm} onCancel={cancel}>
         <div>
           <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
             <Form.Item label="Group Name">
@@ -71,29 +64,6 @@ export default class GroupModal extends Component {
               />
             </Form.Item>
           </Form>
-          {/* <div>
-            <span>Group name:</span>
-            <input
-              name="groupName"
-              value={groupName}
-              onChange={this.handleChange}
-              type="text"
-              placeholder="Less than 12 letters"
-              maxLength="12"
-            />
-          </div>
-          <div>
-            <span>Group Notice:</span>
-            <textarea
-              name="groupNotice"
-              value={groupNotice}
-              onChange={this.handleChange}
-              rows="3"
-              type="text"
-              placeholder="Less than 60 letters"
-              maxLength="60"
-            />
-          </div> */}
         </div>
       </Modal>
     );
