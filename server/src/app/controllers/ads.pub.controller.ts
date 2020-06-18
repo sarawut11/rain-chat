@@ -311,6 +311,33 @@ export const getCostPerImpression = async (ctx: ParameterizedContext, next) => {
   }
 };
 
+export const getStaticAds = async (ctx: ParameterizedContext, next) => {
+  try {
+    const { username } = ctx.state.user;
+    const { userService, adsService } = ServicesContext.getInstance();
+
+    const ads: Ads[] = await adsService.findAdsToCampaign(Ads.TYPE.StaticAds);
+    if (ads.length === 0) {
+      ctx.body = {
+        success: false,
+        message: "No static ads."
+      };
+      return;
+    }
+    await adsService.campaignAds(ads[0].id, 1);
+    ctx.body = {
+      success: true,
+      ads: ads[0]
+    };
+  } catch (error) {
+    console.error(error.message);
+    ctx.body = {
+      success: false,
+      message: "Failed"
+    };
+  }
+};
+
 const checkAdsId = (username, adsId): Promise<{
   success: boolean,
   message?: string,
