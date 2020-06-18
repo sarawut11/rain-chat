@@ -22,6 +22,8 @@ export class Ads {
     Pending: 1,
     Approved: 2,
     Rejected: 3,
-    Paid: 4,
+    PendingPurchase: 4,
+    PendingConfirm: 5,
+    Paid: 6,
   };
 }

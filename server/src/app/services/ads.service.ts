@@ -8,7 +8,7 @@ export class AdsService {
 
   readonly TABLE_NAME = "ads_info";
 
-  insertAds({ userId, assetLink, link, buttonLabel, title, description, type, time }) {
+  insertAds({ userId, assetLink, link, buttonLabel, title, description, time, type }) {
     const _sql = `
       INSERT INTO ${this.TABLE_NAME}(
         userId,assetLink,link,buttonLabel,title,description,type,time
@@ -42,15 +42,15 @@ export class AdsService {
     return query(_sql, adsId);
   }
 
-  requestAds(adsId, userId, impressions, costPerImp) {
+  setImpressions(adsId, userId, impressions, costPerImp) {
     const _sql = `
       UPDATE ${this.TABLE_NAME}
       SET
         impressions = ?,
         costPerImp = ?,
-        status = ?
+        status = ?,
       WHERE id = ? AND userId = ?;`;
-    return query(_sql, [impressions, costPerImp, Ads.STATUS.Pending, adsId, userId]);
+    return query(_sql, [impressions, costPerImp, Ads.STATUS.PendingPurchase, adsId, userId]);
   }
 
   cancelAds(adsId, userId) {
