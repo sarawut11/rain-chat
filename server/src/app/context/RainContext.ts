@@ -61,9 +61,9 @@ export class RainContext {
       const impressions = ads.impressions;
       let rainReward = 0;
       if (impressions > RainContext.usersToRainAds.length) { // Enough impressions
-        rainReward = configs.ads.cost_per_impression_rain;
+        rainReward = ads.costPerImp;
       } else { // Insufficient impressions
-        rainReward = configs.ads.cost_per_impression_rain * impressions / RainContext.usersToRainAds.length;
+        rainReward = ads.costPerImp * impressions / RainContext.usersToRainAds.length;
       }
       console.log("Ads Rain Reward:", rainReward);
 
