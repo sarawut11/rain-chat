@@ -45,8 +45,8 @@ export default {
     rain_coming_delay: 1000 * 5,    // 5s
     ads_duration: 1000 * 20,        // 20s
     ads_time_interval: 1000 * 30,  // 30s
-    cost_per_impression_rain: 1 / 2000,
-    cost_per_impression_static: 1 / 1000,
+    cost_per_impression_rain: 1 / 2000,     // $1 = 2000 impressions
+    cost_per_impression_static: 1 / 1000,   // $1 = 1000 impressions
     revenue: {
       company_revenue: 0.25,
       imp_revenue: 0.75
