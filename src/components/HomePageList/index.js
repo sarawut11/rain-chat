@@ -146,7 +146,7 @@ class HomePageList extends Component {
                   clickItem={chatFromId => this.clickItemHandle({ homePageList, chatFromId })}
                 />
               ) : (
-                <p className="search-none">No</p>
+                <p className="search-none">No users</p>
               )}
               {showSearchUser && (
                 <p className="clickToSearch" onClick={() => this.searchInDB({ searchUser: true })}>
@@ -162,7 +162,7 @@ class HomePageList extends Component {
                   clickItem={chatFromId => this.clickItemHandle({ homePageList, chatFromId })}
                 />
               ) : (
-                <p className="search-none">No</p>
+                <p className="search-none">No groups</p>
               )}
               {showSearchGroup && (
                 <p className="clickToSearch" onClick={() => this.searchInDB({ searchUser: false })}>

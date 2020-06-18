@@ -38,7 +38,8 @@ class ChatHeader extends Component {
           {title}
         </div>
         {groupId && groupId === 'vitae-rain-group' ? (
-          <Button type="primary">Send Vitae to Rain</Button>
+          // <Button type="primary">Send Vitae to Rain</Button>
+          <span />
         ) : (
           showShareIcon && (
             <svg onClick={this._showShareModal} className="icon shareIcon" aria-hidden="true">

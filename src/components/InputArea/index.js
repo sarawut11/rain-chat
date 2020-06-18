@@ -12,7 +12,7 @@ import { shareAction } from '../../redux/actions/shareAction';
 import store from '../../redux/store';
 
 function getPlaceholder() {
-  return 'Hit Enter to send messages';
+  return 'Write messages...';
 }
 
 export default class InputArea extends Component {
