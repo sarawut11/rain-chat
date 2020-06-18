@@ -4,6 +4,7 @@ export class Ads {
   public type: number;
   public status: number;
   public impressions: number;
+  public costPerImp: number;
   public title: string;
   public description: string;
   public buttonLabel: string;
@@ -21,5 +22,6 @@ export class Ads {
     Pending: 1,
     Approved: 2,
     Rejected: 3,
+    Paid: 4,
   };
 }

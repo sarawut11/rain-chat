@@ -47,7 +47,7 @@ export const setModerator = async (ctx, next) => {
       return;
     }
     const { userInfo } = checkUser;
-    await userService.updateMembership(userInfo.user_id, UserService.Role.MODERATOR);
+    await userService.updateMembership(userInfo.user_id, User.ROLE.MODERATOR);
     const user = await userService.findUserByUsername(username);
     ctx.body = {
       success: true,
@@ -90,7 +90,7 @@ export const upgradeMembership = async (ctx, next) => {
       return;
     }
     const { userInfo } = checkUser;
-    if (userInfo.role === UserService.Role.OWNER || userInfo.role === UserService.Role.MODERATOR) {
+    if (userInfo.role === User.ROLE.OWNER || userInfo.role === User.ROLE.MODERATOR) {
       ctx.body = {
         success: false,
         message: "You can't upgrade your membership."
@@ -121,7 +121,7 @@ const confirmMembership = async (userId, amount, confirmTime) => {
   const userInfo = RowDataPacket[0];
 
   // Update UserInfo & Transaction Info
-  await userService.updateMembership(userId, UserService.Role.UPGRADED_USER);
+  await userService.updateMembership(userId, User.ROLE.UPGRADED_USER);
   await transactionService.confirmMembershipRequest(userId, amount, confirmTime);
 
   // Revenue Share Model
@@ -133,13 +133,15 @@ const confirmMembership = async (userId, amount, confirmTime) => {
   // 25% -----> Moderator Share
   // 25% -----> Membership Users Share
   const companyRevenue = amount * configs.membership.revenue.company_revenue;
+  const companyExpense = companyRevenue * configs.company_revenue.company_expenses;
   const ownerShare = companyRevenue * configs.company_revenue.owner_share;
   const moderatorShare = companyRevenue * configs.company_revenue.moderator_share;
   const membersShare = companyRevenue * configs.company_revenue.membership_share;
 
-  await userService.shareRevenue(ownerShare, UserService.Role.OWNER);
-  await userService.shareRevenue(moderatorShare, UserService.Role.MODERATOR);
-  await userService.shareRevenue(membersShare, UserService.Role.UPGRADED_USER);
+  // await userService.shareRevenue(companyExpense, User.ROLE.COMPANY); // Deposit company wallet directly
+  await userService.shareRevenue(ownerShare, User.ROLE.OWNER);
+  await userService.shareRevenue(moderatorShare, User.ROLE.MODERATOR);
+  await userService.shareRevenue(membersShare, User.ROLE.UPGRADED_USER);
 
   // ====== Sponsor Share ===== //
   // 14.99 -> 5 | Sponsor Revenue
@@ -212,10 +214,10 @@ const checkUserInfo = (username, role?): Promise<any> => new Promise(async (reso
       userInfo,
     });
   }
-  if (role === UserService.Role.FREE ||
-    role === UserService.Role.MODERATOR ||
-    role === UserService.Role.OWNER ||
-    role === UserService.Role.UPGRADED_USER) {
+  if (role === User.ROLE.FREE ||
+    role === User.ROLE.MODERATOR ||
+    role === User.ROLE.OWNER ||
+    role === User.ROLE.UPGRADED_USER) {
     resolve({
       success: true,
       userInfo,

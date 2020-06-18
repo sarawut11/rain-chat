@@ -1,6 +1,6 @@
-import { ServicesContext } from "../context";
-import { UserService, AdsService } from "../services";
+import { ServicesContext, RainContext } from "../context";
 import { Ads, User } from "../models";
+import configs from "@configs";
 
 export const getAllAds = async (ctx, next) => {
   try {
@@ -45,7 +45,7 @@ export const rejectAds = async (ctx, next) => {
       return;
     }
 
-    await adsService.rejectAds(adsId);
+    await adsService.updateStatus(adsId, Ads.STATUS.Rejected);
     const ads = await adsService.findAdsById(adsId);
     ctx.body = {
       success: true,
@@ -78,8 +78,14 @@ export const approveAds = async (ctx, next) => {
       return;
     }
 
-    await adsService.approveAds(adsId);
+    await adsService.updateStatus(adsId, Ads.STATUS.Approved);
+
+    // Test -> Share revenue at this point | Move to wallet controller later
+    const totalAmount = checkAds.existingAds.impressions * (checkAds.existingAds.costPerImp / configs.ads.revenue.imp_revenue);
+    await confirmAds(adsId, totalAmount, checkAds.existingAds.type);
+
     const ads = await adsService.findAdsById(adsId);
+
     ctx.body = {
       success: true,
       message: "Successfully Approved",
@@ -94,6 +100,40 @@ export const approveAds = async (ctx, next) => {
   }
 };
 
+const confirmAds = async (adsId: number, amount: number, type: number) => {
+  const { adsService, userService } = ServicesContext.getInstance();
+  await adsService.updateStatus(adsId, Ads.STATUS.Paid);
+
+  // Revenue Share Model
+  // ===== Company Share ===== //
+  // 25% | Company Revenue
+  // ---------------------------------
+  // 20% -----> Company Expenses
+  // 30% -----> Owner Share
+  // 25% -----> Moderator Share
+  // 25% -----> Membership Users Share
+  const companyRevenue = amount * configs.ads.revenue.company_revenue;
+  const companyExpense = companyRevenue * configs.company_revenue.company_expenses;
+  const ownerShare = companyRevenue * configs.company_revenue.owner_share;
+  const moderatorShare = companyRevenue * configs.company_revenue.moderator_share;
+  const membersShare = companyRevenue * configs.company_revenue.membership_share;
+
+  // await userService.shareRevenue(companyExpense, User.ROLE.COMPANY); // Deposit company wallet directly
+  await userService.shareRevenue(ownerShare, User.ROLE.OWNER);
+  await userService.shareRevenue(moderatorShare, User.ROLE.MODERATOR);
+  await userService.shareRevenue(membersShare, User.ROLE.UPGRADED_USER);
+
+  // ===== Rain Rest ===== //
+  // 75% | Ads Operation
+  // ---------------------------------
+  // Rain Room Ads -> buy impressions
+  // Static Ads -> Rain Last 200 Users
+  if (type === Ads.TYPE.StaticAds) {
+    const restShare = amount - companyRevenue;
+    RainContext.getInstance().rainUsersByLastActivity(restShare);
+  }
+};
+
 const isModerator = (username): Promise<any> => new Promise(async (resolve, reject) => {
   const { userService } = ServicesContext.getInstance();
   const RowDataPacket = await userService.getUserInfoByUsername(username);
@@ -105,7 +145,7 @@ const isModerator = (username): Promise<any> => new Promise(async (resolve, reje
     return;
   }
   const userInfo = RowDataPacket[0];
-  if (userInfo.role !== UserService.Role.MODERATOR) {
+  if (userInfo.role !== User.ROLE.MODERATOR) {
     resolve({
       success: false,
       message: "You are not a Moderator."

@@ -57,16 +57,6 @@ export class AdsService {
     return query(_sql, [Ads.STATUS.Created, adsId, userId]);
   }
 
-  approveAds(adsId) {
-    const _sql = "UPDATE ads_info SET status = ? WHERE id = ?;";
-    return query(_sql, [Ads.STATUS.Approved, adsId]);
-  }
-
-  rejectAds(adsId) {
-    const _sql = "UPDATE ads_info SET status = ? WHERE id = ?;";
-    return query(_sql, [Ads.STATUS.Rejected, adsId]);
-  }
-
   findAdsByUserId(userId) {
     const _sql = "SELECT * FROM ads_info WHERE userId = ?;";
     return query(_sql, userId);
@@ -79,9 +69,9 @@ export class AdsService {
     return query(_sql);
   }
 
-  findApprovedAds() {
-    const _sql = "SELECT * FROM ads_info WHERE status = ?;";
-    return query(_sql, [Ads.STATUS.Approved]);
+  updateStatus(id, status) {
+    const _sql = `UPDATE ${this.TABLE_NAME} SET status = ? WHERE id = ?;`;
+    return query(_sql, [status, id]);
   }
 
   findAdsToRain() {
@@ -92,7 +82,7 @@ export class AdsService {
         status = ? AND
         impressions > 0
       ORDER BY lastTime ASC LIMIT 1;`;
-    return query(_sql, [Ads.TYPE.RainRoomAds, Ads.STATUS.Approved]);
+    return query(_sql, [Ads.TYPE.RainRoomAds, Ads.STATUS.Paid]);
   }
 
   rainAds(id, impression, lastTime) {
