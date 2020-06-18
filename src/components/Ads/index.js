@@ -21,6 +21,7 @@ import {
   Tag,
   Form,
   Input,
+  Timeline,
 } from 'antd';
 import {
   EditOutlined,
@@ -375,39 +376,62 @@ class Ads extends Component {
                     Advertiser: <b>{item.username}</b>
                   </p>
                 )}
-                <p>
-                  Description: <b>{item.description}</b>
-                </p>
-                <p>
-                  Button Label: <b>{item.buttonLabel}</b>
-                </p>
-                <p>
-                  Link: <b>{item.link}</b>
-                </p>
-                {item.type ? (
-                  <p>
-                    Type: <b>{item.type === 0 ? 'Rain Room Ads' : 'Static Ads'}</b>
-                  </p>
-                ) : (
-                  ''
-                )}
-                {item.impressions ? (
-                  <p>
-                    Impressions: <b>{item.impressions}</b>
-                  </p>
-                ) : (
-                  ''
-                )}
-                {item.costPerImp ? (
-                  <p>
-                    CostPerImp: <b>{item.costPerImp}</b>
-                  </p>
-                ) : (
-                  ''
-                )}
               </div>
             }
           />
+
+          <Timeline className="camp-item-timeline">
+            {item.description && (
+              <Timeline.Item color="green">
+                <p>
+                  <b>Description:</b>
+                </p>
+                <p>{item.description}</p>
+              </Timeline.Item>
+            )}
+            {item.buttonLabel && (
+              <Timeline.Item color="green">
+                <p>
+                  <b>Button Label: </b>
+                  {item.buttonLabel}
+                </p>
+              </Timeline.Item>
+            )}
+            {item.link && (
+              <Timeline.Item color="green">
+                <p>
+                  <b>Link:</b>
+                </p>
+                <p>
+                  <a>{item.link}</a>
+                </p>
+              </Timeline.Item>
+            )}
+            {item.type && (
+              <Timeline.Item color="green">
+                <p>
+                  <b>Type: </b>
+                  {item.type}
+                </p>
+              </Timeline.Item>
+            )}
+            {item.impressions && (
+              <Timeline.Item color="green">
+                <p>
+                  <b>Impressions: </b>
+                  {item.impressions}
+                </p>
+              </Timeline.Item>
+            )}
+            {item.costPerImp && (
+              <Timeline.Item color="green">
+                <p>
+                  <b>Cost per impression:</b>
+                </p>
+                <p>{item.costPerImp}</p>
+              </Timeline.Item>
+            )}
+          </Timeline>
         </Card>
       </List.Item>
     );

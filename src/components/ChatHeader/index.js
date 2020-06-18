@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import './style.scss';
-import { Button } from 'antd';
 
 class ChatHeader extends Component {
   clickToBack = () => {
