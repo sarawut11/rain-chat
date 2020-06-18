@@ -4,6 +4,7 @@ export class Ads {
   public type: number;
   public status: number;
   public impressions: number;
+  public costPerImp: number;
   public title: string;
   public description: string;
   public buttonLabel: string;

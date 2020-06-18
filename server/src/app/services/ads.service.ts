@@ -82,7 +82,7 @@ export class AdsService {
         status = ? AND
         impressions > 0
       ORDER BY lastTime ASC LIMIT 1;`;
-    return query(_sql, [Ads.TYPE.RainRoomAds, Ads.STATUS.Approved]);
+    return query(_sql, [Ads.TYPE.RainRoomAds, Ads.STATUS.Paid]);
   }
 
   rainAds(id, impression, lastTime) {
