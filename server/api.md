@@ -149,9 +149,8 @@
 > - 6: Paid
 > 
 > **Ads Type**
-> - 0: None
-> - 1: Rain Room Ads
-> - 2: Static Ads
+> - 0: Rain Room Ads
+> - 1: Static Ads
 > 
 ### /campaign/pub/create (POST)
   Register ads

@@ -14,9 +14,8 @@ export class Ads {
   public time: number;
 
   public static readonly TYPE = {
-    None: 0,
-    RainRoomAds: 1,
-    StaticAds: 2,
+    RainRoomAds: 0,
+    StaticAds: 1,
   };
   public static readonly STATUS = {
     Created: 0,
