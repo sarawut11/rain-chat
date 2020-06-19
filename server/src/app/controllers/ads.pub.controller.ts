@@ -2,7 +2,7 @@ import * as mime from "mime-types";
 import * as moment from "moment";
 import * as aws from "../utils/aws";
 import { ParameterizedContext } from "koa";
-import { ServicesContext, CMCContext } from "../context";
+import { ServicesContext, CMCContext, RainContext } from "../context";
 import { Ads, User } from "../models";
 import configs from "@configs";
 import { socketServer } from "../socket/app.socket";
@@ -320,6 +320,9 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
       }
     }, 1000 * 60 * 5); // 5 mins
 
+    // Test -> Share revenue at this point | Move to wallet controller later
+    const totalAmount = existingAds.impressions * (existingAds.costPerImp / configs.ads.revenue.imp_revenue);
+    await confirmAds(adsId, totalAmount, existingAds.type);
     // Save transaction info
     // =====================
 
@@ -386,6 +389,40 @@ export const getStaticAds = async (ctx: ParameterizedContext, next) => {
       success: false,
       message: "Failed"
     };
+  }
+};
+
+const confirmAds = async (adsId: number, amount: number, type: number) => {
+  const { adsService, userService } = ServicesContext.getInstance();
+  await adsService.updateStatus(adsId, Ads.STATUS.Paid);
+
+  // Revenue Share Model
+  // ===== Company Share ===== //
+  // 25% | Company Revenue
+  // ---------------------------------
+  // 20% -----> Company Expenses
+  // 30% -----> Owner Share
+  // 25% -----> Moderator Share
+  // 25% -----> Membership Users Share
+  const companyRevenue = amount * configs.ads.revenue.company_revenue;
+  const companyExpense = companyRevenue * configs.company_revenue.company_expenses;
+  const ownerShare = companyRevenue * configs.company_revenue.owner_share;
+  const moderatorShare = companyRevenue * configs.company_revenue.moderator_share;
+  const membersShare = companyRevenue * configs.company_revenue.membership_share;
+
+  // await userService.shareRevenue(companyExpense, User.ROLE.COMPANY); // Deposit company wallet directly
+  await userService.shareRevenue(ownerShare, User.ROLE.OWNER);
+  await userService.shareRevenue(moderatorShare, User.ROLE.MODERATOR);
+  await userService.shareRevenue(membersShare, User.ROLE.UPGRADED_USER);
+
+  // ===== Rain Rest ===== //
+  // 75% | Ads Operation
+  // ---------------------------------
+  // Rain Room Ads -> buy impressions
+  // Static Ads -> Rain Last 200 Users
+  if (type === Ads.TYPE.StaticAds) {
+    const restShare = amount - companyRevenue;
+    RainContext.getInstance().rainUsersByLastActivity(restShare);
   }
 };
 
