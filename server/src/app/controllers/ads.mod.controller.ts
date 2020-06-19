@@ -81,8 +81,8 @@ export const approveAds = async (ctx, next) => {
     await adsService.updateStatus(adsId, Ads.STATUS.Approved);
 
     // Test -> Share revenue at this point | Move to wallet controller later
-    const totalAmount = checkAds.existingAds.impressions * (checkAds.existingAds.costPerImp / configs.ads.revenue.imp_revenue);
-    await confirmAds(adsId, totalAmount, checkAds.existingAds.type);
+    // const totalAmount = checkAds.existingAds.impressions * (checkAds.existingAds.costPerImp / configs.ads.revenue.imp_revenue);
+    // await confirmAds(adsId, totalAmount, checkAds.existingAds.type);
 
     const ads = await adsService.findAdsById(adsId);
 

@@ -180,14 +180,7 @@ const initServer = server => {
         //   ]);
         // }
 
-        console.log(
-          "disconnect.=>reason",
-          reason,
-          "user_id=>",
-          userId,
-          "socket.id=>",
-          socket.id,
-          "time=>",
+        console.log("disconnect.=>reason", reason, "user_id=>", userId, "socket.id=>", socket.id, "time=>",
           new Date().toLocaleString(),
         );
       } catch (error) {
@@ -223,4 +216,6 @@ export const socketServer = {
   emitTo,
   getSocketIdHandle,
   getRoomClients,
+
+  updateAdsStatus: rainSockets.updateAdsStatus
 };

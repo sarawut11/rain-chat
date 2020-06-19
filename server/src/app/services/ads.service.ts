@@ -48,7 +48,7 @@ export class AdsService {
       SET
         impressions = ?,
         costPerImp = ?,
-        status = ?,
+        status = ?
       WHERE id = ? AND userId = ?;`;
     return query(_sql, [impressions, costPerImp, Ads.STATUS.PendingPurchase, adsId, userId]);
   }

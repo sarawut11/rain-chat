@@ -5,6 +5,7 @@ import { ParameterizedContext } from "koa";
 import { ServicesContext, CMCContext } from "../context";
 import { Ads, User } from "../models";
 import configs from "@configs";
+import { socketServer } from "../socket/app.socket";
 
 export const registerAds = async (ctx, next) => {
   try {
@@ -315,6 +316,7 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
       const ads: Ads[] = await adsService.findAdsById(adsId);
       if (ads[0].status === Ads.STATUS.PendingPurchase) {
         await adsService.updateStatus(adsId, Ads.STATUS.Approved);
+        await socketServer.updateAdsStatus(adsId);
       }
     }, 1000 * 60 * 5); // 5 mins
 
