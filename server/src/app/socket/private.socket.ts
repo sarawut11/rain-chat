@@ -14,7 +14,7 @@ export const sendPrivateMsg = async (io, socket: socketIo.Socket, data, cbFn) =>
       attachments: JSON.stringify(data.attachments),
     });
 
-    const user: User[] = await userService.getUserBySocketId(data.to_user);
+    const user: User[] = await userService.findUserById(data.to_user);
     const existSocketIdStr = socketServer.getSocketIdHandle(user[0].socketid);
     const toUserSocketIds = (existSocketIdStr && existSocketIdStr.split(",")) || [];
     toUserSocketIds.forEach(e => {
