@@ -698,7 +698,9 @@
 
   ***Data***
   ```
-  No data
+  {
+    after: // seconds of ads coming delay
+  }
   ```
 ### showAds (Server)
   Show Ads on frontend when this event is emitted.
@@ -713,6 +715,24 @@
       description,
       link,
       buttonLabel,
+      type,
+    }
+  }
+  ```
+### showStaticAds (Server)
+  Show Ads on frontend when this event is emitted.
+
+  ***Data***
+  ```
+  {
+    ads: {
+      id,
+      assetLink,
+      title,
+      description,
+      link,
+      buttonLabel,
+      type,
     }
   }
   ```

@@ -95,4 +95,13 @@ export class AdsService {
       WHERE id = ?;`;
     return query(_sql, [impression, moment().utc().unix(), id]);
   }
+
+  consumeImpression(id: number, impressions: number) {
+    const _sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET
+        impressions = impressions - ?
+      WHERE id = ?;`;
+    return query(_sql, [impressions, id]);
+  }
 }

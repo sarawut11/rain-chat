@@ -212,6 +212,9 @@ class InitApp {
       console.log('Able to post to Vitae Rain Room');
       store.dispatch(enableVitaePost());
     });
+    window.socket.on('showStaticAds', ({ ads }) => {
+      console.log('Static Ads:', ads);
+    });
   }
 
   subscribeSocket() {

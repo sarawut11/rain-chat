@@ -3,6 +3,7 @@ import { socketServer } from "../socket/app.socket";
 import { ServicesContext } from "./ServicesContext";
 import configs from "@configs";
 import { Ads, User } from "../models";
+import { socketEventNames } from "../socket/resource.socket";
 
 export class RainContext {
   static instance: RainContext;
@@ -19,10 +20,14 @@ export class RainContext {
   constructor() {
     // Ads Rain
     const adsTimeInterval = configs.ads.ads_time_interval + configs.ads.ads_duration;
-    setInterval(() => this.adsRain(), adsTimeInterval);
-  }
+    setInterval(() => this.campaignRainAds(), adsTimeInterval);
 
-  async adsRain() {
+    // Static Ads
+    const staticAdsTimeInterval = configs.ads.static_ads_interval;
+    setInterval(() => this.campaignStaticAds(), staticAdsTimeInterval);
+  }
+  // ========== Ads Rain Section ========== //
+  async campaignRainAds() {
     try {
       const { userService, adsService } = ServicesContext.getInstance();
       const RowDataPacket: Ads[] = await adsService.findAdsToCampaign(Ads.TYPE.RainRoomAds);
@@ -38,7 +43,9 @@ export class RainContext {
 
       // Broadcast RainComing event
       console.log("Rain is coming");
-      socketServer.broadcast("rainComing", {}, error => console.log("showAds Error:", error.message));
+      socketServer.broadcast("rainComing", {
+        after: configs.ads.rain_coming_delay
+      });
       await delay(configs.ads.rain_coming_delay);
 
       // Show Ads First
@@ -54,7 +61,7 @@ export class RainContext {
           buttonLabel: ads.buttonLabel,
           type: ads.type,
         }
-      }, error => console.log("showAds Error:", error.message));
+      });
       await delay(configs.ads.ads_duration);
 
       // Rain Rewards after ads duration
@@ -128,6 +135,30 @@ export class RainContext {
 
   addUserToRainAds(userId: string): void {
     RainContext.usersToRainAds.push(userId);
+  }
+
+  // ========== Static Ads ========== //
+  async campaignStaticAds() {
+    const { adsService } = ServicesContext.getInstance();
+    const RowDataPacket: Ads[] = await adsService.findAdsToCampaign(Ads.TYPE.StaticAds);
+    if (RowDataPacket.length === 0) {
+      console.log("No Static Ads to campaign");
+      return;
+    }
+    const ads: Ads = RowDataPacket[0];
+    console.log("Campaign Static Ads:", ads.id);
+    socketServer.broadcast(socketEventNames.ShowStaticAds, {
+      ads: {
+        id: ads.id,
+        assetLink: ads.assetLink,
+        title: ads.title,
+        description: ads.description,
+        link: ads.link,
+        buttonLabel: ads.buttonLabel,
+        type: ads.type,
+      }
+    });
+    await adsService.campaignAds(ads.id, socketServer.allSocketCount());
   }
 }
 

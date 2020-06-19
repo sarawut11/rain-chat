@@ -378,7 +378,7 @@ export const getStaticAds = async (ctx: ParameterizedContext, next) => {
       };
       return;
     }
-    await adsService.campaignAds(ads[0].id, 1);
+    await adsService.consumeImpression(ads[0].id, 1);
     ctx.body = {
       success: true,
       ads: ads[0]
