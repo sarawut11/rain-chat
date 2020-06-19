@@ -1,4 +1,5 @@
 import io from 'socket.io-client';
+import { notification as antNotification } from 'antd';
 import store from '../../redux/store';
 import {
   updateHomePageListAction,
@@ -164,7 +165,13 @@ class InitApp {
       store.dispatch(setAllPrivateChatsAction({ data: privateChat }));
       store.dispatch(setAllGroupChatsAction({ data: groupChat }));
       if (this._userInfo.role !== 'MODERATOR') store.dispatch(setAdsAction({ data: adsList }));
-      console.log('initMessage success. ', 'time=>', new Date().toLocaleString(), this._userInfo);
+      console.log(
+        'initMessage success. ',
+        'time=>',
+        new Date().toLocaleString(),
+        this._userInfo,
+        allMessage,
+      );
     });
     window.socket.on('initSocket', (socketId, fn) => {
       const clientHomePageList = JSON.parse(localStorage.getItem(`homePageList-${this.user_id}`));
@@ -184,9 +191,6 @@ class InitApp {
     window.socket.on('getRain', ({ reward }) => {
       console.log('Getting Reward:', reward);
       notifyRainReward(reward);
-    });
-    window.socket.on('updateAdsStatus', ({ adsId, username, status }) => {
-      console.log('Ads Status Updated:', username, adsId, status);
     });
   }
 
@@ -218,8 +222,9 @@ class InitApp {
       let afterReconnecting = false;
       window.socket.on('error', error => {
         console.log('window.socket on error', error);
-        notification(error, 'error');
-        if (error.includes('Authentication error')) {
+        // notification(error, 'error');
+        antNotification.error({ message: error.message });
+        if (error.code === 401) {
           window.location.href = '/login';
         }
       });
@@ -260,7 +265,8 @@ class InitApp {
       window.socket.on('reconnect_error', error => {
         afterReconnecting = false;
         console.log('reconnect_error. error =>', error, 'time=>', new Date().toLocaleString());
-        notification(error, 'error');
+        // notification(error, 'error');
+        antNotification.error({ message: 'Internal server error' });
       });
     }
   };

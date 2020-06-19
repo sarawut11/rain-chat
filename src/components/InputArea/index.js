@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Picker } from 'emoji-mart';
 import Fuse from 'fuse.js';
+import { Button, Row, notification as antNotification } from 'antd';
 import upload from '../../utils/qiniu';
 import request from '../../utils/request';
 import './style.scss';
@@ -10,6 +11,8 @@ import notification from '../Notification';
 import debounce from '../../utils/debounce';
 import { shareAction } from '../../redux/actions/shareAction';
 import store from '../../redux/store';
+import { showAds } from '../../utils/ads';
+import { ADS_STATIC_DURATION } from '../../constants/ads';
 
 function getPlaceholder() {
   return 'Write messages...';
@@ -28,12 +31,60 @@ export default class InputArea extends Component {
     this._placeHolder = getPlaceholder();
   }
 
+  async _showStaticAds(cb) {
+    try {
+      const res = await request.axios('get', `/api/v1/campaign/static`);
+
+      if (res && res.success) {
+        showAds(res.ads, true);
+      } else {
+        antNotification.error({
+          message: 'Failed to get static ads.',
+        });
+      }
+
+      setTimeout(cb, ADS_STATIC_DURATION * 1000);
+    } catch (error) {
+      console.log(error);
+      antNotification.error({
+        message: 'Failed to get static ads.',
+      });
+    }
+  }
+
   _sendMessage = ({ attachments = [], message }) => {
     const { sendMessage } = this.props;
     const { inputMsg } = this.state;
-    sendMessage(message || inputMsg, attachments);
-    this.state.inputMsg = '';
-    this.nameInput.focus();
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    const { role } = userInfo;
+    const _this = this;
+
+    if (role === 'FREE') {
+      this._showStaticAds(() => {
+        if (window.location.href.includes('vitae-rain-group')) {
+          _this._postMessage();
+        } else {
+          sendMessage(message || inputMsg, attachments);
+
+          // _this.state.inputMsg = '';
+          _this.setState({ inputMsg: '' });
+          if (_this.nameInput) {
+            _this.nameInput.focus();
+          }
+        }
+      });
+    } else {
+      sendMessage(message || inputMsg, attachments);
+      this.state.inputMsg = '';
+      if (this.nameInput) {
+        this.nameInput.focus();
+      }
+    }
+  };
+
+  _postMessage = () => {
+    const { sendMessage } = this.props;
+    sendMessage('I love Vitae.', []);
   };
 
   _selectSomeOneOrNot = () => {
@@ -71,7 +122,9 @@ export default class InputArea extends Component {
   _selectEmoji = emoji => {
     this.setState(state => ({ inputMsg: `${state.inputMsg} ${emoji.colons}` }));
     this._clickShowEmojiPicker();
-    this.nameInput.focus();
+    if (this.nameInput) {
+      this.nameInput.focus();
+    }
   };
 
   componentDidMount() {
@@ -79,7 +132,9 @@ export default class InputArea extends Component {
       this._sendMessage({ message: `::share::${JSON.stringify(this.props.shareData)}` });
       store.dispatch(shareAction(null));
     }
-    this.nameInput.focus();
+    if (this.nameInput) {
+      this.nameInput.focus();
+    }
   }
 
   _fetchUpLoadToken = async () => {
@@ -148,7 +203,9 @@ export default class InputArea extends Component {
         return { inputMsg: newInputMsg, relatedMembers: [] };
       },
       () => {
-        this.nameInput.focus();
+        if (this.nameInput) {
+          this.nameInput.focus();
+        }
       },
     );
   };
@@ -201,7 +258,17 @@ export default class InputArea extends Component {
       visibility: 'hidden',
     };
     const buttonClass = inputMsg ? 'btn btnActive' : 'btn';
-    return (
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    const { role } = userInfo;
+    return role === 'FREE' && window.location.href.includes('vitae-rain-group') ? (
+      <div className="input-msg">
+        <Row justify="space-around" style={{ width: '100%' }}>
+          <Button type="primary" onClick={this._postMessage}>
+            Post
+          </Button>
+        </Row>
+      </div>
+    ) : (
       <div className="input-msg">
         {showEmojiPicker && <div onClick={this._clickShowEmojiPicker} className="mask" />}
         {showEmojiPicker && (
