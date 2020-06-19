@@ -2,9 +2,12 @@ import React from 'react';
 import { Modal, notification, Row, Col, Button } from 'antd';
 import { ADS_STATIC_DURATION, ADS_RAIN_DURATION } from '../constants/ads';
 import './ads.scss';
+import store from '../redux/store';
+import { enableShowAds, disableShowAds } from '../redux/actions/bShowAdsAction';
 
 export function showAds(ads, staticPost = false) {
   console.log('showAds', ads, staticPost);
+  const { bShowAds } = store.getState();
   const { title, description, link, assetLink, buttonLabel } = ads;
   const secondsToGo = staticPost ? ADS_STATIC_DURATION : ADS_RAIN_DURATION;
   const content = (
@@ -15,6 +18,10 @@ export function showAds(ads, staticPost = false) {
   );
 
   if (!window.location.pathname.includes('vitae-rain-group') && !staticPost) {
+    return;
+  }
+
+  if (!bShowAds) {
     return;
   }
 
@@ -31,6 +38,8 @@ export function showAds(ads, staticPost = false) {
   }
 
   console.log('here');
+
+  store.dispatch(disableShowAds());
 
   const modal = Modal.success({
     // title: 'This is a notification message',
@@ -69,6 +78,7 @@ export function showAds(ads, staticPost = false) {
   setTimeout(() => {
     // clearInterval(timer);
     modal.destroy();
+    store.dispatch(enableShowAds());
   }, secondsToGo * 1000);
 }
 
