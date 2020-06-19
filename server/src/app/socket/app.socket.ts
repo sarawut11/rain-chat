@@ -12,34 +12,6 @@ import { User } from "../models";
 
 let io: socketIo.Server;
 
-function getSocketIdHandle(arr) {
-  return arr[0] ? JSON.parse(JSON.stringify(arr[0])).socketid : "";
-}
-
-const getRoomClients = (room): Promise<any> => {
-  return new Promise((resolve, reject) => {
-    io.of("/").in(room).clients((error, clients) => {
-      resolve(clients);
-    });
-  });
-};
-
-function emitAsync(socket, emitName, data, callback) {
-  return new Promise((resolve, reject) => {
-    if (!socket || !socket.emit) {
-      // eslint-disable-next-line prefer-promise-reject-errors
-      reject("pls input socket");
-    }
-    socket.emit(emitName, data, (...args) => {
-      let response;
-      if (typeof callback === "function") {
-        response = callback(...args);
-      }
-      resolve(response);
-    });
-  });
-}
-
 const initServer = server => {
   const {
     userService,
@@ -192,10 +164,11 @@ const initServer = server => {
   });
 };
 
-const broadcast = (emitName, data, onError) => {
+const broadcast = (emitName, data, onError?) => {
   try {
     io.sockets.emit(emitName, data);
   } catch (error) {
+    console.log(error);
     if (onError) {
       onError(error);
     }
@@ -211,12 +184,44 @@ const emitTo = (toSocketId, emitName, data, onError) => {
   }
 };
 
+const allSocketCount = (): number => {
+  return Object.keys(io.sockets.sockets).length;
+};
+
+function getSocketIdHandle(arr) {
+  return arr[0] ? JSON.parse(JSON.stringify(arr[0])).socketid : "";
+}
+
+const getRoomClients = (room): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    io.of("/").in(room).clients((error, clients) => {
+      resolve(clients);
+    });
+  });
+};
+
+function emitAsync(socket: socketIo.Socket, emitName, data, callback) {
+  return new Promise((resolve, reject) => {
+    if (!socket || !socket.emit) {
+      // eslint-disable-next-line prefer-promise-reject-errors
+      reject("pls input socket");
+    }
+    socket.emit(emitName, data, (...args) => {
+      let response;
+      if (typeof callback === "function") {
+        response = callback(...args);
+      }
+      resolve(response);
+    });
+  });
+}
+
 export const socketServer = {
   initServer,
   broadcast,
   emitTo,
   getSocketIdHandle,
   getRoomClients,
-
+  allSocketCount,
   updateAdsStatus: rainSockets.updateAdsStatus
 };

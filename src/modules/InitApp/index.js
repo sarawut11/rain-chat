@@ -191,6 +191,9 @@ class InitApp {
     window.socket.on('enableVitaePost', () => {
       console.log('Able to post to Vitae Rain Room');
     });
+    window.socket.on('showStaticAds', ({ ads }) => {
+      console.log('Static Ads:', ads);
+    });
   }
 
   subscribeSocket() {

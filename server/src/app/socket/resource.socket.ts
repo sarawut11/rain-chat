@@ -19,6 +19,7 @@ export const socketEventNames = {
   LeaveGroup: "leaveGroup",
   GetGroupMember: "getGroupMember",
 
+  ShowStaticAds: "showStaticAds",
   SubscribeAdsReward: "subscribeAdsReward",
   UpdateAdsStatus: "updateAdsStatus",
   EnableVitaePost: "enableVitaePost",
