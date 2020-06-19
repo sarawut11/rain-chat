@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import './index.scss';
-import { Row, Spin } from 'antd';
+import { Row, Spin, Modal } from 'antd';
 import Request from '../../utils/request';
-import Modal from '../../components/Modal';
+// import Modal from '../../components/Modal';
 import notification from '../../components/Notification';
 import SignInSignUp from '../../components/SignInSignUp';
 
@@ -14,9 +14,6 @@ export default class Register extends Component {
       email: '',
       username: '',
       password: '',
-      modal: {
-        visible: false,
-      },
       show: false,
       sponsor: '',
     };
@@ -77,10 +74,9 @@ export default class Register extends Component {
       });
       if (res && res.success) {
         // Popup
-        this.setState({
-          modal: {
-            visible: true,
-          },
+        Modal.success({
+          title: 'You have successfully registered',
+          onOk: this.confirm,
         });
       } else {
         notification(res.message, 'error');
@@ -116,14 +112,9 @@ export default class Register extends Component {
   };
 
   render() {
-    const { visible } = this.state.modal;
     const { show } = this.state;
     return (
       <div className="register">
-        <Modal title="Alert" visible={visible} hasConfirm confirm={this.confirm} hasCancel={false}>
-          <p className="content">You have successfully registered</p>
-        </Modal>
-        {/* <Message isShow = {this.state.message.isShow}  type = {this.state.message.type}  content = {this.state.message.content} /> */}
         {show ? (
           <SignInSignUp setValue={this.setValue} isLogin={false} />
         ) : (

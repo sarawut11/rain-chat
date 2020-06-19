@@ -185,7 +185,7 @@ export default class CreateAds extends Component {
                   <TextArea name="description" value={description} onChange={this._onChange} />
                 </Item>
                 <Item label="Type">
-                  <Select value={type} onChange={this.onTypeChange}>
+                  <Select value={type.toString()} onChange={this.onTypeChange}>
                     <Option value="0">Rain Room Ads</Option>
                     <Option value="1">Static Ads</Option>
                   </Select>

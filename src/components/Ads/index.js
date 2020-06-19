@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-indent */
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-no-target-blank */
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable no-plusplus */
@@ -36,6 +38,17 @@ import './styles.scss';
 import UserAvatar from '../UserAvatar';
 import CreateAds from './CreateAds';
 import Request from '../../utils/request';
+import {
+  ADS_APPROVED,
+  ADS_PAID,
+  ADS_CREATED,
+  ADS_PENDING,
+  ADS_PENDING_CONFIRM,
+  ADS_PENDING_PURCHASE,
+  ADS_REJECTED,
+  ADS_TYPE_RAIN_ROOM,
+  ADS_TYPE_STATIC,
+} from '../../constants/ads';
 
 const { Meta } = Card;
 const { confirm, warning } = Modal;
@@ -54,6 +67,10 @@ class ImpressionsContent extends Component {
   render() {
     console.log('ImpressionsContent', this);
     const { pointer } = this.props;
+    let amount = Number(this.state.impressions) * pointer.state.price;
+    console.log(amount);
+    amount = Number(amount.toFixed(2)) + (amount - amount.toFixed(2) > 0 ? 0.01 : 0);
+    console.log(amount);
     return (
       <div>
         <Form style={{ marginTop: '20px' }} labelCol={{ span: 7 }} wrapperCol={{ span: 17 }}>
@@ -66,7 +83,7 @@ class ImpressionsContent extends Component {
           </Form.Item>
 
           <Form.Item label="Amount">
-            <Input value={Number(this.state.impressions) * pointer.state.price} disabled />
+            <Input value={amount} disabled />
           </Form.Item>
         </Form>
       </div>
@@ -146,7 +163,7 @@ class Ads extends Component {
       icon: <ExclamationCircleOutlined />,
       content: <ImpressionsContent pointer={pointer} />,
       async onOk() {
-        await pointer.onRequest(item);
+        await pointer.onPurchase(item);
         pointer.setState({ impressions: 0 });
       },
       onCancel() {
@@ -205,17 +222,15 @@ class Ads extends Component {
     }
   };
 
-  onRequest = async item => {
+  onRequest = item => async () => {
     const { id } = item;
     const { impressions, price } = this.state;
     try {
       const data = new FormData();
-      data.append('impressions', impressions);
-      data.append('costPerImp', price);
-      const res = await Request.axios('post', `/api/v1/campaign/pub/${id}/request`, data);
+      const res = await Request.axios('post', `/api/v1/campaign/pub/${id}/request`);
 
       if (res && res.success) {
-        this.props.requestAdsAction({ id, status: 1, adsState: this.props.ads });
+        this.props.requestAdsAction({ id, status: res.ads.status, adsState: this.props.ads });
         notification.success({
           message: res.message,
         });
@@ -228,6 +243,39 @@ class Ads extends Component {
       console.log(error);
       notification.error({
         message: 'Request failed.',
+      });
+    }
+  };
+
+  onPurchase = async item => {
+    const { id } = item;
+    const { impressions, price } = this.state;
+    try {
+      const data = new FormData();
+      data.append('impressions', impressions);
+      data.append('costPerImp', price);
+      const amount = Number(impressions) * price;
+      data.append(
+        'amount',
+        Number(amount.toFixed(2)) + (amount - amount.toFixed(2) > 0 ? 0.01 : 0),
+      );
+      data.append('type', item.type);
+      const res = await Request.axios('post', `/api/v1/campaign/pub/${id}/purchase`, data);
+
+      if (res && res.success) {
+        this.props.requestAdsAction({ id, status: res.ads.status, adsState: this.props.ads });
+        notification.success({
+          message: res.message,
+        });
+      } else {
+        notification.error({
+          message: res.message,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      notification.error({
+        message: 'Purchase failed.',
       });
     }
   };
@@ -338,7 +386,13 @@ class Ads extends Component {
           <CloseOutlined /> Reject
         </span>,
       ];
-    } else {
+    } else if (role === 'MODERATOR') {
+      actions = [
+        <Dropdown overlay={this.renderMenu(item)} placement="bottomCenter">
+          <SettingOutlined key="setting" />
+        </Dropdown>,
+      ];
+    } else if (status === ADS_CREATED || status === ADS_REJECTED) {
       actions = [
         <Dropdown overlay={this.renderMenu(item)} placement="bottomCenter">
           <SettingOutlined key="setting" />
@@ -346,7 +400,17 @@ class Ads extends Component {
         <EditOutlined key="edit" onClick={this.onEditAds(item)} />,
         <DeleteOutlined key="delete" onClick={this.showConfirm(item)} />,
       ];
+    } else if (status >= ADS_PENDING_PURCHASE) {
+      actions = [<DeleteOutlined key="delete" onClick={this.showConfirm(item)} />];
+    } else {
+      actions = [
+        <Dropdown overlay={this.renderMenu(item)} placement="bottomCenter">
+          <SettingOutlined key="setting" />
+        </Dropdown>,
+        <DeleteOutlined key="delete" onClick={this.showConfirm(item)} />,
+      ];
     }
+
     return (
       <List.Item className="campaign-list-item">
         <Card
@@ -355,11 +419,13 @@ class Ads extends Component {
           actions={actions}
         >
           <Row justify="end">
-            {status === 2 && <Tag color="#87d068">approved</Tag>}
-            {status === 1 && <Tag color="#2db7f5">pending</Tag>}
-            {status === 0 && <Tag color="geekblue">created</Tag>}
-            {status === 3 && <Tag color="#f50">rejected</Tag>}
-            {status === 4 && <Tag color="#87d068">paid</Tag>}
+            {status === ADS_APPROVED && <Tag color="#87d068">approved</Tag>}
+            {status === ADS_PENDING && <Tag color="#2db7f5">pending</Tag>}
+            {status === ADS_CREATED && <Tag color="geekblue">created</Tag>}
+            {status === ADS_REJECTED && <Tag color="#f50">rejected</Tag>}
+            {status === ADS_PAID && <Tag color="#87d068">purchased</Tag>}
+            {status === ADS_PENDING_PURCHASE && <Tag color="#2db7f5">awaiting deposit</Tag>}
+            {status === ADS_PENDING_CONFIRM && <Tag color="#2db7f5">pending deposit</Tag>}
           </Row>
           <Meta
             avatar={
@@ -414,7 +480,8 @@ class Ads extends Component {
               <Timeline.Item color="green">
                 <p>
                   <b>Type: </b>
-                  {item.type}
+                  {item.type === ADS_TYPE_RAIN_ROOM && 'Rain room ads'}
+                  {item.type === ADS_TYPE_STATIC && 'Static ads'}
                 </p>
               </Timeline.Item>
             )}
@@ -443,10 +510,14 @@ class Ads extends Component {
   renderMenu = item => {
     return (
       <Menu>
-        {item.status === 0 || item.status === 3 ? (
-          <Menu.Item onClick={this.showImpressionsInput(item)}>Request ads</Menu.Item>
-        ) : (
+        {(item.status === 0 || item.status === 3) && item.role !== 'MODERTOR' && (
+          <Menu.Item onClick={this.onRequest(item)}>Request ads</Menu.Item>
+        )}
+        {item.status === ADS_PENDING && item.role !== 'MODERTOR' && (
           <Menu.Item onClick={this.onCancelRequest(item)}>Cancel request</Menu.Item>
+        )}
+        {item.status === ADS_APPROVED && item.role !== 'MODERTOR' && (
+          <Menu.Item onClick={this.showImpressionsInput(item)}>Purchase</Menu.Item>
         )}
       </Menu>
     );
@@ -498,7 +569,7 @@ class Ads extends Component {
             {ads.paidAdsList && ads.paidAdsList.length > 0 && (
               <Col span={24}>
                 <Divider orientation="left" plain>
-                  <h3>Paid ads</h3>
+                  <h3>Purchased ads</h3>
                 </Divider>
                 <List
                   grid={{
@@ -511,6 +582,27 @@ class Ads extends Component {
                     xxl: 4,
                   }}
                   dataSource={ads.paidAdsList}
+                  renderItem={this.renderItem}
+                />
+              </Col>
+            )}
+
+            {ads.pendingPurchaseAdsList && ads.pendingPurchaseAdsList.length > 0 && (
+              <Col span={24}>
+                <Divider orientation="left" plain>
+                  <h3>Awaiting deposit ads</h3>
+                </Divider>
+                <List
+                  grid={{
+                    gutter: 16,
+                    xs: 1,
+                    sm: 2,
+                    md: 2,
+                    lg: 3,
+                    xl: 3,
+                    xxl: 4,
+                  }}
+                  dataSource={ads.pendingPurchaseAdsList}
                   renderItem={this.renderItem}
                 />
               </Col>
@@ -579,7 +671,7 @@ class Ads extends Component {
               </Col>
             )}
 
-            {ads.rejectedAdsList && ads.rejectedAdsList.length > 0 && (
+            {ads.rejectedAdsList && ads.rejectedAdsList.length > 0 && !isModerator && (
               <Col span={24}>
                 <Divider orientation="left" plain>
                   <h3>Rejected ads</h3>
