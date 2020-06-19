@@ -8,7 +8,6 @@ import {
   ADS_PENDING_CONFIRM,
   ADS_PENDING_PURCHASE,
   ADS_REJECTED,
-  ADS_TYPE_NONE,
   ADS_TYPE_RAIN_ROOM,
   ADS_TYPE_STATIC,
 } from '../../constants/ads';
@@ -47,12 +46,7 @@ const formatAdsList = adsList => {
 
   let pendingPurchaseAdsList = [...adsList];
   pendingPurchaseAdsList = pendingPurchaseAdsList.filter(item => {
-    return item.status === ADS_PENDING_PURCHASE;
-  });
-
-  let pendingConfirmAdsList = [...adsList];
-  pendingConfirmAdsList = pendingConfirmAdsList.filter(item => {
-    return item.status === ADS_PENDING_CONFIRM;
+    return item.status === ADS_PENDING_PURCHASE || item.status === ADS_PENDING_CONFIRM;
   });
 
   return {
@@ -61,7 +55,6 @@ const formatAdsList = adsList => {
     approvedAdsList,
     rejectedAdsList,
     paidAdsList,
-    pendingConfirmAdsList,
     pendingPurchaseAdsList,
   };
 };
