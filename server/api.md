@@ -761,3 +761,14 @@
     status
   }
   ```
+### updateAdsImpressions (Server)
+  Notify clients when ads impressions updated
+
+  ***Data***
+  ```
+  {
+    adsInfo: {
+      // all ads info here
+    }
+  }
+  ```

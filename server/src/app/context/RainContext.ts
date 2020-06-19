@@ -4,6 +4,7 @@ import { ServicesContext } from "./ServicesContext";
 import configs from "@configs";
 import { Ads, User } from "../models";
 import { socketEventNames } from "../socket/resource.socket";
+import { updateAds } from "../controllers";
 
 export class RainContext {
   static instance: RainContext;
@@ -76,6 +77,13 @@ export class RainContext {
 
       await RainContext.instance.rainUsers(RainContext.usersToRainAds, rainReward);
       await adsService.campaignAds(ads.id, RainContext.usersToRainAds.length);
+
+      // Send updated impression info to ads' creator
+      const creator: User[] = await userService.findUserById(ads.userId);
+      const updatedAds: Ads[] = await adsService.findAdsById(ads.id);
+      socketServer.emitTo(creator[0].socketid, socketEventNames.UpdateAdsImpressions, {
+        adsInfo: updatedAds[0]
+      });
     } catch (error) {
       console.log("Rain Failed, ", error.message);
     }
@@ -136,7 +144,7 @@ export class RainContext {
 
   // ========== Static Ads ========== //
   async campaignStaticAds() {
-    const { adsService } = ServicesContext.getInstance();
+    const { adsService, userService } = ServicesContext.getInstance();
     const RowDataPacket: Ads[] = await adsService.findAdsToCampaign(Ads.TYPE.StaticAds);
     if (RowDataPacket.length === 0) {
       console.log("No Static Ads to campaign");
@@ -156,6 +164,13 @@ export class RainContext {
       }
     });
     await adsService.campaignAds(ads.id, socketServer.allSocketCount());
+
+    // Send updated impression info to ads' creator
+    const creator: User[] = await userService.findUserById(ads.userId);
+    const updatedAds: Ads[] = await adsService.findAdsById(ads.id);
+    socketServer.emitTo(creator[0].socketid, socketEventNames.UpdateAdsImpressions, {
+      adsInfo: updatedAds[0]
+    });
   }
 }
 
