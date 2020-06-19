@@ -13,6 +13,7 @@ export class User {
   public refcode: string;
   public role: string;
   public lastUpgradeTime: number;
+  public lastVitaePostTime: number;
 
   public static readonly ROLE = {
     OWNER: "OWNER",

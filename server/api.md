@@ -30,6 +30,7 @@
       referral,
       role,
       token,
+      isVitaePostEnabled
     }
   }
   ```
@@ -559,6 +560,10 @@
   ***Data***
   ```
   {
+    userInfo: {
+      // All User Info Here,
+      isVitaePostEnabled: true/false
+    },
     homePageList: [ // Contact list including Group Chat & Private Chat
       {               // -- Group Chat Info --
         to_group_id,  //    Group Id
