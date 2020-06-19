@@ -7,6 +7,7 @@ import Header from '../../containers/Header';
 import './index.scss';
 import ListItems from '../ListItems';
 import Chat from '../../modules/Chat';
+import StaticAdsPanel from '../StaticAdsPanel';
 
 class HomePageList extends Component {
   constructor(props) {
@@ -178,6 +179,7 @@ class HomePageList extends Component {
               clickItem={chatFromId => this.clickItemHandle({ homePageList, chatFromId })}
             />
           )}
+          <StaticAdsPanel />
         </div>
       </div>
     );

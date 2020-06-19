@@ -1,4 +1,5 @@
 import io from 'socket.io-client';
+import { notification as antNotification } from 'antd';
 import store from '../../redux/store';
 import {
   updateHomePageListAction,
@@ -12,6 +13,7 @@ import {
   setAllGroupChatsAction,
 } from '../../containers/GroupChatPage/groupChatAction';
 import { setAdsAction } from '../../containers/AdsPage/adsAction';
+import { enableVitaePost, disableVitaePost } from '../../redux/actions/enableVitaePost';
 import {
   addPrivateChatMessagesAction,
   addPrivateChatMessageAndInfoAction,
@@ -163,8 +165,26 @@ class InitApp {
       store.dispatch(setHomePageListAction(allMessage.homePageList));
       store.dispatch(setAllPrivateChatsAction({ data: privateChat }));
       store.dispatch(setAllGroupChatsAction({ data: groupChat }));
+
+      try {
+        const { isVitaePostEnabled } = allMessage.userInfo;
+        if (isVitaePostEnabled) {
+          store.dispatch(enableVitaePost());
+        } else {
+          store.dispatch(disableVitaePost());
+        }
+      } catch (e) {
+        console.log(e);
+      }
+
       if (this._userInfo.role !== 'MODERATOR') store.dispatch(setAdsAction({ data: adsList }));
-      console.log('initMessage success. ', 'time=>', new Date().toLocaleString(), this._userInfo);
+      console.log(
+        'initMessage success. ',
+        'time=>',
+        new Date().toLocaleString(),
+        this._userInfo,
+        allMessage,
+      );
     });
     window.socket.on('initSocket', (socketId, fn) => {
       const clientHomePageList = JSON.parse(localStorage.getItem(`homePageList-${this.user_id}`));
@@ -190,6 +210,7 @@ class InitApp {
     });
     window.socket.on('enableVitaePost', () => {
       console.log('Able to post to Vitae Rain Room');
+      store.dispatch(enableVitaePost());
     });
   }
 
@@ -221,8 +242,9 @@ class InitApp {
       let afterReconnecting = false;
       window.socket.on('error', error => {
         console.log('window.socket on error', error);
-        notification(error, 'error');
-        if (error.includes('Authentication error')) {
+        // notification(error, 'error');
+        antNotification.error({ message: error.message });
+        if (error.code === 401) {
           window.location.href = '/login';
         }
       });
@@ -263,7 +285,8 @@ class InitApp {
       window.socket.on('reconnect_error', error => {
         afterReconnecting = false;
         console.log('reconnect_error. error =>', error, 'time=>', new Date().toLocaleString());
-        notification(error, 'error');
+        // notification(error, 'error');
+        antNotification.error({ message: 'Internal server error' });
       });
     }
   };

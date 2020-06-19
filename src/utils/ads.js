@@ -1,28 +1,37 @@
 import React from 'react';
 import { Modal, notification, Row, Col, Button } from 'antd';
+import { ADS_STATIC_DURATION, ADS_RAIN_DURATION } from '../constants/ads';
 import './ads.scss';
 
-export function showAds(ads) {
+export function showAds(ads, staticPost = false) {
+  console.log('showAds', ads, staticPost);
   const { title, description, link, assetLink, buttonLabel } = ads;
-  const secondsToGo = 20;
+  const secondsToGo = staticPost ? ADS_STATIC_DURATION : ADS_RAIN_DURATION;
   const content = (
     <div>
       <img src={assetLink} alt="ads" />
+      {staticPost && <p className="upgrade-warning">Upgrade membership to avoid this ads.</p>}
     </div>
   );
-  if (!window.location.pathname.includes('vitae-rain-group')) {
+
+  if (!window.location.pathname.includes('vitae-rain-group') && !staticPost) {
     return;
   }
 
-  try {
-    const user_info = JSON.parse(localStorage.getItem('userInfo'));
-    const { token } = user_info;
+  if (!staticPost) {
+    try {
+      const user_info = JSON.parse(localStorage.getItem('userInfo'));
+      const { token } = user_info;
 
-    window.socket.emit('subscribeAdsReward', { token });
-  } catch (e) {
-    console.log(e);
-    return;
+      window.socket.emit('subscribeAdsReward', { token });
+    } catch (e) {
+      console.log(e);
+      return;
+    }
   }
+
+  console.log('here');
+
   const modal = Modal.success({
     // title: 'This is a notification message',
     content,

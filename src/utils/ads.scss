@@ -7,6 +7,12 @@
   .ant-modal-confirm-btns {
     display: none;
   }
+
+  .upgrade-warning {
+    color: red;
+    margin-top: 10px;
+    text-align: center;
+  }
 }
 
 @media screen and (max-width: 768px) {

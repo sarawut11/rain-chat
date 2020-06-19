@@ -1,0 +1,17 @@
+.static-campaign-container {
+  display: inline-block;
+  position: absolute;
+  bottom: 10px;
+
+  img {
+    max-width: 90%;
+    max-height: 160px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .static-campaign-container {
+    bottom: 30px;
+    width: 100%;
+  }
+}
