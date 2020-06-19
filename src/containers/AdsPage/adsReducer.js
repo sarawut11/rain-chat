@@ -11,7 +11,6 @@ const initialState = {
   approvedAdsList: [],
   rejectedAdsList: [],
   paidAdsList: [],
-  pendingConfirmAdsList: [],
   pendingPurchaseAdsList: [],
 };
 
