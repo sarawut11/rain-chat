@@ -8,6 +8,7 @@ import { requestFrequency } from "../middlewares/requestFrequency";
 import * as privateSockets from "./private.socket";
 import * as groupSockets from "./group.socket";
 import * as rainSockets from "./rain.socket";
+import { User } from "../models";
 
 let io: socketIo.Server;
 
@@ -67,7 +68,7 @@ const initServer = server => {
       userId = userID;
       clientHomePageList = homePageList;
     });
-    const allMessage = await getAllMessage({ user_id: userId, clientHomePageList });
+    const allMessage = await getAllMessage({ userId, clientHomePageList });
     socket.emit("initSocketSuccess", allMessage);
     console.log("initSocketSuccess user_id=>", userId, "time=>", new Date().toLocaleString());
 

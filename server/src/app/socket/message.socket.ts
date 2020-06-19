@@ -1,9 +1,11 @@
 import { ServicesContext } from "../context";
+import { User } from "../models";
+import { isVitaePostEnabled } from "../utils/utils";
 
-export const getPrivateMsg = async ({ toUser, user_id, start = 1, count = 20 }) => {
+export const getPrivateMsg = async ({ toUser, userId, start = 1, count = 20 }) => {
   const { userService, chatService } = ServicesContext.getInstance();
 
-  const RowDataPacket1 = await chatService.getPrivateDetail(user_id, toUser, start - 1, count);
+  const RowDataPacket1 = await chatService.getPrivateDetail(userId, toUser, start - 1, count);
   const RowDataPacket2 = await userService.getUserInfoById(toUser);
   const messages = JSON.parse(JSON.stringify(RowDataPacket1));
   const userInfo = JSON.parse(JSON.stringify(RowDataPacket2));
@@ -36,16 +38,16 @@ export const getGroupItem = async ({
   };
 };
 
-export const getAllMessage = async ({ user_id, clientHomePageList }) => {
+export const getAllMessage = async ({ userId, clientHomePageList }) => {
   try {
     const { userService, chatService, groupChatService, adsService } = ServicesContext.getInstance();
-
-    const res1 = await userService.getPrivateList(user_id);
+    const user: User[] = await userService.findUserById(userId);
+    const res1 = await userService.getPrivateList(userId);
     const privateList = JSON.parse(JSON.stringify(res1));
-    const res2 = await userService.getGroupList(user_id);
+    const res2 = await userService.getGroupList(userId);
     const groupList = JSON.parse(JSON.stringify(res2));
     const homePageList = groupList.concat(privateList);
-    const res3 = await adsService.findAdsByUserId(user_id);
+    const res3 = await adsService.findAdsByUserId(userId);
     const adsList = JSON.parse(JSON.stringify(res3));
     const privateChat = new Map();
     const groupChat = new Map();
@@ -60,7 +62,7 @@ export const getAllMessage = async ({ user_id, clientHomePageList }) => {
             const res = item.user_id
               ? await chatService.getUnreadCount({
                 sortTime,
-                from_user: user_id,
+                from_user: userId,
                 to_user: item.user_id,
               })
               : await groupChatService.getUnreadCount({ sortTime, to_group_id: item.to_group_id });
@@ -68,7 +70,7 @@ export const getAllMessage = async ({ user_id, clientHomePageList }) => {
           }
         }
         if (item.user_id) {
-          const data = await getPrivateMsg({ toUser: item.user_id, user_id });
+          const data = await getPrivateMsg({ toUser: item.user_id, userId });
           privateChat.set(item.user_id, data);
         } else if (item.to_group_id) {
           const data = await getGroupItem({ groupId: item.to_group_id });
@@ -78,6 +80,10 @@ export const getAllMessage = async ({ user_id, clientHomePageList }) => {
     }
 
     return {
+      userInfo: {
+        ...user[0],
+        isVitaePostEnabled: isVitaePostEnabled(user[0])
+      },
       homePageList,
       privateChat: Array.from(privateChat),
       groupChat: Array.from(groupChat),

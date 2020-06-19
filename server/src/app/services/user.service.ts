@@ -22,6 +22,7 @@ export class UserService {
     refcode: "refcode",
     role: "role",
     lastUpgradeTime: "lastUpgradeTime",
+    lastVitaePostTime: "lastVitaePostTime",
   };
 
   // Fuzzy matching users
@@ -287,6 +288,14 @@ export class UserService {
       WHERE ${this.columns.role} = ? AND ${this.columns.lastUpgradeTime} < ?;
     `;
     return query(_sql, [User.ROLE.FREE, role, expireTime]);
+  }
+
+  resetLastVitaePostTime(userId) {
+    const _sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET ${this.columns.lastVitaePostTime} = ?
+      WHERE ${this.columns.id} = ?`;
+    return query(_sql, [moment().utc().unix(), userId]);
   }
 
   // Add as a friend unilaterally (may later add the function of turning on friend verification)

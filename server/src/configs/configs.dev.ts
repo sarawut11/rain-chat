@@ -34,6 +34,7 @@ export default {
     group_id: "vitae-rain-group",
     pop_rain_balance_limit: 10,     // 100 Vitae Token
     pop_rain_last_post: 200,        // Last active 200 users
+    vitae_post_time: 1000 * 10 * 1    // I love vitae post after 1 hour
   },
   company_revenue: {
     company_expenses: 0.2,
@@ -44,7 +45,8 @@ export default {
   ads: {
     rain_coming_delay: 1000 * 5,    // 5s
     ads_duration: 1000 * 20,        // 20s
-    ads_time_interval: 1000 * 30,  // 30s
+    ads_time_interval: 1000 * 30,   // 30s
+    static_ads_interval: 1000 * 30, // 30s
     cost_per_impression_rain: 1 / 2000,     // $1 = 2000 impressions
     cost_per_impression_static: 1 / 1000,   // $1 = 1000 impressions
     revenue: {

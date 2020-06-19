@@ -5,8 +5,8 @@ import { ServicesContext } from "../context";
 import { socketServer } from "../socket/app.socket";
 import configs from "@configs";
 import { User } from "../models";
+import { isVitaePostEnabled } from "../utils/utils";
 
-// The username login system only involves non-github users, that is, github users can only log in with github authorization
 export const loginUser = async (ctx, next) => {
   const { userService } = ServicesContext.getInstance();
 
@@ -39,6 +39,7 @@ export const loginUser = async (ctx, next) => {
           referral: refcode,
           role,
           token,
+          isVitaePostEnabled: isVitaePostEnabled(users[0])
         },
       };
     } else {

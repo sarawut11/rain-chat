@@ -35,6 +35,7 @@ CREATE TABLE `user_info` (
   `refcode` varchar(50) NOT NULL DEFAULT '',
   `role` varchar(20) DEFAULT 'FREE',
   `lastUpgradeTime` int(11) NOT NULL DEFAULT 0,
+  `lastVitaePostTime` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 # Dump of table group_info
