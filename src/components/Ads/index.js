@@ -255,7 +255,10 @@ class Ads extends Component {
       data.append('impressions', impressions);
       data.append('costPerImp', price);
       const amount = Number(impressions) * price;
-      data.append('amount', amount.toFixed(2) + (amount - amount.toFixed(2) > 0 ? 0.01 : 0));
+      data.append(
+        'amount',
+        Number(amount.toFixed(2)) + (amount - amount.toFixed(2) > 0 ? 0.01 : 0),
+      );
       data.append('type', item.type);
       const res = await Request.axios('post', `/api/v1/campaign/pub/${id}/purchase`, data);
 
