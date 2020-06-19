@@ -26,7 +26,6 @@
       balance,
       intro,
       avatar,
-      socketId,
       referral,
       role,
       token,
@@ -113,7 +112,6 @@
       balance,
       avatar,
       referral,
-      socketId,
     }
   }
   ```
@@ -634,7 +632,6 @@
             members: [
               {
                 user_id,
-                socketid,
                 username,
                 name,
                 email,

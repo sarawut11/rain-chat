@@ -7,7 +7,7 @@ import { socketEventNames } from "../socket/resource.socket";
 
 export class RainContext {
   static instance: RainContext;
-  static usersToRainAds: string[];
+  static usersToRainAds: number[];
 
   static getInstance(): RainContext {
     if (!RainContext.instance) {
@@ -74,28 +74,25 @@ export class RainContext {
       }
       console.log("Ads Rain Reward:", rainReward);
 
-      const socketIdData = await userService.getSocketIdsByUserids(RainContext.usersToRainAds);
-      const socketIds: string[] = [];
-      socketIdData.forEach(element => socketIds.push(element.socketid));
-
-      await RainContext.instance.rainUsers(socketIds, rainReward);
+      await RainContext.instance.rainUsers(RainContext.usersToRainAds, rainReward);
       await adsService.campaignAds(ads.id, RainContext.usersToRainAds.length);
     } catch (error) {
       console.log("Rain Failed, ", error.message);
     }
   }
 
-  async rainUsers(clients: string[], rainReward: number) {
-    if (clients.length === 0) {
+  async rainUsers(userIds: number[], rainReward: number) {
+    if (userIds.length === 0) {
       console.log("No clients to rain");
       return;
     }
     const { userService } = ServicesContext.getInstance();
     const normalReward = rainReward / 2;
     const popReward = rainReward / 2;
-    await userService.rainUsersBySocketId(clients, normalReward, popReward);
-    clients.forEach(socketId => {
-      socketServer.emitTo(socketId, "getRain", {
+    await userService.rainUsers(userIds, normalReward, popReward);
+    const users: User[] = await userService.getUsersByUserIds(userIds);
+    users.forEach(user => {
+      socketServer.emitTo(user.socketid, "getRain", {
         reward: normalReward
       }, error => console.log("getRain Error:", error.message));
     });
@@ -125,15 +122,15 @@ export class RainContext {
 
   async rainUsersByLastActivity(amount) {
     const { userService } = ServicesContext.getInstance();
-    const lastActiveUsers = await userService.getUsersByLastActivity(configs.rain.pop_rain_last_post);
+    const lastActiveUsers: User[] = await userService.getUsersByLastActivity(configs.rain.pop_rain_last_post);
     amount /= lastActiveUsers.length;
-    const socketIds = [];
-    lastActiveUsers.forEach(user => socketIds.push(user.socketid.split(",")));
+    const userIds: number[] = [];
+    lastActiveUsers.forEach(user => userIds.push(user.id));
     console.log(`Rain ${lastActiveUsers.length} users with ${amount} rewards for each`);
-    this.rainUsers(socketIds, amount);
+    this.rainUsers(userIds, amount);
   }
 
-  addUserToRainAds(userId: string): void {
+  addUserToRainAds(userId: number): void {
     RainContext.usersToRainAds.push(userId);
   }
 

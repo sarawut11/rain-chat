@@ -1,14 +1,15 @@
 import * as aws from "../utils/aws";
 import { ServicesContext } from "../context";
 import { socketServer } from "../socket/app.socket";
+import { User } from "../models";
 
 export const getProfileInfo = async (ctx, next) => {
   const { username } = ctx.params;
   const { userService } = ServicesContext.getInstance();
 
-  const res = await userService.findUserByUsername(username);
+  const res: User[] = await userService.findUserByUsername(username);
   if (res.length > 0) {
-    const { id, username, name, email, balance, intro, avatar, socketId, refcode } = res[0];
+    const { id, username, name, email, balance, intro, avatar, refcode } = res[0];
     ctx.body = {
       success: true,
       userInfo: {
@@ -19,7 +20,6 @@ export const getProfileInfo = async (ctx, next) => {
         balance,
         intro,
         avatar,
-        socketId,
         referral: refcode
       },
     };

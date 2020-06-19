@@ -50,11 +50,10 @@ const initServer = server => {
     });
 
     // init socket
-    const arr = await userService.getUserSocketId(userId);
+    const arr = await userService.getSocketid(userId);
     const existSocketIdStr = getSocketIdHandle(arr);
     const newSocketIdStr = existSocketIdStr ? `${existSocketIdStr},${socketId}` : socketId;
-    // await userService.saveUserSocketId(user_id, newSocketIdStr); // TOO LONG DB EXCEPTION in dev mode
-    await userService.saveUserSocketId(userId, socketId);
+    await userService.saveUserSocketId(userId, newSocketIdStr);
     console.log("initSocket user_id=>", userId, "time=>", new Date().toLocaleString());
 
     // init GroupChat
@@ -133,7 +132,7 @@ const initServer = server => {
 
     socket.on("disconnect", async reason => {
       try {
-        const arr = await userService.getUserSocketId(userId);
+        const arr = await userService.getSocketid(userId);
         const existSocketIdStr = getSocketIdHandle(arr);
         const toUserSocketIds = (existSocketIdStr && existSocketIdStr.split(",")) || [];
         const index = toUserSocketIds.indexOf(socketId);
@@ -175,9 +174,10 @@ const broadcast = (emitName, data, onError?) => {
   }
 };
 
-const emitTo = (toSocketId, emitName, data, onError) => {
+const emitTo = (toSocketIds: string, emitName, data, onError?) => {
   try {
-    io.to(toSocketId).emit(emitName, data);
+    const socketids = toSocketIds.split(",");
+    socketids.forEach(socketid => io.to(socketid).emit(emitName, data));
   } catch (error) {
     if (onError)
       onError(error);

@@ -25,6 +25,11 @@ export class UserService {
     lastVitaePostTime: "lastVitaePostTime",
   };
 
+  constructor() {
+    // Clear All User's socketId
+    this.clearAllSocketIds();
+  }
+
   // Fuzzy matching users
   fuzzyMatchUsers(link) {
     const _sql = "SELECT * FROM user_info WHERE username LIKE ?;";
@@ -173,6 +178,13 @@ export class UserService {
     return query(_sql, userId);
   }
 
+  clearAllSocketIds() {
+    const _sql = `
+      UPDATE ${this.TABLE_NAME} SET socketid = '';
+    `;
+    return query(_sql);
+  }
+
   saveUserSocketId(userId, socketId) {
     const data = [socketId, userId];
     const _sql = "UPDATE user_info SET socketid = ? WHERE id= ? limit 1 ; ";
@@ -188,14 +200,15 @@ export class UserService {
     return query(_sql);
   }
 
-  getUserSocketId(toUserId) {
+  getSocketid(toUserId) {
     const _sql = "SELECT socketid FROM user_info WHERE id=? limit 1 ;";
     return query(_sql, [toUserId]);
   }
 
   getUserBySocketId(socketId) {
-    const _sql = "SELECT * FROM user_info WHERE socketid LIKE ? limit 1;";
-    return query(_sql, socketId);
+    if (socketId === "") socketId = undefined;
+    const _sql = `SELECT * FROM user_info WHERE socketid LIKE '%${socketId}%' limit 1;`;
+    return query(_sql);
   }
 
   getUsersByPopLimited() {
@@ -206,12 +219,18 @@ export class UserService {
 
   getUsersByLastActivity(limit) {
     const _sql = `
-    SELECT u.id as user_id, u.socketid
+    SELECT u.id, u.socketid
     FROM rain_group_msg as rgm
     JOIN user_info as u
     ON rgm.from_user = u.id
     ORDER BY rgm.time DESC LIMIT ?;`;
     return query(_sql, limit);
+  }
+
+  getUsersByUserIds(userIds: number[]) {
+    const array = getInArraySQL(userIds);
+    const _sql = `SELECT * FROM ${this.TABLE_NAME} WHERE id IN (${array});`;
+    return query(_sql);
   }
 
   resetPopbalance(userIds: number[]) {
@@ -230,14 +249,14 @@ export class UserService {
     return query(_sql, [reward / 2, reward / 2, username]);
   }
 
-  rainUsersBySocketId(socketIds: string[], reward, popReward) {
-    const array = getInArraySQL(socketIds);
+  rainUsers(userIds: number[], reward, popReward) {
+    const array = getInArraySQL(userIds);
     const _sql = `
       UPDATE ${this.TABLE_NAME}
       SET
         balance = balance + ?,
         popBalance = popBalance + ?
-      WHERE socketid IN (${array});`;
+      WHERE id IN (${array});`;
     return query(_sql, [reward, popReward]);
   }
 
