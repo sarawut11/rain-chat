@@ -5,13 +5,10 @@ const auth = new Router()
   // Authentication
   .post("/register", APIController.registerUser)
   .post("/login", APIController.loginUser)
-  .post("/token/validate", APIController.validateToken);
+  .post("/token/validate", APIController.validateToken)
+  .post("/ref/validate", APIController.validateReferral);
 
 const api = new Router()
-  // Referral
-  .post("/ref/generate", APIController.generateReferral)
-  .post("/ref/validate", APIController.validateReferral)
-
   // Profile
   .get("/user/:username", APIController.getProfileInfo)
   .put("/user/:username", APIController.updateProfileInfo)
@@ -26,10 +23,13 @@ const api = new Router()
   .delete("/campaign/pub/:adsId", APIController.deleteAds)
   .post("/campaign/pub/:adsId/request", APIController.requestAds)
   .post("/campaign/pub/:adsId/cancel", APIController.cancelAds)
+  .post("/campaign/pub/:adsId/purchase", APIController.purchaseAds)
 
   .get("/campaign/mod/all", APIController.getAllAds)
   .post("/campaign/mod/:adsId/reject", APIController.rejectAds)
   .post("/campaign/mod/:adsId/approve", APIController.approveAds)
+
+  .get("/campaign/static", APIController.getStaticAds)
 
   // Membership
   .get("/membership/price", APIController.getMembershipPrice)

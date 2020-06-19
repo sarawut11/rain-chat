@@ -5,6 +5,7 @@ import { ParameterizedContext } from "koa";
 import { ServicesContext, CMCContext, RainContext } from "../context";
 import { Ads, User } from "../models";
 import configs from "@configs";
+import { socketServer } from "../socket/app.socket";
 
 export const registerAds = async (ctx, next) => {
   try {
@@ -48,8 +49,8 @@ export const registerAds = async (ctx, next) => {
       buttonLabel,
       title,
       description,
-      type,
-      time: moment().utc().unix()
+      time: moment().utc().unix(),
+      type
     });
     const insertAds: Ads[] = await adsService.findAdsById(res.insertId);
     ctx.body = {
@@ -209,7 +210,6 @@ export const requestAds = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
     const { adsId } = ctx.params;
-    const { impressions, costPerImp } = ctx.request.body;
     const { adsService } = ServicesContext.getInstance();
 
     const checkResult = await checkAdsId(username, adsId);
@@ -234,11 +234,8 @@ export const requestAds = async (ctx, next) => {
       return;
     }
 
-    const realCostPerImp = configs.ads.revenue.imp_revenue * costPerImp;
-    await adsService.requestAds(adsId, userInfo.id, impressions, realCostPerImp);
+    await adsService.updateStatus(adsId, Ads.STATUS.Pending);
     const updatedAds: Ads[] = await adsService.findAdsById(adsId);
-    // Test -> Share revenue at this point | Move to wallet controller later
-    await confirmAds(adsId, impressions, impressions * costPerImp);
     ctx.body = {
       success: true,
       message: "Successfully requested",
@@ -289,6 +286,61 @@ export const cancelAds = async (ctx, next) => {
   }
 };
 
+export const purchaseAds = async (ctx: ParameterizedContext, next) => {
+  try {
+    const { username } = ctx.state.user;
+    const { adsId } = ctx.params;
+    const { adsService } = ServicesContext.getInstance();
+    const { impressions, costPerImp, amount } = ctx.request.body;
+
+    const checkResult = await checkAdsId(username, adsId);
+    if (checkResult.success === false) {
+      ctx.body = checkResult;
+      return;
+    }
+
+    const { userInfo, existingAds } = checkResult;
+    if (existingAds.status !== Ads.STATUS.Approved) {
+      ctx.body = {
+        success: false,
+        message: "This ads is not approved."
+      };
+      return;
+    }
+
+    const realCostPerImp = configs.ads.revenue.imp_revenue * costPerImp;
+    await adsService.setImpressions(adsId, userInfo.id, impressions, realCostPerImp);
+
+    // Expire ads after 5 mins when it is still in pending purchase
+    setTimeout(async () => {
+      const ads: Ads[] = await adsService.findAdsById(adsId);
+      if (ads[0].status === Ads.STATUS.PendingPurchase) {
+        await adsService.updateStatus(adsId, Ads.STATUS.Approved);
+        await socketServer.updateAdsStatus(adsId);
+      }
+    }, 1000 * 60 * 5); // 5 mins
+
+    // Test -> Share revenue at this point | Move to wallet controller later
+    const totalAmount = existingAds.impressions * (existingAds.costPerImp / configs.ads.revenue.imp_revenue);
+    await confirmAds(adsId, totalAmount, existingAds.type);
+    // Save transaction info
+    // =====================
+
+    const updatedAds: Ads[] = await adsService.findAdsById(adsId);
+    ctx.body = {
+      success: true,
+      message: "Successfully requested.",
+      ads: updatedAds[0]
+    };
+  } catch (error) {
+    console.error(error.message);
+    ctx.body = {
+      success: false,
+      message: "Failed"
+    };
+  }
+};
+
 export const getCostPerImpression = async (ctx: ParameterizedContext, next) => {
   try {
     const { type } = ctx.request.query;
@@ -310,6 +362,67 @@ export const getCostPerImpression = async (ctx: ParameterizedContext, next) => {
       success: false,
       message: "Failed"
     };
+  }
+};
+
+export const getStaticAds = async (ctx: ParameterizedContext, next) => {
+  try {
+    const { username } = ctx.state.user;
+    const { userService, adsService } = ServicesContext.getInstance();
+
+    const ads: Ads[] = await adsService.findAdsToCampaign(Ads.TYPE.StaticAds);
+    if (ads.length === 0) {
+      ctx.body = {
+        success: false,
+        message: "No static ads."
+      };
+      return;
+    }
+    await adsService.campaignAds(ads[0].id, 1);
+    ctx.body = {
+      success: true,
+      ads: ads[0]
+    };
+  } catch (error) {
+    console.error(error.message);
+    ctx.body = {
+      success: false,
+      message: "Failed"
+    };
+  }
+};
+
+const confirmAds = async (adsId: number, amount: number, type: number) => {
+  const { adsService, userService } = ServicesContext.getInstance();
+  await adsService.updateStatus(adsId, Ads.STATUS.Paid);
+
+  // Revenue Share Model
+  // ===== Company Share ===== //
+  // 25% | Company Revenue
+  // ---------------------------------
+  // 20% -----> Company Expenses
+  // 30% -----> Owner Share
+  // 25% -----> Moderator Share
+  // 25% -----> Membership Users Share
+  const companyRevenue = amount * configs.ads.revenue.company_revenue;
+  const companyExpense = companyRevenue * configs.company_revenue.company_expenses;
+  const ownerShare = companyRevenue * configs.company_revenue.owner_share;
+  const moderatorShare = companyRevenue * configs.company_revenue.moderator_share;
+  const membersShare = companyRevenue * configs.company_revenue.membership_share;
+
+  // await userService.shareRevenue(companyExpense, User.ROLE.COMPANY); // Deposit company wallet directly
+  await userService.shareRevenue(ownerShare, User.ROLE.OWNER);
+  await userService.shareRevenue(moderatorShare, User.ROLE.MODERATOR);
+  await userService.shareRevenue(membersShare, User.ROLE.UPGRADED_USER);
+
+  // ===== Rain Rest ===== //
+  // 75% | Ads Operation
+  // ---------------------------------
+  // Rain Room Ads -> buy impressions
+  // Static Ads -> Rain Last 200 Users
+  if (type === Ads.TYPE.StaticAds) {
+    const restShare = amount - companyRevenue;
+    RainContext.getInstance().rainUsersByLastActivity(restShare);
   }
 };
 
@@ -343,37 +456,6 @@ const checkAdsId = (username, adsId): Promise<{
     existingAds,
   });
 });
-
-const confirmAds = async (adsId: number, amount: number, type: number) => {
-  const { adsService, userService } = ServicesContext.getInstance();
-
-  // Revenue Share Model
-  // ===== Company Share ===== //
-  // 25% | Company Revenue
-  // ---------------------------------
-  // 20% -----> Company Expenses
-  // 30% -----> Owner Share
-  // 25% -----> Moderator Share
-  // 25% -----> Membership Users Share
-  const companyRevenue = amount * configs.ads.revenue.company_revenue;
-  const ownerShare = companyRevenue * configs.company_revenue.owner_share;
-  const moderatorShare = companyRevenue * configs.company_revenue.moderator_share;
-  const membersShare = companyRevenue * configs.company_revenue.membership_share;
-
-  await userService.shareRevenue(ownerShare, User.ROLE.OWNER);
-  await userService.shareRevenue(moderatorShare, User.ROLE.MODERATOR);
-  await userService.shareRevenue(membersShare, User.ROLE.UPGRADED_USER);
-
-  // ===== Rain Rest ===== //
-  // 75% | Ads Operation
-  // ---------------------------------
-  // Rain Room Ads -> buy impressions
-  // Static Ads -> Rain Last 200 Users
-  if (type === Ads.TYPE.StaticAds) {
-    const restShare = amount - companyRevenue;
-    RainContext.getInstance().rainUsersByLastActivity(restShare);
-  }
-};
 
 const generateFileName = (username, fileType) => {
   return `campaign/campaign-${username}-${moment().utc().unix()}.${mime.extension(fileType)}`;

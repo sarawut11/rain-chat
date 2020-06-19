@@ -21,8 +21,15 @@ export const walletNotify = async (ctx, next) => {
     // If actual amount >= purchase amount, update db and transaction table according to the purchase type
     // If actual amount < purchase amount, update proper transaction table record to show "insufficient tokens, contact support" in frontend
 
-    // ===== Confrim Transaction =====
+    // ===== Confrim Membership Transaction =====
     // Copy role.controller.ts -> confirmMembership func body
+
+    // ===== Confrim Ads Transaction =====
+    // Copy ads.mod.controller.ts -> confirmAds func body
+    // Ads Purchase Status :
+    //  - PendingPurchase
+    //  - PendingConfirm
+    //  - Paid
 
     ctx.body = {
       success: true,

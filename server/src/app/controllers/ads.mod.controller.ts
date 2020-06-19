@@ -1,5 +1,4 @@
 import { ServicesContext } from "../context";
-import { UserService, AdsService } from "../services";
 import { Ads, User } from "../models";
 
 export const getAllAds = async (ctx, next) => {
@@ -45,7 +44,7 @@ export const rejectAds = async (ctx, next) => {
       return;
     }
 
-    await adsService.rejectAds(adsId);
+    await adsService.updateStatus(adsId, Ads.STATUS.Rejected);
     const ads = await adsService.findAdsById(adsId);
     ctx.body = {
       success: true,
@@ -78,8 +77,10 @@ export const approveAds = async (ctx, next) => {
       return;
     }
 
-    await adsService.approveAds(adsId);
+    await adsService.updateStatus(adsId, Ads.STATUS.Approved);
+
     const ads = await adsService.findAdsById(adsId);
+
     ctx.body = {
       success: true,
       message: "Successfully Approved",
@@ -105,7 +106,7 @@ const isModerator = (username): Promise<any> => new Promise(async (resolve, reje
     return;
   }
   const userInfo = RowDataPacket[0];
-  if (userInfo.role !== UserService.Role.MODERATOR) {
+  if (userInfo.role !== User.ROLE.MODERATOR) {
     resolve({
       success: false,
       message: "You are not a Moderator."
@@ -156,6 +157,6 @@ const checkAdsStatus = (adsId): Promise<{
   }
   resolve({
     success: true,
-    existingAds: existingAds[0]
+    existingAds
   });
 });
