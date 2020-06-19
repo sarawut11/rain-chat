@@ -17,7 +17,7 @@ const initialState = {
   buttonLabel: '',
   title: '',
   description: '',
-  type: '1',
+  type: '0',
   confirmLoading: false,
   fileList: [],
   errorList: {},
@@ -186,8 +186,8 @@ export default class CreateAds extends Component {
                 </Item>
                 <Item label="Type">
                   <Select value={type.toString()} onChange={this.onTypeChange}>
-                    <Option value="1">Rain Room Ads</Option>
-                    <Option value="2">Static Ads</Option>
+                    <Option value="0">Rain Room Ads</Option>
+                    <Option value="1">Static Ads</Option>
                   </Select>
                 </Item>
                 <Item label="Link">

@@ -46,7 +46,6 @@ import {
   ADS_PENDING_CONFIRM,
   ADS_PENDING_PURCHASE,
   ADS_REJECTED,
-  ADS_TYPE_NONE,
   ADS_TYPE_RAIN_ROOM,
   ADS_TYPE_STATIC,
 } from '../../constants/ads';
