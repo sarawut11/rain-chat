@@ -8,3 +8,10 @@
     max-height: 160px;
   }
 }
+
+@media screen and (max-width: 768px) {
+  .static-campaign-container {
+    bottom: 30px;
+    width: 100%;
+  }
+}
