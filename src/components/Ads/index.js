@@ -67,6 +67,8 @@ class ImpressionsContent extends Component {
   render() {
     console.log('ImpressionsContent', this);
     const { pointer } = this.props;
+    let amount = Number(this.state.impressions) * pointer.state.price;
+    amount = amount.toFixed(2) + (amount - amount.toFixed(2)) > 0 ? 0.01 : 0;
     return (
       <div>
         <Form style={{ marginTop: '20px' }} labelCol={{ span: 7 }} wrapperCol={{ span: 17 }}>
@@ -251,7 +253,7 @@ class Ads extends Component {
       data.append('impressions', impressions);
       data.append('costPerImp', price);
       const amount = Number(impressions) * price;
-      data.append('amount', amount.toFixed(2));
+      data.append('amount', amount.toFixed(2) + (amount - amount.toFixed(2)) > 0 ? 0.01 : 0);
       data.append('type', item.type);
       const res = await Request.axios('post', `/api/v1/campaign/pub/${id}/purchase`, data);
 
