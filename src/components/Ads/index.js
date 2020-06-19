@@ -135,7 +135,7 @@ class Ads extends Component {
 
   showConfirm = item => async () => {
     const pointer = this;
-    if (item.status === 0 || item.status === 3 || this.state.user_info.role === 'MODERATOR') {
+    if (item.status !== ADS_PAID) {
       confirm({
         title: 'Do you Want to delete this ads?',
         icon: <ExclamationCircleOutlined />,
@@ -146,7 +146,7 @@ class Ads extends Component {
       });
     } else {
       warning({
-        title: `You can't edit or delete a pending or approved ads.`,
+        title: `You can't edit or delete a paid ads.`,
       });
     }
   };
@@ -387,11 +387,7 @@ class Ads extends Component {
         </span>,
       ];
     } else if (role === 'MODERATOR') {
-      actions = [
-        <Dropdown overlay={this.renderMenu(item)} placement="bottomCenter">
-          <SettingOutlined key="setting" />
-        </Dropdown>,
-      ];
+      actions = [<div style={{ height: '24px', width: '100%' }} />];
     } else if (status === ADS_CREATED || status === ADS_REJECTED) {
       actions = [
         <Dropdown overlay={this.renderMenu(item)} placement="bottomCenter">
