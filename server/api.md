@@ -686,6 +686,8 @@
 ### leaveGroup (Client)
 ### updateGroupInfo (Client)
 ### getGroupMember (Client)
+### enableVitaePost (Server)
+  Notify user to be able to post Vitae for free users
 
 ## 2.4 Search / Contact
 ### fuzzyMatch (Client)

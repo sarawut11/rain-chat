@@ -188,6 +188,9 @@ class InitApp {
     window.socket.on('updateAdsStatus', ({ adsId, username, status }) => {
       console.log('Ads Status Updated:', username, adsId, status);
     });
+    window.socket.on('enableVitaePost', () => {
+      console.log('Able to post to Vitae Rain Room');
+    });
   }
 
   subscribeSocket() {

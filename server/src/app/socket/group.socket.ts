@@ -4,6 +4,9 @@ import { ServicesContext } from "../context";
 import { getAllMessage, getGroupItem } from "./message.socket";
 import { User } from "../models";
 import { isVitaePostEnabled } from "../utils/utils";
+import { socketServer } from "./app.socket";
+import { socketEventNames } from "./resource.socket";
+import configs from "@configs";
 
 export const sendGroupMsg = async (io, socket, data, cbFn) => {
   try {
@@ -14,6 +17,9 @@ export const sendGroupMsg = async (io, socket, data, cbFn) => {
       if (!isVitaePostEnabled(user[0]))
         return;
       await userService.resetLastVitaePostTime(user[0].id);
+      setTimeout(() => {
+        socketServer.emitTo(socket.id, socketEventNames.EnableVitaePost, {}, undefined);
+      }, configs.rain.vitae_post_time);
     }
     if (!data) return;
     data.attachments = JSON.stringify(data.attachments);
