@@ -726,3 +726,14 @@
     reward: // Normal Rain Reward (e.g 0.00025)
   }
   ```
+### updateAdsStatus (Server)
+  Notify clients when Ads status updated
+
+  ***Data***
+  ```
+  {
+    adsId,
+    username,
+    status
+  }
+  ```

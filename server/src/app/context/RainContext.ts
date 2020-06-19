@@ -2,7 +2,7 @@ import * as moment from "moment";
 import { socketServer } from "../socket/app.socket";
 import { ServicesContext } from "./ServicesContext";
 import configs from "@configs";
-import { Ads } from "../models";
+import { Ads, User } from "../models";
 
 export class RainContext {
   static instance: RainContext;
@@ -97,18 +97,18 @@ export class RainContext {
 
   async popRain() {
     const { userService } = ServicesContext.getInstance();
-    const users = await userService.getUsersByPopLimited();
+    const users: User[] = await userService.getUsersByPopLimited();
     if (users.length === 0) {
       console.log("No users with limited pop balance");
       return;
     }
 
     // Reset Pop Balance
-    const userIds: string[] = [];
+    const userIds: number[] = [];
     let popReward = 0;
     users.forEach(user => {
       userIds.push(user.id);
-      popReward += Number(user.pop_balance);
+      popReward += Number(user.popBalance);
     });
     await userService.resetPopbalance(userIds);
 
