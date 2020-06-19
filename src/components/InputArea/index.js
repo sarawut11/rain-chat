@@ -83,6 +83,7 @@ export default class InputArea extends Component {
   };
 
   _postMessage = () => {
+    console.log('_postMessage');
     const { sendMessage } = this.props;
     sendMessage('I love Vitae.', []);
   };
@@ -263,7 +264,7 @@ export default class InputArea extends Component {
     return role === 'FREE' && window.location.href.includes('vitae-rain-group') ? (
       <div className="input-msg">
         <Row justify="space-around" style={{ width: '100%' }}>
-          <Button type="primary" onClick={this._postMessage}>
+          <Button type="primary" onClick={this._sendMessage}>
             Post
           </Button>
         </Row>
