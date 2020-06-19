@@ -185,6 +185,9 @@ class InitApp {
       console.log('Getting Reward:', reward);
       notifyRainReward(reward);
     });
+    window.socket.on('updateAdsStatus', ({ adsId, username, status }) => {
+      console.log('Ads Status Updated:', username, adsId, status);
+    });
   }
 
   subscribeSocket() {
