@@ -22,7 +22,7 @@ export const loginUser = async (ctx, next) => {
   if (users.length > 0) {
     //   After the verification is successful, the server will issue a Token, and then send the Token to the client
     if (md5(password) === users[0].password) {
-      const { id, name, email, balance, username, intro, avatar, socketid, refcode, role } = users[0];
+      const { id, name, email, balance, username, intro, avatar, refcode, role } = users[0];
       const token = generateToken({ id, username });
       ctx.body = {
         success: true,
@@ -35,7 +35,6 @@ export const loginUser = async (ctx, next) => {
           balance,
           intro,
           avatar,
-          socketid,
           referral: refcode,
           role,
           token,

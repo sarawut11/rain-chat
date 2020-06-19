@@ -5,10 +5,12 @@ export const socketEventNames = {
   InitSocketSuccess: "initSocketSuccess",
 
   SendPrivateMsg: "sendPrivateMsg",
+  GetPrivateMsg: "getPrivateMsg",
   GetOnePrivateChatMessages: "getOnePrivateChatMessages",
   AddAsContact: "addAsTheContact",
   GetUserInfo: "getUserInfo",
   DeleteContact: "deleteContact",
+  BeDeleted: "beDeleted",
 
   SendGroupMsg: "sendGroupMsg",
   GetOneGroupMessages: "getOneGroupMessages",

@@ -2,6 +2,7 @@ import * as socketIo from "socket.io";
 import { socketServer } from "./app.socket";
 import { ServicesContext } from "../context";
 import { User } from "../models";
+import { socketEventNames } from "./resource.socket";
 
 export const sendPrivateMsg = async (io, socket: socketIo.Socket, data, cbFn) => {
   try {
@@ -16,10 +17,7 @@ export const sendPrivateMsg = async (io, socket: socketIo.Socket, data, cbFn) =>
 
     const user: User[] = await userService.findUserById(data.to_user);
     const existSocketIdStr = socketServer.getSocketIdHandle(user[0].socketid);
-    const toUserSocketIds = (existSocketIdStr && existSocketIdStr.split(",")) || [];
-    toUserSocketIds.forEach(e => {
-      io.to(e).emit("getPrivateMsg", data);
-    });
+    socketServer.emitTo(existSocketIdStr, socketEventNames.GetPrivateMsg, data);
     console.log("sendPrivateMsg data=>", data, "time=>", new Date().toLocaleString());
     cbFn(data);
   } catch (error) {
@@ -84,12 +82,9 @@ export const deleteContact = async (io, socket, { from_user, to_user }, cbFn) =>
   try {
     const { userService } = ServicesContext.getInstance();
     await userService.deleteContact(from_user, to_user);
-    const sockets = await userService.getUserSocketId(to_user);
+    const sockets = await userService.getSocketid(to_user);
     const existSocketIdStr = socketServer.getSocketIdHandle(sockets);
-    const toUserSocketIds = (existSocketIdStr && existSocketIdStr.split(",")) || [];
-    toUserSocketIds.forEach(e => {
-      io.to(e).emit("beDeleted", from_user);
-    });
+    socketServer.emitTo(existSocketIdStr, socketEventNames.BeDeleted, from_user);
     console.log(
       "deleteContact user_id && to_user =>",
       from_user,

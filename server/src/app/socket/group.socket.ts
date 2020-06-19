@@ -18,7 +18,7 @@ export const sendGroupMsg = async (io, socket, data, cbFn) => {
         return;
       await userService.resetLastVitaePostTime(user[0].id);
       setTimeout(() => {
-        socketServer.emitTo(socket.id, socketEventNames.EnableVitaePost, {}, undefined);
+        socketServer.emitTo(socket.id, socketEventNames.EnableVitaePost, {});
       }, configs.rain.vitae_post_time);
     }
     if (!data) return;
@@ -156,7 +156,7 @@ export const getGroupMember = async (io, socket, groupId, cbfn) => {
       userInfos.forEach(userInfo => {
         userInfo.status = 0;
         if (userInfo.socketid) {
-          const socketIds = userInfo.socketid.split(",");
+          const socketIds: string[] = userInfo.socketid.split(",");
           for (const onlineSocket of onlineSockets) {
             const socketExist = socketIds.some(socketId => socketId === onlineSocket);
             if (socketExist) {
