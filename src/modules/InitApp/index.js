@@ -13,6 +13,7 @@ import {
   setAllGroupChatsAction,
 } from '../../containers/GroupChatPage/groupChatAction';
 import { setAdsAction } from '../../containers/AdsPage/adsAction';
+import { enableVitaePost, disableVitaePost } from '../../redux/actions/enableVitaePost';
 import {
   addPrivateChatMessagesAction,
   addPrivateChatMessageAndInfoAction,
@@ -164,6 +165,18 @@ class InitApp {
       store.dispatch(setHomePageListAction(allMessage.homePageList));
       store.dispatch(setAllPrivateChatsAction({ data: privateChat }));
       store.dispatch(setAllGroupChatsAction({ data: groupChat }));
+
+      try {
+        const { isVitaePostEnabled } = allMessage.userInfo;
+        if (isVitaePostEnabled) {
+          store.dispatch(enableVitaePost());
+        } else {
+          store.dispatch(disableVitaePost());
+        }
+      } catch (e) {
+        console.log(e);
+      }
+
       if (this._userInfo.role !== 'MODERATOR') store.dispatch(setAdsAction({ data: adsList }));
       console.log(
         'initMessage success. ',
@@ -197,6 +210,7 @@ class InitApp {
     });
     window.socket.on('enableVitaePost', () => {
       console.log('Able to post to Vitae Rain Room');
+      store.dispatch(enableVitaePost());
     });
   }
 

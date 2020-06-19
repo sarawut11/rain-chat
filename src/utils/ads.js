@@ -10,7 +10,7 @@ export function showAds(ads, staticPost = false) {
   const content = (
     <div>
       <img src={assetLink} alt="ads" />
-      {staticPost && <p>Upgrade membership to avoid this ads.</p>}
+      {staticPost && <p className="upgrade-warning">Upgrade membership to avoid this ads.</p>}
     </div>
   );
 

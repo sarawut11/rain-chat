@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Picker } from 'emoji-mart';
+import { connect } from 'react-redux';
 import Fuse from 'fuse.js';
 import { Button, Row, notification as antNotification } from 'antd';
 import upload from '../../utils/qiniu';
@@ -13,12 +14,13 @@ import { shareAction } from '../../redux/actions/shareAction';
 import store from '../../redux/store';
 import { showAds } from '../../utils/ads';
 import { ADS_STATIC_DURATION } from '../../constants/ads';
+import { enableVitaePost, disableVitaePost } from '../../redux/actions/enableVitaePost';
 
 function getPlaceholder() {
   return 'Write messages...';
 }
 
-export default class InputArea extends Component {
+class InputArea extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -86,6 +88,7 @@ export default class InputArea extends Component {
     console.log('_postMessage');
     const { sendMessage } = this.props;
     sendMessage('I love Vitae.', []);
+    this.props.disableVitaePost();
   };
 
   _selectSomeOneOrNot = () => {
@@ -261,12 +264,22 @@ export default class InputArea extends Component {
     const buttonClass = inputMsg ? 'btn btnActive' : 'btn';
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
     const { role } = userInfo;
+    const { vitaePostEnabled } = this.props;
+
+    console.log('InputArea render', this);
+
     return role === 'FREE' && window.location.href.includes('vitae-rain-group') ? (
       <div className="input-msg">
         <Row justify="space-around" style={{ width: '100%' }}>
-          <Button type="primary" onClick={this._sendMessage}>
-            Post
-          </Button>
+          {vitaePostEnabled ? (
+            <Button type="primary" onClick={this._sendMessage}>
+              Post
+            </Button>
+          ) : (
+            <Button type="primary" disabled>
+              Post Disabled
+            </Button>
+          )}
         </Row>
       </div>
     ) : (
@@ -321,3 +334,18 @@ InputArea.defaultProps = {
   isRobotChat: false,
   shareData: undefined,
 };
+
+const mapStateToProps = state => ({
+  vitaePostEnabled: state.vitaePostEnabled,
+});
+
+const mapDispatchToProps = dispatch => ({
+  enableVitaePost(arg) {
+    dispatch(enableVitaePost(arg));
+  },
+  disableVitaePost(arg) {
+    dispatch(disableVitaePost(arg));
+  },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(InputArea);

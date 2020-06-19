@@ -6,6 +6,8 @@ import {
 } from '../containers/HomePageList/homePageListReducer';
 import { initAppReducer } from './reducers/initAppReducer';
 import { shareReducer } from './reducers/shareReducer';
+import { enableVitaePostReducer } from './reducers/enableVitaePost';
+import { staticAdsReducer } from './reducers/staticAdsReducer';
 import { fetchAllGroupChatsReducer } from '../containers/GroupChatPage/groupChatReducer';
 import { fetchAllPrivateChatsReducer } from '../containers/PrivateChatPage/privateChatReducer';
 import { setGlobalSettingsReducer } from '../containers/SettingPage/settingReducer';
@@ -22,4 +24,6 @@ export default combineReducers({
   globalSettingsState: setGlobalSettingsReducer,
   adsState: setAdsReducer,
   adminState: setAdminReducer,
+  vitaePostEnabled: enableVitaePostReducer,
+  staticAdsState: staticAdsReducer,
 });
