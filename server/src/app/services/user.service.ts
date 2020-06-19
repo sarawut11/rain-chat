@@ -16,12 +16,13 @@ export class UserService {
     intro: "intro",
     socketId: "socketid",
     sponsorId: "sponsor",
-    walletAddress: "wallet_address",
+    walletAddress: "walletAddress",
     balance: "balance",
-    popBalance: "pop_balance",
+    popBalance: "popBalance",
     refcode: "refcode",
     role: "role",
-    lastUpgradeTime: "last_upgrade_time",
+    lastUpgradeTime: "lastUpgradeTime",
+    lastVitaePostTime: "lastVitaePostTime",
   };
 
   // Fuzzy matching users
@@ -199,7 +200,7 @@ export class UserService {
 
   getUsersByPopLimited() {
     const limit = configs.rain.pop_rain_balance_limit;
-    const _sql = "SELECT * FROM user_info WHERE pop_balance >= ?;";
+    const _sql = "SELECT * FROM user_info WHERE popBalance >= ?;";
     return query(_sql, limit);
   }
 
@@ -213,20 +214,30 @@ export class UserService {
     return query(_sql, limit);
   }
 
-  resetPopbalance(userIds: string[]) {
+  resetPopbalance(userIds: number[]) {
     const array = getInArraySQL(userIds);
-    const _sql = `UPDATE user_info SET pop_balance = 0 WHERE id IN (${array})`;
+    const _sql = `UPDATE user_info SET popBalance = 0 WHERE id IN (${array})`;
     return query(_sql, userIds);
   }
 
   rainUser(username, reward) {
-    const _sql = "UPDATE user_info SET balance = balance + ?, pop_balance = pop_balance + ? WHERE username = ?;";
+    const _sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET
+        balance = balance + ?,
+        popBalance = popBalance + ?
+      WHERE username = ?;`;
     return query(_sql, [reward / 2, reward / 2, username]);
   }
 
   rainUsersBySocketId(socketIds: string[], reward, popReward) {
     const array = getInArraySQL(socketIds);
-    const _sql = `UPDATE user_info SET balance = balance + ?, pop_balance = pop_balance + ? WHERE socketid IN (${array});`;
+    const _sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET
+        balance = balance + ?,
+        popBalance = popBalance + ?
+      WHERE socketid IN (${array});`;
     return query(_sql, [reward, popReward]);
   }
 
@@ -277,6 +288,14 @@ export class UserService {
       WHERE ${this.columns.role} = ? AND ${this.columns.lastUpgradeTime} < ?;
     `;
     return query(_sql, [User.ROLE.FREE, role, expireTime]);
+  }
+
+  resetLastVitaePostTime(userId) {
+    const _sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET ${this.columns.lastVitaePostTime} = ?
+      WHERE ${this.columns.id} = ?`;
+    return query(_sql, [moment().utc().unix(), userId]);
   }
 
   // Add as a friend unilaterally (may later add the function of turning on friend verification)

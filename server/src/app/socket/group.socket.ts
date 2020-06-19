@@ -1,14 +1,29 @@
 import * as uuid from "uuid/v1";
+import * as moment from "moment";
 import { ServicesContext } from "../context";
 import { getAllMessage, getGroupItem } from "./message.socket";
 import { User } from "../models";
+import { isVitaePostEnabled } from "../utils/utils";
+import { socketServer } from "./app.socket";
+import { socketEventNames } from "./resource.socket";
+import configs from "@configs";
 
 export const sendGroupMsg = async (io, socket, data, cbFn) => {
   try {
-    const { groupChatService } = ServicesContext.getInstance();
+    const { groupChatService, userService } = ServicesContext.getInstance();
+    const user: User[] = await userService.getUserBySocketId(socket.id);
+    if (user.length === 0) return;
+    if (user[0].role === User.ROLE.FREE) {
+      if (!isVitaePostEnabled(user[0]))
+        return;
+      await userService.resetLastVitaePostTime(user[0].id);
+      setTimeout(() => {
+        socketServer.emitTo(socket.id, socketEventNames.EnableVitaePost, {}, undefined);
+      }, configs.rain.vitae_post_time);
+    }
     if (!data) return;
     data.attachments = JSON.stringify(data.attachments);
-    data.time = Date.parse(new Date().toString()) / 1000;
+    data.time = moment().utc().unix();
     await groupChatService.saveGroupMsg({ ...data });
     socket.broadcast.to(data.to_group_id).emit("getGroupMsg", data);
     console.log("sendGroupMsg data=>", data, "time=>", new Date().toLocaleString());

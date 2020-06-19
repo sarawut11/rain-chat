@@ -30,6 +30,7 @@
       referral,
       role,
       token,
+      isVitaePostEnabled
     }
   }
   ```
@@ -559,6 +560,10 @@
   ***Data***
   ```
   {
+    userInfo: {
+      // All User Info Here,
+      isVitaePostEnabled: true/false
+    },
     homePageList: [ // Contact list including Group Chat & Private Chat
       {               // -- Group Chat Info --
         to_group_id,  //    Group Id
@@ -681,6 +686,8 @@
 ### leaveGroup (Client)
 ### updateGroupInfo (Client)
 ### getGroupMember (Client)
+### enableVitaePost (Server)
+  Notify user to be able to post Vitae for free users
 
 ## 2.4 Search / Contact
 ### fuzzyMatch (Client)
@@ -724,5 +731,16 @@
   ```
   {
     reward: // Normal Rain Reward (e.g 0.00025)
+  }
+  ```
+### updateAdsStatus (Server)
+  Notify clients when Ads status updated
+
+  ***Data***
+  ```
+  {
+    adsId,
+    username,
+    status
   }
   ```

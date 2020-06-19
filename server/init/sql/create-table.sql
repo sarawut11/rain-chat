@@ -29,12 +29,13 @@ CREATE TABLE `user_info` (
   `intro` varchar(100) DEFAULT NULL,
   `socketid` char(255) DEFAULT NULL,
   `sponsor` int(11) DEFAULT 1,
-  `wallet_address` char(255) DEFAULT NULL,
+  `walletAddress` char(255) DEFAULT NULL,
   `balance` double DEFAULT 0,
-  `pop_balance` double DEFAULT 0,
+  `popBalance` double DEFAULT 0,
   `refcode` varchar(50) NOT NULL DEFAULT '',
   `role` varchar(20) DEFAULT 'FREE',
-  `last_upgrade_time` int(11) NOT NULL DEFAULT 0,
+  `lastUpgradeTime` int(11) NOT NULL DEFAULT 0,
+  `lastVitaePostTime` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 # Dump of table group_info
