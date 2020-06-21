@@ -24,5 +24,6 @@ export const socketEventNames = {
   ShowStaticAds: "showStaticAds",
   SubscribeAdsReward: "subscribeAdsReward",
   UpdateAdsStatus: "updateAdsStatus",
+  UpdateAdsImpressions: "updateAdsImpressions",
   EnableVitaePost: "enableVitaePost",
 };
