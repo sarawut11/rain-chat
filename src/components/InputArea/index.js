@@ -77,7 +77,7 @@ class InputArea extends Component {
       });
     } else {
       sendMessage(message || inputMsg, attachments);
-      this.state.inputMsg = '';
+      this.setState({ inputMsg: '' });
       if (this.nameInput) {
         this.nameInput.focus();
       }
