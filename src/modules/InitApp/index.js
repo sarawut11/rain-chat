@@ -28,7 +28,9 @@ import { showAds, notifyRainComing, notifyRainReward } from '../../utils/ads';
 class InitApp {
   constructor(props) {
     this.WEBSITE_ADDRESS =
-      process.env.NODE_ENV === 'production' ? 'https://production_link' : 'http://localhost:3000';
+      process.env.NODE_ENV === 'production'
+        ? 'https://production_link'
+        : 'http://192.168.1.100:3000';
     this._userInfo = JSON.parse(localStorage.getItem('userInfo'));
     this._hasCalledMe = false;
     this._browserNotification = new BrowserNotification();
@@ -287,6 +289,7 @@ class InitApp {
         console.log('reconnect_error. error =>', error, 'time=>', new Date().toLocaleString());
         // notification(error, 'error');
         antNotification.error({ message: 'Internal server error' });
+        window.location.href = '/login';
       });
     }
   };
