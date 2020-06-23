@@ -94,8 +94,21 @@ export function notifyRainComing() {
 }
 
 export function notifyRainReward(reward) {
-  openNotificationWithIcon('info', {
-    message: 'You got reward!',
-    description: `Rain came and you got reward of ${reward} vitaes.`,
+  const notifyRainRewardContent = (
+    <div>
+      <Row justify="center">
+        <img src="../../assets/vitae-logo.png" alt="vitae-logo" />
+      </Row>
+      <Row justify="center">{reward} vitaes.</Row>
+    </div>
+  );
+  const audio = new Audio('../assets/swiftly.mp3');
+  audio.play();
+  notification.info({
+    icon: null,
+    description: notifyRainRewardContent,
+    message: null,
+    className: 'rain-reward-notify-container',
+    style: { width: '200px' },
   });
 }
