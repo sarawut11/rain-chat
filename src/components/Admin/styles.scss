@@ -1,0 +1,19 @@
+.dashboard-container {
+  padding: 40px;
+  width: 100%;
+
+  .anticon {
+    font-size: 18px;
+    margin-left: 12px;
+  }
+}
+
+.ant-list-item-meta {
+  font-size: unset !important;
+}
+
+@media screen and (max-width: 768px) {
+  .dashboard-container {
+    padding: 20px;
+  }
+}
