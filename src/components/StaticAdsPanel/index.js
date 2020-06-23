@@ -41,16 +41,16 @@ class StaticAdsPanel extends Component {
       <div className="static-campaign-container">
         <Row gutter={[0, 10]}>
           <Col span={24}>
-            <Row justify="center">
-              <img src={ads.assetLink} alt="N/A" />
-            </Row>
+            <Row justify="center">{ads.assetLink && <img src={ads.assetLink} alt="N/A" />}</Row>
           </Col>
 
           <Col span={24}>
             <Row justify="center">
-              <Button type="primary" href={ads.link}>
-                {ads.buttonLabel}
-              </Button>
+              {ads.link && (
+                <Button type="primary" href={ads.link}>
+                  {ads.buttonLabel}
+                </Button>
+              )}
             </Row>
           </Col>
         </Row>

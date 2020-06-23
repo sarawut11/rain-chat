@@ -62,7 +62,7 @@ class Role extends Component {
               onChange(page, pageSize) {
                 console.log(page, pageSize);
               },
-              pageSize: 10,
+              pageSize: 3,
               total: totalCount,
             }}
             renderItem={item => (
