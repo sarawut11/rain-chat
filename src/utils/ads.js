@@ -102,9 +102,7 @@ export function notifyRainReward(reward) {
       <Row justify="center">{reward} vitaes.</Row>
     </div>
   );
-  const audio = new Audio(
-    'https://interactive-examples.mdn.mozilla.net/media/examples/t-rex-roar.mp3',
-  );
+  const audio = new Audio('../assets/swiftly.mp3');
   audio.play();
   notification.info({
     icon: null,
