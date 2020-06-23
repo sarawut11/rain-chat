@@ -15,6 +15,25 @@
   }
 }
 
+.rain-reward-notify-container {
+  margin-left: 184px;
+  .anticon-info-circle {
+    display: none;
+  }
+
+  .ant-notification-notice-message {
+    display: none;
+  }
+
+  .ant-notification-notice-description {
+    margin-left: 0px;
+
+    img {
+      width: 100px;
+    }
+  }
+}
+
 @media screen and (max-width: 768px) {
   .campaign-view-modal {
     width: 100% !important;
