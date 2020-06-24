@@ -6,6 +6,7 @@ import { ServicesContext, CMCContext, RainContext } from "../context";
 import { Ads, User } from "../models";
 import configs from "@configs";
 import { socketServer } from "../socket/app.socket";
+import { Transaction } from "../models/transaction.model";
 
 export const registerAds = async (ctx, next) => {
   try {
@@ -321,7 +322,7 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
     }, 1000 * 60 * 5); // 5 mins
 
     // Test -> Share revenue at this point | Move to wallet controller later
-    const totalAmount = existingAds.impressions * (existingAds.costPerImp / configs.ads.revenue.imp_revenue);
+    const totalAmount = impressions * (costPerImp / configs.ads.revenue.imp_revenue);
     await confirmAds(adsId, totalAmount, existingAds.type);
     // Save transaction info
     // =====================
@@ -393,8 +394,15 @@ export const getStaticAds = async (ctx: ParameterizedContext, next) => {
 };
 
 const confirmAds = async (adsId: number, amount: number, type: number) => {
-  const { adsService, userService } = ServicesContext.getInstance();
+  const { adsService, userService, transactionService } = ServicesContext.getInstance();
+
+  // Update Ads Status
   await adsService.updateStatus(adsId, Ads.STATUS.Paid);
+  const ads: Ads[] = await adsService.findAdsById(adsId);
+
+  // Update Transaction Table
+  await transactionService.createTransactionRequest(ads[0].userId, Transaction.TYPE.ADS, amount);
+  await transactionService.confirmTransactionRequest(ads[0].userId, Transaction.TYPE.ADS, amount, moment().utc().unix());
 
   // Revenue Share Model
   // ===== Company Share ===== //

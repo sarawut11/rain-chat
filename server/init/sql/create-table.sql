@@ -135,13 +135,13 @@ CREATE TABLE `ads_info` (
 DROP TABLE IF EXISTS `transaction_info`;
 CREATE TABLE `transaction_info` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `transaction_id` varchar(200) DEFAULT '',
+  `userId` int(11) NOT NULL,
+  `transactionId` varchar(200) DEFAULT '',
   `type` tinyint(1) NOT NULL DEFAULT 0,
   `status` tinyint(1) NOT NULL DEFAULT 0,
-  `paid_amount` int(11) NOT NULL DEFAULT 0,
-  `expect_amount` int(11) NOT NULL DEFAULT 0,
-  `confirm_time` int(11) DEFAULT 0,
+  `paidAmount` int(11) NOT NULL DEFAULT 0,
+  `expectAmount` int(11) NOT NULL DEFAULT 0,
+  `confirmTime` int(11) DEFAULT 0,
   `time` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
