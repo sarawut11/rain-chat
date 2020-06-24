@@ -1,8 +1,8 @@
 import { ServicesContext, CMCContext, RainContext } from "../context";
-import { UserService } from "../services";
 import configs from "@configs";
 import * as moment from "moment";
 import { User } from "../models";
+import { Transaction } from "../models/transaction.model";
 
 export const getAllUsers = async (ctx, next) => {
   try {
@@ -82,6 +82,7 @@ export const getMembershipPrice = async (ctx, next) => {
 export const upgradeMembership = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
+    const { expectAmount } = ctx.request.body;
     const { userService, transactionService } = ServicesContext.getInstance();
 
     const checkUser = await checkUserInfo(username);
@@ -97,8 +98,7 @@ export const upgradeMembership = async (ctx, next) => {
       };
     }
 
-    const expectAmount = _getMembershipPrice();
-    await transactionService.createMembershipRequest(userInfo.user_id, expectAmount);
+    await transactionService.createTransactionRequest(userInfo.user_id, Transaction.TYPE.MEMBERSHIP, expectAmount);
     // Test call
     await confirmMembership(userInfo.user_id, expectAmount, moment().utc().unix());
     ctx.body = {
@@ -122,7 +122,7 @@ const confirmMembership = async (userId, amount, confirmTime) => {
 
   // Update UserInfo & Transaction Info
   await userService.updateMembership(userId, User.ROLE.UPGRADED_USER);
-  await transactionService.confirmMembershipRequest(userId, amount, confirmTime);
+  await transactionService.confirmTransactionRequest(userId, Transaction.TYPE.MEMBERSHIP, amount, confirmTime);
 
   // Revenue Share Model
   // ===== Company Share ===== //

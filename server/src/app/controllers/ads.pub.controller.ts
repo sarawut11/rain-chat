@@ -6,6 +6,7 @@ import { ServicesContext, CMCContext, RainContext } from "../context";
 import { Ads, User } from "../models";
 import configs from "@configs";
 import { socketServer } from "../socket/app.socket";
+import { Transaction } from "../models/transaction.model";
 
 export const registerAds = async (ctx, next) => {
   try {
@@ -290,8 +291,8 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
   try {
     const { username } = ctx.state.user;
     const { adsId } = ctx.params;
-    const { adsService } = ServicesContext.getInstance();
-    const { impressions, costPerImp, amount } = ctx.request.body;
+    const { adsService, transactionService } = ServicesContext.getInstance();
+    const { impressions, costPerImp, expectAmount } = ctx.request.body;
 
     const checkResult = await checkAdsId(username, adsId);
     if (checkResult.success === false) {
@@ -308,8 +309,12 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
       return;
     }
 
-    const realCostPerImp = configs.ads.revenue.imp_revenue * costPerImp;
-    await adsService.setImpressions(adsId, userInfo.id, impressions, realCostPerImp);
+    const adsTransactionDetails = {
+      adsId,
+      impressions,
+      costPerImp,
+    };
+    await transactionService.createTransactionRequest(existingAds.userId, Transaction.TYPE.ADS, expectAmount, JSON.stringify(adsTransactionDetails));
 
     // Expire ads after 5 mins when it is still in pending purchase
     setTimeout(async () => {
@@ -321,8 +326,7 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
     }, 1000 * 60 * 5); // 5 mins
 
     // Test -> Share revenue at this point | Move to wallet controller later
-    const totalAmount = existingAds.impressions * (existingAds.costPerImp / configs.ads.revenue.imp_revenue);
-    await confirmAds(adsId, totalAmount, existingAds.type);
+    await confirmAds(adsId, expectAmount, existingAds.type);
     // Save transaction info
     // =====================
 
@@ -393,8 +397,20 @@ export const getStaticAds = async (ctx: ParameterizedContext, next) => {
 };
 
 const confirmAds = async (adsId: number, amount: number, type: number) => {
-  const { adsService, userService } = ServicesContext.getInstance();
-  await adsService.updateStatus(adsId, Ads.STATUS.Paid);
+  const { adsService, userService, transactionService } = ServicesContext.getInstance();
+
+  // Update Ads Status
+  const ads: Ads[] = await adsService.findAdsById(adsId);
+  const existingAds = ads[0];
+  const tran: Transaction[] = await transactionService.getLastPendingTransaction(existingAds.userId, Transaction.TYPE.ADS);
+  if (tran.length === 0)
+    return;
+
+  // Update Transaction Table
+  const adsDetails = JSON.parse(tran[0].details);
+  const realCostPerImp = configs.ads.revenue.imp_revenue * adsDetails.costPerImp;
+  await adsService.setImpressions(adsId, existingAds.userId, adsDetails.impressions, realCostPerImp);
+  await transactionService.confirmTransactionRequest(ads[0].userId, Transaction.TYPE.ADS, amount, moment().utc().unix());
 
   // Revenue Share Model
   // ===== Company Share ===== //

@@ -256,7 +256,7 @@ class Ads extends Component {
       data.append('costPerImp', price);
       const amount = Number(impressions) * price;
       data.append(
-        'amount',
+        'expectAmount',
         Number(amount.toFixed(2)) + (amount - amount.toFixed(2) > 0 ? 0.01 : 0),
       );
       data.append('type', item.type);

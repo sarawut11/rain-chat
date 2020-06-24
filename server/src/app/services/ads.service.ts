@@ -50,7 +50,7 @@ export class AdsService {
         costPerImp = ?,
         status = ?
       WHERE id = ? AND userId = ?;`;
-    return query(_sql, [impressions, costPerImp, Ads.STATUS.PendingPurchase, adsId, userId]);
+    return query(_sql, [impressions, costPerImp, Ads.STATUS.Paid, adsId, userId]);
   }
 
   cancelAds(adsId, userId) {

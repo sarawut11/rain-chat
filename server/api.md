@@ -329,11 +329,11 @@
   Request Ads Purchase
 
   ***Request Body***
-  | Fields      | Description               |
-  | ----------- | ------------------------- |
-  | impressions | Impressions for campaign  |
-  | costPerImp  | vitae cost per impression |
-  | amount      | Total vitae amount        |
+  | Fields       | Description               |
+  | ------------ | ------------------------- |
+  | impressions  | Impressions for campaign  |
+  | costPerImp   | vitae cost per impression |
+  | expectAmount | Total vitae amount        |
   ***Response***
   ```
   {
@@ -535,6 +535,10 @@
 ### /membership/role/upgrade/request (POST)
   Upgrade Membership
 
+  ***Request Body***
+  | Fields       | Description                |
+  | ------------ | -------------------------- |
+  | expectAmount | Expected amount to be paid |
   ***Response***
   ```
   {
