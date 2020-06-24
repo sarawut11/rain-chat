@@ -38,7 +38,7 @@ const api = new Router()
   .post("/membership/role/upgrade/request", APIController.upgradeMembership)
 
   // Admin Dashboard
-  // .get("/admin/home", APIController.getHomeAnalytics)
+  .get("/admin/home", APIController.getHomeAnalytics)
   .get("/admin/role/usernamelist", APIController.getUsernamelist)
   .get("/admin/role/moders", APIController.getModers)
 

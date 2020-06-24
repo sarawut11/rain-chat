@@ -31,9 +31,9 @@ export class UserService {
   }
 
   // Fuzzy matching users
-  fuzzyMatchUsers(link) {
+  fuzzyMatchUsers(username) {
     const _sql = "SELECT * FROM user_info WHERE username LIKE ?;";
-    return query(_sql, link);
+    return query(_sql, username);
   }
 
   // Register User
