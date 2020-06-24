@@ -514,6 +514,21 @@
     users: []
   }
   ```
+### /membership/role/usernamelist
+  Get all user's username and email
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    usernameList: [
+      {
+        username,
+        email,
+      }, ...
+    ]
+  }
+  ```
 ### /membership/role/update/moderator (POST)
   Update role to Moderator
 

@@ -132,6 +132,13 @@ export class UserService {
     return query(_sql);
   }
 
+  getUsernamelist() {
+    const _sql = `
+      SELECT ${this.columns.username}, ${this.columns.email}
+      FROM ${this.TABLE_NAME};`;
+    return query(_sql);
+  }
+
   // Check if the user id is a friend of the local user by checking the user id. If yes, return user_id and remark.
   isFriend(userId, fromUser) {
     const _sql =
