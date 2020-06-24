@@ -514,31 +514,6 @@
     users: []
   }
   ```
-### /membership/role/usernamelist
-  Get all user's username and email
-
-  ***Response***
-  ```
-  {
-    success: true/false,
-    usernameList: [
-      {
-        username,
-        email,
-      }, ...
-    ]
-  }
-  ```
-### /membership/role/moders
-  Get all moderators
-
-  ***Response***
-  ```
-  {
-    success: true/false,
-    moders: []
-  }
-  ```
 ### /membership/role/update/moderator (POST)
   Update role to Moderator
 
@@ -569,6 +544,32 @@
   {
     success: true/false,
     message,
+  }
+  ```
+## 1.7 Admin Dashboard API
+### /admin/role/usernamelist
+  Get all user's username and email
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    usernameList: [
+      {
+        username,
+        email,
+      }, ...
+    ]
+  }
+  ```
+### /admin/role/moders
+  Get all moderators
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    moders: []
   }
   ```
 # 2. Socket Events

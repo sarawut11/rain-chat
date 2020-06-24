@@ -135,8 +135,11 @@ export class UserService {
   getUsernamelist() {
     const _sql = `
       SELECT ${this.columns.username}, ${this.columns.email}
-      FROM ${this.TABLE_NAME};`;
-    return query(_sql);
+      FROM ${this.TABLE_NAME}
+      WHERE
+        ${this.columns.role} = ? OR
+        ${this.columns.role} = ?;`;
+    return query(_sql, [User.ROLE.FREE, User.ROLE.UPGRADED_USER]);
   }
 
   getModers() {
