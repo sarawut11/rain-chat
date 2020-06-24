@@ -30,6 +30,31 @@ export const getAllUsers = async (ctx, next) => {
   }
 };
 
+export const getUsernamelist = async (ctx, next) => {
+  try {
+    const { username } = ctx.state.user;
+    const { userService } = ServicesContext.getInstance();
+
+    const checkRole = await isOwner(username);
+    if (checkRole.success === false) {
+      ctx.body = checkRole;
+      return;
+    }
+
+    const users: User[] = await userService.getUsernamelist();
+    ctx.body = {
+      success: true,
+      usernameList: users
+    };
+  } catch (error) {
+    console.error(error.message);
+    ctx.body = {
+      success: false,
+      message: error.message
+    };
+  }
+};
+
 export const setModerator = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
