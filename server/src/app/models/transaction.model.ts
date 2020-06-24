@@ -8,6 +8,7 @@ export class Transaction {
   public expectAmount: number;
   public confirmTime: number;
   public time: number;
+  public details: string;
 
   public static readonly STATUS = {
     REQUESTED: 0,

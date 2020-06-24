@@ -142,6 +142,7 @@ CREATE TABLE `transaction_info` (
   `paidAmount` double NOT NULL DEFAULT 0,
   `expectAmount` double NOT NULL DEFAULT 0,
   `confirmTime` int(11) DEFAULT 0,
+  `details` varchar(200) DEFAULT '',
   `time` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;

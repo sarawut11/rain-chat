@@ -309,9 +309,12 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
       return;
     }
 
-    const realCostPerImp = configs.ads.revenue.imp_revenue * costPerImp;
-    await adsService.setImpressions(adsId, userInfo.id, impressions, realCostPerImp);
-    await transactionService.createTransactionRequest(existingAds.userId, Transaction.TYPE.ADS, expectAmount);
+    const adsTransactionDetails = {
+      adsId,
+      impressions,
+      costPerImp,
+    };
+    await transactionService.createTransactionRequest(existingAds.userId, Transaction.TYPE.ADS, expectAmount, JSON.stringify(adsTransactionDetails));
 
     // Expire ads after 5 mins when it is still in pending purchase
     setTimeout(async () => {
@@ -397,10 +400,16 @@ const confirmAds = async (adsId: number, amount: number, type: number) => {
   const { adsService, userService, transactionService } = ServicesContext.getInstance();
 
   // Update Ads Status
-  await adsService.updateStatus(adsId, Ads.STATUS.Paid);
   const ads: Ads[] = await adsService.findAdsById(adsId);
+  const existingAds = ads[0];
+  const tran: Transaction[] = await transactionService.getLastPendingTransaction(existingAds.userId, Transaction.TYPE.ADS);
+  if (tran.length === 0)
+    return;
 
   // Update Transaction Table
+  const adsDetails = JSON.parse(tran[0].details);
+  const realCostPerImp = configs.ads.revenue.imp_revenue * adsDetails.costPerImp;
+  await adsService.setImpressions(adsId, existingAds.userId, adsDetails.impressions, realCostPerImp);
   await transactionService.confirmTransactionRequest(ads[0].userId, Transaction.TYPE.ADS, amount, moment().utc().unix());
 
   // Revenue Share Model
