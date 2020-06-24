@@ -529,6 +529,16 @@
     ]
   }
   ```
+### /membership/role/moders
+  Get all moderators
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    moders: []
+  }
+  ```
 ### /membership/role/update/moderator (POST)
   Update role to Moderator
 

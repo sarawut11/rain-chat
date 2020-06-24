@@ -35,6 +35,7 @@ const api = new Router()
   .get("/membership/price", APIController.getMembershipPrice)
   .get("/membership/role/users", APIController.getAllUsers)
   .get("/membership/role/usernamelist", APIController.getUsernamelist)
+  .get("/membership/role/moders", APIController.getModers)
   .post("/membership/role/update/moderator", APIController.setModerator)
   .post("/membership/role/upgrade/request", APIController.upgradeMembership)
 
