@@ -82,6 +82,7 @@ export const getMembershipPrice = async (ctx, next) => {
 export const upgradeMembership = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
+    const { expectAmount } = ctx.request.body;
     const { userService, transactionService } = ServicesContext.getInstance();
 
     const checkUser = await checkUserInfo(username);
@@ -97,7 +98,6 @@ export const upgradeMembership = async (ctx, next) => {
       };
     }
 
-    const expectAmount = _getMembershipPrice();
     await transactionService.createTransactionRequest(userInfo.user_id, Transaction.TYPE.MEMBERSHIP, expectAmount);
     // Test call
     await confirmMembership(userInfo.user_id, expectAmount, moment().utc().unix());

@@ -41,7 +41,8 @@ export class TransactionService {
       ${this.columns.confirmTime} = ?
     WHERE
       ${this.columns.userId} = ? AND
-      ${this.columns.type} = ?;`;
+      ${this.columns.type} = ?
+    SORT BY ${this.columns.time} DESC LIMIT 1;`;
     return query(_sql, [Transaction.STATUS.CONFIRMED, amount, confirmTime, userId, type]);
   }
 

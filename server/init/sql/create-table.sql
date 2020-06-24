@@ -139,8 +139,8 @@ CREATE TABLE `transaction_info` (
   `transactionId` varchar(200) DEFAULT '',
   `type` tinyint(1) NOT NULL DEFAULT 0,
   `status` tinyint(1) NOT NULL DEFAULT 0,
-  `paidAmount` int(11) NOT NULL DEFAULT 0,
-  `expectAmount` int(11) NOT NULL DEFAULT 0,
+  `paidAmount` double NOT NULL DEFAULT 0,
+  `expectAmount` double NOT NULL DEFAULT 0,
   `confirmTime` int(11) DEFAULT 0,
   `time` int(11) NOT NULL,
   PRIMARY KEY (`id`)

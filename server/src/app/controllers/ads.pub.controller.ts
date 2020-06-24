@@ -291,8 +291,8 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
   try {
     const { username } = ctx.state.user;
     const { adsId } = ctx.params;
-    const { adsService } = ServicesContext.getInstance();
-    const { impressions, costPerImp, amount } = ctx.request.body;
+    const { adsService, transactionService } = ServicesContext.getInstance();
+    const { impressions, costPerImp, expectAmount } = ctx.request.body;
 
     const checkResult = await checkAdsId(username, adsId);
     if (checkResult.success === false) {
@@ -311,6 +311,7 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
 
     const realCostPerImp = configs.ads.revenue.imp_revenue * costPerImp;
     await adsService.setImpressions(adsId, userInfo.id, impressions, realCostPerImp);
+    await transactionService.createTransactionRequest(existingAds.userId, Transaction.TYPE.ADS, expectAmount);
 
     // Expire ads after 5 mins when it is still in pending purchase
     setTimeout(async () => {
@@ -322,8 +323,7 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
     }, 1000 * 60 * 5); // 5 mins
 
     // Test -> Share revenue at this point | Move to wallet controller later
-    const totalAmount = impressions * (costPerImp / configs.ads.revenue.imp_revenue);
-    await confirmAds(adsId, totalAmount, existingAds.type);
+    await confirmAds(adsId, expectAmount, existingAds.type);
     // Save transaction info
     // =====================
 
@@ -401,7 +401,6 @@ const confirmAds = async (adsId: number, amount: number, type: number) => {
   const ads: Ads[] = await adsService.findAdsById(adsId);
 
   // Update Transaction Table
-  await transactionService.createTransactionRequest(ads[0].userId, Transaction.TYPE.ADS, amount);
   await transactionService.confirmTransactionRequest(ads[0].userId, Transaction.TYPE.ADS, amount, moment().utc().unix());
 
   // Revenue Share Model
