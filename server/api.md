@@ -641,6 +641,18 @@
     userInfo: {}
   }
   ```
+### /admin/chat (GET)
+  Get chat analytics
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    userCount,
+    onlineUserCount,
+    groupCount,
+  }
+  ```
 # 2. Socket Events
 > Note
 > - Client : Frontend (Client) -> Backend (Server)
