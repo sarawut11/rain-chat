@@ -1,12 +1,14 @@
 import { query } from "../utils/db";
 
 export class GroupService {
+  readonly TABLE_NAME = "group_info";
+
   // Fuzzy matching users
-  fuzzyMatchGroups(link) {
+  fuzzyMatchGroups(name) {
     const _sql = `
-      SELECT * FROM group_info WHERE name LIKE ?;
+      SELECT * FROM ${this.TABLE_NAME} WHERE name LIKE ?;
     `;
-    return query(_sql, link);
+    return query(_sql, name);
   }
 
   // Join the group

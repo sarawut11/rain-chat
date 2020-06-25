@@ -40,10 +40,13 @@ const api = new Router()
   // Admin Dashboard
   .get("/admin/home", APIController.getHomeAnalytics)
   .get("/admin/ads", APIController.getAdsAnalytics)
+
   .get("/admin/moders", APIController.getModsAnalytics)
   .get("/admin/moders/usernamelist", APIController.getUsernamelist)
   .post("/admin/moders/set", APIController.updateModers)
   .post("/admin/moders/cancel", APIController.cancelModer)
+
+  .get("/admin/chat", APIController.getChatAnalytics)
 
   // Wallet
   .post("/walletnotify", APIController.walletNotify);
