@@ -3,6 +3,7 @@ import configs from "@configs";
 import * as moment from "moment";
 import { User } from "../models";
 import { Transaction } from "../models/transaction.model";
+import { checkUserInfo, isOwner } from "../utils/utils";
 
 export const getAllUsers = async (ctx, next) => {
   try {
@@ -23,89 +24,6 @@ export const getAllUsers = async (ctx, next) => {
     };
   } catch (error) {
     console.error(error.message);
-    ctx.body = {
-      success: false,
-      message: error.message
-    };
-  }
-};
-
-export const getUsernamelist = async (ctx, next) => {
-  try {
-    const { username } = ctx.state.user;
-    const { userService } = ServicesContext.getInstance();
-
-    const checkRole = await isOwner(username);
-    if (checkRole.success === false) {
-      ctx.body = checkRole;
-      return;
-    }
-
-    const users: User[] = await userService.getUsernamelist();
-    ctx.body = {
-      success: true,
-      usernameList: users
-    };
-  } catch (error) {
-    console.error(error.message);
-    ctx.body = {
-      success: false,
-      message: error.message
-    };
-  }
-};
-
-export const getModers = async (ctx, next) => {
-  try {
-    const { username } = ctx.state.user;
-    const { userService } = ServicesContext.getInstance();
-
-    const checkRole = await isOwner(username);
-    if (checkRole.success === false) {
-      ctx.body = checkRole;
-      return;
-    }
-
-    const users: User[] = await userService.getModers();
-    ctx.body = {
-      success: true,
-      moders: users
-    };
-  } catch (error) {
-    console.error(error.message);
-    ctx.body = {
-      success: false,
-      message: error.message
-    };
-  }
-};
-
-export const setModerator = async (ctx, next) => {
-  try {
-    const { username } = ctx.state.user;
-    const { username: assigneeUsername } = ctx.request.body;
-    const { userService } = ServicesContext.getInstance();
-
-    const checkRole = await isOwner(username);
-    if (checkRole.success === false) {
-      ctx.body = checkRole;
-      return;
-    }
-    const checkUser = await checkUserInfo(assigneeUsername);
-    if (checkUser.success === false) {
-      ctx.body = checkUser;
-      return;
-    }
-    const { userInfo } = checkUser;
-    await userService.updateMembership(userInfo.user_id, User.ROLE.MODERATOR);
-    const user = await userService.findUserByUsername(username);
-    ctx.body = {
-      success: true,
-      message: "Successfully Updated",
-      userInfo: user[0],
-    };
-  } catch (error) {
-    console.log(error.message);
     ctx.body = {
       success: false,
       message: error.message
@@ -216,69 +134,6 @@ const confirmMembership = async (userId, amount, confirmTime) => {
   const restShare = amount - sponsorRevenue - companyRevenue;
   RainContext.getInstance().rainUsersByLastActivity(restShare);
 };
-
-const isOwner = (username): Promise<any> => new Promise(async (resolve, reject) => {
-  const { userService } = ServicesContext.getInstance();
-  const RowDataPacket: User[] = await userService.getUserInfoByUsername(username);
-  if (RowDataPacket.length <= 0) {
-    resolve({
-      success: false,
-      message: "Invalid Username."
-    });
-    return;
-  }
-  const userInfo = RowDataPacket[0];
-  if (userInfo.role !== User.ROLE.OWNER) {
-    resolve({
-      success: false,
-      message: "You are not a Owner."
-    });
-    return;
-  }
-  resolve({
-    success: true,
-    userInfo,
-  });
-});
-
-const checkUserInfo = (username, role?): Promise<any> => new Promise(async (resolve, reject) => {
-  const { userService } = ServicesContext.getInstance();
-  const RowDataPacket = await userService.getUserInfoByUsername(username);
-  if (RowDataPacket.length <= 0) {
-    resolve({
-      success: false,
-      message: "Invalid Username."
-    });
-    return;
-  }
-  const userInfo = RowDataPacket[0];
-  if (userInfo.user_id === 1) { // Default Admin
-    resolve({
-      success: false,
-      message: "Can't modify this user's info"
-    });
-  }
-  if (role === undefined) {
-    resolve({
-      success: true,
-      userInfo,
-    });
-  }
-  if (role === User.ROLE.FREE ||
-    role === User.ROLE.MODERATOR ||
-    role === User.ROLE.OWNER ||
-    role === User.ROLE.UPGRADED_USER) {
-    resolve({
-      success: true,
-      userInfo,
-    });
-  } else {
-    resolve({
-      success: false,
-      message: "Invalid Role."
-    });
-  }
-});
 
 const getUsersByRole = (page = 0, count = 10, role?, name?, username?, email?, searchString?): Promise<any> => new Promise(async (resolve, reject) => {
   if (count === 0) return ([]);

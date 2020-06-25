@@ -582,7 +582,23 @@
     }
   }
   ```
-### /admin/role/usernamelist (GET)
+### /admin/moders (GET)
+  Get moders analytics
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    modersCount,
+    onlineModersCount,
+    moders: [
+      {
+        // general userinfo here
+      }, ...
+    ]
+  }
+  ```
+### /admin/moders/usernamelist (GET)
   Get all user's username and email
 
   ***Response***
@@ -597,17 +613,7 @@
     ]
   }
   ```
-### /admin/role/moders (GET)
-  Get all moderators
-
-  ***Response***
-  ```
-  {
-    success: true/false,
-    moders: []
-  }
-  ```
-### /admin/role/moders/set (POST)
+### /admin/moders/set (POST)
   Set moderator role by username list
 
   ***Request Body***
@@ -621,7 +627,7 @@
     users: []
   }
   ```
-### /admin/role/moders/cancel (POST)
+### /admin/moders/cancel (POST)
   Set moderator role by username list
 
   ***Request Body***

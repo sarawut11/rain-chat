@@ -1,6 +1,7 @@
 import { ServicesContext } from "../context";
 import { User, Ads, AdsExt } from "../models";
 import { Transaction } from "../models/transaction.model";
+import { isOwner } from "../utils/utils";
 
 export const getHomeAnalytics = async (ctx, next) => {
   try {
@@ -165,30 +166,6 @@ export const getAdsAnalytics = async (ctx, next) => {
     };
   }
 };
-
-const isOwner = (username): Promise<any> => new Promise(async (resolve, reject) => {
-  const { userService } = ServicesContext.getInstance();
-  const RowDataPacket: User[] = await userService.getUserInfoByUsername(username);
-  if (RowDataPacket.length <= 0) {
-    resolve({
-      success: false,
-      message: "Invalid Username."
-    });
-    return;
-  }
-  const userInfo = RowDataPacket[0];
-  if (userInfo.role !== User.ROLE.OWNER) {
-    resolve({
-      success: false,
-      message: "You are not a Owner."
-    });
-    return;
-  }
-  resolve({
-    success: true,
-    userInfo,
-  });
-});
 
 class AdsAnalytics {
   adsCount: number;
