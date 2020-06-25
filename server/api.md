@@ -560,6 +560,28 @@
     onlineModeratorsCount
   }
   ```
+### /admin/ads (GET)
+  Get ads analytics
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    staticAds: {
+      adsCount,
+      pendingAds,
+      approvedAds,
+      purchasedAds,
+      runningAds,
+      totalPurchase,
+      totalImpPurchased,
+      totalImpGiven,
+    },
+    rainAds: {
+      // same as above
+    }
+  }
+  ```
 ### /admin/role/usernamelist (GET)
   Get all user's username and email
 

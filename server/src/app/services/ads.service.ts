@@ -7,6 +7,23 @@ import { Ads } from "../models";
 export class AdsService {
 
   readonly TABLE_NAME = "ads_info";
+  readonly COLUMNS = {
+    id: "id",
+    userId: "userId",
+    type: "type",
+    status: "status",
+    impressions: "impressions",
+    givenImp: "givenImp",
+    costPerImp: "costPerImp",
+    paidAmount: "paidAmount",
+    title: "title",
+    description: "description",
+    buttonLabel: "buttonLabel",
+    assetLink: "assetLink",
+    link: "link",
+    lastTime: "lastTime",
+    time: "time",
+  };
 
   insertAds({ userId, assetLink, link, buttonLabel, title, description, time, type }) {
     const _sql = `
@@ -28,11 +45,11 @@ export class AdsService {
     const _sql = `
       UPDATE ${this.TABLE_NAME}
       SET
-        ${isNullOrUndefined(assetLink) ? "" : "assetLink = ?,"}
-        link = ?,
-        buttonLabel = ?,
-        title = ?,
-        description = ?
+        ${isNullOrUndefined(assetLink) ? "" : `${this.COLUMNS.assetLink} = ?,`}
+        ${this.COLUMNS.link} = ?,
+        ${this.COLUMNS.buttonLabel} = ?,
+        ${this.COLUMNS.title} = ?,
+        ${this.COLUMNS.description} = ?
       WHERE id = ? and userId = ?;`;
     return query(_sql, params);
   }
@@ -42,15 +59,16 @@ export class AdsService {
     return query(_sql, adsId);
   }
 
-  setImpressions(adsId, userId, impressions, costPerImp) {
+  setImpressions(adsId, userId, impressions, costPerImp, paidAmount) {
     const _sql = `
       UPDATE ${this.TABLE_NAME}
       SET
-        impressions = ?,
-        costPerImp = ?,
-        status = ?
+        ${this.COLUMNS.impressions} = ?,
+        ${this.COLUMNS.costPerImp} = ?,
+        ${this.COLUMNS.status} = ?,
+        ${this.COLUMNS.paidAmount} = ?
       WHERE id = ? AND userId = ?;`;
-    return query(_sql, [impressions, costPerImp, Ads.STATUS.Paid, adsId, userId]);
+    return query(_sql, [impressions, costPerImp, Ads.STATUS.Paid, paidAmount, adsId, userId]);
   }
 
   cancelAds(adsId, userId) {
@@ -79,9 +97,9 @@ export class AdsService {
     const _sql = `
       SELECT * FROM ${this.TABLE_NAME}
       WHERE
-        type = ? AND
-        status = ? AND
-        impressions > 0
+        ${this.COLUMNS.type} = ? AND
+        ${this.COLUMNS.status} = ? AND
+        ${this.COLUMNS.impressions} > ${this.COLUMNS.givenImp}
       ORDER BY lastTime ASC LIMIT 1;`;
     return query(_sql, [type, Ads.STATUS.Paid]);
   }
@@ -90,8 +108,8 @@ export class AdsService {
     const _sql = `
       UPDATE ${this.TABLE_NAME}
       SET
-        impressions = impressions - ?,
-        lastTime = ?
+        ${this.COLUMNS.givenImp} = ${this.COLUMNS.givenImp} + ?,
+        ${this.COLUMNS.lastTime} = ?
       WHERE id = ?;`;
     return query(_sql, [impression, moment().utc().unix(), id]);
   }
@@ -100,8 +118,8 @@ export class AdsService {
     const _sql = `
       UPDATE ${this.TABLE_NAME}
       SET
-        impressions = impressions - ?
-      WHERE id = ?;`;
+        ${this.COLUMNS.givenImp} = ${this.COLUMNS.givenImp} + ?
+      WHERE ${this.COLUMNS.id} = ?;`;
     return query(_sql, [impressions, id]);
   }
 }

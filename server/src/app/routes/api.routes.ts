@@ -39,6 +39,7 @@ const api = new Router()
 
   // Admin Dashboard
   .get("/admin/home", APIController.getHomeAnalytics)
+  .get("/admin/ads", APIController.getAdsAnalytics)
   .get("/admin/role/usernamelist", APIController.getUsernamelist)
   .get("/admin/role/moders", APIController.getModers)
   .post("/admin/role/moders/set", APIController.updateModers)

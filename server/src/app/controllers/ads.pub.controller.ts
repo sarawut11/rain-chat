@@ -396,7 +396,7 @@ export const getStaticAds = async (ctx: ParameterizedContext, next) => {
   }
 };
 
-const confirmAds = async (adsId: number, amount: number, type: number) => {
+const confirmAds = async (adsId: number, paidAmount: number, type: number) => {
   const { adsService, userService, transactionService } = ServicesContext.getInstance();
 
   // Update Ads Status
@@ -409,8 +409,8 @@ const confirmAds = async (adsId: number, amount: number, type: number) => {
   // Update Transaction Table
   const adsDetails = JSON.parse(tran[0].details);
   const realCostPerImp = configs.ads.revenue.imp_revenue * adsDetails.costPerImp;
-  await adsService.setImpressions(adsId, existingAds.userId, adsDetails.impressions, realCostPerImp);
-  await transactionService.confirmTransactionRequest(ads[0].userId, Transaction.TYPE.ADS, amount, moment().utc().unix());
+  await adsService.setImpressions(adsId, existingAds.userId, adsDetails.impressions, realCostPerImp, paidAmount);
+  await transactionService.confirmTransactionRequest(ads[0].userId, Transaction.TYPE.ADS, paidAmount, moment().utc().unix());
 
   // Revenue Share Model
   // ===== Company Share ===== //
@@ -420,7 +420,7 @@ const confirmAds = async (adsId: number, amount: number, type: number) => {
   // 30% -----> Owner Share
   // 25% -----> Moderator Share
   // 25% -----> Membership Users Share
-  const companyRevenue = amount * configs.ads.revenue.company_revenue;
+  const companyRevenue = paidAmount * configs.ads.revenue.company_revenue;
   const companyExpense = companyRevenue * configs.company_revenue.company_expenses;
   const ownerShare = companyRevenue * configs.company_revenue.owner_share;
   const moderatorShare = companyRevenue * configs.company_revenue.moderator_share;
@@ -437,7 +437,7 @@ const confirmAds = async (adsId: number, amount: number, type: number) => {
   // Rain Room Ads -> buy impressions
   // Static Ads -> Rain Last 200 Users
   if (type === Ads.TYPE.StaticAds) {
-    const restShare = amount - companyRevenue;
+    const restShare = paidAmount - companyRevenue;
     RainContext.getInstance().rainUsersByLastActivity(restShare);
   }
 };

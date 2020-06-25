@@ -316,7 +316,7 @@ export class UserService {
       UPDATE ${this.TABLE_NAME}
       SET ${this.columns.role} = ?
       WHERE ${this.columns.username} = ?;`;
-    return query(sql, [User.ROLE.FREE, username]);  // Change Role field to x,y,z format later
+    return query(sql, [User.ROLE.UPGRADED_USER, username]);  // Change Role field to x,y,z format later
   }
 
   updateMembership(userId, role) {

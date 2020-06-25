@@ -1,4 +1,5 @@
-export class Ads {
+export class AdsExt {
+  // Ads Info
   public id: number;
   public userId: number;
   public type: number;
@@ -15,17 +16,11 @@ export class Ads {
   public lastTime: number;
   public time: number;
 
-  public static readonly TYPE = {
-    RainRoomAds: 0,
-    StaticAds: 1,
-  };
-  public static readonly STATUS = {
-    Created: 0,
-    Pending: 1,
-    Approved: 2,
-    Rejected: 3,
-    PendingPurchase: 4,
-    PendingConfirm: 5,
-    Paid: 6,
-  };
+  // User Info
+  public name: string;
+  public username: string;
+  public avatar: string;
+  public email: string;
+  public intro: string;
+  public role: string;
 }
