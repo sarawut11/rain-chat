@@ -54,6 +54,61 @@ export const getHomeAnalytics = async (ctx, next) => {
   }
 };
 
+export const updateModers = async (ctx, next) => {
+  try {
+    const { username } = ctx.state.user;
+    const { usernamelist } = ctx.request.body;
+    const { userService } = ServicesContext.getInstance();
+
+    const checkRole = await isOwner(username);
+    if (checkRole.success === false) {
+      ctx.body = checkRole;
+      return;
+    }
+
+    const usernames: string[] = usernamelist.split(",");
+    await userService.setModers(usernames);
+    const users: User[] = await userService.getUsersByUsernames(usernames);
+    ctx.body = {
+      success: true,
+      users,
+    };
+  } catch (error) {
+    console.error(error.message);
+    ctx.body = {
+      success: false,
+      message: error.message
+    };
+  }
+};
+
+export const cancelModer = async (ctx, next) => {
+  try {
+    const { username } = ctx.state.user;
+    const { username: modUsername } = ctx.request.body;
+    const { userService } = ServicesContext.getInstance();
+
+    const checkRole = await isOwner(username);
+    if (checkRole.success === false) {
+      ctx.body = checkRole;
+      return;
+    }
+
+    await userService.cancelModer(modUsername);
+    const updatedUser: User[] = await userService.findUserByUsername(modUsername);
+    ctx.body = {
+      success: true,
+      userInfo: updatedUser[0]
+    };
+  } catch (error) {
+    console.error(error.message);
+    ctx.body = {
+      success: false,
+      message: error.message
+    };
+  }
+};
+
 const isOwner = (username): Promise<any> => new Promise(async (resolve, reject) => {
   const { userService } = ServicesContext.getInstance();
   const RowDataPacket: User[] = await userService.getUserInfoByUsername(username);

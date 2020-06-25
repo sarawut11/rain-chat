@@ -244,8 +244,14 @@ export class UserService {
 
   getUsersByUserIds(userIds: number[]) {
     const array = getInArraySQL(userIds);
-    const _sql = `SELECT * FROM ${this.TABLE_NAME} WHERE id IN (${array});`;
+    const _sql = `SELECT * FROM ${this.TABLE_NAME} WHERE ${this.columns.id} IN (${array});`;
     return query(_sql);
+  }
+
+  getUsersByUsernames(usernames: string[]) {
+    const array = getInArraySQL(usernames);
+    const sql = `SELECT * FROM ${this.TABLE_NAME} WHERE ${this.columns.username} IN (${array});`;
+    return query(sql);
   }
 
   resetPopbalance(userIds: number[]) {
@@ -294,6 +300,23 @@ export class UserService {
       ) as b
       SET a.${this.columns.balance} = a.${this.columns.balance} + ? / b.total;`;
     return query(_sql, [role, amount]);
+  }
+
+  setModers(usernames: string[]) {
+    const array = getInArraySQL(usernames);
+    const sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET ${this.columns.role} = ?
+      WHERE ${this.columns.username} IN (${array});`;
+    return query(sql, User.ROLE.MODERATOR);
+  }
+
+  cancelModer(username: string) {
+    const sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET ${this.columns.role} = ?
+      WHERE ${this.columns.username} = ?;`;
+    return query(sql, [User.ROLE.FREE, username]);  // Change Role field to x,y,z format later
   }
 
   updateMembership(userId, role) {

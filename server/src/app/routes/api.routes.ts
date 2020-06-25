@@ -41,6 +41,8 @@ const api = new Router()
   .get("/admin/home", APIController.getHomeAnalytics)
   .get("/admin/role/usernamelist", APIController.getUsernamelist)
   .get("/admin/role/moders", APIController.getModers)
+  .post("/admin/role/moders/set", APIController.updateModers)
+  .post("/admin/role/moders/cancel", APIController.cancelModer)
 
   // Wallet
   .post("/walletnotify", APIController.walletNotify);
