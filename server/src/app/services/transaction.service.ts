@@ -59,20 +59,18 @@ export class TransactionService {
     return query(_sql, [userId, type, Transaction.STATUS.REQUESTED]);
   }
 
-  getTransactions(type: number) {
-    const _sql = `SELECT * FROM ${this.TABLE_NAME} WHERE ${this.columns.type} = ?;`;
-    return query(_sql, type);
+  getTransactions(type?: number) {
+    let _sql = `
+      SELECT * FROM ${this.TABLE_NAME}
+      WHERE
+        ${this.columns.status} = ?`;
+    if (type !== undefined)
+      _sql += `AND ${this.columns.type} = '${type}';`;
+    return query(_sql, Transaction.STATUS.CONFIRMED);
   }
 
-  async getAdsTotalPurchaseAmount() {
-    const trans: Transaction[] = await this.getTransactions(Transaction.TYPE.ADS);
-    let totalAmount = 0;
-    trans.forEach(tran => totalAmount += tran.paidAmount);
-    return totalAmount;
-  }
-
-  async getTotalMembershipAmount() {
-    const trans: Transaction[] = await this.getTransactions(Transaction.TYPE.MEMBERSHIP);
+  async getTotalPurchaseAmount(type: number) {
+    const trans: Transaction[] = await this.getTransactions(type);
     let totalAmount = 0;
     trans.forEach(tran => totalAmount += tran.paidAmount);
     return totalAmount;

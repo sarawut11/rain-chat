@@ -34,10 +34,15 @@ const api = new Router()
   // Membership
   .get("/membership/price", APIController.getMembershipPrice)
   .get("/membership/role/users", APIController.getAllUsers)
-  .get("/membership/role/usernamelist", APIController.getUsernamelist)
-  .get("/membership/role/moders", APIController.getModers)
   .post("/membership/role/update/moderator", APIController.setModerator)
   .post("/membership/role/upgrade/request", APIController.upgradeMembership)
+
+  // Admin Dashboard
+  .get("/admin/home", APIController.getHomeAnalytics)
+  .get("/admin/role/usernamelist", APIController.getUsernamelist)
+  .get("/admin/role/moders", APIController.getModers)
+  .post("/admin/role/moders/set", APIController.updateModers)
+  .post("/admin/role/moders/cancel", APIController.cancelModer)
 
   // Wallet
   .post("/walletnotify", APIController.walletNotify);
