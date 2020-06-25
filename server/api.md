@@ -557,7 +557,21 @@
     freeMembersCount,
     upgradedMembersCount,
     moderatorsCount,
-    onlineModeratorsCount
+    onlineModeratorsCount,
+    ads: {
+      staticAds: {
+        adsCount,
+        pendingAds,
+        approvedAds,
+        readyAds,
+        totalPurchase,
+        totalImpPurchased,
+        totalImpGiven,
+      },
+      rainAds: {
+        // same as above
+      }
+    }
   }
   ```
 ### /admin/role/usernamelist (GET)
