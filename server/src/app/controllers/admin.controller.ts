@@ -1,12 +1,11 @@
 import { ServicesContext } from "../context";
 import { User, Ads, AdsExt } from "../models";
 import { Transaction } from "../models/transaction.model";
-import { approveAds } from "./ads.mod.controller";
 
 export const getHomeAnalytics = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
-    const { userService, transactionService, adsService } = ServicesContext.getInstance();
+    const { userService, transactionService } = ServicesContext.getInstance();
 
     const checkRole = await isOwner(username);
     if (checkRole.success === false) {
@@ -37,36 +36,6 @@ export const getHomeAnalytics = async (ctx, next) => {
     });
     totalMembersCount = allUsers.length;
 
-
-    // Ads Analytics
-    const allAds: AdsExt[] = await adsService.findAllAds();
-    const staticAds: AdsAnalytics = new AdsAnalytics();
-    const rainAds: AdsAnalytics = new AdsAnalytics();
-    allAds.forEach(ads => {
-      if (ads.type === Ads.TYPE.StaticAds) {
-        staticAds.adsCount++;
-        if (ads.status === Ads.STATUS.Approved) staticAds.approvedAds++;
-        if (ads.status === Ads.STATUS.Pending) staticAds.pendingAds++;
-        if (ads.status === Ads.STATUS.Paid) {
-          staticAds.readyAds++;
-          staticAds.totalPurchase += ads.paidAmount;
-          staticAds.totalImpGiven += ads.givenImp;
-          staticAds.totalImpPurchased += ads.impressions;
-        }
-      }
-      if (ads.type === Ads.TYPE.RainRoomAds) {
-        rainAds.adsCount++;
-        if (ads.status === Ads.STATUS.Approved) rainAds.approvedAds++;
-        if (ads.status === Ads.STATUS.Pending) rainAds.pendingAds++;
-        if (ads.status === Ads.STATUS.Paid) {
-          rainAds.readyAds++;
-          rainAds.totalPurchase += ads.paidAmount;
-          rainAds.totalImpGiven += ads.givenImp;
-          rainAds.totalImpPurchased += ads.impressions;
-        }
-      }
-    });
-
     ctx.body = {
       success: true,
       totalAdPurchases,
@@ -75,10 +44,6 @@ export const getHomeAnalytics = async (ctx, next) => {
       upgradedMembersCount,
       moderatorsCount,
       onlineModeratorsCount,
-      ads: {
-        staticAds,
-        rainAds
-      }
     };
   } catch (error) {
     console.error(error.message);
@@ -134,6 +99,59 @@ export const cancelModer = async (ctx, next) => {
     ctx.body = {
       success: true,
       userInfo: updatedUser[0]
+    };
+  } catch (error) {
+    console.error(error.message);
+    ctx.body = {
+      success: false,
+      message: error.message
+    };
+  }
+};
+
+export const getAdsAnalytics = async (ctx, next) => {
+  try {
+    const { username } = ctx.state.user;
+    const { adsService } = ServicesContext.getInstance();
+
+    const checkRole = await isOwner(username);
+    if (checkRole.success === false) {
+      ctx.body = checkRole;
+      return;
+    }
+
+    const allAds: AdsExt[] = await adsService.findAllAds();
+    const staticAds: AdsAnalytics = new AdsAnalytics();
+    const rainAds: AdsAnalytics = new AdsAnalytics();
+    allAds.forEach(ads => {
+      if (ads.type === Ads.TYPE.StaticAds) {
+        staticAds.adsCount++;
+        if (ads.status === Ads.STATUS.Approved) staticAds.approvedAds++;
+        if (ads.status === Ads.STATUS.Pending) staticAds.pendingAds++;
+        if (ads.status === Ads.STATUS.Paid) {
+          staticAds.readyAds++;
+          staticAds.totalPurchase += ads.paidAmount;
+          staticAds.totalImpGiven += ads.givenImp;
+          staticAds.totalImpPurchased += ads.impressions;
+        }
+      }
+      if (ads.type === Ads.TYPE.RainRoomAds) {
+        rainAds.adsCount++;
+        if (ads.status === Ads.STATUS.Approved) rainAds.approvedAds++;
+        if (ads.status === Ads.STATUS.Pending) rainAds.pendingAds++;
+        if (ads.status === Ads.STATUS.Paid) {
+          rainAds.readyAds++;
+          rainAds.totalPurchase += ads.paidAmount;
+          rainAds.totalImpGiven += ads.givenImp;
+          rainAds.totalImpPurchased += ads.impressions;
+        }
+      }
+    });
+
+    ctx.body = {
+      success: true,
+      staticAds,
+      rainAds,
     };
   } catch (error) {
     console.error(error.message);
