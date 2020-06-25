@@ -129,7 +129,9 @@ export const getAdsAnalytics = async (ctx, next) => {
         if (ads.status === Ads.STATUS.Approved) staticAds.approvedAds++;
         if (ads.status === Ads.STATUS.Pending) staticAds.pendingAds++;
         if (ads.status === Ads.STATUS.Paid) {
-          staticAds.readyAds++;
+          staticAds.purchasedAds++;
+          if (ads.impressions > ads.givenImp)
+            staticAds.runningAds++;
           staticAds.totalPurchase += ads.paidAmount;
           staticAds.totalImpGiven += ads.givenImp;
           staticAds.totalImpPurchased += ads.impressions;
@@ -140,7 +142,9 @@ export const getAdsAnalytics = async (ctx, next) => {
         if (ads.status === Ads.STATUS.Approved) rainAds.approvedAds++;
         if (ads.status === Ads.STATUS.Pending) rainAds.pendingAds++;
         if (ads.status === Ads.STATUS.Paid) {
-          rainAds.readyAds++;
+          rainAds.purchasedAds++;
+          if (ads.impressions > ads.givenImp)
+            rainAds.runningAds++;
           rainAds.totalPurchase += ads.paidAmount;
           rainAds.totalImpGiven += ads.givenImp;
           rainAds.totalImpPurchased += ads.impressions;
@@ -190,7 +194,8 @@ class AdsAnalytics {
   adsCount: number;
   pendingAds: number;
   approvedAds: number;
-  readyAds: number;
+  purchasedAds: number;
+  runningAds: number;
   totalPurchase: number;
   totalImpPurchased: number;
   totalImpGiven: number;
@@ -199,7 +204,8 @@ class AdsAnalytics {
     this.adsCount = 0;
     this.pendingAds = 0;
     this.approvedAds = 0;
-    this.readyAds = 0;
+    this.purchasedAds = 0;
+    this.runningAds = 0;
     this.totalPurchase = 0;
     this.totalImpPurchased = 0;
     this.totalImpGiven = 0;
