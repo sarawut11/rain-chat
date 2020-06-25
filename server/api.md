@@ -557,21 +557,7 @@
     freeMembersCount,
     upgradedMembersCount,
     moderatorsCount,
-    onlineModeratorsCount,
-    ads: {
-      staticAds: {
-        adsCount,
-        pendingAds,
-        approvedAds,
-        readyAds,
-        totalPurchase,
-        totalImpPurchased,
-        totalImpGiven,
-      },
-      rainAds: {
-        // same as above
-      }
-    }
+    onlineModeratorsCount
   }
   ```
 ### /admin/ads (GET)
