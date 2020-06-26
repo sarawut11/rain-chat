@@ -266,8 +266,6 @@ class InputArea extends Component {
     const { role } = userInfo;
     const { vitaePostEnabled } = this.props;
 
-    console.log('InputArea render', this);
-
     return role === 'FREE' && window.location.href.includes('vitae-rain-group') ? (
       <div className="input-msg">
         <Row justify="space-around" style={{ width: '100%' }}>
