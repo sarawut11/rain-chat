@@ -5,7 +5,7 @@
 import React, { Component } from 'react';
 import { Tabs } from 'antd';
 import { HomeFilled } from '@ant-design/icons';
-import RoleDashboard from './RoleDashboard';
+import Moderators from './Moderators';
 import AdminHome from './AdminHome';
 import './styles.scss';
 
@@ -18,7 +18,7 @@ class Admin extends Component {
   };
 
   render() {
-    const homeTab = <HomeFilled />;
+    const homeTab = <HomeFilled className="home-tab-icon" />;
     return (
       <div className="dashboard-container">
         <Tabs>
@@ -29,7 +29,7 @@ class Admin extends Component {
             Chat Report
           </TabPane>
           <TabPane tab="Moderators" key="moderators">
-            <RoleDashboard />
+            <Moderators />
           </TabPane>
           <TabPane tab="Ad Report" key="ad-report">
             Ad Report
@@ -44,7 +44,7 @@ class Admin extends Component {
             Finance Report
           </TabPane>
           <TabPane tab="Membership" key="membership">
-            <RoleDashboard />
+            <Moderators />
           </TabPane>
         </Tabs>
       </div>
