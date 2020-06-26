@@ -1,0 +1,29 @@
+.dashboard-container {
+  padding: 40px;
+  width: 100%;
+
+  .home-tab-icon {
+    font-size: 18px;
+    margin-left: 12px;
+  }
+
+  .moderators-table {
+    margin-top: 20px;
+  }
+}
+
+.ant-list-item-meta {
+  font-size: unset !important;
+}
+
+@media screen and (max-width: 990px) {
+  .dashboard-container {
+    padding-right: 80px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .dashboard-container {
+    padding: 20px;
+  }
+}

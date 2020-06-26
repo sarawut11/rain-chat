@@ -303,6 +303,7 @@ class InitApp {
         console.log('reconnect_error. error =>', error, 'time=>', new Date().toLocaleString());
         // notification(error, 'error');
         antNotification.error({ message: 'Internal server error' });
+        window.location.href = '/login';
       });
     }
   };
