@@ -653,6 +653,31 @@
     groupCount,
   }
   ```
+### /admin/financial (GET)
+  Get financial analytics
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    totalAdsRevenue,      // Total Ads Revenue
+    totalMemRevenue,      // Total Membership Revenue
+    ownerPayments: [
+      {
+        ... general user info,
+        payment,          // Owner's total payment
+      }, ...
+    ],
+    moderatorPayments: [
+      {
+        ... general user info,
+        payment,          // Moderator's total payment
+        weekPayments: []  // last 5 weeks payment
+      }, ...
+    ],
+    maintenanceAmount,    // Company Maintenance Revenue
+  }
+  ```
 # 2. Socket Events
 > Note
 > - Client : Frontend (Client) -> Backend (Server)

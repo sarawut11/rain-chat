@@ -48,6 +48,8 @@ const api = new Router()
 
   .get("/admin/chat", APIController.getChatAnalytics)
 
+  .get("/admin/financial", APIController.getFinancialAnalytics)
+
   // Wallet
   .post("/walletnotify", APIController.walletNotify);
 

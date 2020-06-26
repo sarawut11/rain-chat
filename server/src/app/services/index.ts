@@ -7,3 +7,4 @@ export * from "./groupChat.service";
 export * from "./user.service";
 export * from "./ads.service";
 export * from "./transaction.service";
+export * from "./transaction.inner.service";

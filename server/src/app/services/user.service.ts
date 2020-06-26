@@ -1,7 +1,8 @@
 import * as moment from "moment";
 import { query } from "../utils/db";
-import configs from "@configs";
+import { getInArraySQL } from "../utils/utils";
 import { isNullOrUndefined } from "util";
+import configs from "@configs";
 import { User } from "../models";
 
 export class UserService {
@@ -104,6 +105,11 @@ export class UserService {
   setAvatar(username, avatar) {
     const _sql = "UPDATE user_info SET avatar = ? WHERE username = ? limit 1 ; ";
     return query(_sql, [avatar, username]);
+  }
+
+  findUsersByRole(role: string) {
+    const sql = `SELECT * FROM ${this.TABLE_NAME} WHERE ${this.columns.role} = ?;`;
+    return query(sql, role);
   }
 
   updateRole(username, role) {
@@ -385,14 +391,3 @@ export class UserService {
   //   return query(_sql, [userid]);
   // };
 }
-
-const getInArraySQL = array => {
-  let res = "";
-  array.forEach(element => {
-    if (element !== null && element !== undefined && element !== "") {
-      res += "'" + element.toString() + "',";
-    }
-  });
-  res = res.substring(0, res.length - 1);
-  return res;
-};
