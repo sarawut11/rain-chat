@@ -90,7 +90,7 @@ class FinanceReport extends Component {
                     {moder.balance.toFixed(2)}
                   </Descriptions.Item>
                 ))}
-                <Descriptions.Item label="Total payments" span={3}>
+                <Descriptions.Item label="Total payments" span={2}>
                   {totalModeratorsPayment}
                 </Descriptions.Item>
               </Descriptions>
