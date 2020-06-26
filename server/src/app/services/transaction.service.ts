@@ -6,7 +6,7 @@ import { Transaction } from "../models/transaction.model";
 
 export class TransactionService {
 
-  readonly TABLE_NAME = "transaction_info";
+  readonly TABLE_NAME = "wallet_transaction_info";
   readonly columns = {
     id: "id",
     userId: "userId",

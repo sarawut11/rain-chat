@@ -36,6 +36,7 @@ export default {
     pop_rain_last_post: 200,        // Last active 200 users
     vitae_post_time: 1000 * 10 * 1    // I love vitae post after 1 hour
   },
+  companyUserId: 0,
   company_revenue: {
     company_expenses: 0.2,
     owner_share: 0.3,

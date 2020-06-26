@@ -57,6 +57,60 @@ export const getUsernamelist = async (ctx, next) => {
   }
 };
 
+export const updateModers = async (ctx, next) => {
+  try {
+    const { username } = ctx.state.user;
+    const { usernamelist } = ctx.request.body;
+    const { userService } = ServicesContext.getInstance();
+
+    const checkRole = await isOwner(username);
+    if (checkRole.success === false) {
+      ctx.body = checkRole;
+      return;
+    }
+
+    await userService.setModers(usernamelist);
+    const users: User[] = await userService.getUsersByUsernames(usernamelist);
+    ctx.body = {
+      success: true,
+      users,
+    };
+  } catch (error) {
+    console.error(error.message);
+    ctx.body = {
+      success: false,
+      message: error.message
+    };
+  }
+};
+
+export const cancelModer = async (ctx, next) => {
+  try {
+    const { username } = ctx.state.user;
+    const { username: modUsername } = ctx.request.body;
+    const { userService } = ServicesContext.getInstance();
+
+    const checkRole = await isOwner(username);
+    if (checkRole.success === false) {
+      ctx.body = checkRole;
+      return;
+    }
+
+    await userService.cancelModer(modUsername);
+    const updatedUser: User[] = await userService.findUserByUsername(modUsername);
+    ctx.body = {
+      success: true,
+      userInfo: updatedUser[0]
+    };
+  } catch (error) {
+    console.error(error.message);
+    ctx.body = {
+      success: false,
+      message: error.message
+    };
+  }
+};
+
 export const setModerator = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
