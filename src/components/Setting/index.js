@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Modal } from 'antd';
 import { withRouter } from 'react-router-dom';
