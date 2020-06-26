@@ -16,7 +16,7 @@ const mapDispatchToProps = dispatch => ({
   },
 });
 
-class AdminHome extends Component {
+class Wallet extends Component {
   state = {
     // eslint-disable-next-line react/no-unused-state
     loading: false,
@@ -50,19 +50,19 @@ class AdminHome extends Component {
   }
 
   render() {
-    const { userCount, onlineUserCount, groupCount } = this.props.adminState;
+    const { totalRainDonations, totalRained, totalWithdrawn } = this.props.adminState;
 
     const { loading } = this.state;
     return (
       <div>
-        <h2>Admin Dashboard</h2>
+        <h2>Wallet</h2>
         {loading ? (
           <Spin size="large" />
         ) : (
-          <Descriptions bordered>
-            <Descriptions.Item label="Number of Users">{userCount}</Descriptions.Item>
-            <Descriptions.Item label="Number of users online">{onlineUserCount}</Descriptions.Item>
-            <Descriptions.Item label="Number of chat rooms">{groupCount}</Descriptions.Item>
+          <Descriptions bordered title="Current Balance">
+            <Descriptions.Item label="Total Rain Donations">{totalRainDonations}</Descriptions.Item>
+            <Descriptions.Item label="Total Rained">{totalRained}</Descriptions.Item>
+            <Descriptions.Item label="Total Withdrawn">{totalWithdrawn}</Descriptions.Item>
           </Descriptions>
         )}
       </div>
@@ -70,4 +70,4 @@ class AdminHome extends Component {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(AdminHome);
+export default connect(mapStateToProps, mapDispatchToProps)(Wallet);

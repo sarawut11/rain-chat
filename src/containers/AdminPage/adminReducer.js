@@ -19,6 +19,23 @@ const initialState = {
   totalAmountPaidToMembersFromRain: 0,
   totalAmountPaidToMembers: 0,
   totalAmountOwnedToMembers: 0,
+  userCount: 0,
+  onlineUserCount: 0,
+  groupCount: 0,
+  staticAds: {},
+  rainAds: {},
+
+  totalRainDonations: 0,
+  totalRained: 0,
+  totalWithdrawn: 0,
+
+  adRevenue: 0,
+  upgradedRevenue: 0,
+  ownerPayment: 0,
+  totalModeratorsPayment: 0,
+  totalExpenses: 0,
+  paidExpenses: 0,
+  unpaidExpenses: 0,
 };
 
 const setAdminReducer = (previousState = initialState, action) => {

@@ -4,7 +4,7 @@
 /* eslint-disable react/prefer-stateless-function */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { List, notification, Table, Descriptions, Button, Row, Col, Select } from 'antd';
+import { List, notification, Descriptions, Button, Row, Col, Select } from 'antd';
 import {
   setAdminAction,
   addModerators,
@@ -18,7 +18,6 @@ const { Option } = Select;
 class Moderators extends Component {
   state = {
     loading: false,
-    totalCount: 0,
     usernameOptions: [],
     usernamesToAdd: [],
   };
@@ -154,13 +153,15 @@ class Moderators extends Component {
 
       if (res && res.success) {
         const { userInfo } = res;
-        let usernameList = [...this.props.adminState.usernameList];
+        const usernameList = [...this.props.adminState.usernameList];
 
         console.log('here', usernameList);
 
-        usernameList = usernameList.filter(item => {
-          return item.username !== userInfo.username;
-        });
+        // usernameList = usernameList.filter(item => {
+        //   return item.username !== userInfo.username;
+        // });
+
+        usernameList.push({ username: userInfo.username, email: userInfo.email });
 
         this.setUsernameOptions(usernameList);
 
@@ -183,42 +184,9 @@ class Moderators extends Component {
 
   render() {
     console.log('Admin render', this);
-    const { loading, totalCount } = this.state;
-    const { modersCount, onlineModersCount, moders, usernameList } = this.props.adminState;
+    const { loading } = this.state;
+    const { modersCount, onlineModersCount, moders } = this.props.adminState;
     const { usernameOptions, usernamesToAdd } = this.state;
-    const columns = [
-      {
-        title: 'Name',
-        dataIndex: 'name',
-        key: 'name',
-      },
-      {
-        title: 'Username',
-        dataIndex: 'username',
-        key: 'username',
-      },
-      {
-        title: 'Email',
-        dataIndex: 'email',
-        key: 'email',
-      },
-      {
-        title: 'Balance',
-        dataIndex: 'balance',
-        key: 'balance',
-        render: balance => <span>{balance.toFixed(2)}</span>,
-      },
-      {
-        title: 'Action',
-        dataIndex: 'action',
-        key: 'action',
-        render: (text, record) => (
-          <Button danger onClick={this.onRemoveModer(record.username)}>
-            Remove
-          </Button>
-        ),
-      },
-    ];
 
     return (
       <div className="dashboard-role-container">
@@ -230,17 +198,6 @@ class Moderators extends Component {
             {onlineModersCount}
           </Descriptions.Item>
         </Descriptions>
-
-        {/* <AutoComplete
-          style={{ width: 200 }}
-          options={usernameOptions}
-          placeholder="Search for email or username"
-          filterOption={(inputValue, option) =>
-            option.username.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1 ||
-            option.email.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-          }
-          onSelect={this.onUsernameChange}
-        /> */}
 
         <Row gutter={[20, 10]} style={{ marginTop: '20px' }}>
           <Col xs={24} sm={24} md={24} lg={18} xl={20}>
@@ -267,35 +224,51 @@ class Moderators extends Component {
         </Row>
 
         {moders ? (
-          // <List
-          //   className="demo-loadmore-list"
-          //   itemLayout="horizontal"
-          //   dataSource={moders}
-          //   size="large"
-          //   loading={loading}
-          //   pagination={{
-          //     onChange(page, pageSize) {
-          //       console.log(page, pageSize);
-          //     },
-          //     pageSize: 3,
-          //   }}
-          //   renderItem={item => (
-          //       <Row>
-          //         <Col span={6}>
-          //           <List.Item.Meta
-          //             avatar={<UserAvatar name={item.name} src={item.avatar} size="36" />}
-          //             title={item.name}
-          //             description={`@${item.username}`}
-          //           />
-          //         </Col>
-          //         <Col span={6}>Balance: {item.balance.toFixed(2)}</Col>
-          //         <Col span={6}>
-          //           <div>Role: {item.role}</div>
-          //         </Col>
-          //       </Row>
-          //   )}
-          // />
-          <Table dataSource={moders} columns={columns} className="moderators-table" />
+          <List
+            className="demo-loadmore-list"
+            itemLayout="horizontal"
+            dataSource={moders}
+            size="large"
+            loading={loading}
+            pagination={{
+              onChange(page, pageSize) {
+                console.log(page, pageSize);
+              },
+              pageSize: 10,
+            }}
+            renderItem={item => (
+              <List.Item>
+                <Row style={{ width: '100%' }} gutter={[20, 10]}>
+                  <Col xs={12} sm={12} md={12} lg={5} xl={5}>
+                    <List.Item.Meta
+                      avatar={<UserAvatar name={item.name} src={item.avatar} size="36" />}
+                      title={item.name}
+                      description={`@${item.username}`}
+                    />
+                  </Col>
+                  <Col xs={12} sm={12} md={12} lg={5} xl={5}>
+                    Email: <br />
+                    {item.email}
+                  </Col>
+                  <Col xs={12} sm={12} md={12} lg={5} xl={5}>
+                    Balance: <br />
+                    {item.balance.toFixed(2)}
+                  </Col>
+                  <Col xs={12} sm={12} md={12} lg={5} xl={5}>
+                    <div>
+                      Role: <br />
+                      {item.role}
+                    </div>
+                  </Col>
+                  <Col xs={12} sm={12} md={12} lg={4} xl={4}>
+                    <Button danger onClick={this.onRemoveModer(item.username)}>
+                      Remove
+                    </Button>
+                  </Col>
+                </Row>
+              </List.Item>
+            )}
+          />
         ) : null}
       </div>
     );

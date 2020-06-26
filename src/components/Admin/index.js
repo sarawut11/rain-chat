@@ -4,9 +4,11 @@
 /* eslint-disable react/prefer-stateless-function */
 import React, { Component } from 'react';
 import { Tabs } from 'antd';
-import { HomeFilled } from '@ant-design/icons';
 import Moderators from './Moderators';
 import AdminHome from './AdminHome';
+import AdReport from './AdReport';
+import Wallet from './Wallet';
+import FinanceReport from './FinanceReport';
 import './styles.scss';
 
 const { TabPane } = Tabs;
@@ -18,33 +20,23 @@ class Admin extends Component {
   };
 
   render() {
-    const homeTab = <HomeFilled className="home-tab-icon" />;
     return (
       <div className="dashboard-container">
         <Tabs>
-          <TabPane tab={homeTab} key="home" className="dashboard-home-tab">
-            <AdminHome />
-          </TabPane>
           <TabPane tab="Chat Report" key="chat-report">
-            Chat Report
+            <AdminHome />
           </TabPane>
           <TabPane tab="Moderators" key="moderators">
             <Moderators />
           </TabPane>
           <TabPane tab="Ad Report" key="ad-report">
-            Ad Report
+            <AdReport />
           </TabPane>
           <TabPane tab="Wallet" key="wallet">
-            Wallet
-          </TabPane>
-          <TabPane tab="Rain Report" key="rain-report">
-            Rain Report
+            <Wallet />
           </TabPane>
           <TabPane tab="Finance Report" key="finance-report">
-            Finance Report
-          </TabPane>
-          <TabPane tab="Membership" key="membership">
-            <Moderators />
+            <FinanceReport />
           </TabPane>
         </Tabs>
       </div>
