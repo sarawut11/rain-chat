@@ -39,21 +39,23 @@ class StaticAdsPanel extends Component {
     console.log('static ads panel render', this);
     return (
       <div className="static-campaign-container">
-        <Row gutter={[0, 10]}>
-          <Col span={24}>
-            <Row justify="center">{ads.assetLink && <img src={ads.assetLink} alt="N/A" />}</Row>
-          </Col>
+        {ads && (
+          <Row gutter={[0, 10]}>
+            <Col span={24}>
+              <Row justify="center">{ads.assetLink && <img src={ads.assetLink} alt="N/A" />}</Row>
+            </Col>
 
-          <Col span={24}>
-            <Row justify="center">
-              {ads.link && (
-                <Button type="primary" href={ads.link}>
-                  {ads.buttonLabel}
-                </Button>
-              )}
-            </Row>
-          </Col>
-        </Row>
+            <Col span={24}>
+              <Row justify="center">
+                {ads.link && (
+                  <Button type="primary" href={ads.link}>
+                    {ads.buttonLabel}
+                  </Button>
+                )}
+              </Row>
+            </Col>
+          </Row>
+        )}
       </div>
     );
   }
