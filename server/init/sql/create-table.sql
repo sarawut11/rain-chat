@@ -132,10 +132,10 @@ CREATE TABLE `ads_info` (
   `time` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
-# Dump of table transaction_info
+# Dump of table wallet_transaction_info
 # ------------------------------------------------------------
-DROP TABLE IF EXISTS `transaction_info`;
-CREATE TABLE `transaction_info` (
+DROP TABLE IF EXISTS `wallet_transaction_info`;
+CREATE TABLE `wallet_transaction_info` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `userId` int(11) NOT NULL,
   `transactionId` varchar(200) DEFAULT '',
@@ -145,6 +145,17 @@ CREATE TABLE `transaction_info` (
   `expectAmount` double NOT NULL DEFAULT 0,
   `confirmTime` int(11) DEFAULT 0,
   `details` varchar(200) DEFAULT '',
+  `time` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+# Dump of table inner_transaction_info
+# ------------------------------------------------------------
+DROP TABLE IF EXISTS `inner_transaction_info`;
+CREATE TABLE `inner_transaction_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userId` int(11) NOT NULL,
+  `type` tinyint(1) NOT NULL DEFAULT 0,
+  `amount` double NOT NULL DEFAULT 0,
   `time` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
