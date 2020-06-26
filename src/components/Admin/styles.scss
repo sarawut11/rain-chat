@@ -1,6 +1,6 @@
 .dashboard-container {
   padding: 40px;
-  width: 100%;
+  width: calc(100% - 45px);
 
   .home-tab-icon {
     font-size: 18px;
@@ -16,14 +16,9 @@
   font-size: unset !important;
 }
 
-@media screen and (max-width: 990px) {
-  .dashboard-container {
-    padding-right: 80px;
-  }
-}
-
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 647px) {
   .dashboard-container {
     padding: 20px;
+    width: 100%;
   }
 }
