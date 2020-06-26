@@ -1,9 +1,9 @@
 import { ServicesContext, CMCContext, RainContext } from "../context";
 import configs from "@configs";
 import * as moment from "moment";
-import { User } from "../models";
+import { User, InnerTransaction } from "../models";
 import { Transaction } from "../models/transaction.model";
-import { checkUserInfo, isOwner } from "../utils/utils";
+import { checkUserInfo, isOwner, shareRevenue } from "../utils/utils";
 
 export const getAllUsers = async (ctx, next) => {
   try {
@@ -106,10 +106,10 @@ const confirmMembership = async (userId, amount, confirmTime) => {
   const moderatorShare = companyRevenue * configs.company_revenue.moderator_share;
   const membersShare = companyRevenue * configs.company_revenue.membership_share;
 
-  // await userService.shareRevenue(companyExpense, User.ROLE.COMPANY); // Deposit company wallet directly
-  await userService.shareRevenue(ownerShare, User.ROLE.OWNER);
-  await userService.shareRevenue(moderatorShare, User.ROLE.MODERATOR);
-  await userService.shareRevenue(membersShare, User.ROLE.UPGRADED_USER);
+  await shareRevenue(companyExpense, User.ROLE.COMPANY, InnerTransaction.TYPE.MEMBERSHIP_PURCHASE_SHARE);
+  await shareRevenue(ownerShare, User.ROLE.OWNER, InnerTransaction.TYPE.MEMBERSHIP_PURCHASE_SHARE);
+  await shareRevenue(moderatorShare, User.ROLE.MODERATOR, InnerTransaction.TYPE.MEMBERSHIP_PURCHASE_SHARE);
+  await shareRevenue(membersShare, User.ROLE.UPGRADED_USER, InnerTransaction.TYPE.MEMBERSHIP_PURCHASE_SHARE);
 
   // ====== Sponsor Share ===== //
   // 14.99 -> 5 | Sponsor Revenue

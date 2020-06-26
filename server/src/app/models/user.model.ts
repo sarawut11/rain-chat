@@ -16,6 +16,7 @@ export class User {
   public lastVitaePostTime: number;
 
   public static readonly ROLE = {
+    COMPANY: "COMPANY",
     OWNER: "OWNER",
     MODERATOR: "MODERATOR",
     FREE: "FREE",

@@ -4,7 +4,8 @@ import {
   GroupService,
   UserService,
   AdsService,
-  TransactionService
+  TransactionService,
+  InnerTransactionService
 } from "./../services";
 
 export class ServicesContext {
@@ -67,13 +68,23 @@ export class ServicesContext {
     return this;
   }
 
-  // transaction
+  // wallet transaction
   private _transactionService: TransactionService;
   public get transactionService() {
     return this._transactionService;
   }
   public setTransactionService(service: TransactionService): ServicesContext {
     this._transactionService = service;
+    return this;
+  }
+
+  // inner transaction
+  private _innerTransactionService: InnerTransactionService;
+  public get innerTranService() {
+    return this._innerTransactionService;
+  }
+  public setInnerTransactionService(service: InnerTransactionService): ServicesContext {
+    this._innerTransactionService = service;
     return this;
   }
 }

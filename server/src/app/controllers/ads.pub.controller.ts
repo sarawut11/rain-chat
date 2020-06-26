@@ -3,10 +3,10 @@ import * as moment from "moment";
 import * as aws from "../utils/aws";
 import { ParameterizedContext } from "koa";
 import { ServicesContext, CMCContext, RainContext } from "../context";
-import { Ads, User } from "../models";
+import { Ads, User, Transaction, InnerTransaction } from "../models";
 import configs from "@configs";
 import { socketServer } from "../socket/app.socket";
-import { Transaction } from "../models/transaction.model";
+import { shareRevenue } from "../utils/utils";
 
 export const registerAds = async (ctx, next) => {
   try {
@@ -397,7 +397,7 @@ export const getStaticAds = async (ctx: ParameterizedContext, next) => {
 };
 
 const confirmAds = async (adsId: number, paidAmount: number, type: number) => {
-  const { adsService, userService, transactionService } = ServicesContext.getInstance();
+  const { adsService, userService, transactionService, innerTranService } = ServicesContext.getInstance();
 
   // Update Ads Status
   const ads: Ads[] = await adsService.findAdsById(adsId);
@@ -426,10 +426,10 @@ const confirmAds = async (adsId: number, paidAmount: number, type: number) => {
   const moderatorShare = companyRevenue * configs.company_revenue.moderator_share;
   const membersShare = companyRevenue * configs.company_revenue.membership_share;
 
-  // await userService.shareRevenue(companyExpense, User.ROLE.COMPANY); // Deposit company wallet directly
-  await userService.shareRevenue(ownerShare, User.ROLE.OWNER);
-  await userService.shareRevenue(moderatorShare, User.ROLE.MODERATOR);
-  await userService.shareRevenue(membersShare, User.ROLE.UPGRADED_USER);
+  await shareRevenue(companyExpense, User.ROLE.COMPANY, InnerTransaction.TYPE.ADS_PURCHASE_SHARE);
+  await shareRevenue(ownerShare, User.ROLE.OWNER, InnerTransaction.TYPE.ADS_PURCHASE_SHARE);
+  await shareRevenue(moderatorShare, User.ROLE.MODERATOR, InnerTransaction.TYPE.ADS_PURCHASE_SHARE);
+  await shareRevenue(membersShare, User.ROLE.UPGRADED_USER, InnerTransaction.TYPE.ADS_PURCHASE_SHARE);
 
   // ===== Rain Rest ===== //
   // 75% | Ads Operation

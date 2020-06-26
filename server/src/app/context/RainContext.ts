@@ -4,7 +4,7 @@ import { ServicesContext } from "./ServicesContext";
 import configs from "@configs";
 import { Ads, User } from "../models";
 import { socketEventNames } from "../socket/resource.socket";
-import { updateAds } from "../controllers";
+import { InnerTransaction } from "../models/transaction.inner.model";
 
 export class RainContext {
   static instance: RainContext;
@@ -94,10 +94,11 @@ export class RainContext {
       console.log("No clients to rain");
       return;
     }
-    const { userService } = ServicesContext.getInstance();
+    const { userService, innerTranService } = ServicesContext.getInstance();
     const normalReward = rainReward / 2;
     const popReward = rainReward / 2;
     await userService.rainUsers(userIds, normalReward, popReward);
+    await innerTranService.addTrans(userIds, normalReward, InnerTransaction.TYPE.RAIN);
     const users: User[] = await userService.getUsersByUserIds(userIds);
     users.forEach(user => {
       socketServer.emitTo(user.socketid, "getRain", {

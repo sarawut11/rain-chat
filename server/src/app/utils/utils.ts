@@ -1,7 +1,7 @@
 import { ServicesContext } from "../context";
 import * as moment from "moment";
 import configs from "@configs";
-import { User } from "../models";
+import { User, InnerTransaction } from "../models";
 
 export const isVitaePostEnabled = (user: User): boolean => {
   const enabled: boolean = (moment().utc().unix() - configs.rain.vitae_post_time / 1000) >= user.lastVitaePostTime;
@@ -71,3 +71,32 @@ export const checkUserInfo = (username, role?): Promise<any> => new Promise(asyn
     });
   }
 });
+
+export const shareRevenue = async (amount: number, role: string, type: number) => {
+  const { userService, innerTranService } = ServicesContext.getInstance();
+  if (role === User.ROLE.COMPANY) {
+    // Deposit Company Wallet directly later ...
+    // Add Inner Transactions
+    await innerTranService.addTrans([configs.companyUserId], amount, type);
+  }
+  else {
+    // Add Inner Transactions
+    const users: User[] = await userService.findUsersByRole(role);
+    const userIds = [];
+    users.forEach(user => userIds.push(user.id));
+    await innerTranService.addTrans(userIds, amount, type);
+    // Update User Balance
+    await userService.shareRevenue(amount, User.ROLE.OWNER);
+  }
+};
+
+export const getInArraySQL = array => {
+  let res = "";
+  array.forEach(element => {
+    if (element !== null && element !== undefined && element !== "") {
+      res += "'" + element.toString() + "',";
+    }
+  });
+  res = res.substring(0, res.length - 1);
+  return res;
+};

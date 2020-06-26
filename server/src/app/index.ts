@@ -13,7 +13,8 @@ import {
   GroupService,
   UserService,
   AdsService,
-  TransactionService
+  TransactionService,
+  InnerTransactionService
 } from "./services";
 
 const corsArgs = configs.production ? { origin: "https://production_link" } : {};
@@ -40,7 +41,8 @@ export const App = Server.init(app => {
       .setChatService(new ChatService())
       .setGroupChatService(new GroupChatService())
       .setAdsService(new AdsService())
-      .setTransactionService(new TransactionService());
+      .setTransactionService(new TransactionService())
+      .setInnerTransactionService(new InnerTransactionService());
     RainContext.getInstance();
     DailyContext.getInstance();
     CMCContext.getInstance();
