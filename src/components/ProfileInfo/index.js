@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { Form, Input, Button, Row, notification as antNotification } from 'antd';
+import { CopyOutlined } from '@ant-design/icons';
 import ModalBase from '../ModalBase';
 import './styles.scss';
 import Request from '../../utils/request';
@@ -66,6 +67,12 @@ class userInfoRender extends Component {
     this.setState({ avatar: file, updateAvailable: true });
   };
 
+  onCopyReferral = () => {
+    const { referral } = this.state;
+    const refLink = `${window.location.origin}/register?ref=${referral}`;
+    navigator.clipboard.writeText(refLink);
+  };
+
   render() {
     const {
       username,
@@ -78,6 +85,8 @@ class userInfoRender extends Component {
       updateAvailable,
       updating,
     } = this.state;
+    const reflink = `${window.location.origin}/register?ref=${referral}`;
+    const reftext = reflink.substring(0, 34).concat('...');
 
     return (
       <div className="userInfo">
@@ -100,7 +109,12 @@ class userInfoRender extends Component {
             />
           </Form.Item>
           <Form.Item label="Email">{email}</Form.Item>
-          <Form.Item label="Referral link">{`${window.location.origin}/register?ref=${referral}`}</Form.Item>
+          <Form.Item label="Referral link">
+            {reftext}
+            <Button type="link" icon={<CopyOutlined />} onClick={this.onCopyReferral}>
+              Copy
+            </Button>
+          </Form.Item>
           <Form.Item label="Role">{role}</Form.Item>
           <Row justify="center" align="middle">
             <Button
