@@ -66,9 +66,9 @@ export const upgradeMembership = async (ctx, next) => {
       };
     }
 
-    await transactionService.createTransactionRequest(userInfo.user_id, Transaction.TYPE.MEMBERSHIP, expectAmount);
+    await transactionService.createTransactionRequest(userInfo.userId, Transaction.TYPE.MEMBERSHIP, expectAmount);
     // Test call
-    await confirmMembership(userInfo.user_id, expectAmount, moment().utc().unix());
+    await confirmMembership(userInfo.userId, expectAmount, moment().utc().unix());
     ctx.body = {
       success: true,
       message: "Your membership request is in pending."

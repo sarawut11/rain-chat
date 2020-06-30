@@ -22,12 +22,12 @@ export default class Header extends Component {
   };
 
   createGroup = ({ groupName, groupNotice }) => {
-    const { name, user_id } = this._userInfo;
+    const { name, userId } = this._userInfo;
     const data = {
       name: groupName,
-      group_notice: groupNotice,
-      creator_id: user_id,
-      // create_time: Date.parse(new Date()) / 1000
+      description: groupNotice,
+      creatorId: userId,
+      // createTime: Date.parse(new Date()) / 1000
     };
     window.socket.emit('createGroup', data, res => {
       const {
@@ -38,23 +38,23 @@ export default class Header extends Component {
       } = this.props;
       const members = [
         {
-          user_id,
+          userId,
           name,
           status: 1,
         },
       ];
       const groupInfo = Object.assign({ members }, res);
       res.message = `${name}: Create group successfully!`;
-      res.time = res.create_time;
-      res.from_user = res.creator_id;
+      res.time = res.createTime;
+      res.fromUser = res.creatorId;
       updateHomePageList({ data: res, homePageList });
       addGroupMessageAndInfo({
         allGroupChats,
         message: { ...res, name },
-        groupId: res.to_group_id,
+        groupId: res.groupId,
         groupInfo,
       });
-      this.props.history.push(`/group_chat/${res.to_group_id}`);
+      this.props.history.push(`/group_chat/${res.groupId}`);
     });
   };
 

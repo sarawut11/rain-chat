@@ -47,13 +47,13 @@ const initDB = async () => {
 
   // Create Vitae Rain Room
   const rainGroupId = configs.rain.group_id;
-  sql = "INSERT INTO group_info (id,to_group_id,name,group_notice,creator_id,create_time) VALUES (?,?,?,?,?,?);";
+  sql = "INSERT INTO group_info (id,groupId,name,description,creatorId,createTime) VALUES (?,?,?,?,?,?);";
   await query(sql, [1, rainGroupId, "Vitae Rain Room", "Vitae Rain Room", 1, moment().utc().unix()]);
 
   // Assign Admin to Vitae Rain Room
-  sql = "INSERT INTO group_user_relation (id, to_group_id, user_id) VALUE (?,?,?);";
+  sql = "INSERT INTO group_user_relation (id, groupId, userId) VALUE (?,?,?);";
   await query(sql, [1, rainGroupId, 1]);
-  sql = "INSERT INTO rain_group_msg (from_user, to_group_id, message, time, attachments) VALUE (?,?,?,?,?);";
+  sql = "INSERT INTO rain_group_msg (fromUser, groupId, message, time, attachments) VALUE (?,?,?,?,?);";
   await query(sql, [0, rainGroupId, "Welcome to Vitae Rain Room", moment().utc().unix(), "[]"]);
 
   console.log("SQL command execution is over!");

@@ -25,7 +25,7 @@ const getHomePageListReducer = (previousState = [], action) => {
     case SHOW_CALL_ME_TIP:
     case UPDATE_LIST_GROUP_NAME:
       if (userInfo) {
-        localStorage.setItem(`homePageList-${userInfo.user_id}`, JSON.stringify(action.data));
+        localStorage.setItem(`homePageList-${userInfo.userId}`, JSON.stringify(action.data));
       }
       return [...action.data];
     default:

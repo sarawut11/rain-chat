@@ -34,17 +34,16 @@ class GroupChat extends Component {
 
   sendMessage = async (inputMsg = '', attachments = []) => {
     if (inputMsg.trim() === '' && attachments.length === 0) return;
-    const { user_id, avatar, name, github_id } = this._userInfo;
+    const { userId, avatar, name } = this._userInfo;
     const { allGroupChats, homePageList, updateHomePageList, addGroupMessages } = this.props;
     const data = {
-      from_user: user_id, // Own id
+      fromUser: userId, // Own id
       avatar, // Own avatar
       name,
-      github_id,
       groupName: this.groupName,
       message: inputMsg === '' ? `[${attachments[0].type || 'file'}]` : `${inputMsg}`, // Message content
       attachments, // attatchment
-      to_group_id: this.chatId,
+      groupId: this.chatId,
       // time: Date.parse(new Date()) / 1000 // time
     };
     this._sendByMe = true;
@@ -52,7 +51,7 @@ class GroupChat extends Component {
       notification('Failed to send message', 'error', 2);
     });
     addGroupMessages({ allGroupChats, message: response, groupId: this.chatId });
-    updateHomePageList({ data: response, homePageList, myUserId: user_id });
+    updateHomePageList({ data: response, homePageList, myUserId: userId });
   };
 
   joinGroup = async () => {
@@ -91,9 +90,9 @@ class GroupChat extends Component {
   };
 
   leaveGroup = () => {
-    const { user_id } = this._userInfo;
+    const { userId } = this._userInfo;
     const { homePageList, deleteHomePageList, allGroupChats, deleteGroupChat } = this.props;
-    window.socket.emit('leaveGroup', { user_id, toGroupId: this.chatId });
+    window.socket.emit('leaveGroup', { userId, toGroupId: this.chatId });
     deleteHomePageList({ homePageList, chatId: this.chatId });
     deleteGroupChat({ allGroupChats, groupId: this.chatId });
     this.props.history.push('/');
@@ -105,7 +104,7 @@ class GroupChat extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     const { relatedCurrentChat, match } = nextProps;
-    if (relatedCurrentChat || match.params.to_group_id !== this.chatId || this._sendByMe) {
+    if (relatedCurrentChat || match.params.groupId !== this.chatId || this._sendByMe) {
       this._sendByMe = false;
       return true;
     }
@@ -124,12 +123,12 @@ class GroupChat extends Component {
     this.setState({ showPersonalInfo: value });
   }
 
-  _clickPersonAvatar = user_id => {
+  _clickPersonAvatar = userId => {
     const { allGroupChats } = this.props;
     const { members = [] } =
       (allGroupChats.get(this.chatId) && allGroupChats.get(this.chatId).groupInfo) || {};
-    const personalInfo = members.filter(member => member.user_id === user_id)[0];
-    if (!members.length || !user_id) return;
+    const personalInfo = members.filter(member => member.userId === userId)[0];
+    if (!members.length || !userId) return;
     if (!personalInfo) {
       notification('This person is no longer in the group', 'warn', 1.5);
       return;
@@ -152,7 +151,7 @@ class GroupChat extends Component {
 
   get chatId() {
     // eslint-disable-next-line react/prop-types
-    return this.props.match.params.to_group_id;
+    return this.props.match.params.groupId;
   }
 
   _showShareModal = () => {
@@ -188,7 +187,7 @@ class GroupChat extends Component {
       <div className="chat-wrapper">
         <ChatHeader
           title={(groupInfo && groupInfo.name) || '----'}
-          groupId={groupInfo && groupInfo.to_group_id}
+          groupId={groupInfo && groupInfo.groupId}
           chatType="group"
           hasShowed={showGroupChatInfo}
           showShareModal={this._showShareModal}
@@ -220,7 +219,7 @@ class GroupChat extends Component {
           shouldScrollToFetchData={!!chatItem}
           chatId={this.chatId}
           chatType="groupChat"
-          clickAvatar={user_id => this._clickPersonAvatar(user_id)}
+          clickAvatar={userId => this._clickPersonAvatar(userId)}
         />
         {showGroupChatInfo && (
           <div onClick={() => this._showGroupChatInfo(false)} className="groupChatInfoMask" />
@@ -231,7 +230,7 @@ class GroupChat extends Component {
             allGroupChats={allGroupChats}
             homePageList={homePageList}
             leaveGroup={this._showLeaveModal}
-            clickMember={user_id => this._clickPersonAvatar(user_id)}
+            clickMember={userId => this._clickPersonAvatar(userId)}
             updateGroupTitleNotice={updateGroupTitleNotice}
             updateListGroupName={updateListGroupName}
             chatId={this.chatId}

@@ -39,7 +39,7 @@ class HomePageList extends Component {
     const filter = homePageList.filter(
       e =>
         chatFromId &&
-        (chatFromId === e.to_group_id || chatFromId === (e.user_id && e.user_id.toString())),
+        (chatFromId === e.groupId || chatFromId === (e.userId && e.userId.toString())),
     );
     const goal = filter[0];
     if (goal && goal.unread !== 0) {
@@ -90,7 +90,7 @@ class HomePageList extends Component {
           searchResultTitle: { ...state.searchResultTitle, user: 'All users' },
         }));
         data.fuzzyMatchResult.forEach(element => {
-          element.user_id = element.id;
+          element.userId = element.id;
         });
       } else {
         this.setState(state => ({
@@ -124,9 +124,9 @@ class HomePageList extends Component {
       searchResultTitle,
     } = this.state;
     const contactedUsers = contactedItems.filter(
-      e => e.user_id && e.user_id !== this._userInfo.user_id,
+      e => e.userId && e.userId !== this._userInfo.userId,
     );
-    const contactedGroups = contactedItems.filter(e => e.to_group_id);
+    const contactedGroups = contactedItems.filter(e => e.groupId);
     return (
       <div className="home-page-list-wrapper">
         <Header

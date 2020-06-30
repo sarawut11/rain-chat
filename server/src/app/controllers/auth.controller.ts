@@ -31,7 +31,7 @@ export const loginUser = async (ctx, next) => {
           name,
           email,
           username,
-          user_id: id,
+          userId: id,
           balance,
           intro,
           avatar,
@@ -95,11 +95,11 @@ export const registerUser = async (ctx, next) => {
     await userService.insertUser([name, email, username, md5(password), sponsorUser[0].id, uniqid()]);
     // Join Rain Group & Broadcast
     const userInfo = (await userService.getUserInfoByUsername(username))[0];
-    await groupService.joinGroup(userInfo.user_id, configs.rain.group_id);
+    await groupService.joinGroup(userInfo.userId, configs.rain.group_id);
     socketServer.broadcast("getGroupMsg", {
       ...userInfo,
       message: `${userInfo.name} joined a group chat`,
-      to_group_id: configs.rain.group_id,
+      groupId: configs.rain.group_id,
       tip: "joinGroup",
     }, error => console.log(error.message));
 

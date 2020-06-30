@@ -19,20 +19,18 @@ const updateHomePageListAction = ({
   const homePageListCopy = [...List(homePageList)];
   const dataCopy = { ...data, showCallMeTip };
   let chatFromId;
-  if (dataCopy && dataCopy.to_user) {
-    chatFromId = dataCopy.from_user === myUserId ? dataCopy.to_user : dataCopy.from_user;
-    dataCopy.user_id = chatFromId;
-  } else if (dataCopy && dataCopy.to_group_id) {
-    chatFromId = dataCopy.to_group_id;
+  if (dataCopy && dataCopy.toUser) {
+    chatFromId = dataCopy.fromUser === myUserId ? dataCopy.toUser : dataCopy.fromUser;
+    dataCopy.userId = chatFromId;
+  } else if (dataCopy && dataCopy.groupId) {
+    chatFromId = dataCopy.groupId;
   }
-  const chatExist = homePageListCopy.find(
-    e => e.user_id === chatFromId || e.to_group_id === chatFromId,
-  );
+  const chatExist = homePageListCopy.find(e => e.userId === chatFromId || e.groupId === chatFromId);
   if (chatExist) {
     const length = homePageListCopy.length;
     for (let i = 0; i < length; i += 1) {
-      const { user_id, to_group_id, unread = 0 } = homePageListCopy[i];
-      if (user_id === chatFromId || to_group_id === chatFromId) {
+      const { userId, groupId, unread = 0 } = homePageListCopy[i];
+      if (userId === chatFromId || groupId === chatFromId) {
         const updatedUnread = unread + increaseUnread;
         const { message, time } = dataCopy;
         homePageListCopy[i] = Object.assign(homePageListCopy[i], {
@@ -54,9 +52,9 @@ const updateHomePageListAction = ({
   };
 };
 
-const updateListGroupNameAction = ({ homePageList, name, to_group_id }) => {
+const updateListGroupNameAction = ({ homePageList, name, groupId }) => {
   const homePageListCopy = [...List(homePageList)];
-  const goal = homePageListCopy.find(e => e.to_group_id === to_group_id);
+  const goal = homePageListCopy.find(e => e.groupId === groupId);
   goal.name = name;
   return {
     type: UPDATE_LIST_GROUP_NAME,
@@ -68,8 +66,8 @@ const showCallMeTipAction = ({ homePageList, showCallMeTip, chatFromId }) => {
   const homePageListCopy = [...List(homePageList)];
   const length = homePageListCopy.length;
   for (let i = 0; i < length; i += 1) {
-    const { to_group_id } = homePageListCopy[i];
-    if (to_group_id === chatFromId) {
+    const { groupId } = homePageListCopy[i];
+    if (groupId === chatFromId) {
       homePageListCopy[i].showCallMeTip = showCallMeTip;
       break;
     }
@@ -84,8 +82,8 @@ const deleteHomePageListAction = ({ homePageList, chatId }) => {
   const homePageListCopy = [...List(homePageList)];
   const length = homePageListCopy.length;
   for (let i = 0; i < length; i += 1) {
-    const { to_group_id, user_id } = homePageListCopy[i];
-    const id = to_group_id || user_id;
+    const { groupId, userId } = homePageListCopy[i];
+    const id = groupId || userId;
     if (chatId === id) {
       homePageListCopy.splice(i, 1);
       break;
@@ -101,10 +99,10 @@ const clearUnreadAction = ({ chatFromId, homePageList }) => {
   const homePageListCopy = [...List(homePageList)];
   const length = homePageListCopy.length;
   for (let i = 0; i < length; i += 1) {
-    const { user_id, to_group_id } = homePageListCopy[i];
+    const { userId, groupId } = homePageListCopy[i];
     if (
-      (user_id && user_id.toString()) === (chatFromId && chatFromId.toString()) ||
-      to_group_id === chatFromId
+      (userId && userId.toString()) === (chatFromId && chatFromId.toString()) ||
+      groupId === chatFromId
     ) {
       homePageListCopy[i].unread = 0;
       break;

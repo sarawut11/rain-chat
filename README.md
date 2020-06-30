@@ -126,11 +126,6 @@ export default {
   },
   client_secret: '', // client_secret of github authorization:  github-> settings ->  Developer settings to get
   jwt_secret: '', // secret of json web token
-  qiniu: { // qiniu cdn configuration
-    accessKey: '',
-    secretKey: '',
-    bucket: ''
-  },
   robot_key: '', // the key of robot chat api => If you want to use robot chat, pls apply this key from http://www.tuling123.com/
 };
 ```

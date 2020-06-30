@@ -8,7 +8,7 @@ import configs from "@configs";
 
 export const authVerify = (token): any => {
   try {
-    // Decode the user_id that existed in the previous payload
+    // Decode the userId that existed in the previous payload
     const payload = jwt.verify(token, configs.token.jwt_secret, {
       ignoreExpiration: false
     });

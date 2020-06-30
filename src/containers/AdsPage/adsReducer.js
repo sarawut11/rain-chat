@@ -16,7 +16,7 @@ const initialState = {
 
 // const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 // const previousSettings =
-//   userInfo && JSON.parse(localStorage.getItem(`settings-${userInfo.user_id}`));
+//   userInfo && JSON.parse(localStorage.getItem(`settings-${userInfo.userId}`));
 
 const setAdsReducer = (previousState = initialState, action) => {
   switch (action.type) {

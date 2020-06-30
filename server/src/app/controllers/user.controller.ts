@@ -16,7 +16,7 @@ export const getProfileInfo = async (ctx, next) => {
         name,
         email,
         username,
-        user_id: id,
+        userId: id,
         balance,
         intro,
         avatar,

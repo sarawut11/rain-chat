@@ -25,17 +25,17 @@ class ListItems extends Component {
         if (isShareUrl) {
           message = '[Invitation card]';
         }
-        const chatFromId = data.to_group_id || (data.user_id && data.user_id.toString());
-        const isGroupChat = !!data.to_group_id;
+        const chatFromId = data.groupId || (data.userId && data.userId.toString());
+        const isGroupChat = !!data.groupId;
         let GroupMembers;
         let groupId;
         if (isGroupChat) {
-          const chatItem = allGroupChats && allGroupChats.get(data.to_group_id);
+          const chatItem = allGroupChats && allGroupChats.get(data.groupId);
           GroupMembers = chatItem && chatItem.groupInfo && chatItem.groupInfo.members;
-          groupId = chatItem && chatItem.groupInfo && chatItem.groupInfo.to_group_id;
+          groupId = chatItem && chatItem.groupInfo && chatItem.groupInfo.groupId;
         }
         const { params } = match;
-        const unreadColor = data.to_group_id ? 'groupUnread' : 'privateUnread';
+        const unreadColor = data.groupId ? 'groupUnread' : 'privateUnread';
         let unreadCircular;
         switch (data.unread && data.unread.toString().length) {
           case 2:
@@ -51,7 +51,7 @@ class ListItems extends Component {
           <li
             key={index}
             style={
-              !showAsContacts && (params.user_id || params.to_group_id) === chatFromId
+              !showAsContacts && (params.userId || params.groupId) === chatFromId
                 ? { backgroundColor: '#f5f5f5' }
                 : {}
             }

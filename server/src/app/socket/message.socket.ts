@@ -24,10 +24,10 @@ export const getGroupItem = async ({
   start?: number;
   count?: number;
 }) => {
-  const { groupChatService } = ServicesContext.getInstance();
+  const { groupChatService, groupService } = ServicesContext.getInstance();
 
   const RowDataPacket1 = await groupChatService.getGroupMsg(groupId, start - 1, count);
-  const RowDataPacket2 = await groupChatService.getGroupInfo([groupId, undefined]);
+  const RowDataPacket2 = await groupService.getGroupByGroupId(groupId);
   const RowDataPacket3 = await groupChatService.getGroupMember(groupId);
   const members = JSON.parse(JSON.stringify(RowDataPacket3));
   const messages = JSON.parse(JSON.stringify(RowDataPacket1));
@@ -55,26 +55,26 @@ export const getAllMessage = async ({ userId, clientHomePageList }) => {
       for (const item of homePageList) {
         if (clientHomePageList && clientHomePageList.length) {
           const goal = clientHomePageList.find(e =>
-            e.user_id ? e.user_id === item.user_id : e.to_group_id === item.to_group_id,
+            e.userId ? e.userId === item.userId : e.groupId === item.groupId,
           );
           if (goal) {
             const sortTime = goal.time;
-            const res = item.user_id
+            const res = item.userId
               ? await chatService.getUnreadCount({
                 sortTime,
-                from_user: userId,
-                to_user: item.user_id,
+                fromUser: userId,
+                toUser: item.userId,
               })
-              : await groupChatService.getUnreadCount({ sortTime, to_group_id: item.to_group_id });
+              : await groupChatService.getUnreadCount({ sortTime, groupId: item.groupId });
             item.unread = goal.unread + JSON.parse(JSON.stringify(res))[0].unread;
           }
         }
-        if (item.user_id) {
-          const data = await getPrivateMsg({ toUser: item.user_id, userId });
-          privateChat.set(item.user_id, data);
-        } else if (item.to_group_id) {
-          const data = await getGroupItem({ groupId: item.to_group_id });
-          groupChat.set(item.to_group_id, data);
+        if (item.userId) {
+          const data = await getPrivateMsg({ toUser: item.userId, userId });
+          privateChat.set(item.userId, data);
+        } else if (item.groupId) {
+          const data = await getGroupItem({ groupId: item.groupId });
+          groupChat.set(item.groupId, data);
         }
       }
     }

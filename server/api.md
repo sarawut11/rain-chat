@@ -22,7 +22,7 @@
       name,
       email,
       username,
-      user_id,
+      userId,
       balance,
       intro,
       avatar,
@@ -104,7 +104,7 @@
     success: true/false,
     message: "Success or Failed Message",
     userInfo: {
-      user_id,
+      userId,
       username,
       name,
       email,
@@ -700,20 +700,20 @@
     },
     homePageList: [ // Contact list including Group Chat & Private Chat
       {               // -- Group Chat Info --
-        to_group_id,  //    Group Id
+        groupId,  //    Group Id
         name,         //    Group Name
-        create_time,  //    Created Time in UNIX timestamp
+        createTime,  //    Created Time in UNIX timestamp
         message:      //    Last message in this group
         time:         //    Last message time
         attachments: [],
         unread,       //    Number of unread messages
       }, ...
       {               // -- Private Chat Info --
-        user_id,
+        userId,
         username,
         name,
         avatar,
-        be_friend_time,
+        friendtime,
         message,
         time,
         attachments: [],
@@ -722,12 +722,12 @@
     ]
     privateChat: [
       [ 
-        2,                // Sender's user_id
+        2,                // Sender's userId
         {
           messages: [
             {
-              from_user,  // sender's user_id,
-              to_user,    // recipient's user_id,
+              fromUser,  // sender's userId,
+              toUser,    // recipient's userId,
               message,
               time,
               avatar,     // sender's avatar
@@ -735,7 +735,7 @@
             }, ...
           ],
           userInfo: {     // recipient's userInfo
-            user_id,
+            userId,
             username,
             name,
             avatar,
@@ -753,21 +753,21 @@
               message,
               attachments: [],
               time,
-              from_user,
-              to_group_id,
+              fromUser,
+              groupId,
               avatar,
               name
             }, ...
           ],
           groupInfo: {
-            to_group_id,
+            groupId,
             name,
-            group_notice,
-            creator_id,
-            create_time,
+            description,
+            creatorId,
+            createTime,
             members: [
               {
-                user_id,
+                userId,
                 username,
                 name,
                 email,

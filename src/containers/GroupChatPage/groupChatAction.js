@@ -39,7 +39,7 @@ const addGroupInfoAction = ({ allGroupChats, member, members, groupId, groupInfo
   const originGroupInfo = (goalGroupChat && goalGroupChat.groupInfo) || {};
   const originMembers = (originGroupInfo && originGroupInfo.members) || [];
   const newGroupMembers =
-    originMembers.filter(m => m.user_id === (member && member.user_id)).length === 0
+    originMembers.filter(m => m.userId === (member && member.userId)).length === 0
       ? [...originMembers, ...membersArg]
       : originMembers;
   const newGroupInfo = groupInfo || { ...originGroupInfo, members: newGroupMembers };
@@ -58,7 +58,7 @@ const updateGroupTitleNoticeAction = ({ allGroupChats, groupNotice, groupName, g
     console.error('There is no information for this group');
   goalGroupChat.groupInfo = {
     ...goalGroupChat.groupInfo,
-    group_notice: groupNotice,
+    description: groupNotice,
     name: groupName,
   };
   return { type: UPDATE_GROUP_TITLE_NOTICE, data: allGroupChatsCopy };

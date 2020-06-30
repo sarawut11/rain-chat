@@ -15,7 +15,7 @@ export default class GroupChatInfo extends Component {
       justShowOnlineMember: true,
     };
     this._userInfo = JSON.parse(localStorage.getItem('userInfo'));
-    this._isCreator = this._userInfo.user_id === parseInt(props.groupInfo.creator_id, 10);
+    this._isCreator = this._userInfo.userId === parseInt(props.groupInfo.creatorId, 10);
   }
 
   componentDidMount() {
@@ -30,8 +30,8 @@ export default class GroupChatInfo extends Component {
     });
   }
 
-  _clickMember = user_id => {
-    this.props.clickMember(user_id);
+  _clickMember = userId => {
+    this.props.clickMember(userId);
   };
 
   _openEditorInfoModal = () => {
@@ -44,7 +44,7 @@ export default class GroupChatInfo extends Component {
         groupMember.map(
           e =>
             (!this.state.justShowOnlineMember || !!e.status) && (
-              <li key={e.user_id} className="member" onClick={() => this._clickMember(e.user_id)}>
+              <li key={e.userId} className="member" onClick={() => this._clickMember(e.userId)}>
                 <UserAdapter
                   src={e.avatar}
                   name={e.name}
@@ -77,23 +77,23 @@ export default class GroupChatInfo extends Component {
       updateListGroupName,
       homePageList,
     } = this.props;
-    const { to_group_id } = groupInfo;
+    const { groupId } = groupInfo;
     const data = {
       name: groupName,
-      group_notice: groupNotice,
-      to_group_id,
+      description: groupNotice,
+      groupId,
     };
     window.socket.emit('updateGroupInfo', data, res => {
       updateGroupTitleNotice({
         allGroupChats,
         groupNotice,
         groupName,
-        groupId: to_group_id,
+        groupId,
       });
       updateListGroupName({
         homePageList,
         name: groupName,
-        to_group_id,
+        groupId,
       });
       notification(res, 'success');
       this._closeModal();
@@ -110,7 +110,7 @@ export default class GroupChatInfo extends Component {
     const { groupMember, onlineNumber, modalVisible, justShowOnlineMember } = this.state;
     const { groupInfo, leaveGroup } = this.props;
     const { role } = this.userInfo;
-
+    console.log('GroupInfo', groupInfo);
     return (
       <div className="chatInformation">
         <CreateGroupModal
@@ -119,11 +119,11 @@ export default class GroupChatInfo extends Component {
           confirm={args => this._confirm(args)}
           cancel={this._closeModal}
           defaultGroupName={groupInfo.name}
-          defaultGroupNotice={groupInfo.group_notice}
+          defaultGroupNotice={groupInfo.description}
         />
         <div className="info">
           <p className="noticeTitle">
-            Group announcement
+            Description
             {(this._isCreator || role === 'OWNER' || role === 'MODERATOR') && (
               <svg
                 onClick={this._openEditorInfoModal}
@@ -134,7 +134,7 @@ export default class GroupChatInfo extends Component {
               </svg>
             )}
           </p>
-          <p className="noticeContent">{groupInfo.group_notice}</p>
+          <p className="noticeContent">{groupInfo.description}</p>
           <p className="memberTitle">
             {`online users: ${onlineNumber}`}
             <span className="showAllMember" onClick={this._showAllMember}>
