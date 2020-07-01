@@ -104,8 +104,8 @@ const initServer = server => {
       .on("leaveGroup", async data => {
         await groupSockets.leaveGroup(io, socket, data);
       })
-      .on("kickMember", async data => {
-        await groupSockets.kickMember(io, socket, data);
+      .on("kickMember", async (data, fn) => {
+        await groupSockets.kickMember(io, socket, data, fn);
       })
       .on("getGroupMember", async (groupId, fn) => {
         await groupSockets.getGroupMember(io, socket, groupId, fn);

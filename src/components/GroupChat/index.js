@@ -169,6 +169,7 @@ class GroupChat extends Component {
       allPrivateChats,
       deletePrivateChat,
       initApp,
+      deleteGroupMember,
     } = this.props;
     const {
       groupMsgAndInfo,
@@ -209,8 +210,10 @@ class GroupChat extends Component {
           hide={() => this._showPersonalInfo(false)}
           homePageList={homePageList}
           allPrivateChats={allPrivateChats}
+          allGroupChats={allGroupChats}
           deleteHomePageList={deleteHomePageList}
           deletePrivateChat={deletePrivateChat}
+          deleteGroupMember={deleteGroupMember}
           modalVisible={chatItem && showPersonalInfo}
         />
         <ChatContentList
@@ -269,6 +272,7 @@ GroupChat.propTypes = {
   addGroupMessageAndInfo: PropTypes.func,
   deleteHomePageList: PropTypes.func,
   deleteGroupChat: PropTypes.func,
+  deleteGroupMember: PropTypes.func,
   updateGroupTitleNotice: PropTypes.func,
   updateListGroupName: PropTypes.func,
   shareData: PropTypes.object,
@@ -285,6 +289,7 @@ GroupChat.defaultProps = {
   addGroupMessageAndInfo() {},
   deleteHomePageList() {},
   deleteGroupChat() {},
+  deleteGroupMember() {},
   updateGroupTitleNotice() {},
   updateListGroupName() {},
   shareData: undefined,

@@ -145,7 +145,7 @@ export const leaveGroup = async (io, socket, data) => {
   }
 };
 
-export const kickMember = async (io, socket, data) => {
+export const kickMember = async (io, socket, data, cbFn) => {
   try {
     const { userId, groupId } = data;
     console.log(data);
@@ -161,7 +161,8 @@ export const kickMember = async (io, socket, data) => {
     await groupService.leaveGroup(userId, groupId);
     const kicker: User[] = await userService.findUserById(userId);
     socketServer.emitTo(kicker[0].socketid, "kickedFromGroup", { groupId });
-    console.log("kickMember data=>", data, "time=>", moment().utc().unix());
+    console.log("kickMember data=>", data, "time=>", moment().utc());
+    cbFn({ code: 200, data: "Kicked member successfully" });
   } catch (error) {
     console.log("error", error.message);
     io.to(socket.id).emit("error", { code: 500, message: error.message });

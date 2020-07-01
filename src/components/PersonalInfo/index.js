@@ -40,7 +40,7 @@ class PersonalInfo extends Component {
   };
 
   kickMember = () => {
-    const { userInfo, groupInfo } = this.props;
+    const { userInfo, groupInfo, deleteGroupMember, allGroupChats } = this.props;
     window.socket.emit(
       'kickMember',
       {
@@ -49,6 +49,7 @@ class PersonalInfo extends Component {
       },
       res => {
         if (res.code === 200) {
+          deleteGroupMember({ allGroupChats, userId: userInfo.userId, groupId: groupInfo.groupId });
           this.props.hide();
         }
       },
@@ -166,7 +167,9 @@ PersonalInfo.propTypes = {
   homePageList: PropTypes.array,
   deleteHomePageList: PropTypes.func,
   deletePrivateChat: PropTypes.func,
+  deleteGroupMember: PropTypes.func,
   allPrivateChats: PropTypes.instanceOf(Map),
+  allGroupChats: PropTypes.instanceOf(Map),
   showContactButton: PropTypes.bool,
   showShareIcon: PropTypes.bool,
   showShareModal: PropTypes.func,
@@ -180,7 +183,9 @@ PersonalInfo.defaultProps = {
   homePageList: undefined,
   deleteHomePageList() {},
   deletePrivateChat() {},
+  deleteGroupMember() {},
   allPrivateChats: new Map(),
+  allGroupChats: new Map(),
   showContactButton: true,
   showShareIcon: false,
   showShareModal() {},
