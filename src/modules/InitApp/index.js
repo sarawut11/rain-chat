@@ -11,6 +11,7 @@ import {
   addGroupMessagesAction,
   addGroupMessageAndInfoAction,
   setAllGroupChatsAction,
+  deleteGroupChatAction,
 } from '../../containers/GroupChatPage/groupChatAction';
 import { setAdsAction } from '../../containers/AdsPage/adsAction';
 import { enableVitaePost, disableVitaePost } from '../../redux/actions/enableVitaePost';
@@ -23,11 +24,12 @@ import {
 import BrowserNotification from '../BrowserNotification';
 import Chat from '../Chat';
 import { showAds, notifyRainComing, notifyRainReward } from '../../utils/ads';
+import request from '../../utils/request';
 
 class InitApp {
   constructor(props) {
     this.WEBSITE_ADDRESS =
-      process.env.NODE_ENV === 'production' ? 'https://production_link' : 'http://localhost:3000';
+      process.env.NODE_ENV === 'production' ? 'https://production_link' : request.apiUrl;
     this._userInfo = JSON.parse(localStorage.getItem('userInfo'));
     this._hasCalledMe = false;
     this._browserNotification = new BrowserNotification();
@@ -144,6 +146,18 @@ class InitApp {
       );
       this._browserNotificationHandle(data);
       // TODO: mute notifications switch
+    });
+    window.socket.on('kickedFromGroup', data => {
+      const { groupId } = data;
+      const myInfo = JSON.parse(localStorage.getItem('userInfo'));
+      const { userId } = myInfo;
+      window.socket.emit('leaveGroup', { userId, groupId });
+      const homePageList = store.getState().homePageListState;
+      const allGroupChats = store.getState().allGroupChatsState;
+      store.dispatch(deleteHomePageListAction({ homePageList, chatId: groupId }));
+      store.dispatch(deleteGroupChatAction({ allGroupChats, chatId: groupId }));
+      window.location.href = '/group_chat/vitae-rain-group';
+      console.log(`You are kicked from Group:${groupId}`);
     });
   }
 

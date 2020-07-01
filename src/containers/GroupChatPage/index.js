@@ -8,6 +8,7 @@ import {
 import {
   addGroupMessagesAction,
   deleteGroupChatAction,
+  deleteGroupMemberAction,
   addGroupInfoAction,
   addGroupMessageAndInfoAction,
   updateGroupTitleNoticeAction,
@@ -33,6 +34,9 @@ const mapDispatchToProps = dispatch => ({
   },
   deleteGroupChat(arg = {}) {
     dispatch(deleteGroupChatAction({ ...arg }));
+  },
+  deleteGroupMember(arg = {}) {
+    dispatch(deleteGroupMemberAction({ ...arg }));
   },
   addGroupInfo(arg = {}) {
     dispatch(addGroupInfoAction({ ...arg }));

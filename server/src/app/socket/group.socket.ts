@@ -73,7 +73,7 @@ export const createGroup = async (io, socket, data, cbfn) => {
   try {
     const { groupService, userService } = ServicesContext.getInstance();
     const groupId = uuid();
-    data.createTime = Date.parse(new Date().toString()) / 1000;
+    data.createTime = moment().utc().unix();
     const { name, description, creatorId, createTime } = data;
     const RowDataPacket = await userService.getUserInfoById(creatorId);
     const userInfo = RowDataPacket[0];
@@ -108,22 +108,22 @@ export const updateGroupInfo = async (io, socket, data, cbfn) => {
 
 export const joinGroup = async (io, socket, data, cbfn) => {
   try {
-    const { userInfo, toGroupId } = data;
+    const { userInfo, groupId } = data;
     const { groupService } = ServicesContext.getInstance();
 
-    const joinedThisGroup = (await groupService.isInGroup(userInfo.userId, toGroupId)).length;
+    const joinedThisGroup = (await groupService.isInGroup(userInfo.userId, groupId)).length;
     if (!joinedThisGroup) {
-      await groupService.joinGroup(userInfo.userId, toGroupId);
-      socket.broadcast.to(toGroupId).emit("getGroupMsg", {
+      await groupService.joinGroup(userInfo.userId, groupId);
+      socket.broadcast.to(groupId).emit("getGroupMsg", {
         ...userInfo,
         message: `${userInfo.name} joined a group chat`,
-        groupId: toGroupId,
+        groupId,
         tip: "joinGroup",
       });
     }
-    socket.join(toGroupId);
-    const groupItem = await getGroupItem({ groupId: toGroupId });
-    console.log("joinGroup data=>", data, "time=>", new Date().toLocaleString());
+    socket.join(groupId);
+    const groupItem = await getGroupItem({ groupId });
+    console.log("joinGroup data=>", data, "time=>", moment().utc());
     cbfn(groupItem);
   } catch (error) {
     console.log("error", error.message);
@@ -133,31 +133,36 @@ export const joinGroup = async (io, socket, data, cbfn) => {
 
 export const leaveGroup = async (io, socket, data) => {
   try {
-    const { userId, toGroupId } = data;
+    const { userId, groupId } = data;
     const { groupService } = ServicesContext.getInstance();
 
-    socket.leave(toGroupId);
-    await groupService.leaveGroup(userId, toGroupId);
-    console.log("leaveGroup data=>", data, "time=>", new Date().toLocaleString());
+    socket.leave(groupId);
+    await groupService.leaveGroup(userId, groupId);
+    console.log("leaveGroup data=>", data, "time=>", moment().utc());
   } catch (error) {
     console.log("error", error.message);
     io.to(socket.id).emit("error", { code: 500, message: error.message });
   }
 };
 
-export const kickMember = async (io, socket: socketIo.Socket, data) => {
+export const kickMember = async (io, socket, data, cbFn) => {
   try {
     const { userId, groupId } = data;
+    console.log(data);
     const { userService, groupService } = ServicesContext.getInstance();
 
     const user: User[] = await userService.getUserBySocketId(socket.id);
     if (user.length === 0) return;
-    if (user[0].role !== User.ROLE.UPGRADED_USER) return;
 
-    const group: Group[] = await groupService.getGroupById(groupId);
+    const group: Group[] = await groupService.getGroupByGroupId(groupId);
     if (group.length === 0) return;
     if (group[0].creatorId !== user[0].id) return;
 
+    await groupService.leaveGroup(userId, groupId);
+    const kicker: User[] = await userService.findUserById(userId);
+    socketServer.emitTo(kicker[0].socketid, "kickedFromGroup", { groupId });
+    console.log("kickMember data=>", data, "time=>", moment().utc());
+    cbFn({ code: 200, data: "Kicked member successfully" });
   } catch (error) {
     console.log("error", error.message);
     io.to(socket.id).emit("error", { code: 500, message: error.message });
@@ -186,7 +191,7 @@ export const getGroupMember = async (io, socket, groupId, cbfn) => {
         }
         delete userInfo.socketid;
       });
-      console.log("getGroupMember data=>", groupId, "time=>", new Date().toLocaleString());
+      console.log("getGroupMember data=>", groupId, "time=>", moment().utc().unix());
       cbfn(userInfos);
     });
   } catch (error) {
