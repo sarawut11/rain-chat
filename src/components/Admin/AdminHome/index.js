@@ -54,15 +54,21 @@ class AdminHome extends Component {
 
     const { loading } = this.state;
     return (
-      <div>
-        <h2>Admin Dashboard</h2>
+      <div className="chat-report-container">
+        <h2>Chat Report</h2>
         {loading ? (
           <Spin size="large" />
         ) : (
           <Descriptions bordered>
-            <Descriptions.Item label="Number of Users">{userCount}</Descriptions.Item>
-            <Descriptions.Item label="Number of users online">{onlineUserCount}</Descriptions.Item>
-            <Descriptions.Item label="Number of chat rooms">{groupCount}</Descriptions.Item>
+            <Descriptions.Item label="Number of Users" span={3}>
+              {userCount}
+            </Descriptions.Item>
+            <Descriptions.Item label="Number of users online" span={3}>
+              {onlineUserCount}
+            </Descriptions.Item>
+            <Descriptions.Item label="Number of chat rooms" span={3}>
+              {groupCount}
+            </Descriptions.Item>
           </Descriptions>
         )}
       </div>

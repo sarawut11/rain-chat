@@ -10,15 +10,56 @@
   .moderators-table {
     margin-top: 20px;
   }
+
+  h2 {
+    text-align: center;
+  }
+
+  .moderator-remove-button {
+    float: right;
+  }
+
+  .ad-report-container {
+    .ant-descriptions-title {
+      text-align: center;
+    }
+
+    .ant-divider-vertical {
+      margin-left: 50%;
+      height: 90%;
+      margin-top: 10%;
+    }
+
+    .ant-descriptions {
+      max-width: 500px;
+      margin: auto;
+    }
+  }
+
+  .wallet-container {
+    max-width: 750px;
+    margin: auto;
+  }
+
+  .expense-upload-container {
+    max-width: 500px;
+    margin-bottom: 20px;
+  }
 }
 
 .ant-list-item-meta {
   font-size: unset !important;
 }
 
+.chat-report-container {
+  max-width: 750px;
+  margin: auto;
+}
+
 @media screen and (max-width: 647px) {
   .dashboard-container {
     padding: 20px;
     width: 100%;
+    margin-bottom: 48px;
   }
 }
