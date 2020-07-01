@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Descriptions, notification, Spin } from 'antd';
+import { Descriptions, notification, Spin, Row, Button } from 'antd';
 import { setAdminAction } from '../../../containers/AdminPage/adminAction';
 import Request from '../../../utils/request';
 
@@ -50,20 +50,43 @@ class Wallet extends Component {
   }
 
   render() {
-    const { totalRainDonations, totalRained, totalWithdrawn } = this.props.adminState;
+    const {
+      totalRainDonations,
+      totalRained,
+      totalWithdrawn,
+      currentBalance,
+      walletAddress,
+    } = this.props.adminState;
 
     const { loading } = this.state;
     return (
-      <div>
+      <div className="wallet-container">
         <h2>Wallet</h2>
         {loading ? (
           <Spin size="large" />
         ) : (
-          <Descriptions bordered title="Current Balance">
-            <Descriptions.Item label="Total Rain Donations">{totalRainDonations}</Descriptions.Item>
-            <Descriptions.Item label="Total Rained">{totalRained}</Descriptions.Item>
-            <Descriptions.Item label="Total Withdrawn">{totalWithdrawn}</Descriptions.Item>
-          </Descriptions>
+          <div>
+            <Descriptions bordered>
+              <Descriptions.Item label="Current Balance" span={3}>
+                {currentBalance || 0}
+              </Descriptions.Item>
+              <Descriptions.Item label="Total Rain Donations" span={3}>
+                {totalRainDonations}
+              </Descriptions.Item>
+              <Descriptions.Item label="Total Rained" span={3}>
+                {totalRained}
+              </Descriptions.Item>
+              <Descriptions.Item label="Total Withdrawn" span={3}>
+                {totalWithdrawn}
+              </Descriptions.Item>
+              <Descriptions.Item label="Wallet address" span={3}>
+                {walletAddress || 0}
+              </Descriptions.Item>
+            </Descriptions>
+            <Row justify="center" style={{ marginTop: 40 }}>
+              <Button type="primary">Withdraw from Main Wallet</Button>
+            </Row>
+          </div>
         )}
       </div>
     );

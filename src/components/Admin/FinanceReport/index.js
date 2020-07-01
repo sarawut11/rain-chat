@@ -1,8 +1,22 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Descriptions, notification, Spin, Row, Col } from 'antd';
+import {
+  Descriptions,
+  notification,
+  Spin,
+  Row,
+  Col,
+  Collapse,
+  Table,
+  Upload,
+  message,
+  Button,
+} from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 import { setAdminAction } from '../../../containers/AdminPage/adminAction';
 import Request from '../../../utils/request';
+
+const { Panel } = Collapse;
 
 function mapStateToProps(state) {
   return {
@@ -15,6 +29,34 @@ const mapDispatchToProps = dispatch => ({
     dispatch(setAdminAction(arg));
   },
 });
+
+const renderModerItem = item => (
+  <Row style={{ width: '100%', margin: 0 }} gutter={[20, 10]} align="middle">
+    <Col span={12}>{item.username}</Col>
+    <Col span={12}>
+      Total Payment:
+      {item.totalPayment}
+    </Col>
+  </Row>
+);
+
+const uploadDummyProps = {
+  name: 'file',
+  action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
+  headers: {
+    authorization: 'authorization-text',
+  },
+  onChange(info) {
+    if (info.file.status !== 'uploading') {
+      console.log(info.file, info.fileList);
+    }
+    if (info.file.status === 'done') {
+      message.success(`${info.file.name} file uploaded successfully`);
+    } else if (info.file.status === 'error') {
+      message.error(`${info.file.name} file upload failed.`);
+    }
+  },
+};
 
 class FinanceReport extends Component {
   state = {
@@ -55,13 +97,54 @@ class FinanceReport extends Component {
       upgradedRevenue,
       ownerPayment,
       moders,
-      totalModeratorsPayment,
       totalExpenses,
       paidExpenses,
       unpaidExpenses,
     } = this.props.adminState;
 
     const { loading } = this.state;
+
+    const dataSource = [
+      {
+        key: '1',
+        date: '2020/6/30',
+        payment: '$2013',
+      },
+      {
+        key: '2',
+        date: '2020/6/29',
+        payment: '$2013',
+      },
+      {
+        key: '3',
+        date: '2020/6/28',
+        payment: '$2013',
+      },
+      {
+        key: '4',
+        date: '2020/6/27',
+        payment: '$2013',
+      },
+      {
+        key: '5',
+        date: '2020/6/26',
+        payment: '$2013',
+      },
+    ];
+
+    const columns = [
+      {
+        title: 'Date',
+        dataIndex: 'date',
+        key: 'date',
+      },
+      {
+        title: 'Payment',
+        dataIndex: 'payment',
+        key: 'payment',
+      },
+    ];
+
     return (
       <div>
         <h2>Financial Report</h2>
@@ -70,7 +153,7 @@ class FinanceReport extends Component {
         ) : (
           <Row gutter={[0, 20]}>
             <Col span={24}>
-              <Descriptions bordered>
+              <Descriptions bordered title="Revenue">
                 <Descriptions.Item label="Ad revenue">{adRevenue}</Descriptions.Item>
                 <Descriptions.Item label="Upgraded revenue">{upgradedRevenue}</Descriptions.Item>
               </Descriptions>
@@ -84,20 +167,26 @@ class FinanceReport extends Component {
             </Col>
 
             <Col span={24}>
-              <Descriptions bordered title="Moderator Payments">
+              <div className="ant-descriptions-title">Moderator Payments</div>
+              <Collapse>
                 {moders.map(moder => (
-                  <Descriptions.Item label={moder.name}>
-                    {moder.balance.toFixed(2)}
-                  </Descriptions.Item>
+                  <Panel header={renderModerItem(moder)} key={moder.username}>
+                    <Table dataSource={dataSource} columns={columns} pagination={false} />
+                  </Panel>
                 ))}
-                <Descriptions.Item label="Total payments" span={3}>
-                  {totalModeratorsPayment}
-                </Descriptions.Item>
-              </Descriptions>
+              </Collapse>
             </Col>
 
             <Col span={24}>
-              <Descriptions bordered title="Expenses">
+              <div className="ant-descriptions-title">Expenses</div>
+              <div className="expense-upload-container">
+                <Upload {...uploadDummyProps}>
+                  <Button>
+                    <UploadOutlined /> Click to upload expense pdf file
+                  </Button>
+                </Upload>
+              </div>
+              <Descriptions bordered>
                 <Descriptions.Item label="TotalExpenses">{totalExpenses}</Descriptions.Item>
                 <Descriptions.Item label="Expenses Unpaid">{unpaidExpenses}</Descriptions.Item>
                 <Descriptions.Item label="Expenses Paid">{paidExpenses}</Descriptions.Item>

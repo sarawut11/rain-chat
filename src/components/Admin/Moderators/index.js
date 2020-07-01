@@ -238,30 +238,40 @@ class Moderators extends Component {
             }}
             renderItem={item => (
               <List.Item>
-                <Row style={{ width: '100%' }} gutter={[20, 10]}>
-                  <Col xs={12} sm={12} md={12} lg={5} xl={5}>
+                <Row style={{ width: '100%' }} gutter={[20, 10]} align="middle">
+                  <Col xs={12} sm={12} md={12} lg={4} xl={4}>
                     <List.Item.Meta
                       avatar={<UserAvatar name={item.name} src={item.avatar} size="36" />}
                       title={item.name}
                       description={`@${item.username}`}
                     />
                   </Col>
-                  <Col xs={12} sm={12} md={12} lg={5} xl={5}>
+                  <Col xs={12} sm={12} md={12} lg={4} xl={4}>
                     Email: <br />
                     {item.email}
                   </Col>
-                  <Col xs={12} sm={12} md={12} lg={5} xl={5}>
+                  <Col xs={12} sm={12} md={12} lg={4} xl={4}>
                     Balance: <br />
                     {item.balance.toFixed(2)}
                   </Col>
-                  <Col xs={12} sm={12} md={12} lg={5} xl={5}>
+                  <Col xs={12} sm={12} md={12} lg={4} xl={4}>
                     <div>
-                      Role: <br />
-                      {item.role}
+                      Moderator Pay Total: <br />
+                      {item.totalModerPay}
                     </div>
                   </Col>
                   <Col xs={12} sm={12} md={12} lg={4} xl={4}>
-                    <Button danger onClick={this.onRemoveModer(item.username)}>
+                    <div>
+                      Last Moderator Payment: <br />
+                      {item.lastModer}
+                    </div>
+                  </Col>
+                  <Col xs={12} sm={12} md={12} lg={4} xl={4}>
+                    <Button
+                      danger
+                      onClick={this.onRemoveModer(item.username)}
+                      className="moderator-remove-button"
+                    >
                       Remove
                     </Button>
                   </Col>

@@ -35,6 +35,9 @@ export default class Request {
         })
         .catch(error => {
           console.log('request error', error, error.response);
+          notification.error({
+            message: 'Internal server error.',
+          });
           if (error.response.status === 401) {
             window.socket.disconnect();
             localStorage.removeItem('userInfo');
