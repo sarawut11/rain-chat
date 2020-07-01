@@ -37,23 +37,23 @@ export class GroupService {
   }
 
   // Join the group
-  joinGroup(userId, toGroupId) {
+  joinGroup(userId, groupId) {
     const sql = `
       INSERT INTO ${this.GROUP_USER_TABLE}(
         ${this.GROUP_USER_COLUMNS.userId},
         ${this.GROUP_USER_COLUMNS.groupId}
       ) VALUES(?,?);`;
-    return query(sql, [userId, toGroupId]);
+    return query(sql, [userId, groupId]);
   }
 
   // See if a user is in a group
-  isInGroup(userId, toGroupId) {
+  isInGroup(userId, groupId) {
     const sql = `
       SELECT * FROM ${this.GROUP_USER_TABLE}
       WHERE
         ${this.GROUP_USER_COLUMNS.userId} = ? AND
         ${this.GROUP_USER_COLUMNS.groupId} = ?;`;
-    return query(sql, [userId, toGroupId]);
+    return query(sql, [userId, groupId]);
   }
 
   // Create New Group
@@ -81,12 +81,12 @@ export class GroupService {
   }
 
   // Leave
-  leaveGroup(userId, toGroupId) {
+  leaveGroup(userId, groupId) {
     const sql = `
       DELETE FROM ${this.GROUP_USER_TABLE}
       WHERE
         ${this.GROUP_USER_COLUMNS.userId} = ? AND
         ${this.GROUP_USER_COLUMNS.groupId} = ?;`;
-    return query(sql, [userId, toGroupId]);
+    return query(sql, [userId, groupId]);
   }
 }

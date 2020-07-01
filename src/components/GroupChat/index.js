@@ -60,7 +60,7 @@ class GroupChat extends Component {
     const { allGroupChats, homePageList, updateHomePageList, addGroupMessageAndInfo } = this.props;
     const response = await request.socketEmitAndGetResponse(
       'joinGroup',
-      { userInfo: this._userInfo, toGroupId: this.chatId },
+      { userInfo: this._userInfo, groupId: this.chatId },
       () => {
         notification('Add group failed', 'error', 1.5);
         this.setState({ disableJoinButton: false });
@@ -92,7 +92,7 @@ class GroupChat extends Component {
   leaveGroup = () => {
     const { userId } = this._userInfo;
     const { homePageList, deleteHomePageList, allGroupChats, deleteGroupChat } = this.props;
-    window.socket.emit('leaveGroup', { userId, toGroupId: this.chatId });
+    window.socket.emit('leaveGroup', { userId, groupId: this.chatId });
     deleteHomePageList({ homePageList, chatId: this.chatId });
     deleteGroupChat({ allGroupChats, groupId: this.chatId });
     this.props.history.push('/');
@@ -204,6 +204,7 @@ class GroupChat extends Component {
           homePageList={homePageList}
         />
         <PersonalInfo
+          groupInfo={groupInfo}
           userInfo={personalInfo}
           hide={() => this._showPersonalInfo(false)}
           homePageList={homePageList}
