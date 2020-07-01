@@ -29,7 +29,7 @@ export default class PrivateChat extends Component {
 
   sendMessage = async (inputMsg = '', attachments = []) => {
     if (inputMsg.trim() === '' && attachments.length === 0) return;
-    const { user_id, avatar, name, github_id } = this._userInfo;
+    const { userId, avatar, name } = this._userInfo;
     const {
       allPrivateChats,
       homePageList,
@@ -37,11 +37,10 @@ export default class PrivateChat extends Component {
       addPrivateChatMessages,
     } = this.props;
     const data = {
-      from_user: user_id, // Own id
-      to_user: this.friendId, // Other's id
+      fromUser: userId, // Own id
+      toUser: this.friendId, // Other's id
       avatar, // Own avatar
       name,
-      github_id,
       message: inputMsg === '' ? `[${attachments[0].type || 'file'}]` : `${inputMsg}`, // Message content
       attachments, // attatchment
       // time: Date.parse(new Date()) / 1000 //
@@ -57,20 +56,20 @@ export default class PrivateChat extends Component {
     });
     // eslint-disable-next-line no-restricted-globals
     const dataForHomePage = { ...response, name: location.search.split('=')[1] };
-    updateHomePageList({ data: dataForHomePage, homePageList, myUserId: user_id });
+    updateHomePageList({ data: dataForHomePage, homePageList, myUserId: userId });
   };
 
   addAsTheContact = async () => {
     if (this.state.disableJoinButton) return;
     this.setState({ disableJoinButton: true });
     const { allPrivateChats, homePageList, updateHomePageList, addPrivateChatInfo } = this.props;
-    if (this.chatId === this._userInfo.user_id) {
+    if (this.chatId === this._userInfo.userId) {
       notification('Can not add yourself as a contact', 'error', 2);
       return;
     }
     const data = await request.socketEmitAndGetResponse(
       'addAsTheContact',
-      { user_id: this._userInfo.user_id, from_user: this.friendId },
+      { userId: this._userInfo.userId, fromUser: this.friendId },
       () => {
         notification('Add failed! ', 'error', 1.5);
         this.setState({ disableJoinButton: false });
@@ -79,7 +78,7 @@ export default class PrivateChat extends Component {
     addPrivateChatInfo({ allPrivateChats, chatId: this.friendId, userInfo: data });
     const dataInHomePageList = {
       ...data,
-      to_user: data.user_id,
+      toUser: data.userId,
       message: 'Add contact successfully, send me a message:)',
       time: Date.parse(new Date()) / 1000,
     };
@@ -93,7 +92,7 @@ export default class PrivateChat extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     const { relatedCurrentChat, match } = nextProps;
     // console.log('shouldComponentUpdate', relatedCurrentChat, chatId, this.props.chatId, this._sendByMe);
-    if (relatedCurrentChat || match.params.user_id !== this.chatId || this._sendByMe) {
+    if (relatedCurrentChat || match.params.userId !== this.chatId || this._sendByMe) {
       this._sendByMe = false;
       return true;
     }
@@ -195,7 +194,7 @@ export default class PrivateChat extends Component {
   }
 
   get chatId() {
-    return parseInt(this.props.match.params.user_id, 10);
+    return parseInt(this.props.match.params.userId, 10);
   }
 
   // question: writing as this is ok ?

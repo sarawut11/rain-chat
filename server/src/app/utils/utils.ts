@@ -44,7 +44,7 @@ export const checkUserInfo = (username, role?): Promise<any> => new Promise(asyn
     return;
   }
   const userInfo = RowDataPacket[0];
-  if (userInfo.user_id === 1) { // Default Admin
+  if (userInfo.userId === 1) { // Default Admin
     resolve({
       success: false,
       message: "Can't modify this user's info"

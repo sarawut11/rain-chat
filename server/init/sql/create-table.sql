@@ -43,11 +43,11 @@ CREATE TABLE `user_info` (
 DROP TABLE IF EXISTS `group_info`;
 CREATE TABLE `group_info` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `to_group_id` char(100) NOT NULL DEFAULT '',
+  `groupId` char(100) NOT NULL DEFAULT '',
   `name` varchar(20) NOT NULL DEFAULT '',
-  `group_notice` varchar(100) NOT NULL DEFAULT '',
-  `creator_id` int(11) NOT NULL,
-  `create_time` int(11) NOT NULL,
+  `description` varchar(100) NOT NULL DEFAULT '',
+  `creatorId` int(11) NOT NULL,
+  `createTime` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 # Dump of table group_msg
@@ -55,34 +55,34 @@ CREATE TABLE `group_info` (
 DROP TABLE IF EXISTS `group_msg`;
 CREATE TABLE `group_msg` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `from_user` int(11) NOT NULL,
-  `to_group_id` char(100) NOT NULL DEFAULT '',
+  `fromUser` int(11) NOT NULL,
+  `groupId` char(100) NOT NULL DEFAULT '',
   `message` text NOT NULL,
   `time` int(11) NOT NULL,
   `attachments` varchar(250) DEFAULT '''[]''',
   PRIMARY KEY (`id`),
-  KEY `to_group` (`to_group_id`)
+  KEY `to_group` (`groupId`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 # Dump of table rain_group_msg
 # ------------------------------------------------------------
 DROP TABLE IF EXISTS `rain_group_msg`;
 CREATE TABLE `rain_group_msg` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `from_user` int(11) NOT NULL,
-  `to_group_id` char(100) NOT NULL DEFAULT '',
+  `fromUser` int(11) NOT NULL,
+  `groupId` char(100) NOT NULL DEFAULT '',
   `message` text NOT NULL,
   `time` int(11) NOT NULL,
   `attachments` varchar(250) DEFAULT '''[]''',
   PRIMARY KEY (`id`),
-  KEY `to_group` (`to_group_id`)
+  KEY `to_group` (`groupId`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 # Dump of table group_user_relation
 # ------------------------------------------------------------
 DROP TABLE IF EXISTS `group_user_relation`;
 CREATE TABLE `group_user_relation` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `to_group_id` char(100) NOT NULL DEFAULT '',
-  `user_id` int(11) NOT NULL,
+  `groupId` char(100) NOT NULL DEFAULT '',
+  `userId` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 # Dump of table private_msg
@@ -90,22 +90,22 @@ CREATE TABLE `group_user_relation` (
 DROP TABLE IF EXISTS `private_msg`;
 CREATE TABLE `private_msg` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `from_user` int(11) NOT NULL,
-  `to_user` int(11) NOT NULL,
+  `fromUser` int(11) NOT NULL,
+  `toUser` int(11) NOT NULL,
   `message` text,
   `time` int(11) NOT NULL,
   `attachments` varchar(250) DEFAULT '[]',
   PRIMARY KEY (`id`),
-  KEY `from_user` (`from_user`),
-  KEY `to_user` (`to_user`)
+  KEY `fromUser` (`fromUser`),
+  KEY `toUser` (`toUser`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 # Dump of table user_user_relation
 # ------------------------------------------------------------
 DROP TABLE IF EXISTS `user_user_relation`;
 CREATE TABLE `user_user_relation` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `from_user` int(11) NOT NULL,
+  `userId` int(11) NOT NULL,
+  `fromUser` int(11) NOT NULL,
   `remark` varchar(10) DEFAULT '',
   `shield` tinyint(1) NOT NULL DEFAULT '0',
   `time` int(11) NOT NULL,

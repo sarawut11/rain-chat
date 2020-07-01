@@ -10,14 +10,14 @@ const initialSettings = {
 
 const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 const previousSettings =
-  userInfo && JSON.parse(localStorage.getItem(`settings-${userInfo.user_id}`));
+  userInfo && JSON.parse(localStorage.getItem(`settings-${userInfo.userId}`));
 
 const setGlobalSettingsReducer = (previousState = previousSettings || initialSettings, action) => {
   switch (action.type) {
     case SET_GLOBAL_SETTINGS:
       if (userInfo) {
         localStorage.setItem(
-          `settings-${userInfo.user_id}`,
+          `settings-${userInfo.userId}`,
           JSON.stringify({ ...previousState, ...action.data }),
         );
       }

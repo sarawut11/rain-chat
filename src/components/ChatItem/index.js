@@ -24,8 +24,8 @@ class ChatItem extends Component {
   }
 
   sharePersonalCard = shareObj => {
-    const { name, user_id } = shareObj;
-    const redirectUrl = `/private_chat/${user_id}`;
+    const { name, userId } = shareObj;
+    const redirectUrl = `/private_chat/${userId}`;
     return (
       <div
         className="shareCard"
@@ -40,8 +40,8 @@ class ChatItem extends Component {
   };
 
   shareGroupCard = shareObj => {
-    const { name, to_group_id } = shareObj;
-    const redirectUrl = `/group_chat/${to_group_id}`;
+    const { name, groupId } = shareObj;
+    const redirectUrl = `/group_chat/${groupId}`;
     return (
       <div
         className="shareCard"
@@ -76,10 +76,10 @@ class ChatItem extends Component {
     const isShareUrl = /^::share::{"/.test(msg);
     if (isShareUrl) {
       const shareObj = JSON.parse(msg.replace(/::share::/, ''));
-      if (shareObj.to_group_id) {
+      if (shareObj.groupId) {
         return <div className="msg-render">{this.shareGroupCard(shareObj)}</div>;
       }
-      if (shareObj.user_id) {
+      if (shareObj.userId) {
         return <div className="msg-render">{this.sharePersonalCard(shareObj)}</div>;
       }
     }

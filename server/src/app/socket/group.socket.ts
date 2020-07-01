@@ -1,8 +1,9 @@
 import * as uuid from "uuid/v1";
 import * as moment from "moment";
+import * as socketIo from "socket.io";
 import { ServicesContext } from "../context";
 import { getAllMessage, getGroupItem } from "./message.socket";
-import { User } from "../models";
+import { User, Group } from "../models";
 import { isVitaePostEnabled } from "../utils/utils";
 import { socketServer } from "./app.socket";
 import { socketEventNames } from "./resource.socket";
@@ -25,7 +26,7 @@ export const sendGroupMsg = async (io, socket, data, cbFn) => {
     data.attachments = JSON.stringify(data.attachments);
     data.time = moment().utc().unix();
     await groupChatService.saveGroupMsg({ ...data });
-    socket.broadcast.to(data.to_group_id).emit("getGroupMsg", data);
+    socket.broadcast.to(data.groupId).emit("getGroupMsg", data);
     console.log("sendGroupMsg data=>", data, "time=>", new Date().toLocaleString());
     cbFn(data);
   } catch (error) {
@@ -71,21 +72,21 @@ export const getOneGroupItem = async (io, socket, data, cbfn) => {
 export const createGroup = async (io, socket, data, cbfn) => {
   try {
     const { groupService, userService } = ServicesContext.getInstance();
-    const toGroupId = uuid();
-    data.create_time = Date.parse(new Date().toString()) / 1000;
-    const { name, group_notice, creator_id, create_time } = data;
-    const RowDataPacket = await userService.getUserInfoById(creator_id);
+    const groupId = uuid();
+    data.createTime = Date.parse(new Date().toString()) / 1000;
+    const { name, description, creatorId, createTime } = data;
+    const RowDataPacket = await userService.getUserInfoById(creatorId);
     const userInfo = RowDataPacket[0];
     if (userInfo.role !== User.ROLE.OWNER && userInfo.role !== User.ROLE.UPGRADED_USER) {
       console.log("Free Members can't create a group");
       io.to(socket.id).emit("error", { code: 500, message: "Free Members can't create a group" });
     } else {
-      const arr = [toGroupId, name, group_notice, creator_id, create_time];
+      const arr = [groupId, name, description, creatorId, createTime];
       await groupService.createGroup(arr);
-      await groupService.joinGroup(creator_id, toGroupId);
-      socket.join(toGroupId);
+      await groupService.joinGroup(creatorId, groupId);
+      socket.join(groupId);
       console.log("createGroup data=>", data, "time=>", new Date().toLocaleString());
-      cbfn({ to_group_id: toGroupId, ...data });
+      cbfn({ groupId, ...data });
     }
   } catch (error) {
     console.log("error", error.message);
@@ -110,13 +111,13 @@ export const joinGroup = async (io, socket, data, cbfn) => {
     const { userInfo, toGroupId } = data;
     const { groupService } = ServicesContext.getInstance();
 
-    const joinedThisGroup = (await groupService.isInGroup(userInfo.user_id, toGroupId)).length;
+    const joinedThisGroup = (await groupService.isInGroup(userInfo.userId, toGroupId)).length;
     if (!joinedThisGroup) {
-      await groupService.joinGroup(userInfo.user_id, toGroupId);
+      await groupService.joinGroup(userInfo.userId, toGroupId);
       socket.broadcast.to(toGroupId).emit("getGroupMsg", {
         ...userInfo,
         message: `${userInfo.name} joined a group chat`,
-        to_group_id: toGroupId,
+        groupId: toGroupId,
         tip: "joinGroup",
       });
     }
@@ -132,12 +133,31 @@ export const joinGroup = async (io, socket, data, cbfn) => {
 
 export const leaveGroup = async (io, socket, data) => {
   try {
-    const { user_id, toGroupId } = data;
+    const { userId, toGroupId } = data;
     const { groupService } = ServicesContext.getInstance();
 
     socket.leave(toGroupId);
-    await groupService.leaveGroup(user_id, toGroupId);
+    await groupService.leaveGroup(userId, toGroupId);
     console.log("leaveGroup data=>", data, "time=>", new Date().toLocaleString());
+  } catch (error) {
+    console.log("error", error.message);
+    io.to(socket.id).emit("error", { code: 500, message: error.message });
+  }
+};
+
+export const kickMember = async (io, socket: socketIo.Socket, data) => {
+  try {
+    const { userId, groupId } = data;
+    const { userService, groupService } = ServicesContext.getInstance();
+
+    const user: User[] = await userService.getUserBySocketId(socket.id);
+    if (user.length === 0) return;
+    if (user[0].role !== User.ROLE.UPGRADED_USER) return;
+
+    const group: Group[] = await groupService.getGroupById(groupId);
+    if (group.length === 0) return;
+    if (group[0].creatorId !== user[0].id) return;
+
   } catch (error) {
     console.log("error", error.message);
     io.to(socket.id).emit("error", { code: 500, message: error.message });

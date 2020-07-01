@@ -66,7 +66,7 @@ export default class ChatContentList extends Component {
       this._chat
         .lazyLoadPrivateChatMessages({
           chats,
-          user_id: this._userInfo.user_id,
+          userId: this._userInfo.userId,
           chatId,
           start: ChatContent.length + 1,
           count: 20,
@@ -110,12 +110,12 @@ export default class ChatContentList extends Component {
     const { ChatContent, clickAvatar } = this.props;
     const listItems = ChatContent.map((item, index) => {
       let isMe;
-      if (item.to_user) {
+      if (item.toUser) {
         // is private chat
-        isMe = this._userInfo && this._userInfo.user_id === item.from_user;
-      } else if (item.to_group_id) {
+        isMe = this._userInfo && this._userInfo.userId === item.fromUser;
+      } else if (item.groupId) {
         // is group chat
-        isMe = this._userInfo && this._userInfo.user_id === item.from_user;
+        isMe = this._userInfo && this._userInfo.userId === item.fromUser;
       }
       const time = toNormalTime(item.time);
       const attachments = item.attachments;
@@ -138,7 +138,7 @@ export default class ChatContentList extends Component {
             github_id={item.github_id}
             clickImage={this.clickImage}
             shouldScrollIntoView={!(this._scrollHeight && this._loadingNewMessages)}
-            clickAvatar={() => clickAvatar(item.from_user)}
+            clickAvatar={() => clickAvatar(item.fromUser)}
             attachments={attachments}
           />
         </li>

@@ -42,7 +42,7 @@ const initServer = server => {
     });
     const allMessage = await getAllMessage({ userId, clientHomePageList });
     socket.emit("initSocketSuccess", allMessage);
-    console.log("initSocketSuccess user_id=>", userId, "time=>", new Date().toLocaleString());
+    console.log("initSocketSuccess userId=>", userId, "time=>", new Date().toLocaleString());
 
     socket.use((packet, next) => {
       if (!requestFrequency(socketId)) return next();
@@ -54,15 +54,15 @@ const initServer = server => {
     const existSocketIdStr = getSocketIdHandle(arr);
     const newSocketIdStr = existSocketIdStr ? `${existSocketIdStr},${socketId}` : socketId;
     await userService.saveUserSocketId(userId, newSocketIdStr);
-    console.log("initSocket user_id=>", userId, "time=>", new Date().toLocaleString());
+    console.log("initSocket userId=>", userId, "time=>", new Date().toLocaleString());
 
     // init GroupChat
     const result = await userService.getGroupList(userId);
     const groupList = JSON.parse(JSON.stringify(result));
     for (const item of groupList) {
-      socket.join(item.to_group_id);
+      socket.join(item.groupId);
     }
-    console.log("initGroupChat user_id=>", userId, "time=>", new Date().toLocaleString());
+    console.log("initGroupChat userId=>", userId, "time=>", new Date().toLocaleString());
 
     socket
       // Private message
@@ -78,8 +78,8 @@ const initServer = server => {
       .on("getUserInfo", async (userID, fn) => {
         await privateSockets.getUserInfo(io, socket, userID, fn);
       })
-      .on("deleteContact", async ({ from_user, to_user }, fn) => {
-        await privateSockets.deleteContact(io, socket, { from_user, to_user }, fn);
+      .on("deleteContact", async ({ fromUser, toUser }, fn) => {
+        await privateSockets.deleteContact(io, socket, { fromUser, toUser }, fn);
       })
 
       // Group chat
@@ -152,7 +152,7 @@ const initServer = server => {
         //   ]);
         // }
 
-        console.log("disconnect.=>reason", reason, "user_id=>", userId, "socket.id=>", socket.id, "time=>",
+        console.log("disconnect.=>reason", reason, "userId=>", userId, "socket.id=>", socket.id, "time=>",
           new Date().toLocaleString(),
         );
       } catch (error) {

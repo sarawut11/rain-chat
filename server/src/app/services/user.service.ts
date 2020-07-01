@@ -33,78 +33,78 @@ export class UserService {
 
   // Fuzzy matching users
   fuzzyMatchUsers(username) {
-    const _sql = "SELECT * FROM user_info WHERE username LIKE ?;";
-    return query(_sql, username);
+    const sql = "SELECT * FROM user_info WHERE username LIKE ?;";
+    return query(sql, username);
   }
 
   // Register User
   insertUser(value) {
-    const _sql = "insert into user_info(name,email,username,password,sponsor,refcode) values(?,?,?,?,?,?);";
-    return query(_sql, value);
+    const sql = "insert into user_info(name,email,username,password,sponsor,refcode) values(?,?,?,?,?,?);";
+    return query(sql, value);
   }
 
   findUserById(id) {
-    const _sql = "SELECT * FROM user_info WHERE id = ?;";
-    return query(_sql, id);
+    const sql = "SELECT * FROM user_info WHERE id = ?;";
+    return query(sql, id);
   }
 
   findUserByUsername(username) {
-    const _sql = "SELECT * FROM user_info WHERE username = ?;";
-    return query(_sql, username);
+    const sql = "SELECT * FROM user_info WHERE username = ?;";
+    return query(sql, username);
   }
 
   findUserByEmail(email) {
-    const _sql = "SELECT * FROM user_info WHERE email = ?;";
-    return query(_sql, email);
+    const sql = "SELECT * FROM user_info WHERE email = ?;";
+    return query(sql, email);
   }
 
   findUserByRefcode(refcode) {
-    const _sql = "SELECT * FROM user_info WHERE refcode = ?;";
-    return query(_sql, refcode);
+    const sql = "SELECT * FROM user_info WHERE refcode = ?;";
+    return query(sql, refcode);
   }
 
   findUserByEmailOrUsername(email, username) {
     if (email === "") email = undefined;
-    const _sql = "SELECT * FROM user_info WHERE email = ? OR username = ?;";
-    return query(_sql, [email, username]);
+    const sql = "SELECT * FROM user_info WHERE email = ? OR username = ?;";
+    return query(sql, [email, username]);
   }
 
   getRefcode(username) {
-    const _sql = "SELECT refcode FROM user_info WHERE username = ?;";
-    return query(_sql, username);
+    const sql = "SELECT refcode FROM user_info WHERE username = ?;";
+    return query(sql, username);
   }
 
   setRefcode(username, refcode) {
-    const _sql = "UPDATE user_info SET refcode = ? WHERE username = ? limit 1 ; ";
-    return query(_sql, [refcode, username]);
+    const sql = "UPDATE user_info SET refcode = ? WHERE username = ? limit 1 ; ";
+    return query(sql, [refcode, username]);
   }
 
   // Find user information by user id user_info includes user name, avatar, last login time, status, etc. excluding password
   getUserInfoById(userId) {
-    const _sql =
-      "SELECT id AS user_id, username, name, avatar, intro, role FROM user_info WHERE user_info.id =? ";
-    return query(_sql, [userId]);
+    const sql =
+      "SELECT id AS userId, username, name, avatar, intro, role FROM user_info WHERE user_info.id =? ";
+    return query(sql, [userId]);
   }
 
   getUserInfoByUsername(username) {
-    const _sql =
-      "SELECT id AS user_id, username, name, avatar, intro, role FROM user_info WHERE user_info.username =? ";
-    return query(_sql, [username]);
+    const sql =
+      "SELECT id AS userId, username, name, avatar, intro, role FROM user_info WHERE user_info.username =? ";
+    return query(sql, [username]);
   }
 
   setUserInfo(username, { name, intro, avatar }) {
     if (isNullOrUndefined(avatar)) {
-      const _sql = "UPDATE user_info SET name = ?, intro = ? WHERE username = ? limit 1 ; ";
-      return query(_sql, [name, intro, username]);
+      const sql = "UPDATE user_info SET name = ?, intro = ? WHERE username = ? limit 1 ; ";
+      return query(sql, [name, intro, username]);
     } else {
-      const _sql = "UPDATE user_info SET name = ?, intro = ?, avatar = ? WHERE username = ? limit 1 ; ";
-      return query(_sql, [name, intro, avatar, username]);
+      const sql = "UPDATE user_info SET name = ?, intro = ?, avatar = ? WHERE username = ? limit 1 ; ";
+      return query(sql, [name, intro, avatar, username]);
     }
   }
 
   setAvatar(username, avatar) {
-    const _sql = "UPDATE user_info SET avatar = ? WHERE username = ? limit 1 ; ";
-    return query(_sql, [avatar, username]);
+    const sql = "UPDATE user_info SET avatar = ? WHERE username = ? limit 1 ; ";
+    return query(sql, [avatar, username]);
   }
 
   findUsersByRole(role: string) {
@@ -113,8 +113,8 @@ export class UserService {
   }
 
   updateRole(username, role) {
-    const _sql = "UPDATE user_info SET role = ? WHERE username = ? limit 1 ; ";
-    return query(_sql, [role, username]);
+    const sql = "UPDATE user_info SET role = ? WHERE username = ? limit 1 ; ";
+    return query(sql, [role, username]);
   }
 
   getUsers({ start, count, name, username, role, email, searchString }) {
@@ -123,7 +123,7 @@ export class UserService {
     if (username === undefined) username = "";
     if (email === undefined) email = "";
     if (searchString === undefined) searchString = "";
-    const _sql = `
+    const sql = `
       SELECT *, COUNT(*) OVER() as totalCount FROM user_info
       WHERE
         (role LIKE '%${role}%' AND
@@ -135,81 +135,81 @@ export class UserService {
         name LIKE '%${searchString}%' OR
         email LIKE '%${searchString}%')
       LIMIT ${start}, ${count};`;
-    return query(_sql);
+    return query(sql);
   }
 
   getUsernamelist() {
-    const _sql = `
+    const sql = `
       SELECT ${this.columns.username}, ${this.columns.email}
       FROM ${this.TABLE_NAME}
       WHERE
         ${this.columns.role} = ? OR
         ${this.columns.role} = ?;`;
-    return query(_sql, [User.ROLE.FREE, User.ROLE.UPGRADED_USER]);
+    return query(sql, [User.ROLE.FREE, User.ROLE.UPGRADED_USER]);
   }
 
   getModers() {
-    const _sql = `SELECT * FROM ${this.TABLE_NAME} WHERE ${this.columns.role} = ?;`;
-    return query(_sql, User.ROLE.MODERATOR);
+    const sql = `SELECT * FROM ${this.TABLE_NAME} WHERE ${this.columns.role} = ?;`;
+    return query(sql, User.ROLE.MODERATOR);
   }
 
-  // Check if the user id is a friend of the local user by checking the user id. If yes, return user_id and remark.
+  // Check if the user id is a friend of the local user by checking the user id. If yes, return userId and remark.
   isFriend(userId, fromUser) {
-    const _sql =
-      "SELECT * FROM user_user_relation AS u WHERE u.user_id = ? AND u.from_user = ? ";
-    return query(_sql, [userId, fromUser]);
+    const sql =
+      "SELECT * FROM user_user_relation AS u WHERE u.userId = ? AND u.fromUser = ? ";
+    return query(sql, [userId, fromUser]);
   }
 
   // Add each other as friends
   addFriendEachOther(userId, fromUser, time) {
-    const _sql = "INSERT INTO user_user_relation(user_id,from_user,time) VALUES (?,?,?), (?,?,?)";
-    return query(_sql, [userId, fromUser, time, fromUser, userId, time]);
+    const sql = "INSERT INTO user_user_relation(userId,fromUser,time) VALUES (?,?,?), (?,?,?)";
+    return query(sql, [userId, fromUser, time, fromUser, userId, time]);
   }
 
   // Delete contact
   deleteContact(userId, fromUser) {
-    const _sql =
-      "DELETE FROM  user_user_relation WHERE (user_id = ? AND from_user = ?) or (user_id = ? AND from_user = ?)";
-    return query(_sql, [userId, fromUser, fromUser, userId]);
+    const sql =
+      "DELETE FROM  user_user_relation WHERE (userId = ? AND fromUser = ?) or (userId = ? AND fromUser = ?)";
+    return query(sql, [userId, fromUser, fromUser, userId]);
   }
 
-  // Find home page group list by user_id
+  // Find home page group list by userId
   // TODO: Optimize SQL statement
   getGroupList(userId) {
-    const _sql = `
-    ( SELECT r.to_group_id ,i.name , i.create_time,
-      (SELECT g.message  FROM group_msg AS g  WHERE g.to_group_id = r.to_group_id  ORDER BY TIME DESC   LIMIT 1 )  AS message ,
-      (SELECT g.time  FROM group_msg AS g  WHERE g.to_group_id = r.to_group_id  ORDER BY TIME DESC   LIMIT 1 )  AS time,
-      (SELECT g.attachments FROM group_msg AS g  WHERE g.to_group_id = r.to_group_id  ORDER BY TIME DESC   LIMIT 1 )  AS attachments
-      FROM  group_user_relation AS r inner join group_info AS i on r.to_group_id = i.to_group_id WHERE r.user_id = ? AND r.to_group_id != ? )
+    const sql = `
+    ( SELECT r.groupId ,i.name , i.createTime,
+      (SELECT g.message  FROM group_msg AS g  WHERE g.groupId = r.groupId  ORDER BY TIME DESC   LIMIT 1 )  AS message ,
+      (SELECT g.time  FROM group_msg AS g  WHERE g.groupId = r.groupId  ORDER BY TIME DESC   LIMIT 1 )  AS time,
+      (SELECT g.attachments FROM group_msg AS g  WHERE g.groupId = r.groupId  ORDER BY TIME DESC   LIMIT 1 )  AS attachments
+      FROM  group_user_relation AS r inner join group_info AS i on r.groupId = i.groupId WHERE r.userId = ? AND r.groupId != ? )
     UNION
-    ( SELECT i.to_group_id ,i.name , i.create_time, g.message, g.time, g.attachments
-      FROM  group_info AS i INNER JOIN rain_group_msg as g on i.to_group_id = ? ORDER BY TIME DESC LIMIT 1 );`;
-    return query(_sql, [userId, configs.rain.group_id, configs.rain.group_id]);
+    ( SELECT i.groupId ,i.name , i.createTime, g.message, g.time, g.attachments
+      FROM  group_info AS i INNER JOIN rain_group_msg as g on i.groupId = ? ORDER BY TIME DESC LIMIT 1 );`;
+    return query(sql, [userId, configs.rain.group_id, configs.rain.group_id]);
   }
 
-  // Find homepage private chat list by user_id
+  // Find homepage private chat list by userId
   // TODO: Optimize SQL statement
   getPrivateList(userId) {
-    const _sql = ` SELECT r.from_user as user_id, i.username, i.name, i.avatar, r.time as be_friend_time,
-      (SELECT p.message FROM private_msg AS p WHERE (p.to_user = r.from_user and p.from_user = r.user_id) or (p.from_user = r.from_user and p.to_user = r.user_id) ORDER BY p.time DESC   LIMIT 1 )  AS message ,
-      (SELECT p.time FROM private_msg AS p WHERE (p.to_user = r.from_user and p.from_user = r.user_id) or (p.from_user = r.from_user and p.to_user = r.user_id) ORDER BY p.time DESC   LIMIT 1 )  AS time,
-      (SELECT p.attachments FROM private_msg AS p WHERE (p.to_user = r.from_user and p.from_user = r.user_id) or (p.from_user = r.from_user and p.to_user = r.user_id) ORDER BY p.time DESC   LIMIT 1 )  AS attachments
-      FROM  user_user_relation AS r inner join user_info AS i on r.from_user  = i.id WHERE r.user_id = ? ;`;
-    return query(_sql, userId);
+    const sql = `SELECT r.fromUser as userId, i.username, i.name, i.avatar, r.time as friendtime,
+      (SELECT p.message FROM private_msg AS p WHERE (p.toUser = r.fromUser and p.fromUser = r.userId) or (p.fromUser = r.fromUser and p.toUser = r.userId) ORDER BY p.time DESC   LIMIT 1 )  AS message ,
+      (SELECT p.time FROM private_msg AS p WHERE (p.toUser = r.fromUser and p.fromUser = r.userId) or (p.fromUser = r.fromUser and p.toUser = r.userId) ORDER BY p.time DESC   LIMIT 1 )  AS time,
+      (SELECT p.attachments FROM private_msg AS p WHERE (p.toUser = r.fromUser and p.fromUser = r.userId) or (p.fromUser = r.fromUser and p.toUser = r.userId) ORDER BY p.time DESC   LIMIT 1 )  AS attachments
+      FROM  user_user_relation AS r inner join user_info AS i on r.fromUser  = i.id WHERE r.userId = ? ;`;
+    return query(sql, userId);
   }
 
   clearAllSocketIds() {
-    const _sql = `
+    const sql = `
       UPDATE ${this.TABLE_NAME} SET socketid = '';
     `;
-    return query(_sql);
+    return query(sql);
   }
 
   saveUserSocketId(userId, socketId) {
     const data = [socketId, userId];
-    const _sql = "UPDATE user_info SET socketid = ? WHERE id= ? limit 1 ; ";
-    return query(_sql, data);
+    const sql = "UPDATE user_info SET socketid = ? WHERE id= ? limit 1 ; ";
+    return query(sql, data);
   }
 
   getSocketIdsByUserids(userIds: string[]) {
@@ -217,41 +217,41 @@ export class UserService {
       return [];
     }
     const array = getInArraySQL(userIds);
-    const _sql = `SELECT socketid FROM user_info WHERE id IN (${array})`;
-    return query(_sql);
+    const sql = `SELECT socketid FROM user_info WHERE id IN (${array})`;
+    return query(sql);
   }
 
   getSocketid(toUserId) {
-    const _sql = "SELECT socketid FROM user_info WHERE id=? limit 1 ;";
-    return query(_sql, [toUserId]);
+    const sql = "SELECT socketid FROM user_info WHERE id=? limit 1 ;";
+    return query(sql, [toUserId]);
   }
 
   getUserBySocketId(socketId) {
     if (socketId === "") socketId = undefined;
-    const _sql = `SELECT * FROM user_info WHERE socketid LIKE '%${socketId}%' limit 1;`;
-    return query(_sql);
+    const sql = `SELECT * FROM user_info WHERE socketid LIKE '%${socketId}%' limit 1;`;
+    return query(sql);
   }
 
   getUsersByPopLimited() {
     const limit = configs.rain.pop_rain_balance_limit;
-    const _sql = "SELECT * FROM user_info WHERE popBalance >= ?;";
-    return query(_sql, limit);
+    const sql = "SELECT * FROM user_info WHERE popBalance >= ?;";
+    return query(sql, limit);
   }
 
   getUsersByLastActivity(limit) {
-    const _sql = `
+    const sql = `
     SELECT u.id, u.socketid
     FROM rain_group_msg as rgm
     JOIN user_info as u
-    ON rgm.from_user = u.id
+    ON rgm.fromUser = u.id
     ORDER BY rgm.time DESC LIMIT ?;`;
-    return query(_sql, limit);
+    return query(sql, limit);
   }
 
   getUsersByUserIds(userIds: number[]) {
     const array = getInArraySQL(userIds);
-    const _sql = `SELECT * FROM ${this.TABLE_NAME} WHERE ${this.columns.id} IN (${array});`;
-    return query(_sql);
+    const sql = `SELECT * FROM ${this.TABLE_NAME} WHERE ${this.columns.id} IN (${array});`;
+    return query(sql);
   }
 
   getUsersByUsernames(usernames: string[]) {
@@ -262,50 +262,50 @@ export class UserService {
 
   resetPopbalance(userIds: number[]) {
     const array = getInArraySQL(userIds);
-    const _sql = `UPDATE user_info SET popBalance = 0 WHERE id IN (${array})`;
-    return query(_sql, userIds);
+    const sql = `UPDATE user_info SET popBalance = 0 WHERE id IN (${array})`;
+    return query(sql, userIds);
   }
 
   rainUser(username, reward) {
-    const _sql = `
+    const sql = `
       UPDATE ${this.TABLE_NAME}
       SET
         balance = balance + ?,
         popBalance = popBalance + ?
       WHERE username = ?;`;
-    return query(_sql, [reward / 2, reward / 2, username]);
+    return query(sql, [reward / 2, reward / 2, username]);
   }
 
   rainUsers(userIds: number[], reward, popReward) {
     const array = getInArraySQL(userIds);
-    const _sql = `
+    const sql = `
       UPDATE ${this.TABLE_NAME}
       SET
         balance = balance + ?,
         popBalance = popBalance + ?
       WHERE id IN (${array});`;
-    return query(_sql, [reward, popReward]);
+    return query(sql, [reward, popReward]);
   }
 
   // Membership Revenue
   addBalance(userId: number, amount: number) {
-    const _sql = `
+    const sql = `
       UPDATE ${this.TABLE_NAME}
       SET
         ${this.columns.balance} = ${this.columns.balance} + ?
       WHERE ${this.columns.id} = ?;`;
-    return query(_sql, [amount, userId]);
+    return query(sql, [amount, userId]);
   }
 
   shareRevenue(amount: number, role: string) {
-    const _sql = `
+    const sql = `
       UPDATE ${this.TABLE_NAME} as a
       INNER JOIN (
         SELECT COUNT(*) OVER() as total
         FROM ${this.TABLE_NAME} WHERE ${this.columns.role} = ?
       ) as b
       SET a.${this.columns.balance} = a.${this.columns.balance} + ? / b.total;`;
-    return query(_sql, [role, amount]);
+    return query(sql, [role, amount]);
   }
 
   setModers(usernames: string[]) {
@@ -326,68 +326,68 @@ export class UserService {
   }
 
   updateMembership(userId, role) {
-    const _sql = `
+    const sql = `
       UPDATE ${this.TABLE_NAME}
       SET
         ${this.columns.role} = ?,
         ${this.columns.lastUpgradeTime} = ?
       WHERE ${this.columns.id} = ?;
     `;
-    return query(_sql, [role, moment().utc().unix(), userId]);
+    return query(sql, [role, moment().utc().unix(), userId]);
   }
 
   getUsersByExpired(role, expireTime) {
-    const _sql = `
+    const sql = `
       SELECT * FROM ${this.TABLE_NAME}
       WHERE ${this.columns.role} = ? AND ${this.columns.lastUpgradeTime} < ?;
     `;
-    return query(_sql, [role, expireTime]);
+    return query(sql, [role, expireTime]);
   }
 
   resetExpiredRole(role, expireTime) {
-    const _sql = `
+    const sql = `
       UPDATE ${this.TABLE_NAME}
       SET ${this.columns.role} = ?
       WHERE ${this.columns.role} = ? AND ${this.columns.lastUpgradeTime} < ?;
     `;
-    return query(_sql, [User.ROLE.FREE, role, expireTime]);
+    return query(sql, [User.ROLE.FREE, role, expireTime]);
   }
 
   resetLastVitaePostTime(userId) {
-    const _sql = `
+    const sql = `
       UPDATE ${this.TABLE_NAME}
       SET ${this.columns.lastVitaePostTime} = ?
       WHERE ${this.columns.id} = ?`;
-    return query(_sql, [moment().utc().unix(), userId]);
+    return query(sql, [moment().utc().unix(), userId]);
   }
 
   // Add as a friend unilaterally (may later add the function of turning on friend verification)
-  // const addAsFriend = (user_id, from_user, time) {
-  //   const _sql = 'INSERT INTO user_user_relation(user_id,from_user,time) VALUES (?,?,?)';
-  //   return query(_sql, [user_id, from_user, time]);
+  // const addAsFriend = (userId, fromUser, time) {
+  //   const sql = 'INSERT INTO user_user_relation(userId,fromUser,time) VALUES (?,?,?)';
+  //   return query(sql, [userId, fromUser, time]);
   // };
 
   // Block friends
-  // const shieldFriend = (status, user_id, from_user) {
-  //   const _sql = 'UPDATE  user_user_relation  SET shield = ?  WHERE  user_id = ? AND from_user = ? ';
-  //   return query(_sql, [status, user_id, from_user]);
+  // const shieldFriend = (status, userId, fromUser) {
+  //   const sql = 'UPDATE  user_user_relation  SET shield = ?  WHERE  userId = ? AND fromUser = ? ';
+  //   return query(sql, [status, userId, fromUser]);
   // };
 
   // // Modify notes
-  // const editorRemark = (remark, user_id, from_user) {
-  //   const _sql = 'UPDATE  user_user_relation  SET remark = ?  WHERE  user_id = ? AND from_user = ? ';
-  //   return query(_sql, [remark, user_id, from_user]);
+  // const editorRemark = (remark, userId, fromUser) {
+  //   const sql = 'UPDATE  user_user_relation  SET remark = ?  WHERE  userId = ? AND fromUser = ? ';
+  //   return query(sql, [remark, userId, fromUser]);
   // };
 
   // Find user information by user name user_info does not include password
   // const findUIByName = (name) {
-  //   const _sql = 'SELECT id ,name,avatar FROM user_info WHERE name = ? ';
-  //   return query(_sql, name);
+  //   const sql = 'SELECT id ,name,avatar FROM user_info WHERE name = ? ';
+  //   return query(sql, name);
   // };
 
   // Find user information by user id user_info including password
-  // const findDataByUserid = (user_id) {
-  //   const _sql = 'SELECT * FROM user_info WHERE id= ? ';
-  //   return query(_sql, [userid]);
+  // const findDataByUserid = (userId) {
+  //   const sql = 'SELECT * FROM user_info WHERE id= ? ';
+  //   return query(sql, [userid]);
   // };
 }

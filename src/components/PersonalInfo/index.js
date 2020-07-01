@@ -9,7 +9,7 @@ import notification from '../Notification';
 
 class PersonalInfo extends Component {
   goToChat = () => {
-    this.props.history.push(`/private_chat/${this.props.userInfo.user_id}`);
+    this.props.history.push(`/private_chat/${this.props.userInfo.userId}`);
     this.props.hide();
   };
 
@@ -25,13 +25,13 @@ class PersonalInfo extends Component {
     window.socket.emit(
       'deleteContact',
       {
-        from_user: myInfo.user_id,
-        to_user: userInfo.user_id,
+        fromUser: myInfo.userId,
+        toUser: userInfo.userId,
       },
       res => {
         if (res.code === 200) {
-          deleteHomePageList({ homePageList, chatId: userInfo.user_id });
-          deletePrivateChat({ allPrivateChats, chatId: userInfo.user_id });
+          deleteHomePageList({ homePageList, chatId: userInfo.userId });
+          deletePrivateChat({ allPrivateChats, chatId: userInfo.userId });
           this.props.hide();
           notification('Successfully deleted contact', 'success', 2);
         }
@@ -42,7 +42,7 @@ class PersonalInfo extends Component {
   get isContact() {
     return (
       this.props.homePageList &&
-      this.props.homePageList.find(e => e.user_id === this.props.userInfo.user_id)
+      this.props.homePageList.find(e => e.userId === this.props.userInfo.userId)
     );
   }
 

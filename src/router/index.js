@@ -5,8 +5,8 @@ import loadable from '@loadable/component';
 const FUNCTION_ROUTERS = [
   '/',
   '/robot_chat',
-  '/group_chat/:to_group_id',
-  '/private_chat/:user_id',
+  '/group_chat/:groupId',
+  '/private_chat/:userId',
   '/setting',
   '/ads',
   '/admin',
@@ -35,7 +35,7 @@ function MainView(props) {
     <div className={MainViewClassName}>
       <Route component={loadable(() => import('../containers/Tabs'))} />
       <Route
-        path={['/', '/robot_chat', '/group_chat/:to_group_id', '/private_chat/:user_id']}
+        path={['/', '/robot_chat', '/group_chat/:groupId', '/private_chat/:userId']}
         exact
         component={loadable(() => import('../containers/HomePageList'))}
       />
@@ -67,11 +67,11 @@ function RightView(props) {
   return (
     <div className={RightViewClassName}>
       <Route
-        path="/group_chat/:to_group_id"
+        path="/group_chat/:groupId"
         component={loadable(() => import('../containers/GroupChatPage'))}
       />
       <Route
-        path="/private_chat/:user_id"
+        path="/private_chat/:userId"
         component={loadable(() => import('../containers/PrivateChatPage'))}
       />
       {['/', '/setting'].map((path, index) => (

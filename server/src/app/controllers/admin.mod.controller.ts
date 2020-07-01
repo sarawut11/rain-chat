@@ -128,7 +128,7 @@ export const setModerator = async (ctx, next) => {
       return;
     }
     const { userInfo } = checkUser;
-    await userService.updateMembership(userInfo.user_id, User.ROLE.MODERATOR);
+    await userService.updateMembership(userInfo.userId, User.ROLE.MODERATOR);
     const user = await userService.findUserByUsername(username);
     ctx.body = {
       success: true,

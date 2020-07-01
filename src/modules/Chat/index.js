@@ -11,17 +11,17 @@ export default class Chat {
   }
 
   clickItemToShare = ({ homePageList, chatId, userInfo }) => {
-    const data = homePageList.filter(e => e.user_id === chatId || e.to_group_id === chatId);
+    const data = homePageList.filter(e => e.userId === chatId || e.groupId === chatId);
     if (!data) {
       throw Error("can't find the date of this item");
     }
-    const { name, avatar, user_id, to_group_id } = userInfo || data[0];
+    const { name, avatar, userId, groupId } = userInfo || data[0];
     store.dispatch(
       shareAction({
         name,
         avatar,
-        user_id,
-        to_group_id,
+        userId,
+        groupId,
       }),
     );
   };
@@ -64,13 +64,13 @@ export default class Chat {
     });
   }
 
-  lazyLoadPrivateChatMessages({ chats, user_id, chatId, start, count }) {
+  lazyLoadPrivateChatMessages({ chats, userId, chatId, start, count }) {
     return new Promise((resolve, reject) => {
       if (!this._hasLoadAllMessages) {
         window.socket.emit(
           'getOnePrivateChatMessages',
           {
-            user_id,
+            userId,
             toUser: chatId,
             start,
             count,

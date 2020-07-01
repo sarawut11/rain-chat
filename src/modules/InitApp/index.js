@@ -39,9 +39,9 @@ class InitApp {
   _browserNotificationHandle = data => {
     const { homePageListState } = store.getState();
     const { name, message, avatar } = data;
-    const chatType = data.to_group_id ? 'group_chat' : 'private_chat';
-    const chatFromId = data.to_group_id ? data.to_group_id : data.from_user;
-    const title = data.to_group_id && data.groupName ? data.groupName : name;
+    const chatType = data.groupId ? 'group_chat' : 'private_chat';
+    const chatFromId = data.groupId ? data.groupId : data.fromUser;
+    const title = data.groupId && data.groupName ? data.groupName : name;
     const audio = 'https://cdn.aermin.top/audio.aac';
     this._browserNotification.notify({
       title,
@@ -64,22 +64,22 @@ class InitApp {
       const { homePageListState, allPrivateChatsState } = store.getState();
       // eslint-disable-next-line radix
       const chatId = parseInt(window.location.pathname.split('/').slice(-1)[0]);
-      const isRelatedCurrentChat = data.from_user === chatId || data.to_user === chatId;
+      const isRelatedCurrentChat = data.fromUser === chatId || data.toUser === chatId;
       const increaseUnread = isRelatedCurrentChat ? 0 : 1;
       store.dispatch(relatedCurrentChatAction(isRelatedCurrentChat));
       if (
-        !allPrivateChatsState.get(data.from_user) ||
-        !allPrivateChatsState.get(data.from_user).userInfo
+        !allPrivateChatsState.get(data.fromUser) ||
+        !allPrivateChatsState.get(data.fromUser).userInfo
       ) {
         const userInfo = {
           ...data,
-          user_id: data.from_user,
+          userId: data.fromUser,
         };
         store.dispatch(
           addPrivateChatMessageAndInfoAction({
             allPrivateChats: allPrivateChatsState,
             message: data,
-            chatId: data.from_user,
+            chatId: data.fromUser,
             userInfo,
           }),
         );
@@ -88,7 +88,7 @@ class InitApp {
           addPrivateChatMessagesAction({
             allPrivateChats: allPrivateChatsState,
             message: data,
-            chatId: data.from_user,
+            chatId: data.fromUser,
           }),
         );
       }
@@ -96,7 +96,7 @@ class InitApp {
         updateHomePageListAction({
           data,
           homePageList: homePageListState,
-          myUserId: this.user_id,
+          myUserId: this.userId,
           increaseUnread,
         }),
       );
@@ -110,13 +110,13 @@ class InitApp {
       const { allGroupChatsState, homePageListState } = store.getState();
       // eslint-disable-next-line radix
       const chatId = window.location.pathname.split('/').slice(-1)[0];
-      const isRelatedCurrentChat = data.to_group_id === chatId;
+      const isRelatedCurrentChat = data.groupId === chatId;
       store.dispatch(relatedCurrentChatAction(isRelatedCurrentChat));
       if (data.tip === 'joinGroup') {
         store.dispatch(
           addGroupMessageAndInfoAction({
             allGroupChats: allGroupChatsState,
-            groupId: data.to_group_id,
+            groupId: data.groupId,
             message: data,
             member: data,
           }),
@@ -126,7 +126,7 @@ class InitApp {
           addGroupMessagesAction({
             allGroupChats: allGroupChatsState,
             message: data,
-            groupId: data.to_group_id,
+            groupId: data.groupId,
           }),
         );
       }
@@ -148,11 +148,11 @@ class InitApp {
   }
 
   _listeningBeDelete() {
-    window.socket.on('beDeleted', from_user => {
+    window.socket.on('beDeleted', fromUser => {
       const homePageList = store.getState().homePageListState;
       const allPrivateChats = store.getState().allPrivateChats;
-      store.dispatch(deleteHomePageListAction({ homePageList, chatId: from_user }));
-      store.dispatch(deletePrivateChatAction({ allPrivateChats, chatId: from_user }));
+      store.dispatch(deleteHomePageListAction({ homePageList, chatId: fromUser }));
+      store.dispatch(deletePrivateChatAction({ allPrivateChats, chatId: fromUser }));
     });
   }
 
@@ -186,8 +186,8 @@ class InitApp {
       );
     });
     window.socket.on('initSocket', (socketId, fn) => {
-      const clientHomePageList = JSON.parse(localStorage.getItem(`homePageList-${this.user_id}`));
-      fn(this.user_id, clientHomePageList);
+      const clientHomePageList = JSON.parse(localStorage.getItem(`homePageList-${this.userId}`));
+      fn(this.userId, clientHomePageList);
     });
   }
 
@@ -308,8 +308,8 @@ class InitApp {
     }
   };
 
-  get user_id() {
-    return (this._userInfo && this._userInfo.user_id) || null;
+  get userId() {
+    return (this._userInfo && this._userInfo.userId) || null;
   }
 }
 

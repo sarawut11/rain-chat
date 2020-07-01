@@ -31,11 +31,11 @@ class MyInfo extends Component {
   };
 
   get shareLink() {
-    return `${window.location.origin}/private_chat/${this._userInfo.user_id}`;
+    return `${window.location.origin}/private_chat/${this._userInfo.userId}`;
   }
 
   render() {
-    const { name, avatar, github_id, user_id } = this._userInfo;
+    const { name, avatar, userId } = this._userInfo;
     const { allGroupChatsState, homePageListState } = store.getState();
     return (
       <div className="myInfo">
@@ -44,7 +44,7 @@ class MyInfo extends Component {
           src={avatar}
           size="36"
           clickAvatar={this._showPersonalInfo}
-          showLogo={!!github_id}
+          showLogo={false}
         />
         <ProfileInfo
           userInfo={this._userInfo}
@@ -57,7 +57,7 @@ class MyInfo extends Component {
         <ShareModal
           title="Share this contact to"
           modalVisible={this.state.showShareModal}
-          chatId={user_id}
+          chatId={userId}
           cancel={this._closeShareModal}
           allGroupChats={allGroupChatsState}
           homePageList={homePageListState}

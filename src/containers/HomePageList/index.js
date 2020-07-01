@@ -6,8 +6,8 @@ const mapStateToProps = state => {
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const homePageListStorage =
     userInfo &&
-    userInfo.user_id &&
-    JSON.parse(localStorage.getItem(`homePageList-${userInfo.user_id}`));
+    userInfo.userId &&
+    JSON.parse(localStorage.getItem(`homePageList-${userInfo.userId}`));
   return {
     homePageList: homePageListStorage || state.homePageListState,
     allGroupChats: state.allGroupChatsState,

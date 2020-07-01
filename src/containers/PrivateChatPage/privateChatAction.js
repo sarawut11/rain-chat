@@ -32,7 +32,7 @@ const addPrivateChatMessagesAction = ({
 };
 
 const addPrivateChatInfoAction = ({ allPrivateChats, chatId, userInfo }) => {
-  if (!userInfo.user_id) throw new Error('not exist userInfo.user_id!');
+  if (!userInfo.userId) throw new Error('not exist userInfo.userId!');
   const allPrivateChatsCopy = new Map(allPrivateChats);
   const goalPrivateChat = allPrivateChatsCopy.get(chatId);
   if (goalPrivateChat) {

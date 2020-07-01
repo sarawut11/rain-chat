@@ -15,7 +15,7 @@ export const sendPrivateMsg = async (io, socket: socketIo.Socket, data, cbFn) =>
       attachments: JSON.stringify(data.attachments),
     });
 
-    const user: User[] = await userService.findUserById(data.to_user);
+    const user: User[] = await userService.findUserById(data.toUser);
     const existSocketIdStr = socketServer.getSocketIdHandle(user[0].socketid);
     socketServer.emitTo(existSocketIdStr, socketEventNames.GetPrivateMsg, data);
     console.log("sendPrivateMsg data=>", data, "time=>", new Date().toLocaleString());
@@ -30,8 +30,8 @@ export const getOnePrivateChatMessages = async (io, socket, data, cbFn) => {
   try {
     const { chatService } = ServicesContext.getInstance();
 
-    const { user_id, toUser, start, count } = data;
-    const RowDataPacket = await chatService.getPrivateDetail(user_id, toUser, start - 1, count);
+    const { userId, toUser, start, count } = data;
+    const RowDataPacket = await chatService.getPrivateDetail(userId, toUser, start - 1, count);
     const privateMessages = JSON.parse(JSON.stringify(RowDataPacket));
     console.log(
       "getOnePrivateChatMessages data=>",
@@ -48,16 +48,16 @@ export const getOnePrivateChatMessages = async (io, socket, data, cbFn) => {
 
 /**
  * Add as contact
- * @param  user_id    Local user
- * @param  from_user  Friends of the local user (the other party)
+ * @param  userId    Local user
+ * @param  fromUser  Friends of the local user (the other party)
  */
 export const addAsTheContact = async (io, socket, data, cbFn) => {
   try {
-    const { user_id, from_user } = data;
+    const { userId, fromUser } = data;
     const { userService } = ServicesContext.getInstance();
     const time = Date.now() / 1000;
-    await userService.addFriendEachOther(user_id, from_user, time);
-    const userInfo = await userService.getUserInfoById(from_user);
+    await userService.addFriendEachOther(userId, fromUser, time);
+    const userInfo = await userService.getUserInfoById(fromUser);
     console.log("addAsTheContact data=>", data, "time=>", new Date().toLocaleString());
     cbFn(userInfo[0]);
   } catch (error) {
@@ -70,7 +70,7 @@ export const getUserInfo = async (io, socket, userId, cbFn) => {
   try {
     const { userService } = ServicesContext.getInstance();
     const userInfo = await userService.getUserInfoById(userId);
-    console.log("getUserInfo user_id=>", userId, "time=>", new Date().toLocaleString());
+    console.log("getUserInfo userId=>", userId, "time=>", new Date().toLocaleString());
     cbFn(userInfo[0]);
   } catch (error) {
     console.log("error", error.message);
@@ -78,17 +78,17 @@ export const getUserInfo = async (io, socket, userId, cbFn) => {
   }
 };
 
-export const deleteContact = async (io, socket, { from_user, to_user }, cbFn) => {
+export const deleteContact = async (io, socket, { fromUser, toUser }, cbFn) => {
   try {
     const { userService } = ServicesContext.getInstance();
-    await userService.deleteContact(from_user, to_user);
-    const sockets = await userService.getSocketid(to_user);
+    await userService.deleteContact(fromUser, toUser);
+    const sockets = await userService.getSocketid(toUser);
     const existSocketIdStr = socketServer.getSocketIdHandle(sockets);
-    socketServer.emitTo(existSocketIdStr, socketEventNames.BeDeleted, from_user);
+    socketServer.emitTo(existSocketIdStr, socketEventNames.BeDeleted, fromUser);
     console.log(
-      "deleteContact user_id && to_user =>",
-      from_user,
-      to_user,
+      "deleteContact userId && toUser =>",
+      fromUser,
+      toUser,
       "time=>",
       new Date().toLocaleString(),
     );
