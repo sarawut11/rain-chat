@@ -32,7 +32,7 @@ const mapDispatchToProps = dispatch => ({
 
 const renderModerItem = item => (
   <Row style={{ width: '100%', margin: 0 }} gutter={[20, 10]} align="middle">
-    <Col span={12}>{item.username}</Col>
+    <Col span={12}>Username: {item.username}</Col>
     <Col span={12}>
       Total Payment:
       {item.totalPayment}
