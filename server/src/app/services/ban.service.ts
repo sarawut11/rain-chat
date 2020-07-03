@@ -1,6 +1,5 @@
 import * as moment from "moment";
 import { query } from "../utils/db";
-import { getInArraySQL } from "../utils/utils";
 import { Ban } from "../models/ban.model";
 import configs from "@configs";
 

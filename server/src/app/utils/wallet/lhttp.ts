@@ -108,7 +108,7 @@ export function lhttp_read(
       }
       len -= cnk.length;
       if (encoding) {
-        str += decoder!.write(cnk);
+        str += decoder.write(cnk);
       } else {
         chunks.push(cnk);
       }
@@ -128,7 +128,7 @@ export function lhttp_read(
   function tidyUpAndGetData(): Buffer[] | string {
     done = true;
     if (encoding) {
-      str += decoder!.end();
+      str += decoder.end();
       return str;
     } else {
       return chunks;

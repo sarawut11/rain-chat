@@ -4,7 +4,6 @@ import { ServicesContext } from "../context";
 export const walletNotify = async (ctx, next) => {
   try {
     const { txid } = ctx.request.body;
-    const { transactionService } = ServicesContext.getInstance();
 
     const txInfo = await rpcInterface.getTransaction(txid);
     console.log("Tx Info: ", txInfo);

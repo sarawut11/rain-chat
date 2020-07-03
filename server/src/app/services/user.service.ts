@@ -33,9 +33,12 @@ export class UserService {
   }
 
   // Fuzzy matching users
-  fuzzyMatchUsers(username) {
-    const sql = "SELECT * FROM user_info WHERE username LIKE ?;";
-    return query(sql, username);
+  async findMatchUsers(username: string): Promise<User[]> {
+    const sql = `
+      SELECT * FROM ${this.TABLE_NAME}
+      WHERE ${this.columns.username} LIKE ?;`;
+    const users: User[] = await query(sql, username);
+    return users;
   }
 
   // Register User

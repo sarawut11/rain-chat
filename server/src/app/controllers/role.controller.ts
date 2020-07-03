@@ -51,7 +51,7 @@ export const upgradeMembership = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
     const { expectAmount } = ctx.request.body;
-    const { userService, transactionService } = ServicesContext.getInstance();
+    const { transactionService } = ServicesContext.getInstance();
 
     const checkUser = await checkUserInfo(username);
     if (checkUser.success === false) {

@@ -110,7 +110,7 @@ export const getAds = async (ctx, next) => {
       return;
     }
 
-    const { userInfo, existingAds } = checkResult;
+    const { existingAds } = checkResult;
 
     ctx.body = {
       success: true,
@@ -132,7 +132,7 @@ export const updateAds = async (ctx, next) => {
     const { adsId } = ctx.params;
     const asset = ctx.request.files.asset;
     const { link, buttonLabel, title, description } = ctx.request.body;
-    const { adsService, userService } = ServicesContext.getInstance();
+    const { adsService } = ServicesContext.getInstance();
 
     const checkResult = await checkAdsId(username, adsId);
     if (checkResult.success === false) {
@@ -191,7 +191,7 @@ export const deleteAds = async (ctx, next) => {
       return;
     }
 
-    const { userInfo, existingAds } = checkResult;
+    const { existingAds } = checkResult;
     await aws.deleteFile(existingAds.assetLink);
     await adsService.deleteAds(adsId);
     ctx.body = {
@@ -219,7 +219,7 @@ export const requestAds = async (ctx, next) => {
       return;
     }
 
-    const { userInfo, existingAds } = checkResult;
+    const { existingAds } = checkResult;
     if (existingAds.status === Ads.STATUS.Pending) {
       ctx.body = {
         success: false,
@@ -300,7 +300,7 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
       return;
     }
 
-    const { userInfo, existingAds } = checkResult;
+    const { existingAds } = checkResult;
     if (existingAds.status !== Ads.STATUS.Approved) {
       ctx.body = {
         success: false,
@@ -371,8 +371,7 @@ export const getCostPerImpression = async (ctx: ParameterizedContext, next) => {
 
 export const getStaticAds = async (ctx: ParameterizedContext, next) => {
   try {
-    const { username } = ctx.state.user;
-    const { userService, adsService } = ServicesContext.getInstance();
+    const { adsService } = ServicesContext.getInstance();
 
     const ads: Ads[] = await adsService.findAdsToCampaign(Ads.TYPE.StaticAds);
     if (ads.length === 0) {
@@ -398,7 +397,7 @@ export const getStaticAds = async (ctx: ParameterizedContext, next) => {
 };
 
 const confirmAds = async (adsId: number, paidAmount: number, type: number) => {
-  const { adsService, userService, transactionService, innerTranService } = ServicesContext.getInstance();
+  const { adsService, transactionService } = ServicesContext.getInstance();
 
   // Update Ads Status
   const ads: Ads[] = await adsService.findAdsById(adsId);

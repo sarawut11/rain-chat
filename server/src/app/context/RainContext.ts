@@ -1,4 +1,3 @@
-import * as moment from "moment";
 import { socketServer } from "../socket/app.socket";
 import { ServicesContext } from "./ServicesContext";
 import configs from "@configs";

@@ -20,11 +20,10 @@ export class GroupService {
   };
 
   // Fuzzy matching users
-  fuzzyMatchGroups(name) {
-    const sql = `
-      SELECT * FROM ${this.GROUP_TABLE} WHERE name LIKE ?;
-    `;
-    return query(sql, name);
+  async findMatchGroups(name: string): Promise<Group[]> {
+    const sql = `SELECT * FROM ${this.GROUP_TABLE} WHERE ${this.GROUP_COLUMNS.name} LIKE ?;`;
+    const groups: Group[] = await query(sql, name);
+    return groups;
   }
 
   getGroupById(id: number) {

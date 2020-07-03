@@ -9,7 +9,7 @@ export const getProfileInfo = async (ctx, next) => {
 
   const res: User[] = await userService.findUserByUsername(username);
   if (res.length > 0) {
-    const { id, username, name, email, balance, intro, avatar, refcode } = res[0];
+    const { id, name, email, balance, intro, avatar, refcode } = res[0];
     ctx.body = {
       success: true,
       userInfo: {
