@@ -14,6 +14,7 @@ export class User {
   public role: string;
   public lastUpgradeTime: number;
   public lastVitaePostTime: number;
+  public ban: number;
 
   public static readonly ROLE = {
     COMPANY: "COMPANY",
@@ -21,5 +22,10 @@ export class User {
     MODERATOR: "MODERATOR",
     FREE: "FREE",
     UPGRADED_USER: "UPGRADED",
+  };
+
+  public static readonly BAN = {
+    NONE: 0,
+    BANNED: 1,
   };
 }

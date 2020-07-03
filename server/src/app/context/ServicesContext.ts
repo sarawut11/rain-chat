@@ -3,6 +3,7 @@ import {
   GroupChatService,
   GroupService,
   UserService,
+  BanService,
   AdsService,
   TransactionService,
   InnerTransactionService
@@ -25,6 +26,16 @@ export class ServicesContext {
   }
   public setUserService(service: UserService): ServicesContext {
     this._userService = service;
+    return this;
+  }
+
+  // ban
+  private _banService: BanService;
+  public get banService() {
+    return this._banService;
+  }
+  public setBanService(service: BanService): ServicesContext {
+    this._banService = service;
     return this;
   }
 

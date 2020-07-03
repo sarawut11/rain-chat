@@ -31,7 +31,7 @@ export const getGroupItem = async ({
   const RowDataPacket3 = await groupChatService.getGroupMember(groupId);
   const members = JSON.parse(JSON.stringify(RowDataPacket3));
   const messages = JSON.parse(JSON.stringify(RowDataPacket1));
-  const groupInfo = JSON.parse(JSON.stringify(RowDataPacket2))[0];
+  const groupInfo = JSON.parse(JSON.stringify(RowDataPacket2));
   return {
     messages,
     groupInfo: { ...groupInfo, members },

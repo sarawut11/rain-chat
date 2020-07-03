@@ -385,7 +385,8 @@ export const getStaticAds = async (ctx: ParameterizedContext, next) => {
     await adsService.consumeImpression(ads[0].id, 1);
     ctx.body = {
       success: true,
-      ads: ads[0]
+      ads: ads[0],
+      duration: configs.ads.static_ads_interval
     };
   } catch (error) {
     console.error(error.message);

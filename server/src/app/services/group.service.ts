@@ -1,4 +1,5 @@
 import { query } from "../utils/db";
+import { Group } from "../models";
 
 export class GroupService {
   readonly GROUP_TABLE = "group_info";
@@ -31,9 +32,11 @@ export class GroupService {
     return query(sql, id);
   }
 
-  getGroupByGroupId(groupId: string) {
-    const sql = `SELECT * FROM ${this.GROUP_TABLE} WHERE ${this.GROUP_COLUMNS.groupId} = ?;`;
-    return query(sql, groupId);
+  async getGroupByGroupId(groupId: string) {
+    const sql = `SELECT * FROM ${this.GROUP_TABLE} WHERE ${this.GROUP_COLUMNS.groupId} = ? LIMIT 1;`;
+    const groups: Group[] = await query(sql, groupId);
+    if (groups.length === 0) return undefined;
+    return groups[0];
   }
 
   // Join the group

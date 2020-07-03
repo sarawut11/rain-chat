@@ -110,6 +110,9 @@ const initServer = server => {
       .on("getGroupMember", async (groupId, fn) => {
         await groupSockets.getGroupMember(io, socket, groupId, fn);
       })
+      .on("banMember", async ({ userId, groupId }, fn) => {
+        await groupSockets.banMember(io, socket, { userId, groupId }, fn);
+      })
 
       // Rain Sockets
       .on("subscribeAdsReward", async ({ token }) => {

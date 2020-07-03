@@ -61,7 +61,8 @@ export class RainContext {
           link: ads.link,
           buttonLabel: ads.buttonLabel,
           type: ads.type,
-        }
+        },
+        duration: configs.ads.ads_duration
       });
       await delay(configs.ads.ads_duration);
 

@@ -13,7 +13,6 @@ import debounce from '../../utils/debounce';
 import { shareAction } from '../../redux/actions/shareAction';
 import store from '../../redux/store';
 import { showAds } from '../../utils/ads';
-import { ADS_STATIC_DURATION } from '../../constants/ads';
 import { enableVitaePost, disableVitaePost } from '../../redux/actions/enableVitaePost';
 
 function getPlaceholder() {
@@ -36,16 +35,16 @@ class InputArea extends Component {
   async _showStaticAds(cb) {
     try {
       const res = await request.axios('get', `/api/v1/campaign/static`);
-
+      const duration = res.duration;
       if (res && res.success) {
-        showAds(res.ads, true);
+        showAds(res.ads, duration, true);
       } else {
         antNotification.error({
           message: 'Failed to get static ads.',
         });
       }
 
-      setTimeout(cb, ADS_STATIC_DURATION * 1000);
+      setTimeout(cb, duration);
     } catch (error) {
       console.log(error);
       antNotification.error({
@@ -269,13 +268,19 @@ class InputArea extends Component {
     return role === 'FREE' && window.location.href.includes('vitae-rain-group') ? (
       <div className="input-msg">
         <Row justify="space-around" style={{ width: '100%' }}>
-          {vitaePostEnabled ? (
-            <Button type="primary" onClick={this._sendMessage}>
-              Post
-            </Button>
-          ) : (
+          {userInfo.ban === 0 &&
+            (vitaePostEnabled ? (
+              <Button type="primary" onClick={this._sendMessage}>
+                Post
+              </Button>
+            ) : (
+              <Button type="primary" disabled>
+                Post Disabled
+              </Button>
+            ))}
+          {userInfo.ban > 0 && (
             <Button type="primary" disabled>
-              Post Disabled
+              You are banned
             </Button>
           )}
         </Row>

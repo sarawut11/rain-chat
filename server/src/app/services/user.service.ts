@@ -24,6 +24,7 @@ export class UserService {
     role: "role",
     lastUpgradeTime: "lastUpgradeTime",
     lastVitaePostTime: "lastVitaePostTime",
+    ban: "ban",
   };
 
   constructor() {
@@ -166,6 +167,38 @@ export class UserService {
     return query(sql, [userId, fromUser, time, fromUser, userId, time]);
   }
 
+  banUserFromRainGroup(userId: number) {
+    const sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET ${this.columns.ban} = ?
+      WHERE ${this.columns.id} = ?;`;
+    return query(sql, [User.BAN.BANNED, userId]);
+  }
+
+  unbanUsersFromRainGroup(userIds: number[]) {
+    const array = getInArraySQL(userIds);
+    const sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET ${this.columns.ban} = ?
+      WHERE ${this.columns.id} IN (${array});`;
+    return query(sql, [User.BAN.NONE]);
+  }
+
+  getUsersByRainBanned() {
+    const sql = `
+      SELECT
+        user.${this.columns.id},
+        user.${this.columns.username},
+        user.${this.columns.ban}
+        ban.time
+      FROM ${this.TABLE_NAME} as user
+      INNER JOIN contact_ban_info as ban
+      ON user.id = ban.userId
+      WHERE ${this.columns.ban} = ?
+      ORDER BY ban.time DESC LIMIT 1;`;
+    return query(sql, User.BAN.BANNED);
+  }
+
   // Delete contact
   deleteContact(userId, fromUser) {
     const sql =
@@ -226,10 +259,14 @@ export class UserService {
     return query(sql, [toUserId]);
   }
 
-  getUserBySocketId(socketId) {
+  async getUserBySocketId(socketId): Promise<User> {
     if (socketId === "") socketId = undefined;
-    const sql = `SELECT * FROM user_info WHERE socketid LIKE '%${socketId}%' limit 1;`;
-    return query(sql);
+    const sql = `
+      SELECT * FROM ${this.TABLE_NAME}
+      WHERE ${this.columns.socketId} LIKE '%${socketId}%' LIMIT 1;`;
+    const users: User[] = await query(sql);
+    if (users.length === 0) return undefined;
+    return users[0];
   }
 
   getUsersByPopLimited() {

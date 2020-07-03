@@ -56,6 +56,23 @@ class PersonalInfo extends Component {
     );
   };
 
+  banMember = () => {
+    const { userInfo, groupInfo, deleteGroupMember, allGroupChats } = this.props;
+    window.socket.emit(
+      'banMember',
+      {
+        userId: userInfo.userId,
+        groupId: groupInfo.groupId,
+      },
+      res => {
+        if (res.code === 200) {
+          deleteGroupMember({ allGroupChats, userId: userInfo.userId, groupId: groupInfo.groupId });
+          this.props.hide();
+        }
+      },
+    );
+  };
+
   get isContact() {
     return (
       this.props.homePageList &&
@@ -64,14 +81,23 @@ class PersonalInfo extends Component {
   }
 
   get isCreator() {
+    const { groupInfo } = this.props;
     const myInfo = JSON.parse(localStorage.getItem('userInfo'));
-    return myInfo.userId === this.props.groupInfo.creatorId;
+    if (groupInfo.groupId === 'vitae-rain-group') {
+      return myInfo.role === 'OWNER' || myInfo.role === 'MODERATOR';
+    }
+    return myInfo.userId === groupInfo.creatorId;
   }
 
   get isInGroup() {
     const { userInfo, groupInfo } = this.props;
     const members = groupInfo.members.filter(member => member.userId === userInfo.userId);
     return members.length !== 0;
+  }
+
+  get isVitaeRainGroup() {
+    const { groupInfo } = this.props;
+    return groupInfo.groupId === 'vitae-rain-group';
   }
 
   render() {
@@ -135,15 +161,25 @@ class PersonalInfo extends Component {
                 </Button>
               )}
 
-              {this.isCreator && this.isInGroup && (
-                <Button
-                  type="primary"
-                  onClick={this.kickMember}
-                  style={{ width: '100%', background: 'grey', borderColor: 'grey' }}
-                >
-                  Kick member
-                </Button>
-              )}
+              {this.isCreator &&
+                this.isInGroup &&
+                (this.isVitaeRainGroup ? (
+                  <Button
+                    type="primary"
+                    onClick={this.banMember}
+                    style={{ width: '100%', background: 'grey', borderColor: 'grey' }}
+                  >
+                    Ban member
+                  </Button>
+                ) : (
+                  <Button
+                    type="primary"
+                    onClick={this.kickMember}
+                    style={{ width: '100%', background: 'grey', borderColor: 'grey' }}
+                  >
+                    Kick member
+                  </Button>
+                ))}
             </Col>
           )}
           {showShareIcon && (
