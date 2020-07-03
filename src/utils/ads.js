@@ -87,7 +87,7 @@ const openNotificationWithIcon = (type, props) => {
 export function notifyRainComing(after) {
   openNotificationWithIcon('info', {
     message: 'Rain is coming soon',
-    description: `Rain is coming in ${after} seconds. Please get ready for the rain`,
+    description: `Rain is coming in ${after / 1000} seconds. Please get ready for the rain`,
   });
 }
 
