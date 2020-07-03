@@ -1,6 +1,5 @@
 import * as moment from "moment";
 import { query } from "../utils/db";
-import configs from "@configs";
 import { isNullOrUndefined } from "util";
 import { Ads } from "../models";
 

@@ -3,20 +3,16 @@ import * as socketIo from "socket.io";
 
 import { ServicesContext } from "../context";
 import { authVerify } from "../middlewares/verify";
-import { getAllMessage, getGroupItem } from "./message.socket";
+import { getAllMessage } from "./message.socket";
 import { requestFrequency } from "../middlewares/requestFrequency";
 import * as privateSockets from "./private.socket";
 import * as groupSockets from "./group.socket";
 import * as rainSockets from "./rain.socket";
-import { User } from "../models";
 
 let io: socketIo.Server;
 
 const initServer = server => {
-  const {
-    userService,
-    groupService,
-  } = ServicesContext.getInstance();
+  const { userService } = ServicesContext.getInstance();
 
   io = socketIo(server);
   io.use((socket, next) => {
@@ -113,59 +109,46 @@ const initServer = server => {
       .on("banMember", async ({ userId, groupId }, fn) => {
         await groupSockets.banMember(io, socket, { userId, groupId }, fn);
       })
+      .on("findMatch", async ({ field, searchUser }, fn) => {
+        groupSockets.findMatch(io, socket, { field, searchUser }, fn);
+      })
 
       // Rain Sockets
       .on("subscribeAdsReward", async ({ token }) => {
         rainSockets.subscribeAdsReward(token);
+      })
+
+      // Disconnect
+      .on("disconnect", async reason => {
+        try {
+          const socketid = await userService.getSocketid(userId);
+          const existSocketIdStr = getSocketIdHandle(socketid);
+          const toUserSocketIds = (existSocketIdStr && existSocketIdStr.split(",")) || [];
+          const index = toUserSocketIds.indexOf(socketId);
+
+          if (index > -1) {
+            toUserSocketIds.splice(index, 1);
+          }
+
+          await userService.saveUserSocketId(userId, toUserSocketIds.join(","));
+
+          // if (toUserSocketIds.length) {
+          //   await userService.saveUserSocketId(_userId, toUserSocketIds.join(','));
+          // } else {
+          //   await Promise.all([
+          //     userService.saveUserSocketId(_userId, toUserSocketIds.join(',')),
+          //     userService.updateUserStatus(_userId, 0)
+          //   ]);
+          // }
+
+          console.log("disconnect.=>reason", reason, "userId=>", userId, "socket.id=>", socket.id, "time=>",
+            new Date().toLocaleString(),
+          );
+        } catch (error) {
+          console.log("error", error.message);
+          io.to(socketId).emit("error", { code: 500, message: error.message });
+        }
       });
-
-    //  Fuzzy match users or groups
-    socket.on("fuzzyMatch", async (data, fn) => {
-      try {
-        let fuzzyMatchResult;
-        const field = `%${data.field}%`;
-        if (data.searchUser) {
-          fuzzyMatchResult = await userService.fuzzyMatchUsers(field);
-        } else {
-          fuzzyMatchResult = await groupService.fuzzyMatchGroups(field);
-        }
-        fn({ fuzzyMatchResult, searchUser: data.searchUser });
-      } catch (error) {
-        console.log("error", error.message);
-        io.to(socketId).emit("error", { code: 500, message: error.message });
-      }
-    });
-
-    socket.on("disconnect", async reason => {
-      try {
-        const arr = await userService.getSocketid(userId);
-        const existSocketIdStr = getSocketIdHandle(arr);
-        const toUserSocketIds = (existSocketIdStr && existSocketIdStr.split(",")) || [];
-        const index = toUserSocketIds.indexOf(socketId);
-
-        if (index > -1) {
-          toUserSocketIds.splice(index, 1);
-        }
-
-        await userService.saveUserSocketId(userId, toUserSocketIds.join(","));
-
-        // if (toUserSocketIds.length) {
-        //   await userService.saveUserSocketId(_userId, toUserSocketIds.join(','));
-        // } else {
-        //   await Promise.all([
-        //     userService.saveUserSocketId(_userId, toUserSocketIds.join(',')),
-        //     userService.updateUserStatus(_userId, 0)
-        //   ]);
-        // }
-
-        console.log("disconnect.=>reason", reason, "userId=>", userId, "socket.id=>", socket.id, "time=>",
-          new Date().toLocaleString(),
-        );
-      } catch (error) {
-        console.log("error", error.message);
-        io.to(socketId).emit("error", { code: 500, message: error.message });
-      }
-    });
   });
 };
 

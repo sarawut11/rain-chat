@@ -1,14 +1,12 @@
 import * as uuid from "uuid/v1";
 import * as moment from "moment";
-import * as socketIo from "socket.io";
 import { ServicesContext } from "../context";
-import { getAllMessage, getGroupItem } from "./message.socket";
+import { getGroupItem } from "./message.socket";
 import { User, Group } from "../models";
 import { isVitaePostEnabled } from "../utils/utils";
 import { socketServer } from "./app.socket";
 import { socketEventNames } from "./resource.socket";
 import configs from "@configs";
-import { CronJob } from "cron";
 
 export const sendGroupMsg = async (io, socket, data, cbFn) => {
   try {
@@ -235,6 +233,24 @@ export const getGroupMember = async (io, socket, groupId, cbfn) => {
       console.log("getGroupMember data=>", groupId, "time=>", moment().utc().unix());
       cbfn(userInfos);
     });
+  } catch (error) {
+    console.log("error", error.message);
+    io.to(socket.id).emit("error", { code: 500, message: error.message });
+  }
+};
+
+export const findMatch = async (io, socket, { field, searchUser }, cbFn) => {
+  try {
+    // searchUser : true => find users | searchUser : false => find groups
+    const { userService, groupService } = ServicesContext.getInstance();
+    let fuzzyMatchResult;
+    field = `%${field}%`;
+    if (searchUser) {
+      fuzzyMatchResult = await userService.findMatchUsers(field);
+    } else {
+      fuzzyMatchResult = await groupService.findMatchGroups(field);
+    }
+    cbFn({ fuzzyMatchResult, searchUser });
   } catch (error) {
     console.log("error", error.message);
     io.to(socket.id).emit("error", { code: 500, message: error.message });

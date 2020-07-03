@@ -155,7 +155,7 @@ export const validateToken = async (ctx, next) => {
       return;
     }
 
-    const { username, id } = checkResult;
+    const { username } = checkResult;
     const { userService } = ServicesContext.getInstance();
     const RowDataPacket = await userService.getUserInfoByUsername(username);
     if (RowDataPacket.length <= 0) {

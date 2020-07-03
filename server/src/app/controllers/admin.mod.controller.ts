@@ -5,7 +5,7 @@ import { isOwner, checkUserInfo } from "../utils/utils";
 export const getModsAnalytics = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
-    const { userService, transactionService } = ServicesContext.getInstance();
+    const { userService } = ServicesContext.getInstance();
 
     const checkRole = await isOwner(username);
     if (checkRole.success === false) {

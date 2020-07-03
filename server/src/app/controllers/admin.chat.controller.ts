@@ -1,5 +1,5 @@
 import { ServicesContext } from "../context";
-import { User } from "../models";
+import { User, Group } from "../models";
 import { isOwner } from "../utils/utils";
 
 export const getChatAnalytics = async (ctx, next) => {
@@ -13,10 +13,10 @@ export const getChatAnalytics = async (ctx, next) => {
       return;
     }
 
-    const users: User[] = await userService.fuzzyMatchUsers("%%");
+    const users: User[] = await userService.findMatchUsers("%%");
     const userCount = users.length;
     const onlineUserCount = users.filter(user => user.socketid !== "").length;
-    const groups = await groupService.fuzzyMatchGroups("%%");
+    const groups: Group[] = await groupService.findMatchGroups("%%");
     const groupCount = groups.length;
 
     ctx.body = {

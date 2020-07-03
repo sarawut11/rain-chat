@@ -1,5 +1,4 @@
 import { CMCManager } from "../utils/wallet/CMC";
-import configs from "@configs";
 
 export class CMCContext {
   static instance: CMCContext;

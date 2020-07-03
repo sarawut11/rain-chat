@@ -25,5 +25,6 @@ temp/
 Thumbs.db
 .nyc_output
 .awcache
+.scannerwork
 /secrets.*
 test.rest

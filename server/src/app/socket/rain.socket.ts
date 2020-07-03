@@ -10,7 +10,7 @@ export const subscribeAdsReward = (token) => {
     return;
   }
   const rainContext = RainContext.getInstance();
-  const { id, username } = userInfo;
+  const { id } = userInfo;
   rainContext.addUserToRainAds(id);
 };
 
