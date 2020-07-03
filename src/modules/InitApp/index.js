@@ -206,7 +206,7 @@ class InitApp {
   }
 
   _listeningRain() {
-    window.socket.on('rainComing', after => {
+    window.socket.on('rainComing', ({ after }) => {
       console.log(`Rain is coming after ${after}seconds`);
       notifyRainComing(after);
     });
