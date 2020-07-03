@@ -1,5 +1,4 @@
 import { rpcInterface } from "../utils/wallet/RpcInterface";
-import { ServicesContext } from "../context";
 
 export const walletNotify = async (ctx, next) => {
   try {
