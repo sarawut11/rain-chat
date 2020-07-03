@@ -14,6 +14,7 @@ export class Ads {
   public link: string;
   public lastTime: number;
   public time: number;
+  public reviewer: number;
 
   public static readonly TYPE = {
     RainRoomAds: 0,

@@ -131,6 +131,7 @@ CREATE TABLE `ads_info` (
   `link` varchar(200) DEFAULT '',
   `lastTime` int(11) DEFAULT 0,
   `time` int(11) NOT NULL,
+  `reviewer` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 # Dump of table wallet_transaction_info

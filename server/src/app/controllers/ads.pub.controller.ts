@@ -53,11 +53,11 @@ export const registerAds = async (ctx, next) => {
       time: moment().utc().unix(),
       type
     });
-    const insertAds: Ads[] = await adsService.findAdsById(res.insertId);
+    const insertAds: Ads = await adsService.findAdsById(res.insertId);
     ctx.body = {
       success: true,
       message: "Successfully Created.",
-      ads: insertAds[0]
+      ads: insertAds
     };
   } catch (error) {
     console.error(error.message);
@@ -164,11 +164,11 @@ export const updateAds = async (ctx, next) => {
       title,
       description
     });
-    const updatedAds: Ads[] = await adsService.findAdsById(adsId);
+    const updatedAds: Ads = await adsService.findAdsById(adsId);
     ctx.body = {
       success: true,
       message: "Successfully Updated.",
-      ads: updatedAds[0],
+      ads: updatedAds,
     };
   } catch (error) {
     console.error(error.message);
@@ -236,11 +236,11 @@ export const requestAds = async (ctx, next) => {
     }
 
     await adsService.updateStatus(adsId, Ads.STATUS.Pending);
-    const updatedAds: Ads[] = await adsService.findAdsById(adsId);
+    const updatedAds: Ads = await adsService.findAdsById(adsId);
     ctx.body = {
       success: true,
       message: "Successfully requested",
-      ads: updatedAds[0],
+      ads: updatedAds,
     };
   } catch (error) {
     console.error(error.message);
@@ -272,11 +272,11 @@ export const cancelAds = async (ctx, next) => {
     }
 
     await adsService.cancelAds(adsId, userInfo.id);
-    const updatedAds: Ads[] = await adsService.findAdsById(adsId);
+    const updatedAds: Ads = await adsService.findAdsById(adsId);
     ctx.body = {
       success: true,
       message: "Successfully canceled.",
-      ads: updatedAds[0]
+      ads: updatedAds
     };
   } catch (error) {
     console.error(error.message);
@@ -318,8 +318,8 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
 
     // Expire ads after 5 mins when it is still in pending purchase
     setTimeout(async () => {
-      const ads: Ads[] = await adsService.findAdsById(adsId);
-      if (ads[0].status === Ads.STATUS.PendingPurchase) {
+      const ads: Ads = await adsService.findAdsById(adsId);
+      if (ads.status === Ads.STATUS.PendingPurchase) {
         await adsService.updateStatus(adsId, Ads.STATUS.Approved);
         await socketServer.updateAdsStatus(adsId);
       }
@@ -330,11 +330,11 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
     // Save transaction info
     // =====================
 
-    const updatedAds: Ads[] = await adsService.findAdsById(adsId);
+    const updatedAds: Ads = await adsService.findAdsById(adsId);
     ctx.body = {
       success: true,
       message: "Successfully requested.",
-      ads: updatedAds[0]
+      ads: updatedAds
     };
   } catch (error) {
     console.error(error.message);
@@ -400,8 +400,7 @@ const confirmAds = async (adsId: number, paidAmount: number, type: number) => {
   const { adsService, transactionService } = ServicesContext.getInstance();
 
   // Update Ads Status
-  const ads: Ads[] = await adsService.findAdsById(adsId);
-  const existingAds = ads[0];
+  const existingAds = await adsService.findAdsById(adsId);
   const tran: Transaction[] = await transactionService.getLastPendingTransaction(existingAds.userId, Transaction.TYPE.ADS);
   if (tran.length === 0)
     return;
@@ -410,7 +409,7 @@ const confirmAds = async (adsId: number, paidAmount: number, type: number) => {
   const adsDetails = JSON.parse(tran[0].details);
   const realCostPerImp = configs.ads.revenue.imp_revenue * adsDetails.costPerImp;
   await adsService.setImpressions(adsId, existingAds.userId, adsDetails.impressions, realCostPerImp, paidAmount);
-  await transactionService.confirmTransactionRequest(ads[0].userId, Transaction.TYPE.ADS, paidAmount, moment().utc().unix());
+  await transactionService.confirmTransactionRequest(existingAds.userId, Transaction.TYPE.ADS, paidAmount, moment().utc().unix());
 
   // Revenue Share Model
   // ===== Company Share ===== //
@@ -449,15 +448,14 @@ const checkAdsId = (username, adsId): Promise<{
   existingAds?: Ads
 }> => new Promise(async (resolve, reject) => {
   const { adsService, userService } = ServicesContext.getInstance();
-  const RowDataPacket: Ads[] = await adsService.findAdsById(adsId);
-  if (RowDataPacket.length === 0) {
+  const existingAds = await adsService.findAdsById(adsId);
+  if (existingAds === undefined) {
     resolve({
       success: false,
       message: "Ads doesn't exist"
     });
     return;
   }
-  const existingAds = RowDataPacket[0];
   const userInfo: User = (await userService.findUserByUsername(username))[0];
   if (existingAds.userId !== userInfo.id) {
     resolve({

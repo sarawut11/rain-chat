@@ -106,8 +106,8 @@ const initServer = server => {
       .on("getGroupMember", async (groupId, fn) => {
         await groupSockets.getGroupMember(io, socket, groupId, fn);
       })
-      .on("banMember", async ({ userId, groupId }, fn) => {
-        await groupSockets.banMember(io, socket, { userId, groupId }, fn);
+      .on("banMember", async (data, fn) => {
+        await groupSockets.banMember(io, socket, data, fn);
       })
       .on("findMatch", async ({ field, searchUser }, fn) => {
         groupSockets.findMatch(io, socket, { field, searchUser }, fn);
@@ -122,8 +122,8 @@ const initServer = server => {
       .on("disconnect", async reason => {
         try {
           const socketid = await userService.getSocketid(userId);
-          const existSocketIdStr = getSocketIdHandle(socketid);
-          const toUserSocketIds = (existSocketIdStr && existSocketIdStr.split(",")) || [];
+          const existSocketidStr = getSocketIdHandle(socketid);
+          const toUserSocketIds = (existSocketidStr && existSocketidStr.split(",")) || [];
           const index = toUserSocketIds.indexOf(socketId);
 
           if (index > -1) {

@@ -423,55 +423,24 @@ class Ads extends Component {
             {status === ADS_PENDING_PURCHASE && <Tag color="#2db7f5">awaiting deposit</Tag>}
             {status === ADS_PENDING_CONFIRM && <Tag color="#2db7f5">pending deposit</Tag>}
           </Row>
-          <Meta
-            avatar={
-              <UserAvatar
-                name={item.name ? item.name : this.state.user_info.name}
-                src={item.avatar ? item.avatar : this.state.user_info.avatar}
-                size="36"
-              />
-            }
-            title={item.title}
-            description={
-              <div>
-                {item.username && (
-                  <p>
-                    Advertiser: <b>{item.username}</b>
-                  </p>
-                )}
-              </div>
-            }
-          />
-
+          <Row glutter={10}>
+            <Col span={18}>
+              <Meta title={item.title} description={item.description} />
+            </Col>
+            <Col span={6}>
+              <Button
+                type="primary"
+                href={item.link}
+                target="_blank"
+                size="large"
+                style={{ width: '100%' }}
+              >
+                {item.buttonLabel}
+              </Button>
+            </Col>
+          </Row>
+          <Divider />
           <Timeline className="camp-item-timeline">
-            {item.description && (
-              <Timeline.Item color="green">
-                <p>
-                  <b>Description:</b>
-                </p>
-                <p>{item.description}</p>
-              </Timeline.Item>
-            )}
-            {item.buttonLabel && (
-              <Timeline.Item color="green">
-                <p>
-                  <b>Button Label: </b>
-                  {item.buttonLabel}
-                </p>
-              </Timeline.Item>
-            )}
-            {item.link && (
-              <Timeline.Item color="green">
-                <p>
-                  <b>Link:</b>
-                </p>
-                <p>
-                  <a href={item.link} target="_blank">
-                    {item.link}
-                  </a>
-                </p>
-              </Timeline.Item>
-            )}
             {item.type && (
               <Timeline.Item color="green">
                 <p>
@@ -498,6 +467,21 @@ class Ads extends Component {
               </Timeline.Item>
             )}
           </Timeline>
+          <Divider />
+          <Row glutter={16}>
+            <Col className="gutter-row" span={10} offset={2}>
+              <p>Creator</p>
+              <UserAvatar
+                name={item.creatorName ? item.creatorName : this.state.user_info.name}
+                src={item.creatorAvatar ? item.creatorAvatar : this.state.user_info.avatar}
+                size="36"
+              />
+            </Col>
+            <Col className="gutter-row" span={6} offset={4} style={{ marginBottom: 10 }}>
+              <p>Reviewer</p>
+              <UserAvatar name={item.reviewerName} src={item.reviewerAvatar} size="36" />
+            </Col>
+          </Row>
         </Card>
       </List.Item>
     );
