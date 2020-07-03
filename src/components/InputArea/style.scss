@@ -82,7 +82,7 @@
     outline: none;
     resize: none;
     border: 1px solid #fff;
-    font: 14px 'Microsoft Yahei';
+    font-size: 14px;
   }
   p.btn {
     width: 60px;
@@ -93,7 +93,6 @@
     background: #ccc;
     color: white;
     border-radius: 2px;
-    font-family: 'Microsoft Yahei';
     cursor: not-allowed;
   }
   p.btnActive {
