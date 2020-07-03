@@ -8,6 +8,7 @@ import { isVitaePostEnabled } from "../utils/utils";
 import { socketServer } from "./app.socket";
 import { socketEventNames } from "./resource.socket";
 import configs from "@configs";
+import { CronJob } from "cron";
 
 export const sendGroupMsg = async (io, socket, data, cbFn) => {
   try {
@@ -148,7 +149,6 @@ export const leaveGroup = async (io, socket, data) => {
 export const kickMember = async (io, socket, data, cbFn) => {
   try {
     const { userId, groupId } = data;
-    console.log(data);
     const { userService, groupService } = ServicesContext.getInstance();
 
     const user: User[] = await userService.getUserBySocketId(socket.id);
@@ -163,6 +163,41 @@ export const kickMember = async (io, socket, data, cbFn) => {
     socketServer.emitTo(kicker[0].socketid, "kickedFromGroup", { groupId });
     console.log("kickMember data=>", data, "time=>", moment().utc());
     cbFn({ code: 200, data: "Kicked member successfully" });
+  } catch (error) {
+    console.log("error", error.message);
+    io.to(socket.id).emit("error", { code: 500, message: error.message });
+  }
+};
+
+export const banMember = async (io, socket, { userId, groupId }, cbfn) => {
+  try {
+    const { groupService, userService, banService } = ServicesContext.getInstance();
+    const user: User[] = await userService.getUserBySocketId(socket.id);
+    if (user.length === 0) return;
+
+    if (groupId === configs.rain.group_id) { // Vitae Rain Group
+      // Check Group Ownership
+      if (user[0].role !== User.ROLE.OWNER && user[0].role !== User.ROLE.MODERATOR) return;
+
+      // Ban user from vitae-rain group
+      await groupService.leaveGroup(userId, groupId);
+      await banService.banUserFromGroup(userId, groupId);
+      await userService.banUserFromRainGroup(userId);
+    } else {  // General Group
+      // Check Group Ownership
+      const group: Group[] = await groupService.getGroupByGroupId(groupId);
+      if (group.length === 0) return;
+      if (group[0].creatorId !== user[0].id) return;
+
+      // Ban user from group
+      await groupService.leaveGroup(userId, groupId);
+      await banService.banUserFromGroup(userId, groupId);
+      const kicker: User[] = await userService.findUserById(userId);
+      if (kicker.length !== 0)
+        socketServer.emitTo(kicker[0].socketid, "kickedFromGroup", { groupId });
+    }
+    console.log(`banMember => User:${userId} from Group:${groupId} | time=> ${moment().utc()}`);
+    cbfn({ code: 200, data: "ban member successfully" });
   } catch (error) {
     console.log("error", error.message);
     io.to(socket.id).emit("error", { code: 500, message: error.message });

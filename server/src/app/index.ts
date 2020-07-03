@@ -12,6 +12,7 @@ import {
   GroupChatService,
   GroupService,
   UserService,
+  BanService,
   AdsService,
   TransactionService,
   InnerTransactionService
@@ -37,6 +38,7 @@ export const App = Server.init(app => {
   .then(() => {
     ServicesContext.getInstance()
       .setUserService(new UserService())
+      .setBanService(new BanService())
       .setGroupService(new GroupService())
       .setChatService(new ChatService())
       .setGroupChatService(new GroupChatService())

@@ -24,6 +24,7 @@ export class UserService {
     role: "role",
     lastUpgradeTime: "lastUpgradeTime",
     lastVitaePostTime: "lastVitaePostTime",
+    ban: "ban",
   };
 
   constructor() {
@@ -164,6 +165,38 @@ export class UserService {
   addFriendEachOther(userId, fromUser, time) {
     const sql = "INSERT INTO user_user_relation(userId,fromUser,time) VALUES (?,?,?), (?,?,?)";
     return query(sql, [userId, fromUser, time, fromUser, userId, time]);
+  }
+
+  banUserFromRainGroup(userId: number) {
+    const sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET ${this.columns.ban} = ?
+      WHERE ${this.columns.id} = ?;`;
+    return query(sql, [User.BAN.BANNED, userId]);
+  }
+
+  unbanUsersFromRainGroup(userIds: number[]) {
+    const array = getInArraySQL(userIds);
+    const sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET ${this.columns.ban} = ?
+      WHERE ${this.columns.id} IN (${array});`;
+    return query(sql, [User.BAN.NONE]);
+  }
+
+  getUsersByRainBanned() {
+    const sql = `
+      SELECT
+        user.${this.columns.id},
+        user.${this.columns.username},
+        user.${this.columns.ban}
+        ban.time
+      FROM ${this.TABLE_NAME} as user
+      INNER JOIN contact_ban_info as ban
+      ON user.id = ban.userId
+      WHERE ${this.columns.ban} = ?
+      ORDER BY ban.time DESC LIMIT 1;`;
+    return query(sql, User.BAN.BANNED);
   }
 
   // Delete contact

@@ -21,7 +21,7 @@ export default {
   client_secret: "",
   token: {
     jwt_secret: "chat-sec",
-    expireIn: 60 * 60 * 1 // One hour
+    expireIn: 60 * 60 * 24 // One hour
   },
   crypto_key: "VITAE-RAIN-CHAT",
   default_admin: {
