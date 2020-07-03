@@ -13,12 +13,13 @@ import { CronJob } from "cron";
 export const sendGroupMsg = async (io, socket, data, cbFn) => {
   try {
     const { groupChatService, userService } = ServicesContext.getInstance();
-    const user: User[] = await userService.getUserBySocketId(socket.id);
-    if (user.length === 0) return;
-    if (user[0].role === User.ROLE.FREE) {
-      if (!isVitaePostEnabled(user[0]))
+    const user: User = await userService.getUserBySocketId(socket.id);
+    if (user === undefined) return;
+    if (user.ban === User.BAN.BANNED) return;
+    if (user.role === User.ROLE.FREE) {
+      if (!isVitaePostEnabled(user))
         return;
-      await userService.resetLastVitaePostTime(user[0].id);
+      await userService.resetLastVitaePostTime(user.id);
       setTimeout(() => {
         socketServer.emitTo(socket.id, socketEventNames.EnableVitaePost, {});
       }, configs.rain.vitae_post_time);
@@ -148,15 +149,17 @@ export const leaveGroup = async (io, socket, data) => {
 
 export const kickMember = async (io, socket, data, cbFn) => {
   try {
+    console.log("socket => kick member request =>", data);
     const { userId, groupId } = data;
     const { userService, groupService } = ServicesContext.getInstance();
 
-    const user: User[] = await userService.getUserBySocketId(socket.id);
-    if (user.length === 0) return;
+    const user: User = await userService.getUserBySocketId(socket.id);
+    if (user === undefined) return;
 
-    const group: Group[] = await groupService.getGroupByGroupId(groupId);
-    if (group.length === 0) return;
-    if (group[0].creatorId !== user[0].id) return;
+    console.log("here");
+    const group: Group = await groupService.getGroupByGroupId(groupId);
+    if (group === undefined) return;
+    if (group.creatorId !== user.id) return;
 
     await groupService.leaveGroup(userId, groupId);
     const kicker: User[] = await userService.findUserById(userId);
@@ -172,22 +175,25 @@ export const kickMember = async (io, socket, data, cbFn) => {
 export const banMember = async (io, socket, { userId, groupId }, cbfn) => {
   try {
     const { groupService, userService, banService } = ServicesContext.getInstance();
-    const user: User[] = await userService.getUserBySocketId(socket.id);
-    if (user.length === 0) return;
+    const user: User = await userService.getUserBySocketId(socket.id);
+    if (user === undefined) return;
 
     if (groupId === configs.rain.group_id) { // Vitae Rain Group
       // Check Group Ownership
-      if (user[0].role !== User.ROLE.OWNER && user[0].role !== User.ROLE.MODERATOR) return;
+      if (user.role !== User.ROLE.OWNER && user.role !== User.ROLE.MODERATOR) return;
 
       // Ban user from vitae-rain group
       await groupService.leaveGroup(userId, groupId);
       await banService.banUserFromGroup(userId, groupId);
       await userService.banUserFromRainGroup(userId);
+      const kicker: User[] = await userService.findUserById(userId);
+      if (kicker.length !== 0)
+        socketServer.emitTo(kicker[0].socketid, "kickedFromGroup", { groupId });
     } else {  // General Group
       // Check Group Ownership
-      const group: Group[] = await groupService.getGroupByGroupId(groupId);
-      if (group.length === 0) return;
-      if (group[0].creatorId !== user[0].id) return;
+      const group = await groupService.getGroupByGroupId(groupId);
+      if (group === undefined) return;
+      if (group.creatorId !== user.id) return;
 
       // Ban user from group
       await groupService.leaveGroup(userId, groupId);

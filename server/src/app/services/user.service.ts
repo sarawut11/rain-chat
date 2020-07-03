@@ -259,10 +259,14 @@ export class UserService {
     return query(sql, [toUserId]);
   }
 
-  getUserBySocketId(socketId) {
+  async getUserBySocketId(socketId): Promise<User> {
     if (socketId === "") socketId = undefined;
-    const sql = `SELECT * FROM user_info WHERE socketid LIKE '%${socketId}%' limit 1;`;
-    return query(sql);
+    const sql = `
+      SELECT * FROM ${this.TABLE_NAME}
+      WHERE ${this.columns.socketId} LIKE '%${socketId}%' LIMIT 1;`;
+    const users: User[] = await query(sql);
+    if (users.length === 0) return undefined;
+    return users[0];
   }
 
   getUsersByPopLimited() {

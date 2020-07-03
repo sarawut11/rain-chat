@@ -206,13 +206,13 @@ class InitApp {
   }
 
   _listeningRain() {
-    window.socket.on('rainComing', () => {
-      console.log('Rain is coming soon');
-      notifyRainComing();
+    window.socket.on('rainComing', after => {
+      console.log(`Rain is coming after ${after}seconds`);
+      notifyRainComing(after);
     });
-    window.socket.on('showAds', ({ ads }) => {
-      console.log('Show Ads', ads);
-      showAds(ads);
+    window.socket.on('showAds', ({ ads, duration }) => {
+      console.log('Show Ads', ads, '| Duration -', duration);
+      showAds(ads, duration);
     });
     window.socket.on('getRain', ({ reward }) => {
       console.log('Getting Reward:', reward);
