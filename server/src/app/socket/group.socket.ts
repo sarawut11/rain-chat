@@ -75,8 +75,7 @@ export const createGroup = async (io, socket, data, cbfn) => {
     const groupId = uuid();
     data.createTime = moment().utc().unix();
     const { name, description, creatorId, createTime } = data;
-    const RowDataPacket = await userService.getUserInfoById(creatorId);
-    const userInfo = RowDataPacket[0];
+    const userInfo: User = await userService.findUserById(creatorId);
     if (userInfo.role !== User.ROLE.OWNER && userInfo.role !== User.ROLE.UPGRADED_USER) {
       console.log("Free Members can't create a group");
       io.to(socket.id).emit("error", { code: 500, message: "Free Members can't create a group" });
@@ -160,8 +159,9 @@ export const kickMember = async (io, socket, data, cbFn) => {
     if (group.creatorId !== user.id) return;
 
     await groupService.leaveGroup(userId, groupId);
-    const kicker: User[] = await userService.findUserById(userId);
-    socketServer.emitTo(kicker[0].socketid, "kickedFromGroup", { groupId });
+    const kicker: User = await userService.findUserById(userId);
+    if (kicker !== undefined)
+      socketServer.emitTo(kicker.socketid, "kickedFromGroup", { groupId });
     console.log("kickMember data=>", data, "time=>", moment().utc());
     cbFn({ code: 200, data: "Kicked member successfully" });
   } catch (error) {
@@ -184,9 +184,9 @@ export const banMember = async (io, socket, { userId, groupId }, cbfn) => {
       await groupService.leaveGroup(userId, groupId);
       await banService.banUserFromGroup(userId, groupId);
       await userService.banUserFromRainGroup(userId);
-      const kicker: User[] = await userService.findUserById(userId);
-      if (kicker.length !== 0)
-        socketServer.emitTo(kicker[0].socketid, "kickedFromGroup", { groupId });
+      const kicker: User = await userService.findUserById(userId);
+      if (kicker !== undefined)
+        socketServer.emitTo(kicker.socketid, "kickedFromGroup", { groupId });
     } else {  // General Group
       // Check Group Ownership
       const group = await groupService.getGroupByGroupId(groupId);
@@ -196,9 +196,9 @@ export const banMember = async (io, socket, { userId, groupId }, cbfn) => {
       // Ban user from group
       await groupService.leaveGroup(userId, groupId);
       await banService.banUserFromGroup(userId, groupId);
-      const kicker: User[] = await userService.findUserById(userId);
-      if (kicker.length !== 0)
-        socketServer.emitTo(kicker[0].socketid, "kickedFromGroup", { groupId });
+      const kicker: User = await userService.findUserById(userId);
+      if (kicker !== undefined)
+        socketServer.emitTo(kicker.socketid, "kickedFromGroup", { groupId });
     }
     console.log(`banMember => User:${userId} from Group:${groupId} | time=> ${moment().utc()}`);
     cbfn({ code: 200, data: "ban member successfully" });

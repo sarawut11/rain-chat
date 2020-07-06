@@ -85,8 +85,7 @@ export const upgradeMembership = async (ctx, next) => {
 const confirmMembership = async (userId, amount, confirmTime) => {
   const { userService, transactionService } = ServicesContext.getInstance();
 
-  const RowDataPacket = await userService.findUserById(userId);
-  const userInfo = RowDataPacket[0];
+  const userInfo = await userService.findUserById(userId);
 
   // Update UserInfo & Transaction Info
   await userService.updateMembership(userId, User.ROLE.UPGRADED_USER);

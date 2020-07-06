@@ -35,7 +35,7 @@ export class DailyContext {
       console.log("Checking Membership Expiration");
       const { userService } = ServicesContext.getInstance();
       const expireTime = moment().utc().subtract(1, "months").unix();
-      const expiredUsers = await userService.getUsersByExpired(User.ROLE.UPGRADED_USER, expireTime);
+      const expiredUsers: User[] = await userService.getUsersByExpired(User.ROLE.UPGRADED_USER, expireTime);
       await userService.resetExpiredRole(User.ROLE.UPGRADED_USER, expireTime);
       console.log(`${expiredUsers.length} users' membership have been expired`);
     } catch (error) {
@@ -47,7 +47,7 @@ export class DailyContext {
     try {
       console.log("Checking Banned Users");
       const { userService, banService } = ServicesContext.getInstance();
-      const bannedUsers: { id, username, ban, time }[] = await userService.getUsersByRainBanned();
+      const bannedUsers = await userService.getUsersByRainBanned();
       if (bannedUsers.length === 0) return;
       const banNumbers: number[] = await Promise.all<number>(bannedUsers.map(user => {
         return banService.numberOfBan(user.id, configs.rain.group_id, Ban.TYPE.GROUP);

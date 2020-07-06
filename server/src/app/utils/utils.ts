@@ -10,15 +10,14 @@ export const isVitaePostEnabled = (user: User): boolean => {
 
 export const isOwner = (username): Promise<any> => new Promise(async (resolve, reject) => {
   const { userService } = ServicesContext.getInstance();
-  const RowDataPacket: User[] = await userService.getUserInfoByUsername(username);
-  if (RowDataPacket.length <= 0) {
+  const userInfo: User = await userService.getUserInfoByUsername(username);
+  if (userInfo === undefined) {
     resolve({
       success: false,
       message: "Invalid Username."
     });
     return;
   }
-  const userInfo = RowDataPacket[0];
   if (userInfo.role !== User.ROLE.OWNER) {
     resolve({
       success: false,
@@ -35,15 +34,14 @@ export const isOwner = (username): Promise<any> => new Promise(async (resolve, r
 
 export const checkUserInfo = (username, role?): Promise<any> => new Promise(async (resolve, reject) => {
   const { userService } = ServicesContext.getInstance();
-  const RowDataPacket = await userService.getUserInfoByUsername(username);
-  if (RowDataPacket.length <= 0) {
+  const userInfo: User = await userService.getUserInfoByUsername(username);
+  if (userInfo === undefined) {
     resolve({
       success: false,
       message: "Invalid Username."
     });
     return;
   }
-  const userInfo = RowDataPacket[0];
   if (userInfo.userId === 1) { // Default Admin
     resolve({
       success: false,

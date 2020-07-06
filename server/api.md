@@ -137,6 +137,22 @@
     }
   }
   ```
+### /user/wallet-address (POST)
+  Update wallet address
+
+  ***Request Body ***
+  | Fields        | Description       |
+  | ------------- | ----------------- |
+  | walletAddress | Avatar Image File |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    userInfo: { // when success == true
+    }
+  }
+  ```
 ## 1.4 Ads
 > **Ads Status**
 > - 0: Created

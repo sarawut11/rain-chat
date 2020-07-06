@@ -97,15 +97,14 @@ export const approveAds = async (ctx, next) => {
 
 const isModerator = (username): Promise<any> => new Promise(async (resolve, reject) => {
   const { userService } = ServicesContext.getInstance();
-  const RowDataPacket = await userService.getUserInfoByUsername(username);
-  if (RowDataPacket.length <= 0) {
+  const userInfo: User = await userService.getUserInfoByUsername(username);
+  if (userInfo === undefined) {
     resolve({
       success: false,
       message: "Invalid Username."
     });
     return;
   }
-  const userInfo = RowDataPacket[0];
   if (userInfo.role !== User.ROLE.MODERATOR) {
     resolve({
       success: false,

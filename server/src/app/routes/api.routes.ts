@@ -12,6 +12,7 @@ const api = new Router()
   // Profile
   .get("/user/:username", APIController.getProfileInfo)
   .put("/user/:username", APIController.updateProfileInfo)
+  .post("/user/wallet-address", APIController.saveWalletAddress)
 
   // Ads
   .get("/campaign/impcost", APIController.getCostPerImpression)

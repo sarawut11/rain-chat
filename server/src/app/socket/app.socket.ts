@@ -46,9 +46,9 @@ const initServer = server => {
     });
 
     // init socket
-    const arr = await userService.getSocketid(userId);
-    const existSocketIdStr = getSocketIdHandle(arr);
-    const newSocketIdStr = existSocketIdStr ? `${existSocketIdStr},${socketId}` : socketId;
+    const socketIds = await userService.getSocketid(userId);
+    socketIds.push(socketId);
+    const newSocketIdStr = socketIds.join(",");
     await userService.saveUserSocketId(userId, newSocketIdStr);
     console.log("initSocket userId=>", userId, "time=>", new Date().toLocaleString());
 
@@ -121,16 +121,14 @@ const initServer = server => {
       // Disconnect
       .on("disconnect", async reason => {
         try {
-          const socketid = await userService.getSocketid(userId);
-          const existSocketidStr = getSocketIdHandle(socketid);
-          const toUserSocketIds = (existSocketidStr && existSocketidStr.split(",")) || [];
-          const index = toUserSocketIds.indexOf(socketId);
+          const socketids = await userService.getSocketid(userId);
+          const index = socketids.indexOf(socketId);
 
           if (index > -1) {
-            toUserSocketIds.splice(index, 1);
+            socketids.splice(index, 1);
           }
 
-          await userService.saveUserSocketId(userId, toUserSocketIds.join(","));
+          await userService.saveUserSocketId(userId, socketids.join(","));
 
           // if (toUserSocketIds.length) {
           //   await userService.saveUserSocketId(_userId, toUserSocketIds.join(','));

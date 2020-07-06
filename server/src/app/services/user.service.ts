@@ -3,11 +3,11 @@ import { query } from "../utils/db";
 import { getInArraySQL } from "../utils/utils";
 import { isNullOrUndefined } from "util";
 import configs from "@configs";
-import { User } from "../models";
+import { User, UserRelation } from "../models";
 
 export class UserService {
-  readonly TABLE_NAME = "user_info";
-  readonly columns = {
+  readonly USER_TABLE = "user_info";
+  readonly USER_COL = {
     id: "id",
     username: "username",
     password: "password",
@@ -27,6 +27,16 @@ export class UserService {
     ban: "ban",
   };
 
+  readonly USER_REL_TABLE = "user_user_relation";
+  readonly USER_REL_COL = {
+    id: "id",
+    userId: "userId",
+    fromUser: "fromUser",
+    remark: "remark",
+    shield: "shield",
+    time: "time"
+  };
+
   constructor() {
     // Clear All User's socketId
     this.clearAllSocketIds();
@@ -35,65 +45,105 @@ export class UserService {
   // Fuzzy matching users
   async findMatchUsers(username: string): Promise<User[]> {
     const sql = `
-      SELECT * FROM ${this.TABLE_NAME}
-      WHERE ${this.columns.username} LIKE ?;`;
+      SELECT * FROM ${this.USER_TABLE}
+      WHERE ${this.USER_COL.username} LIKE ?;`;
     const users: User[] = await query(sql, username);
     return users;
   }
 
   // Register User
   insertUser(value) {
-    const sql = "insert into user_info(name,email,username,password,sponsor,refcode) values(?,?,?,?,?,?);";
+    const sql = `
+      INSERT INTO ${this.USER_TABLE}(
+        ${this.USER_COL.name},
+        ${this.USER_COL.email},
+        ${this.USER_COL.username},
+        ${this.USER_COL.password},
+        ${this.USER_COL.sponsorId},
+        ${this.USER_COL.refcode}
+      ) values(?,?,?,?,?,?);`;
     return query(sql, value);
   }
 
-  findUserById(id) {
-    const sql = "SELECT * FROM user_info WHERE id = ?;";
-    return query(sql, id);
+  async findUserById(id: number): Promise<User> {
+    const sql = `SELECT * FROM ${this.USER_TABLE} WHERE ${this.USER_COL.id} = ?;`;
+    const users: User[] = await query(sql, id);
+    if (users.length === 0) return undefined;
+    return users[0];
   }
 
-  findUserByUsername(username) {
-    const sql = "SELECT * FROM user_info WHERE username = ?;";
-    return query(sql, username);
+  async findUserByUsername(username: string): Promise<User> {
+    const sql = `SELECT * FROM ${this.USER_TABLE} WHERE ${this.USER_COL.username} = ?;`;
+    const users: User[] = await query(sql, username);
+    if (users.length === 0) return undefined;
+    return users[0];
   }
 
-  findUserByEmail(email) {
-    const sql = "SELECT * FROM user_info WHERE email = ?;";
-    return query(sql, email);
+  async findUserByRefcode(refcode: string): Promise<User> {
+    const sql = `SELECT * FROM ${this.USER_TABLE} WHERE ${this.USER_COL.refcode} = ?;`;
+    const users: User[] = await query(sql, refcode);
+    if (users.length === 0) return undefined;
+    return users[0];
   }
 
-  findUserByRefcode(refcode) {
-    const sql = "SELECT * FROM user_info WHERE refcode = ?;";
-    return query(sql, refcode);
-  }
-
-  findUserByEmailOrUsername(email, username) {
+  async findUserByEmailOrUsername(email, username): Promise<User> {
     if (email === "") email = undefined;
-    const sql = "SELECT * FROM user_info WHERE email = ? OR username = ?;";
-    return query(sql, [email, username]);
+    const sql = `
+      SELECT * FROM ${this.USER_TABLE}
+      WHERE
+        ${this.USER_COL.email} = ? OR
+        ${this.USER_COL.username} = ?;`;
+    const users: User[] = await query(sql, [email, username]);
+    if (users.length === 0) return undefined;
+    return users[0];
   }
 
-  getRefcode(username) {
-    const sql = "SELECT refcode FROM user_info WHERE username = ?;";
-    return query(sql, username);
+  async getRefcode(username: string): Promise<string> {
+    const sql = `SELECT ${this.USER_COL.refcode} FROM ${this.USER_TABLE} WHERE ${this.USER_COL.username} = ?;`;
+    const user: User[] = await query(sql, username);
+    if (user.length === 0) return undefined;
+    return user[0].refcode;
   }
 
-  setRefcode(username, refcode) {
-    const sql = "UPDATE user_info SET refcode = ? WHERE username = ? limit 1 ; ";
+  setRefcode(username: string, refcode: string) {
+    const sql = `
+      UPDATE ${this.USER_TABLE}
+      SET ${this.USER_COL.refcode} = ?
+      WHERE ${this.USER_COL.username} = ? LIMIT 1;`;
     return query(sql, [refcode, username]);
   }
 
   // Find user information by user id user_info includes user name, avatar, last login time, status, etc. excluding password
-  getUserInfoById(userId) {
+  async getUserInfoById(userId: number): Promise<User> {
     const sql =
-      "SELECT id AS userId, username, name, avatar, intro, role FROM user_info WHERE user_info.id =? ";
-    return query(sql, [userId]);
+      `SELECT
+        ${this.USER_COL.id} AS userId,
+        ${this.USER_COL.username},
+        ${this.USER_COL.name},
+        ${this.USER_COL.avatar},
+        ${this.USER_COL.intro},
+        ${this.USER_COL.role}
+      FROM ${this.USER_TABLE}
+      WHERE ${this.USER_COL.id} = ?;`;
+    const user: User[] = await query(sql, userId);
+    if (user.length === 0) return undefined;
+    return user[0];
   }
 
-  getUserInfoByUsername(username) {
+  async getUserInfoByUsername(username: string): Promise<User> {
     const sql =
-      "SELECT id AS userId, username, name, avatar, intro, role FROM user_info WHERE user_info.username =? ";
-    return query(sql, [username]);
+      `SELECT
+        ${this.USER_COL.id} AS userId,
+        ${this.USER_COL.username},
+        ${this.USER_COL.name},
+        ${this.USER_COL.avatar},
+        ${this.USER_COL.intro},
+        ${this.USER_COL.role}
+      FROM ${this.USER_TABLE}
+      WHERE ${this.USER_COL.username} = ?;`;
+    const user: User[] = await query(sql, username);
+    if (user.length === 0) return undefined;
+    return user[0];
   }
 
   setUserInfo(username, { name, intro, avatar }) {
@@ -107,13 +157,25 @@ export class UserService {
   }
 
   setAvatar(username, avatar) {
-    const sql = "UPDATE user_info SET avatar = ? WHERE username = ? limit 1 ; ";
+    const sql = `
+      UPDATE ${this.USER_TABLE}
+      SET ${this.USER_COL.avatar} = ?
+      WHERE ${this.USER_COL.username} = ? LIMIT 1;`;
     return query(sql, [avatar, username]);
   }
 
-  findUsersByRole(role: string) {
-    const sql = `SELECT * FROM ${this.TABLE_NAME} WHERE ${this.columns.role} = ?;`;
-    return query(sql, role);
+  setWalletAddress(username: string, walletAddress: string) {
+    const sql = `
+      UPDATE ${this.USER_TABLE}
+      SET ${this.USER_COL.walletAddress} = ?
+      WHERE ${this.USER_COL.username} = ? LIMIT 1;`;
+    return query(sql, [walletAddress, username]);
+  }
+
+  async findUsersByRole(role: string): Promise<User[]> {
+    const sql = `SELECT * FROM ${this.USER_TABLE} WHERE ${this.USER_COL.role} = ?;`;
+    const users: User[] = await query(sql, role);
+    return users;
   }
 
   updateRole(username, role) {
@@ -144,68 +206,86 @@ export class UserService {
 
   getUsernamelist() {
     const sql = `
-      SELECT ${this.columns.username}, ${this.columns.email}
-      FROM ${this.TABLE_NAME}
+      SELECT ${this.USER_COL.username}, ${this.USER_COL.email}
+      FROM ${this.USER_TABLE}
       WHERE
-        ${this.columns.role} = ? OR
-        ${this.columns.role} = ?;`;
+        ${this.USER_COL.role} = ? OR
+        ${this.USER_COL.role} = ?;`;
     return query(sql, [User.ROLE.FREE, User.ROLE.UPGRADED_USER]);
   }
 
-  getModers() {
-    const sql = `SELECT * FROM ${this.TABLE_NAME} WHERE ${this.columns.role} = ?;`;
-    return query(sql, User.ROLE.MODERATOR);
+  async getModers(): Promise<User[]> {
+    const sql = `SELECT * FROM ${this.USER_TABLE} WHERE ${this.USER_COL.role} = ?;`;
+    const users: User[] = await query(sql, User.ROLE.MODERATOR);
+    return users;
   }
 
   // Check if the user id is a friend of the local user by checking the user id. If yes, return userId and remark.
-  isFriend(userId, fromUser) {
-    const sql =
-      "SELECT * FROM user_user_relation AS u WHERE u.userId = ? AND u.fromUser = ? ";
-    return query(sql, [userId, fromUser]);
+  async isFriend(userId, fromUser): Promise<boolean> {
+    const sql = `
+      SELECT * FROM ${this.USER_REL_TABLE}
+      WHERE
+        ${this.USER_REL_COL.userId} = ? AND
+        ${this.USER_REL_COL.fromUser} = ?;`;
+    const relation: UserRelation[] = await query(sql, [userId, fromUser]);
+    return relation.length !== 0;
   }
 
   // Add each other as friends
   addFriendEachOther(userId, fromUser, time) {
-    const sql = "INSERT INTO user_user_relation(userId,fromUser,time) VALUES (?,?,?), (?,?,?)";
+    const sql = `
+      INSERT INTO ${this.USER_REL_TABLE}(
+        ${this.USER_REL_COL.userId},
+        ${this.USER_REL_COL.fromUser},
+        ${this.USER_REL_COL.time}
+      ) VALUES (?,?,?), (?,?,?);`;
     return query(sql, [userId, fromUser, time, fromUser, userId, time]);
   }
 
   banUserFromRainGroup(userId: number) {
     const sql = `
-      UPDATE ${this.TABLE_NAME}
-      SET ${this.columns.ban} = ?
-      WHERE ${this.columns.id} = ?;`;
+      UPDATE ${this.USER_TABLE}
+      SET ${this.USER_COL.ban} = ?
+      WHERE ${this.USER_COL.id} = ?;`;
     return query(sql, [User.BAN.BANNED, userId]);
   }
 
   unbanUsersFromRainGroup(userIds: number[]) {
     const array = getInArraySQL(userIds);
     const sql = `
-      UPDATE ${this.TABLE_NAME}
-      SET ${this.columns.ban} = ?
-      WHERE ${this.columns.id} IN (${array});`;
+      UPDATE ${this.USER_TABLE}
+      SET ${this.USER_COL.ban} = ?
+      WHERE ${this.USER_COL.id} IN (${array});`;
     return query(sql, [User.BAN.NONE]);
   }
 
-  getUsersByRainBanned() {
+  async getUsersByRainBanned(): Promise<{
+    id: number,
+    username: string,
+    ban: number,
+    time: number
+  }[]> {
     const sql = `
       SELECT
-        user.${this.columns.id},
-        user.${this.columns.username},
-        user.${this.columns.ban}
+        user.${this.USER_COL.id},
+        user.${this.USER_COL.username},
+        user.${this.USER_COL.ban}
         ban.time
-      FROM ${this.TABLE_NAME} as user
+      FROM ${this.USER_TABLE} as user
       INNER JOIN contact_ban_info as ban
       ON user.id = ban.userId
-      WHERE ${this.columns.ban} = ?
+      WHERE ${this.USER_COL.ban} = ?
       ORDER BY ban.time DESC LIMIT 1;`;
     return query(sql, User.BAN.BANNED);
   }
 
   // Delete contact
   deleteContact(userId, fromUser) {
-    const sql =
-      "DELETE FROM  user_user_relation WHERE (userId = ? AND fromUser = ?) or (userId = ? AND fromUser = ?)";
+    const sql = `
+      DELETE FROM ${this.USER_REL_TABLE}
+      WHERE
+        (${this.USER_REL_COL.userId} = ? AND ${this.USER_REL_COL.fromUser} = ?) OR
+        (${this.USER_REL_COL.userId} = ? AND ${this.USER_REL_COL.fromUser} = ?);`;
     return query(sql, [userId, fromUser, fromUser, userId]);
   }
 
@@ -236,46 +316,44 @@ export class UserService {
   }
 
   clearAllSocketIds() {
-    const sql = `
-      UPDATE ${this.TABLE_NAME} SET socketid = '';
-    `;
+    const sql = `UPDATE ${this.USER_TABLE} SET socketid = '';`;
     return query(sql);
   }
 
   saveUserSocketId(userId, socketId) {
     const data = [socketId, userId];
-    const sql = "UPDATE user_info SET socketid = ? WHERE id= ? limit 1 ; ";
+    const sql = `
+      UPDATE ${this.USER_TABLE}
+      SET ${this.USER_COL.socketId} = ?
+      WHERE ${this.USER_COL.id} = ? LIMIT 1;`;
     return query(sql, data);
   }
 
-  getSocketIdsByUserids(userIds: string[]) {
-    if (userIds.length === 0) {
-      return [];
-    }
-    const array = getInArraySQL(userIds);
-    const sql = `SELECT socketid FROM user_info WHERE id IN (${array})`;
-    return query(sql);
-  }
-
-  getSocketid(toUserId) {
-    const sql = "SELECT socketid FROM user_info WHERE id=? limit 1 ;";
-    return query(sql, [toUserId]);
+  async getSocketid(userId: number): Promise<string[]> {
+    const sql = `
+      SELECT ${this.USER_COL.socketId}
+      FROM ${this.USER_TABLE}
+      WHERE ${this.USER_COL.id} = ? LIMIT 1;`;
+    const users: User[] = await query(sql, userId);
+    if (users.length === 0) return [];
+    return users[0].socketid.split(",");
   }
 
   async getUserBySocketId(socketId): Promise<User> {
     if (socketId === "") socketId = undefined;
     const sql = `
-      SELECT * FROM ${this.TABLE_NAME}
-      WHERE ${this.columns.socketId} LIKE '%${socketId}%' LIMIT 1;`;
+      SELECT * FROM ${this.USER_TABLE}
+      WHERE ${this.USER_COL.socketId} LIKE '%${socketId}%' LIMIT 1;`;
     const users: User[] = await query(sql);
     if (users.length === 0) return undefined;
     return users[0];
   }
 
-  getUsersByPopLimited() {
+  async getUsersByPopLimited(): Promise<User[]> {
     const limit = configs.rain.pop_rain_balance_limit;
-    const sql = "SELECT * FROM user_info WHERE popBalance >= ?;";
-    return query(sql, limit);
+    const sql = `SELECT * FROM ${this.USER_TABLE} WHERE ${this.USER_COL.popBalance} >= ?;`;
+    const users: User[] = await query(sql, limit);
+    return users;
   }
 
   getUsersByLastActivity(limit) {
@@ -290,13 +368,13 @@ export class UserService {
 
   getUsersByUserIds(userIds: number[]) {
     const array = getInArraySQL(userIds);
-    const sql = `SELECT * FROM ${this.TABLE_NAME} WHERE ${this.columns.id} IN (${array});`;
+    const sql = `SELECT * FROM ${this.USER_TABLE} WHERE ${this.USER_COL.id} IN (${array});`;
     return query(sql);
   }
 
   getUsersByUsernames(usernames: string[]) {
     const array = getInArraySQL(usernames);
-    const sql = `SELECT * FROM ${this.TABLE_NAME} WHERE ${this.columns.username} IN (${array});`;
+    const sql = `SELECT * FROM ${this.USER_TABLE} WHERE ${this.USER_COL.username} IN (${array});`;
     return query(sql);
   }
 
@@ -308,7 +386,7 @@ export class UserService {
 
   rainUser(username, reward) {
     const sql = `
-      UPDATE ${this.TABLE_NAME}
+      UPDATE ${this.USER_TABLE}
       SET
         balance = balance + ?,
         popBalance = popBalance + ?
@@ -319,7 +397,7 @@ export class UserService {
   rainUsers(userIds: number[], reward, popReward) {
     const array = getInArraySQL(userIds);
     const sql = `
-      UPDATE ${this.TABLE_NAME}
+      UPDATE ${this.USER_TABLE}
       SET
         balance = balance + ?,
         popBalance = popBalance + ?
@@ -330,74 +408,74 @@ export class UserService {
   // Membership Revenue
   addBalance(userId: number, amount: number) {
     const sql = `
-      UPDATE ${this.TABLE_NAME}
+      UPDATE ${this.USER_TABLE}
       SET
-        ${this.columns.balance} = ${this.columns.balance} + ?
-      WHERE ${this.columns.id} = ?;`;
+        ${this.USER_COL.balance} = ${this.USER_COL.balance} + ?
+      WHERE ${this.USER_COL.id} = ?;`;
     return query(sql, [amount, userId]);
   }
 
   shareRevenue(amount: number, role: string) {
     const sql = `
-      UPDATE ${this.TABLE_NAME} as a
+      UPDATE ${this.USER_TABLE} as a
       INNER JOIN (
         SELECT COUNT(*) OVER() as total
-        FROM ${this.TABLE_NAME} WHERE ${this.columns.role} = ?
+        FROM ${this.USER_TABLE} WHERE ${this.USER_COL.role} = ?
       ) as b
-      SET a.${this.columns.balance} = a.${this.columns.balance} + ? / b.total;`;
+      SET a.${this.USER_COL.balance} = a.${this.USER_COL.balance} + ? / b.total;`;
     return query(sql, [role, amount]);
   }
 
   setModers(usernames: string[]) {
     const array = getInArraySQL(usernames);
     const sql = `
-      UPDATE ${this.TABLE_NAME}
-      SET ${this.columns.role} = ?
-      WHERE ${this.columns.username} IN (${array});`;
+      UPDATE ${this.USER_TABLE}
+      SET ${this.USER_COL.role} = ?
+      WHERE ${this.USER_COL.username} IN (${array});`;
     return query(sql, User.ROLE.MODERATOR);
   }
 
   cancelModer(username: string) {
     const sql = `
-      UPDATE ${this.TABLE_NAME}
-      SET ${this.columns.role} = ?
-      WHERE ${this.columns.username} = ?;`;
+      UPDATE ${this.USER_TABLE}
+      SET ${this.USER_COL.role} = ?
+      WHERE ${this.USER_COL.username} = ?;`;
     return query(sql, [User.ROLE.UPGRADED_USER, username]);  // Change Role field to x,y,z format later
   }
 
   updateMembership(userId, role) {
     const sql = `
-      UPDATE ${this.TABLE_NAME}
+      UPDATE ${this.USER_TABLE}
       SET
-        ${this.columns.role} = ?,
-        ${this.columns.lastUpgradeTime} = ?
-      WHERE ${this.columns.id} = ?;
+        ${this.USER_COL.role} = ?,
+        ${this.USER_COL.lastUpgradeTime} = ?
+      WHERE ${this.USER_COL.id} = ?;
     `;
     return query(sql, [role, moment().utc().unix(), userId]);
   }
 
   getUsersByExpired(role, expireTime) {
     const sql = `
-      SELECT * FROM ${this.TABLE_NAME}
-      WHERE ${this.columns.role} = ? AND ${this.columns.lastUpgradeTime} < ?;
+      SELECT * FROM ${this.USER_TABLE}
+      WHERE ${this.USER_COL.role} = ? AND ${this.USER_COL.lastUpgradeTime} < ?;
     `;
     return query(sql, [role, expireTime]);
   }
 
   resetExpiredRole(role, expireTime) {
     const sql = `
-      UPDATE ${this.TABLE_NAME}
-      SET ${this.columns.role} = ?
-      WHERE ${this.columns.role} = ? AND ${this.columns.lastUpgradeTime} < ?;
+      UPDATE ${this.USER_TABLE}
+      SET ${this.USER_COL.role} = ?
+      WHERE ${this.USER_COL.role} = ? AND ${this.USER_COL.lastUpgradeTime} < ?;
     `;
     return query(sql, [User.ROLE.FREE, role, expireTime]);
   }
 
   resetLastVitaePostTime(userId) {
     const sql = `
-      UPDATE ${this.TABLE_NAME}
-      SET ${this.columns.lastVitaePostTime} = ?
-      WHERE ${this.columns.id} = ?`;
+      UPDATE ${this.USER_TABLE}
+      SET ${this.USER_COL.lastVitaePostTime} = ?
+      WHERE ${this.USER_COL.id} = ?`;
     return query(sql, [moment().utc().unix(), userId]);
   }
 

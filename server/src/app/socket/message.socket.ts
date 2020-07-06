@@ -6,12 +6,11 @@ export const getPrivateMsg = async ({ toUser, userId, start = 1, count = 20 }) =
   const { userService, chatService } = ServicesContext.getInstance();
 
   const RowDataPacket1 = await chatService.getPrivateDetail(userId, toUser, start - 1, count);
-  const RowDataPacket2 = await userService.getUserInfoById(toUser);
+  const userInfo: User = await userService.getUserInfoById(toUser);
   const messages = JSON.parse(JSON.stringify(RowDataPacket1));
-  const userInfo = JSON.parse(JSON.stringify(RowDataPacket2));
   return {
     messages,
-    userInfo: userInfo[0],
+    userInfo,
   };
 };
 
@@ -41,7 +40,7 @@ export const getGroupItem = async ({
 export const getAllMessage = async ({ userId, clientHomePageList }) => {
   try {
     const { userService, chatService, groupChatService, adsService } = ServicesContext.getInstance();
-    const user: User[] = await userService.findUserById(userId);
+    const user: User = await userService.findUserById(userId);
     const res1 = await userService.getPrivateList(userId);
     const privateList = JSON.parse(JSON.stringify(res1));
     const res2 = await userService.getGroupList(userId);
@@ -81,8 +80,8 @@ export const getAllMessage = async ({ userId, clientHomePageList }) => {
 
     return {
       userInfo: {
-        ...user[0],
-        isVitaePostEnabled: isVitaePostEnabled(user[0])
+        ...user,
+        isVitaePostEnabled: isVitaePostEnabled(user)
       },
       homePageList,
       privateChat: Array.from(privateChat),
