@@ -24,15 +24,14 @@ export const registerAds = async (ctx, next) => {
     }
 
     // Check Username
-    const RowDataPacket: User[] = await userService.findUserByUsername(username);
-    if (RowDataPacket.length <= 0) {
+    const userInfo: User = await userService.findUserByUsername(username);
+    if (userInfo === undefined) {
       ctx.body = {
         success: false,
         message: "Invalid Username."
       };
       return;
     }
-    const userInfo = RowDataPacket[0];
 
     // Upload Asset
     const fileName = generateFileName(username, asset.type);
@@ -74,15 +73,14 @@ export const getAdsByUsername = async (ctx, next) => {
     const { userService, adsService } = ServicesContext.getInstance();
 
     // Check Username
-    const RowDataPacket: User[] = await userService.findUserByUsername(username);
-    if (RowDataPacket.length <= 0) {
+    const userInfo: User = await userService.findUserByUsername(username);
+    if (userInfo === undefined) {
       ctx.body = {
         success: false,
         message: "Invalid Username."
       };
       return;
     }
-    const userInfo = RowDataPacket[0];
 
     const result: Ads[] = await adsService.findAdsByUserId(userInfo.id);
     ctx.body = {
@@ -456,7 +454,7 @@ const checkAdsId = (username, adsId): Promise<{
     });
     return;
   }
-  const userInfo: User = (await userService.findUserByUsername(username))[0];
+  const userInfo: User = await userService.findUserByUsername(username);
   if (existingAds.userId !== userInfo.id) {
     resolve({
       success: false,

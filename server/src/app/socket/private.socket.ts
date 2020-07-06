@@ -1,4 +1,5 @@
 import * as socketIo from "socket.io";
+import * as moment from "moment";
 import { socketServer } from "./app.socket";
 import { ServicesContext } from "../context";
 import { User } from "../models";
@@ -15,8 +16,8 @@ export const sendPrivateMsg = async (io, socket: socketIo.Socket, data, cbFn) =>
       attachments: JSON.stringify(data.attachments),
     });
 
-    const user: User[] = await userService.findUserById(data.toUser);
-    const existSocketIdStr = socketServer.getSocketIdHandle(user[0].socketid);
+    const user: User = await userService.findUserById(data.toUser);
+    const existSocketIdStr = socketServer.getSocketIdHandle(user.socketid);
     socketServer.emitTo(existSocketIdStr, socketEventNames.GetPrivateMsg, data);
     console.log("sendPrivateMsg data=>", data, "time=>", new Date().toLocaleString());
     cbFn(data);
@@ -55,11 +56,11 @@ export const addAsTheContact = async (io, socket, data, cbFn) => {
   try {
     const { userId, fromUser } = data;
     const { userService } = ServicesContext.getInstance();
-    const time = Date.now() / 1000;
+    const time = moment().utc().unix();
     await userService.addFriendEachOther(userId, fromUser, time);
-    const userInfo = await userService.getUserInfoById(fromUser);
+    const userInfo: User = await userService.getUserInfoById(fromUser);
     console.log("addAsTheContact data=>", data, "time=>", new Date().toLocaleString());
-    cbFn(userInfo[0]);
+    cbFn(userInfo);
   } catch (error) {
     console.log("error", error.message);
     io.to(socket.id).emit("error", { code: 500, message: error.message });
@@ -69,9 +70,9 @@ export const addAsTheContact = async (io, socket, data, cbFn) => {
 export const getUserInfo = async (io, socket, userId, cbFn) => {
   try {
     const { userService } = ServicesContext.getInstance();
-    const userInfo = await userService.getUserInfoById(userId);
+    const userInfo: User = await userService.getUserInfoById(userId);
     console.log("getUserInfo userId=>", userId, "time=>", new Date().toLocaleString());
-    cbFn(userInfo[0]);
+    cbFn(userInfo);
   } catch (error) {
     console.log("error", error.message);
     io.to(socket.id).emit("error", { code: 500, message: error.message });
@@ -82,9 +83,8 @@ export const deleteContact = async (io, socket, { fromUser, toUser }, cbFn) => {
   try {
     const { userService } = ServicesContext.getInstance();
     await userService.deleteContact(fromUser, toUser);
-    const sockets = await userService.getSocketid(toUser);
-    const existSocketIdStr = socketServer.getSocketIdHandle(sockets);
-    socketServer.emitTo(existSocketIdStr, socketEventNames.BeDeleted, fromUser);
+    const socketIds = await userService.getSocketid(toUser);
+    socketServer.emitTo(socketIds.join(","), socketEventNames.BeDeleted, fromUser);
     console.log(
       "deleteContact userId && toUser =>",
       fromUser,

@@ -97,10 +97,10 @@ export const cancelModer = async (ctx, next) => {
     }
 
     await userService.cancelModer(modUsername);
-    const updatedUser: User[] = await userService.findUserByUsername(modUsername);
+    const updatedUser: User = await userService.findUserByUsername(modUsername);
     ctx.body = {
       success: true,
-      userInfo: updatedUser[0]
+      userInfo: updatedUser
     };
   } catch (error) {
     console.error(error.message);
@@ -129,11 +129,11 @@ export const setModerator = async (ctx, next) => {
     }
     const { userInfo } = checkUser;
     await userService.updateMembership(userInfo.userId, User.ROLE.MODERATOR);
-    const user = await userService.findUserByUsername(username);
+    const updatedUser: User = await userService.findUserByUsername(username);
     ctx.body = {
       success: true,
       message: "Successfully Updated",
-      userInfo: user[0],
+      userInfo: updatedUser,
     };
   } catch (error) {
     console.log(error.message);
