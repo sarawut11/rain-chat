@@ -80,9 +80,9 @@ export class RainContext {
 
       // Send updated impression info to ads' creator
       const creator: User[] = await userService.findUserById(ads.userId);
-      const updatedAds: Ads[] = await adsService.findAdsById(ads.id);
+      const updatedAd: Ads = await adsService.findAdsById(ads.id);
       socketServer.emitTo(creator[0].socketid, socketEventNames.UpdateAdsImpressions, {
-        adsInfo: updatedAds[0]
+        adsInfo: updatedAd
       });
     } catch (error) {
       console.log("Rain Failed, ", error.message);
@@ -168,9 +168,9 @@ export class RainContext {
 
     // Send updated impression info to ads' creator
     const creator: User[] = await userService.findUserById(ads.userId);
-    const updatedAds: Ads[] = await adsService.findAdsById(ads.id);
+    const updatedAd: Ads = await adsService.findAdsById(ads.id);
     socketServer.emitTo(creator[0].socketid, socketEventNames.UpdateAdsImpressions, {
-      adsInfo: updatedAds[0]
+      adsInfo: updatedAd
     });
   }
 }

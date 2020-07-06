@@ -16,11 +16,11 @@ export const subscribeAdsReward = (token) => {
 
 export const updateAdsStatus = async (adsId) => {
   const { userService, adsService } = ServicesContext.getInstance();
-  const ads: Ads[] = await adsService.findAdsById(adsId);
-  const user: User[] = await userService.findUserById(ads[0].userId);
+  const ads: Ads = await adsService.findAdsById(adsId);
+  const user: User[] = await userService.findUserById(ads.userId);
   socketServer.emitTo(user[0].socketid, socketEventNames.UpdateAdsStatus, {
     adsId,
     username: user[0].username,
-    status: ads[0].status
+    status: ads.status
   }, (error) => console.error(error.message));
 };

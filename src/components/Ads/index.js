@@ -423,35 +423,31 @@ class Ads extends Component {
             {status === ADS_PENDING_PURCHASE && <Tag color="#2db7f5">awaiting deposit</Tag>}
             {status === ADS_PENDING_CONFIRM && <Tag color="#2db7f5">pending deposit</Tag>}
           </Row>
+          <Row justify="end">
+            <p>
+              Created By: <b>{item.creatorUsername}</b>
+            </p>
+          </Row>
+          {item.reviewerUsername && (
+            <Row justify="end">
+              <p>
+                Approved By: <b>{item.reviewerUsername}</b>
+              </p>
+            </Row>
+          )}
           <Meta
             avatar={
               <UserAvatar
-                name={item.name ? item.name : this.state.user_info.name}
-                src={item.avatar ? item.avatar : this.state.user_info.avatar}
+                name={item.creatorUsername ? item.creatorUsername : this.state.user_info.name}
+                src={item.creatorAvatar ? item.creatorAvatar : this.state.user_info.avatar}
                 size="36"
               />
             }
             title={item.title}
-            description={
-              <div>
-                {item.username && (
-                  <p>
-                    Advertiser: <b>{item.username}</b>
-                  </p>
-                )}
-              </div>
-            }
+            description={item.description}
           />
-
+          <Divider />
           <Timeline className="camp-item-timeline">
-            {item.description && (
-              <Timeline.Item color="green">
-                <p>
-                  <b>Description:</b>
-                </p>
-                <p>{item.description}</p>
-              </Timeline.Item>
-            )}
             {item.buttonLabel && (
               <Timeline.Item color="green">
                 <p>
