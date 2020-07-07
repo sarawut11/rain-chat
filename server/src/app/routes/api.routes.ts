@@ -13,6 +13,8 @@ const api = new Router()
   .get("/user/:username", APIController.getProfileInfo)
   .put("/user/:username", APIController.updateProfileInfo)
   .post("/user/wallet-address", APIController.saveWalletAddress)
+  .get("/user/otp/request", APIController.generateOTP)
+  .post("/user/otp/verify", APIController.verifyOTP)
 
   // Ads
   .get("/campaign/impcost", APIController.getCostPerImpression)
