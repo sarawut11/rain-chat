@@ -1,4 +1,6 @@
 import { rpcInterface } from "../utils/wallet/RpcInterface";
+import { ServicesContext } from "../context";
+import { User, Transaction } from "../models";
 
 export const walletNotify = async (ctx, next) => {
   try {
@@ -32,6 +34,44 @@ export const walletNotify = async (ctx, next) => {
     ctx.body = {
       success: true,
       message: "Success",
+    };
+  } catch (error) {
+    console.error(error.message);
+    ctx.body = {
+      success: false,
+      message: "Failed"
+    };
+  }
+};
+
+export const walletWithdraw = async (ctx, next) => {
+  try {
+    const { username } = ctx.state.user;
+    const { walletAddress, amount } = ctx.request.body;
+    const { userService, transactionService } = ServicesContext.getInstance();
+
+    const userInfo: User = await userService.findUserByUsername(username);
+    if (userInfo === undefined) {
+      ctx.body = {
+        success: false,
+        message: "Invalid username"
+      };
+      return;
+    }
+    // if (!userInfo.walletAddress.includes(walletAddress)) {
+    //   ctx.body = {
+    //     success: false,
+    //     message: "Invalid wallet address"
+    //   };
+    //   return;
+    // }
+
+    // Withraw amount from wallet
+    await transactionService.createTransactionRequest(userInfo.id, Transaction.TYPE.WITHDRAW, amount);
+    // ...
+    ctx.body = {
+      success: true,
+      message: "Pending"
     };
   } catch (error) {
     console.error(error.message);

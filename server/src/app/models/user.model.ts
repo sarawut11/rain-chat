@@ -16,6 +16,7 @@ export class User {
   public lastUpgradeTime: number;
   public lastVitaePostTime: number;
   public ban: number;
+  public walletAddress: string;
 
   public static readonly ROLE = {
     COMPANY: "COMPANY",
