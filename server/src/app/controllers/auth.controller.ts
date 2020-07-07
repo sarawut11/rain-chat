@@ -6,7 +6,7 @@ import { ServicesContext } from "../context";
 import { socketServer } from "../socket/app.socket";
 import configs from "@configs";
 import { User, Ban } from "../models";
-import { isVitaePostEnabled } from "../utils/utils";
+import { isVitaePostEnabled, generateOtp, verifyOtp, sendMail } from "../utils";
 
 export const loginUser = async (ctx, next) => {
   try {
@@ -169,6 +169,69 @@ export const validateToken = async (ctx, next) => {
       success: true,
       message: "Valid",
       userInfo,
+    };
+  } catch (error) {
+    console.log(error.message);
+    ctx.body = {
+      success: false,
+      message: "Invalid Username.",
+    };
+  }
+};
+
+export const generateOTP = async (ctx, next) => {
+  try {
+    const { username } = ctx.state.user;
+    const { userService } = ServicesContext.getInstance();
+
+    const user: User = await userService.findUserByUsername(username);
+    if (user === undefined) {
+      ctx.body = {
+        success: false,
+        message: "Invalid Username."
+      };
+      return;
+    }
+    const otp: string = await generateOtp();
+    await sendMail({
+      to: user.email,
+      subject: "Vitae OTP",
+      text: otp,
+      html: undefined,
+    });
+    ctx.body = {
+      success: true,
+      message: "6 digit code sent to your email.",
+      expireIn: configs.otp.timeOut
+    };
+  } catch (error) {
+    console.log(error.message);
+    ctx.body = {
+      success: false,
+      message: "Invalid Username.",
+    };
+  }
+};
+
+export const verifyOTP = async (ctx, next) => {
+  try {
+    const { username } = ctx.state.user;
+    const { token } = ctx.request.body;
+    const { userService } = ServicesContext.getInstance();
+
+    const user: User = await userService.findUserByUsername(username);
+    if (user === undefined) {
+      ctx.body = {
+        success: false,
+        message: "Invalid Username."
+      };
+      return;
+    }
+
+    const isValid: boolean = verifyOtp(token);
+    ctx.body = {
+      success: true,
+      isValid,
     };
   } catch (error) {
     console.log(error.message);

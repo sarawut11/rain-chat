@@ -73,5 +73,14 @@ export default {
   cmc: {
     api_key: "6325368a-751f-45c0-bf8a-5f6afacfa81e",
     polling_interval_seconds: 5
-  }
+  },
+  otp: {
+    timeOut: 60, // seconds
+  },
+  mail: {
+    host: "",
+    service: "gmail",
+    user: "kirillvasilyevdev@gmail.com",
+    pass: "intelinside1995",
+  },
 };

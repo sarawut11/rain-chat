@@ -269,12 +269,12 @@ export class UserService {
       SELECT
         user.${this.USER_COL.id},
         user.${this.USER_COL.username},
-        user.${this.USER_COL.ban}
+        user.${this.USER_COL.ban},
         ban.time
       FROM ${this.USER_TABLE} as user
       INNER JOIN contact_ban_info as ban
       ON user.id = ban.userId
-      WHERE ${this.USER_COL.ban} = ?
+      WHERE user.${this.USER_COL.ban} = ?
       ORDER BY ban.time DESC LIMIT 1;`;
     return query(sql, User.BAN.BANNED);
   }

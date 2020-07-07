@@ -153,6 +153,32 @@
     }
   }
   ```
+### /user/otp/request (GET)
+  Generate Otp token and the token will be sent to user's email
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    expireIn: 60 // seconds
+  }
+  ```
+### /user/otp/verify (POST)
+  Verify OTP token
+
+  ***Request Body ***
+  | Fields | Description             |
+  | ------ | ----------------------- |
+  | token  | OTP token sent to email |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    isValid: true/false,
+  }
+  ```
 ## 1.4 Ads
 > **Ads Status**
 > - 0: Created
