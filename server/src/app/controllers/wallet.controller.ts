@@ -58,13 +58,13 @@ export const walletWithdraw = async (ctx, next) => {
       };
       return;
     }
-    if (!userInfo.walletAddress.includes(walletAddress)) {
-      ctx.body = {
-        success: false,
-        message: "Invalid wallet address"
-      };
-      return;
-    }
+    // if (!userInfo.walletAddress.includes(walletAddress)) {
+    //   ctx.body = {
+    //     success: false,
+    //     message: "Invalid wallet address"
+    //   };
+    //   return;
+    // }
 
     // Withraw amount from wallet
     await transactionService.createTransactionRequest(userInfo.id, Transaction.TYPE.WITHDRAW, amount);
