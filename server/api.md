@@ -29,6 +29,8 @@
       referral,
       role,
       token,
+      ban,
+      walletAddress,
       isVitaePostEnabled
     }
   }
@@ -522,6 +524,16 @@
   }
   ```
 ## 1.6 Role Management API
+### /membership/price (GET)
+  Get membership price in vitae token
+
+  ***Response***
+  ```
+  {
+    success: ture/false,
+    price: // membership price in vitae
+  }
+  ```
 ### /membership/role/users (GET)
   Get first 10 users for each role
 
@@ -718,6 +730,23 @@
       }, ...
     ],
     maintenanceAmount,    // Company Maintenance Revenue
+  }
+  ```
+## 1.8 Wallet
+### /wallet/withdraw (POST)
+  Request withdraw
+
+  ***Request Body ***
+  | Fields        | Description                |
+  | ------------- | -------------------------- |
+  | walletAddress | wallet address to withdraw |
+  | amount        | amount to withdraw         |
+  
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
   }
   ```
 # 2. Socket Events

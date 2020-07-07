@@ -54,6 +54,7 @@ const api = new Router()
   .get("/admin/financial", APIController.getFinancialAnalytics)
 
   // Wallet
+  .post("/wallet/withdraw", APIController.walletWithdraw)
   .post("/walletnotify", APIController.walletNotify);
 
 export const apiRoutes = new Router()
