@@ -25,6 +25,8 @@ import {
   Form,
   Input,
   Timeline,
+  Tabs,
+  Empty,
 } from 'antd';
 import {
   EditOutlined,
@@ -33,6 +35,7 @@ import {
   ExclamationCircleOutlined,
   CheckOutlined,
   CloseOutlined,
+  LikeOutlined,
 } from '@ant-design/icons';
 import './styles.scss';
 import UserAvatar from '../UserAvatar';
@@ -51,6 +54,7 @@ import {
 } from '../../constants/ads';
 
 const { Meta } = Card;
+const { TabPane } = Tabs;
 const { confirm, warning } = Modal;
 
 class ImpressionsContent extends Component {
@@ -423,11 +427,13 @@ class Ads extends Component {
             {status === ADS_PENDING_PURCHASE && <Tag color="#2db7f5">awaiting deposit</Tag>}
             {status === ADS_PENDING_CONFIRM && <Tag color="#2db7f5">pending deposit</Tag>}
           </Row>
-          <Row justify="end">
-            <p>
-              Created By: <b>{item.creatorUsername}</b>
-            </p>
-          </Row>
+          {item.creatorUsername && (
+            <Row justify="end">
+              <p>
+                Created By: <b>{item.creatorUsername}</b>
+              </p>
+            </Row>
+          )}
           {item.reviewerUsername && (
             <Row justify="end">
               <p>
@@ -468,15 +474,13 @@ class Ads extends Component {
                 </p>
               </Timeline.Item>
             )}
-            {item.type && (
-              <Timeline.Item color="green">
-                <p>
-                  <b>Type: </b>
-                  {item.type === ADS_TYPE_RAIN_ROOM && 'Rain room ads'}
-                  {item.type === ADS_TYPE_STATIC && 'Static ads'}
-                </p>
-              </Timeline.Item>
-            )}
+            <Timeline.Item color="green">
+              <p>
+                <b>Type: </b>
+                {item.type === ADS_TYPE_RAIN_ROOM && 'Rain room ads'}
+                {item.type === ADS_TYPE_STATIC && 'Static ads'}
+              </p>
+            </Timeline.Item>
             {item.impressions && (
               <Timeline.Item color="green">
                 <p>
@@ -547,6 +551,10 @@ class Ads extends Component {
           <Row gutter={[0, 16]}>
             {!isModerator && (
               <Col span={24}>
+                <h1 className="campaign-container-title">
+                  <LikeOutlined />
+                  Advertise
+                </h1>
                 <Button
                   className="camp-add-button"
                   type="primary"
@@ -558,131 +566,160 @@ class Ads extends Component {
               </Col>
             )}
 
-            {ads.paidAdsList && ads.paidAdsList.length > 0 && (
-              <Col span={24}>
-                <Divider orientation="left" plain>
-                  <h3>Purchased ads</h3>
-                </Divider>
-                <List
-                  grid={{
-                    gutter: 16,
-                    xs: 1,
-                    sm: 2,
-                    md: 2,
-                    lg: 3,
-                    xl: 3,
-                    xxl: 4,
-                  }}
-                  dataSource={ads.paidAdsList}
-                  renderItem={this.renderItem}
-                />
-              </Col>
-            )}
-
-            {ads.pendingPurchaseAdsList && ads.pendingPurchaseAdsList.length > 0 && (
-              <Col span={24}>
-                <Divider orientation="left" plain>
-                  <h3>Awaiting deposit ads</h3>
-                </Divider>
-                <List
-                  grid={{
-                    gutter: 16,
-                    xs: 1,
-                    sm: 2,
-                    md: 2,
-                    lg: 3,
-                    xl: 3,
-                    xxl: 4,
-                  }}
-                  dataSource={ads.pendingPurchaseAdsList}
-                  renderItem={this.renderItem}
-                />
-              </Col>
-            )}
-
-            {ads.approvedAdsList && ads.approvedAdsList.length > 0 && (
-              <Col span={24}>
-                <Divider orientation="left" plain>
-                  <h3>Approved ads</h3>
-                </Divider>
-                <List
-                  grid={{
-                    gutter: 16,
-                    xs: 1,
-                    sm: 2,
-                    md: 2,
-                    lg: 3,
-                    xl: 3,
-                    xxl: 4,
-                  }}
-                  dataSource={ads.approvedAdsList}
-                  renderItem={this.renderItem}
-                />
-              </Col>
-            )}
-
-            {ads.pendingAdsList && ads.pendingAdsList.length > 0 && (
-              <Col span={24}>
-                <Divider orientation="left" plain>
-                  <h3>Pending ads</h3>
-                </Divider>
-                <List
-                  grid={{
-                    gutter: 16,
-                    xs: 1,
-                    sm: 2,
-                    md: 2,
-                    lg: 3,
-                    xl: 3,
-                    xxl: 4,
-                  }}
-                  dataSource={ads.pendingAdsList}
-                  renderItem={this.renderItem}
-                />
-              </Col>
-            )}
-
-            {ads.createdAdsList && ads.createdAdsList.length > 0 && !isModerator && (
-              <Col span={24}>
-                <Divider orientation="left" plain>
-                  <h3>Created ads</h3>
-                </Divider>
-                <List
-                  grid={{
-                    gutter: 16,
-                    xs: 1,
-                    sm: 2,
-                    md: 2,
-                    lg: 3,
-                    xl: 3,
-                    xxl: 4,
-                  }}
-                  dataSource={ads.createdAdsList}
-                  renderItem={this.renderItem}
-                />
-              </Col>
-            )}
-
-            {ads.rejectedAdsList && ads.rejectedAdsList.length > 0 && !isModerator && (
-              <Col span={24}>
-                <Divider orientation="left" plain>
-                  <h3>Rejected ads</h3>
-                </Divider>
-                <List
-                  grid={{
-                    gutter: 16,
-                    xs: 1,
-                    sm: 2,
-                    md: 2,
-                    lg: 3,
-                    xl: 3,
-                    xxl: 4,
-                  }}
-                  dataSource={ads.rejectedAdsList}
-                  renderItem={this.renderItem}
-                />
-              </Col>
-            )}
+            <Col span={24}>
+              <Tabs defaultActiveKey="1">
+                {!isModerator && (
+                  <TabPane tab="Created" key="1">
+                    {ads.createdAdsList && ads.createdAdsList.length > 0 && !isModerator ? (
+                      <div>
+                        <Divider orientation="left" plain>
+                          <h3>Created ads</h3>
+                        </Divider>
+                        <List
+                          grid={{
+                            gutter: 16,
+                            xs: 1,
+                            sm: 2,
+                            md: 2,
+                            lg: 3,
+                            xl: 3,
+                            xxl: 4,
+                          }}
+                          dataSource={ads.createdAdsList}
+                          renderItem={this.renderItem}
+                        />
+                      </div>
+                    ) : (
+                      <Empty description="No Created Ads" />
+                    )}
+                  </TabPane>
+                )}
+                {!isModerator && (
+                  <TabPane tab="Rejected" key="6">
+                    {ads.rejectedAdsList && ads.rejectedAdsList.length > 0 && !isModerator ? (
+                      <div>
+                        <Divider orientation="left" plain>
+                          <h3>Rejected ads</h3>
+                        </Divider>
+                        <List
+                          grid={{
+                            gutter: 16,
+                            xs: 1,
+                            sm: 2,
+                            md: 2,
+                            lg: 3,
+                            xl: 3,
+                            xxl: 4,
+                          }}
+                          dataSource={ads.rejectedAdsList}
+                          renderItem={this.renderItem}
+                        />
+                      </div>
+                    ) : (
+                      <Empty description="No Rejected Ads" />
+                    )}
+                  </TabPane>
+                )}
+                {!isModerator && (
+                  <TabPane tab="Pending" key="2">
+                    {ads.pendingAdsList && ads.pendingAdsList.length > 0 ? (
+                      <div>
+                        <Divider orientation="left" plain>
+                          <h3>Pending ads</h3>
+                        </Divider>
+                        <List
+                          grid={{
+                            gutter: 16,
+                            xs: 1,
+                            sm: 2,
+                            md: 2,
+                            lg: 3,
+                            xl: 3,
+                            xxl: 4,
+                          }}
+                          dataSource={ads.pendingAdsList}
+                          renderItem={this.renderItem}
+                        />
+                      </div>
+                    ) : (
+                      <Empty description="No Pending Ads" />
+                    )}
+                  </TabPane>
+                )}
+                <TabPane tab="Approved" key="3">
+                  {ads.approvedAdsList && ads.approvedAdsList.length > 0 ? (
+                    <div>
+                      <Divider orientation="left" plain>
+                        <h3>Approved ads</h3>
+                      </Divider>
+                      <List
+                        grid={{
+                          gutter: 16,
+                          xs: 1,
+                          sm: 2,
+                          md: 2,
+                          lg: 3,
+                          xl: 3,
+                          xxl: 4,
+                        }}
+                        dataSource={ads.approvedAdsList}
+                        renderItem={this.renderItem}
+                      />
+                    </div>
+                  ) : (
+                    <Empty description="No Approved Ads" />
+                  )}
+                </TabPane>
+                <TabPane tab="Awaiting Purchase" key="4">
+                  {ads.pendingPurchaseAdsList && ads.pendingPurchaseAdsList.length > 0 ? (
+                    <div>
+                      <Divider orientation="left" plain>
+                        <h3>Awaiting deposit ads</h3>
+                      </Divider>
+                      <List
+                        grid={{
+                          gutter: 16,
+                          xs: 1,
+                          sm: 2,
+                          md: 2,
+                          lg: 3,
+                          xl: 3,
+                          xxl: 4,
+                        }}
+                        dataSource={ads.pendingPurchaseAdsList}
+                        renderItem={this.renderItem}
+                      />
+                    </div>
+                  ) : (
+                    <Empty description="No Awaiting Purchased Ads" />
+                  )}
+                </TabPane>
+                <TabPane tab="Purchased" key="5">
+                  {ads.paidAdsList && ads.paidAdsList.length > 0 ? (
+                    <div>
+                      <Divider orientation="left" plain>
+                        <h3>Purchased ads</h3>
+                      </Divider>
+                      <List
+                        grid={{
+                          gutter: 16,
+                          xs: 1,
+                          sm: 2,
+                          md: 2,
+                          lg: 3,
+                          xl: 3,
+                          xxl: 4,
+                        }}
+                        dataSource={ads.paidAdsList}
+                        renderItem={this.renderItem}
+                      />
+                    </div>
+                  ) : (
+                    <Empty description="No Purchased Ads" />
+                  )}
+                </TabPane>
+              </Tabs>
+            </Col>
           </Row>
         ) : (
           <Space size="middle">
