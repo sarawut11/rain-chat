@@ -33,10 +33,12 @@ export const getAllUsers = async (ctx, next) => {
 
 export const getMembershipPrice = async (ctx, next) => {
   try {
-    const price = _getMembershipPrice();
+    const vitaePrice = _getMembershipPrice();
     ctx.body = {
       success: true,
-      price
+      vitaePrice,
+      usdPrice: configs.membership.price,
+      walletAddress: "testing wallet address"
     };
   } catch (error) {
     console.log(error.message);
