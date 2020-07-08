@@ -6,6 +6,7 @@ import { setGlobalSettingsAction } from './settingAction';
 
 const mapStateToProps = state => ({
   globalSettings: state.globalSettingsState,
+  userInfo: state.user.userInfo,
 });
 
 const mapDispatchToProps = dispatch => ({

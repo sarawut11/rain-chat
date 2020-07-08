@@ -9,6 +9,7 @@ import { shareReducer } from './reducers/shareReducer';
 import { enableVitaePostReducer } from './reducers/enableVitaePost';
 import { staticAdsReducer } from './reducers/staticAdsReducer';
 import { bShowAdsReducer } from './reducers/bShowAdsReducer';
+import { userReducer } from './reducers/userReducer';
 import { fetchAllGroupChatsReducer } from '../containers/GroupChatPage/groupChatReducer';
 import { fetchAllPrivateChatsReducer } from '../containers/PrivateChatPage/privateChatReducer';
 import { setGlobalSettingsReducer } from '../containers/SettingPage/settingReducer';
@@ -28,4 +29,5 @@ export default combineReducers({
   vitaePostEnabled: enableVitaePostReducer,
   staticAdsState: staticAdsReducer,
   bShowAds: bShowAdsReducer,
+  user: userReducer,
 });

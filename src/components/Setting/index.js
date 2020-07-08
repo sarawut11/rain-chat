@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Modal } from 'antd';
+import { Modal, Button, Row, Col } from 'antd';
 import { withRouter } from 'react-router-dom';
+import UserUpgrader from './UserUpgrader';
 import './styles.scss';
-import CustomButton from '../Button';
 
 function Setting({ initApp, history }) {
   const logout = () => {
@@ -22,7 +22,14 @@ function Setting({ initApp, history }) {
 
   return (
     <div className="setting">
-      <CustomButton clickFn={showLogoutModal} value="Sign out" />
+      <Row gutter={[20, 20]}>
+        <Col span={24}>
+          <UserUpgrader />
+        </Col>
+        <Col span={24}>
+          <Button onClick={showLogoutModal}>Sign Out</Button>
+        </Col>
+      </Row>
     </div>
   );
 }
