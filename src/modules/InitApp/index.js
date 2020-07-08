@@ -1,5 +1,6 @@
 import io from 'socket.io-client';
 import { notification as antNotification } from 'antd';
+import { filterParams } from 'qiniu-js';
 import store from '../../redux/store';
 import {
   updateHomePageListAction,
@@ -13,6 +14,7 @@ import {
   setAllGroupChatsAction,
 } from '../../containers/GroupChatPage/groupChatAction';
 import { setAdsAction } from '../../containers/AdsPage/adsAction';
+import { setUserInfoAction } from '../../redux/actions/userAction';
 import { enableVitaePost, disableVitaePost } from '../../redux/actions/enableVitaePost';
 import {
   addPrivateChatMessagesAction,
@@ -184,6 +186,8 @@ class InitApp {
         this._userInfo,
         allMessage,
       );
+
+      store.dispatch(setUserInfoAction({ data: this._userInfo }));
     });
     window.socket.on('initSocket', (socketId, fn) => {
       const clientHomePageList = JSON.parse(localStorage.getItem(`homePageList-${this.userId}`));
