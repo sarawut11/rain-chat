@@ -1,5 +1,6 @@
 import { ServicesContext } from "../context";
 import * as uniqid from "uniqid";
+import { User } from "../models";
 
 export const generateReferral = async (ctx, next) => {
   const { sponsor } = ctx.request.body;
@@ -13,37 +14,40 @@ export const generateReferral = async (ctx, next) => {
     return;
   }
 
-  const RowDataPacket = await userService.findUserByUsername(sponsor);
-  const res = JSON.parse(JSON.stringify(RowDataPacket));
-  let refcode = res[0].refcode;
+  const userInfo: User = await userService.findUserByUsername(sponsor);
+  if (userInfo === undefined) {
+    ctx.body = {
+      success: false,
+      message: "Invalid sponsor."
+    };
+    return;
+  }
+  let refcode = userInfo.refcode;
   if (refcode === "" || !refcode) {
     refcode = uniqid();
     await userService.setRefcode(sponsor, refcode);
   }
-  if (res.length > 0) {
-    ctx.body = {
-      success: true,
-      message: "Referral Code Generated!",
-      refcode
-    };
-  }
+  ctx.body = {
+    success: true,
+    message: "Referral Code Generated!",
+    refcode
+  };
 };
 
 export const validateReferral = async (ctx, next) => {
   const { refcode } = ctx.request.body;
   const { userService } = ServicesContext.getInstance();
 
-  const RowDataPacket = await userService.findUserByRefcode(refcode);
-  const res = JSON.parse(JSON.stringify(RowDataPacket));
-  if (res.length > 0) {
-    ctx.body = {
-      success: true,
-      message: "Referral code is valid!",
-    };
-  } else {
+  const userInfo: User = await userService.findUserByRefcode(refcode);
+  if (userInfo === undefined) {
     ctx.body = {
       success: false,
       message: "Referral code is invalid!",
+    };
+  } else {
+    ctx.body = {
+      success: true,
+      message: "Referral code is valid!",
     };
   }
 };

@@ -1,6 +1,5 @@
 import * as moment from "moment";
 import { query } from "../utils/db";
-import configs from "@configs";
 import { isNullOrUndefined } from "util";
 import { Ads } from "../models";
 
@@ -23,6 +22,7 @@ export class AdsService {
     link: "link",
     lastTime: "lastTime",
     time: "time",
+    reviewer: "reviewer",
   };
 
   insertAds({ userId, assetLink, link, buttonLabel, title, description, time, type }) {
@@ -33,9 +33,11 @@ export class AdsService {
     return query(sql, [userId, assetLink, link, buttonLabel, title, description, type, time]);
   }
 
-  findAdsById(adsId) {
-    const sql = "SELECT * FROM ads_info WHERE id = ?;";
-    return query(sql, adsId);
+  async findAdsById(adsId: number): Promise<Ads> {
+    const sql = `SELECT * FROM ${this.TABLE_NAME} WHERE ${this.COLUMNS.id} = ?;`;
+    const ads: Ads[] = await query(sql, adsId);
+    if (ads.length === 0) return undefined;
+    return ads[0];
   }
 
   updateAds(adsId, userId, { assetLink, link, buttonLabel, title, description }) {
@@ -82,15 +84,33 @@ export class AdsService {
   }
 
   findAllAds() {
-    const sql =
-      `SELECT ads.*, user.username, user.name, user.avatar, user.email, user.intro, user.role
-      FROM ads_info AS ads JOIN user_info as user ON ads.userId = user.id;`;
+    const sql = `
+      SELECT ads.*,
+        creator.username as creatorUsername,
+        creator.name as creatorName,
+        creator.avatar as creatorAvatar,
+        reviewer.username as reviewerUsername,
+        reviewer.name as reviewerName,
+        reviewer.avatar as reviewerAvatar
+      FROM ${this.TABLE_NAME} AS ads
+      JOIN user_info as creator ON ads.userId = creator.id
+      JOIN user_info as reviewer ON ads.reviewer = reviewer.id;`;
     return query(sql);
   }
 
   updateStatus(id, status) {
     const sql = `UPDATE ${this.TABLE_NAME} SET status = ? WHERE id = ?;`;
     return query(sql, [status, id]);
+  }
+
+  approveAds(adsId: number, reviewerId: number) {
+    const sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET
+        ${this.COLUMNS.status} = ? AND
+        ${this.COLUMNS.reviewer} = ?
+      WHERE ${this.COLUMNS.id} = ?;`;
+    return query(sql, [Ads.STATUS.Approved, reviewerId, adsId]);
   }
 
   findAdsToCampaign(type) {

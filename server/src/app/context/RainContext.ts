@@ -1,4 +1,3 @@
-import * as moment from "moment";
 import { socketServer } from "../socket/app.socket";
 import { ServicesContext } from "./ServicesContext";
 import configs from "@configs";
@@ -61,7 +60,8 @@ export class RainContext {
           link: ads.link,
           buttonLabel: ads.buttonLabel,
           type: ads.type,
-        }
+        },
+        duration: configs.ads.ads_duration
       });
       await delay(configs.ads.ads_duration);
 
@@ -79,10 +79,10 @@ export class RainContext {
       await adsService.campaignAds(ads.id, RainContext.usersToRainAds.length);
 
       // Send updated impression info to ads' creator
-      const creator: User[] = await userService.findUserById(ads.userId);
-      const updatedAds: Ads[] = await adsService.findAdsById(ads.id);
-      socketServer.emitTo(creator[0].socketid, socketEventNames.UpdateAdsImpressions, {
-        adsInfo: updatedAds[0]
+      const creator: User = await userService.findUserById(ads.userId);
+      const updatedAd: Ads = await adsService.findAdsById(ads.id);
+      socketServer.emitTo(creator.socketid, socketEventNames.UpdateAdsImpressions, {
+        adsInfo: updatedAd
       });
     } catch (error) {
       console.log("Rain Failed, ", error.message);
@@ -167,10 +167,10 @@ export class RainContext {
     await adsService.campaignAds(ads.id, socketServer.allSocketCount());
 
     // Send updated impression info to ads' creator
-    const creator: User[] = await userService.findUserById(ads.userId);
-    const updatedAds: Ads[] = await adsService.findAdsById(ads.id);
-    socketServer.emitTo(creator[0].socketid, socketEventNames.UpdateAdsImpressions, {
-      adsInfo: updatedAds[0]
+    const creator: User = await userService.findUserById(ads.userId);
+    const updatedAd: Ads = await adsService.findAdsById(ads.id);
+    socketServer.emitTo(creator.socketid, socketEventNames.UpdateAdsImpressions, {
+      adsInfo: updatedAd
     });
   }
 }

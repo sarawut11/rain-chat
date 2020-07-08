@@ -7,9 +7,14 @@ export const getProfileInfo = async (ctx, next) => {
   const { username } = ctx.params;
   const { userService } = ServicesContext.getInstance();
 
-  const res: User[] = await userService.findUserByUsername(username);
-  if (res.length > 0) {
-    const { id, username, name, email, balance, intro, avatar, refcode } = res[0];
+  const userInfo: User = await userService.findUserByUsername(username);
+  if (userInfo === undefined) {
+    ctx.body = {
+      success: false,
+      message: "Username does not exist."
+    };
+  } else {
+    const { id, name, email, balance, intro, avatar, refcode } = userInfo;
     ctx.body = {
       success: true,
       userInfo: {
@@ -22,11 +27,6 @@ export const getProfileInfo = async (ctx, next) => {
         avatar,
         referral: refcode
       },
-    };
-  } else {
-    ctx.body = {
-      success: false,
-      message: "Username does not exist."
     };
   }
 };
@@ -63,6 +63,28 @@ export const updateProfileInfo = async (ctx, next) => {
       success: true,
       message: "Profile updated successfully.",
       userInfo,
+    };
+  } catch (error) {
+    console.log(error.message);
+    ctx.body = {
+      success: false,
+      message: error.message
+    };
+  }
+};
+
+export const saveWalletAddress = async (ctx, next) => {
+  try {
+    const { username } = ctx.state.user;
+    const { walletAddress } = ctx.request.body;
+    const { userService } = ServicesContext.getInstance();
+
+    await userService.setWalletAddress(username, walletAddress);
+    const updatedUser: User = await userService.findUserByUsername(username);
+    ctx.body = {
+      success: true,
+      message: "Success",
+      userInfo: updatedUser
     };
   } catch (error) {
     console.log(error.message);

@@ -3,7 +3,6 @@
  */
 
 import * as jwt from "jsonwebtoken";
-import * as koaJwt from "koa-jwt";
 import configs from "@configs";
 
 export const authVerify = (token): any => {

@@ -1,5 +1,4 @@
 import { query } from "../utils/db";
-import configs from "@configs";
 import * as moment from "moment";
 import * as uniqid from "uniqid";
 import { Transaction } from "../models/transaction.model";

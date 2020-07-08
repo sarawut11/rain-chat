@@ -10,17 +10,17 @@ export const subscribeAdsReward = (token) => {
     return;
   }
   const rainContext = RainContext.getInstance();
-  const { id, username } = userInfo;
+  const { id } = userInfo;
   rainContext.addUserToRainAds(id);
 };
 
 export const updateAdsStatus = async (adsId) => {
   const { userService, adsService } = ServicesContext.getInstance();
-  const ads: Ads[] = await adsService.findAdsById(adsId);
-  const user: User[] = await userService.findUserById(ads[0].userId);
-  socketServer.emitTo(user[0].socketid, socketEventNames.UpdateAdsStatus, {
+  const ads: Ads = await adsService.findAdsById(adsId);
+  const user: User = await userService.findUserById(ads.userId);
+  socketServer.emitTo(user.socketid, socketEventNames.UpdateAdsStatus, {
     adsId,
-    username: user[0].username,
-    status: ads[0].status
+    username: user.username,
+    status: ads.status
   }, (error) => console.error(error.message));
 };

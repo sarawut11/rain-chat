@@ -1,4 +1,5 @@
 import { query } from "../utils/db";
+import { Group } from "../models";
 
 export class GroupService {
   readonly GROUP_TABLE = "group_info";
@@ -19,11 +20,10 @@ export class GroupService {
   };
 
   // Fuzzy matching users
-  fuzzyMatchGroups(name) {
-    const sql = `
-      SELECT * FROM ${this.GROUP_TABLE} WHERE name LIKE ?;
-    `;
-    return query(sql, name);
+  async findMatchGroups(name: string): Promise<Group[]> {
+    const sql = `SELECT * FROM ${this.GROUP_TABLE} WHERE ${this.GROUP_COLUMNS.name} LIKE ?;`;
+    const groups: Group[] = await query(sql, name);
+    return groups;
   }
 
   getGroupById(id: number) {
@@ -31,29 +31,31 @@ export class GroupService {
     return query(sql, id);
   }
 
-  getGroupByGroupId(groupId: string) {
-    const sql = `SELECT * FROM ${this.GROUP_TABLE} WHERE ${this.GROUP_COLUMNS.groupId} = ?;`;
-    return query(sql, groupId);
+  async getGroupByGroupId(groupId: string) {
+    const sql = `SELECT * FROM ${this.GROUP_TABLE} WHERE ${this.GROUP_COLUMNS.groupId} = ? LIMIT 1;`;
+    const groups: Group[] = await query(sql, groupId);
+    if (groups.length === 0) return undefined;
+    return groups[0];
   }
 
   // Join the group
-  joinGroup(userId, toGroupId) {
+  joinGroup(userId, groupId) {
     const sql = `
       INSERT INTO ${this.GROUP_USER_TABLE}(
         ${this.GROUP_USER_COLUMNS.userId},
         ${this.GROUP_USER_COLUMNS.groupId}
       ) VALUES(?,?);`;
-    return query(sql, [userId, toGroupId]);
+    return query(sql, [userId, groupId]);
   }
 
   // See if a user is in a group
-  isInGroup(userId, toGroupId) {
+  isInGroup(userId, groupId) {
     const sql = `
       SELECT * FROM ${this.GROUP_USER_TABLE}
       WHERE
         ${this.GROUP_USER_COLUMNS.userId} = ? AND
         ${this.GROUP_USER_COLUMNS.groupId} = ?;`;
-    return query(sql, [userId, toGroupId]);
+    return query(sql, [userId, groupId]);
   }
 
   // Create New Group
@@ -81,12 +83,12 @@ export class GroupService {
   }
 
   // Leave
-  leaveGroup(userId, toGroupId) {
+  leaveGroup(userId, groupId) {
     const sql = `
       DELETE FROM ${this.GROUP_USER_TABLE}
       WHERE
         ${this.GROUP_USER_COLUMNS.userId} = ? AND
         ${this.GROUP_USER_COLUMNS.groupId} = ?;`;
-    return query(sql, [userId, toGroupId]);
+    return query(sql, [userId, groupId]);
   }
 }

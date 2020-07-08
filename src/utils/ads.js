@@ -1,15 +1,13 @@
 import React from 'react';
 import { Modal, notification, Row, Col, Button } from 'antd';
-import { ADS_STATIC_DURATION, ADS_RAIN_DURATION } from '../constants/ads';
 import './ads.scss';
 import store from '../redux/store';
 import { enableShowAds, disableShowAds } from '../redux/actions/bShowAdsAction';
 
-export function showAds(ads, staticPost = false) {
+export function showAds(ads, duration, staticPost = false) {
   console.log('showAds', ads, staticPost);
   const { bShowAds } = store.getState();
   const { title, description, link, assetLink, buttonLabel } = ads;
-  const secondsToGo = staticPost ? ADS_STATIC_DURATION : ADS_RAIN_DURATION;
   const content = (
     <div>
       <img src={assetLink} alt="ads" />
@@ -79,17 +77,17 @@ export function showAds(ads, staticPost = false) {
     // clearInterval(timer);
     modal.destroy();
     store.dispatch(enableShowAds());
-  }, secondsToGo * 1000);
+  }, duration);
 }
 
 const openNotificationWithIcon = (type, props) => {
   notification[type]({ ...props });
 };
 
-export function notifyRainComing() {
+export function notifyRainComing(after) {
   openNotificationWithIcon('info', {
     message: 'Rain is coming soon',
-    description: 'Rain is coming in 5 seconds. Please get ready for the rain',
+    description: `Rain is coming in ${after / 1000} seconds. Please get ready for the rain`,
   });
 }
 

@@ -2,6 +2,7 @@ const SET_ALL_GROUP_CHATS = 'SET_ALL_GROUP_CHATS';
 const ADD_GROUP_MESSAGES = 'ADD_GROUP_MESSAGES';
 const ADD_GROUP_INFO = 'ADD_GROUP_INFO';
 const DELETE_GROUP_CHAT = 'DELETE_GROUP_CHAT';
+const DELETE_GROUP_MEMBER = 'DELETE_GROUP_MEMBER';
 const ADD_GROUP_MESSAGE_AND_INFO = 'ADD_GROUP_MESSAGE_AND_INFO';
 const UPDATE_GROUP_TITLE_NOTICE = 'UPDATE_GROUP_TITLE_NOTICE';
 
@@ -98,16 +99,28 @@ const deleteGroupChatAction = ({ allGroupChats, groupId }) => {
   return { type: DELETE_GROUP_CHAT, data: allGroupChatsCopy };
 };
 
+const deleteGroupMemberAction = ({ allGroupChats, userId, groupId }) => {
+  const allGroupChatsCopy = new Map(allGroupChats);
+  const goalGroupChat = allGroupChatsCopy.get(groupId);
+  if (goalGroupChat && goalGroupChat.groupInfo) {
+    const membersCopy = goalGroupChat.groupInfo.members.filter(member => member.userId !== userId);
+    goalGroupChat.groupInfo.members = membersCopy;
+  }
+  return { type: DELETE_GROUP_MEMBER, data: allGroupChatsCopy };
+};
+
 export {
   SET_ALL_GROUP_CHATS,
   ADD_GROUP_MESSAGES,
   DELETE_GROUP_CHAT,
+  DELETE_GROUP_MEMBER,
   ADD_GROUP_INFO,
   ADD_GROUP_MESSAGE_AND_INFO,
   UPDATE_GROUP_TITLE_NOTICE,
   setAllGroupChatsAction,
   addGroupMessagesAction,
   deleteGroupChatAction,
+  deleteGroupMemberAction,
   addGroupInfoAction,
   addGroupMessageAndInfoAction,
   updateGroupTitleNoticeAction,

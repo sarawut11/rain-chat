@@ -1,8 +1,7 @@
 import * as uuid from "uuid/v1";
 import * as moment from "moment";
-import * as socketIo from "socket.io";
 import { ServicesContext } from "../context";
-import { getAllMessage, getGroupItem } from "./message.socket";
+import { getGroupItem } from "./message.socket";
 import { User, Group } from "../models";
 import { isVitaePostEnabled } from "../utils/utils";
 import { socketServer } from "./app.socket";
@@ -12,12 +11,13 @@ import configs from "@configs";
 export const sendGroupMsg = async (io, socket, data, cbFn) => {
   try {
     const { groupChatService, userService } = ServicesContext.getInstance();
-    const user: User[] = await userService.getUserBySocketId(socket.id);
-    if (user.length === 0) return;
-    if (user[0].role === User.ROLE.FREE) {
-      if (!isVitaePostEnabled(user[0]))
+    const user: User = await userService.getUserBySocketId(socket.id);
+    if (user === undefined) return;
+    if (user.ban === User.BAN.BANNED) return;
+    if (user.role === User.ROLE.FREE) {
+      if (!isVitaePostEnabled(user))
         return;
-      await userService.resetLastVitaePostTime(user[0].id);
+      await userService.resetLastVitaePostTime(user.id);
       setTimeout(() => {
         socketServer.emitTo(socket.id, socketEventNames.EnableVitaePost, {});
       }, configs.rain.vitae_post_time);
@@ -73,10 +73,9 @@ export const createGroup = async (io, socket, data, cbfn) => {
   try {
     const { groupService, userService } = ServicesContext.getInstance();
     const groupId = uuid();
-    data.createTime = Date.parse(new Date().toString()) / 1000;
+    data.createTime = moment().utc().unix();
     const { name, description, creatorId, createTime } = data;
-    const RowDataPacket = await userService.getUserInfoById(creatorId);
-    const userInfo = RowDataPacket[0];
+    const userInfo: User = await userService.findUserById(creatorId);
     if (userInfo.role !== User.ROLE.OWNER && userInfo.role !== User.ROLE.UPGRADED_USER) {
       console.log("Free Members can't create a group");
       io.to(socket.id).emit("error", { code: 500, message: "Free Members can't create a group" });
@@ -108,22 +107,22 @@ export const updateGroupInfo = async (io, socket, data, cbfn) => {
 
 export const joinGroup = async (io, socket, data, cbfn) => {
   try {
-    const { userInfo, toGroupId } = data;
+    const { userInfo, groupId } = data;
     const { groupService } = ServicesContext.getInstance();
 
-    const joinedThisGroup = (await groupService.isInGroup(userInfo.userId, toGroupId)).length;
+    const joinedThisGroup = (await groupService.isInGroup(userInfo.userId, groupId)).length;
     if (!joinedThisGroup) {
-      await groupService.joinGroup(userInfo.userId, toGroupId);
-      socket.broadcast.to(toGroupId).emit("getGroupMsg", {
+      await groupService.joinGroup(userInfo.userId, groupId);
+      socket.broadcast.to(groupId).emit("getGroupMsg", {
         ...userInfo,
         message: `${userInfo.name} joined a group chat`,
-        groupId: toGroupId,
+        groupId,
         tip: "joinGroup",
       });
     }
-    socket.join(toGroupId);
-    const groupItem = await getGroupItem({ groupId: toGroupId });
-    console.log("joinGroup data=>", data, "time=>", new Date().toLocaleString());
+    socket.join(groupId);
+    const groupItem = await getGroupItem({ groupId });
+    console.log("joinGroup data=>", data, "time=>", moment().utc());
     cbfn(groupItem);
   } catch (error) {
     console.log("error", error.message);
@@ -133,31 +132,76 @@ export const joinGroup = async (io, socket, data, cbfn) => {
 
 export const leaveGroup = async (io, socket, data) => {
   try {
-    const { userId, toGroupId } = data;
+    const { userId, groupId } = data;
     const { groupService } = ServicesContext.getInstance();
 
-    socket.leave(toGroupId);
-    await groupService.leaveGroup(userId, toGroupId);
-    console.log("leaveGroup data=>", data, "time=>", new Date().toLocaleString());
+    socket.leave(groupId);
+    await groupService.leaveGroup(userId, groupId);
+    console.log("leaveGroup data=>", data, "time=>", moment().utc());
   } catch (error) {
     console.log("error", error.message);
     io.to(socket.id).emit("error", { code: 500, message: error.message });
   }
 };
 
-export const kickMember = async (io, socket: socketIo.Socket, data) => {
+export const kickMember = async (io, socket, data, cbFn) => {
   try {
+    console.log("socket => kick member request =>", data);
     const { userId, groupId } = data;
     const { userService, groupService } = ServicesContext.getInstance();
 
-    const user: User[] = await userService.getUserBySocketId(socket.id);
-    if (user.length === 0) return;
-    if (user[0].role !== User.ROLE.UPGRADED_USER) return;
+    const user: User = await userService.getUserBySocketId(socket.id);
+    if (user === undefined) return;
 
-    const group: Group[] = await groupService.getGroupById(groupId);
-    if (group.length === 0) return;
-    if (group[0].creatorId !== user[0].id) return;
+    console.log("here");
+    const group: Group = await groupService.getGroupByGroupId(groupId);
+    if (group === undefined) return;
+    if (group.creatorId !== user.id) return;
 
+    await groupService.leaveGroup(userId, groupId);
+    const kicker: User = await userService.findUserById(userId);
+    if (kicker !== undefined)
+      socketServer.emitTo(kicker.socketid, "kickedFromGroup", { groupId });
+    console.log("kickMember data=>", data, "time=>", moment().utc());
+    cbFn({ code: 200, data: "Kicked member successfully" });
+  } catch (error) {
+    console.log("error", error.message);
+    io.to(socket.id).emit("error", { code: 500, message: error.message });
+  }
+};
+
+export const banMember = async (io, socket, { userId, groupId }, cbfn) => {
+  try {
+    const { groupService, userService, banService } = ServicesContext.getInstance();
+    const user: User = await userService.getUserBySocketId(socket.id);
+    if (user === undefined) return;
+
+    if (groupId === configs.rain.group_id) { // Vitae Rain Group
+      // Check Group Ownership
+      if (user.role !== User.ROLE.OWNER && user.role !== User.ROLE.MODERATOR) return;
+
+      // Ban user from vitae-rain group
+      await groupService.leaveGroup(userId, groupId);
+      await banService.banUserFromGroup(userId, groupId);
+      await userService.banUserFromRainGroup(userId);
+      const kicker: User = await userService.findUserById(userId);
+      if (kicker !== undefined)
+        socketServer.emitTo(kicker.socketid, "kickedFromGroup", { groupId });
+    } else {  // General Group
+      // Check Group Ownership
+      const group = await groupService.getGroupByGroupId(groupId);
+      if (group === undefined) return;
+      if (group.creatorId !== user.id) return;
+
+      // Ban user from group
+      await groupService.leaveGroup(userId, groupId);
+      await banService.banUserFromGroup(userId, groupId);
+      const kicker: User = await userService.findUserById(userId);
+      if (kicker !== undefined)
+        socketServer.emitTo(kicker.socketid, "kickedFromGroup", { groupId });
+    }
+    console.log(`banMember => User:${userId} from Group:${groupId} | time=> ${moment().utc()}`);
+    cbfn({ code: 200, data: "ban member successfully" });
   } catch (error) {
     console.log("error", error.message);
     io.to(socket.id).emit("error", { code: 500, message: error.message });
@@ -186,9 +230,27 @@ export const getGroupMember = async (io, socket, groupId, cbfn) => {
         }
         delete userInfo.socketid;
       });
-      console.log("getGroupMember data=>", groupId, "time=>", new Date().toLocaleString());
+      console.log("getGroupMember data=>", groupId, "time=>", moment().utc().unix());
       cbfn(userInfos);
     });
+  } catch (error) {
+    console.log("error", error.message);
+    io.to(socket.id).emit("error", { code: 500, message: error.message });
+  }
+};
+
+export const findMatch = async (io, socket, { field, searchUser }, cbFn) => {
+  try {
+    // searchUser : true => find users | searchUser : false => find groups
+    const { userService, groupService } = ServicesContext.getInstance();
+    let fuzzyMatchResult;
+    field = `%${field}%`;
+    if (searchUser) {
+      fuzzyMatchResult = await userService.findMatchUsers(field);
+    } else {
+      fuzzyMatchResult = await groupService.findMatchGroups(field);
+    }
+    cbFn({ fuzzyMatchResult, searchUser });
   } catch (error) {
     console.log("error", error.message);
     io.to(socket.id).emit("error", { code: 500, message: error.message });

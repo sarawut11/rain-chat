@@ -1,56 +1,82 @@
 import * as md5 from "md5";
 import * as uniqid from "uniqid";
+import * as moment from "moment";
 import { generateToken, authVerify } from "../middlewares/verify";
 import { ServicesContext } from "../context";
 import { socketServer } from "../socket/app.socket";
 import configs from "@configs";
-import { User } from "../models";
-import { isVitaePostEnabled } from "../utils/utils";
+import { User, Ban } from "../models";
+import { isVitaePostEnabled, generateOtp, verifyOtp, sendMail } from "../utils";
 
 export const loginUser = async (ctx, next) => {
-  const { userService } = ServicesContext.getInstance();
+  try {
+    const { userService, banService } = ServicesContext.getInstance();
 
-  const { email = "", username = "", password = "" } = ctx.request.body;
-  if ((username === "" && email === "") || password === "") {
-    ctx.body = {
-      success: false,
-      message: "Username or password cannot be empty",
-    };
-    return;
-  }
-  const users: User[] = await userService.findUserByEmailOrUsername(email, username);
-  if (users.length > 0) {
-    //   After the verification is successful, the server will issue a Token, and then send the Token to the client
-    if (md5(password) === users[0].password) {
-      const { id, name, email, balance, username, intro, avatar, refcode, role } = users[0];
-      const token = generateToken({ id, username });
+    const { email = "", username = "", password = "" } = ctx.request.body;
+    if ((username === "" && email === "") || password === "") {
       ctx.body = {
-        success: true,
-        message: "Login Successful",
-        userInfo: {
-          name,
-          email,
-          username,
-          userId: id,
-          balance,
-          intro,
-          avatar,
-          referral: refcode,
-          role,
-          token,
-          isVitaePostEnabled: isVitaePostEnabled(users[0])
-        },
+        success: false,
+        message: "Username or password cannot be empty",
       };
-    } else {
+      return;
+    }
+    const user: User = await userService.findUserByEmailOrUsername(email, username);
+    if (user === undefined) {
+      ctx.body = {
+        success: false,
+        message: "Invalid username or email",
+      };
+      return;
+    }
+    //   After the verification is successful, the server will issue a Token, and then send the Token to the client
+    if (md5(password) !== user.password) {
       ctx.body = {
         success: false,
         message: "Wrong Password",
       };
+      return;
     }
-  } else {
+    const { id, username: userName, email: userEmail, name, balance, intro, avatar, refcode, role, ban, walletAddress } = user;
+    const bans: Ban[] = await banService.getBanInfo(id, configs.rain.group_id, Ban.TYPE.GROUP);
+    if (bans.length >= 3) {
+      ctx.body = {
+        success: false,
+        message: "You are permanentaly banned."
+      };
+      return;
+    }
+    if (ban === User.BAN.BANNED) {
+      const lastBanTime = bans[0].time;
+      const paneltyDays = bans.length === 1 ? 1 : 3;
+      if (lastBanTime <= moment().utc().subtract(paneltyDays, "day").unix()) {
+        await userService.unbanUsersFromRainGroup([id]);
+      }
+    }
+    const token = generateToken({ id, username });
+    ctx.body = {
+      success: true,
+      message: "Login Successful",
+      userInfo: {
+        name,
+        email: userEmail,
+        username: userName,
+        userId: id,
+        balance,
+        intro,
+        avatar,
+        referral: refcode,
+        role,
+        token,
+        ban,
+        walletAddress,
+        isVitaePostEnabled: isVitaePostEnabled(user)
+      },
+    };
+  } catch (error) {
+    console.log(error.message);
     ctx.body = {
       success: false,
-      message: "Username Error",
+      message: "Login Failed!",
     };
   }
 };
@@ -75,16 +101,16 @@ export const registerUser = async (ctx, next) => {
       return;
     }
     // Check Referral Username
-    const sponsorUser: User[] = await userService.findUserByRefcode(sponsor);
-    if (sponsorUser.length === 0) {
+    const sponsorUser: User = await userService.findUserByRefcode(sponsor);
+    if (sponsorUser === undefined) {
       ctx.body = {
         success: false,
         message: "Referral username is invalid",
       };
       return;
     }
-    const existingUser: User[] = await userService.findUserByEmailOrUsername(email, username);
-    if (existingUser.length) {
+    const existingUser: User = await userService.findUserByEmailOrUsername(email, username);
+    if (existingUser !== undefined) {
       ctx.body = {
         success: false,
         message: "Username or email already exists",
@@ -92,9 +118,9 @@ export const registerUser = async (ctx, next) => {
       return;
     }
     // Register DB
-    await userService.insertUser([name, email, username, md5(password), sponsorUser[0].id, uniqid()]);
+    await userService.insertUser([name, email, username, md5(password), sponsorUser.id, uniqid()]);
     // Join Rain Group & Broadcast
-    const userInfo = (await userService.getUserInfoByUsername(username))[0];
+    const userInfo: User = await userService.getUserInfoByUsername(username);
     await groupService.joinGroup(userInfo.userId, configs.rain.group_id);
     socketServer.broadcast("getGroupMsg", {
       ...userInfo,
@@ -130,21 +156,83 @@ export const validateToken = async (ctx, next) => {
       return;
     }
 
-    const { username, id } = checkResult;
+    const { username } = checkResult;
     const { userService } = ServicesContext.getInstance();
-    const RowDataPacket = await userService.getUserInfoByUsername(username);
-    if (RowDataPacket.length <= 0) {
+    const userInfo = await userService.getUserInfoByUsername(username);
+    if (userInfo === undefined) {
       ctx.body = {
         success: false,
         message: "Invalid Username."
       };
       return;
     }
-    const userInfo = RowDataPacket[0];
     ctx.body = {
       success: true,
       message: "Valid",
       userInfo,
+    };
+  } catch (error) {
+    console.log(error.message);
+    ctx.body = {
+      success: false,
+      message: "Invalid Username.",
+    };
+  }
+};
+
+export const generateOTP = async (ctx, next) => {
+  try {
+    const { username } = ctx.state.user;
+    const { userService } = ServicesContext.getInstance();
+
+    const user: User = await userService.findUserByUsername(username);
+    if (user === undefined) {
+      ctx.body = {
+        success: false,
+        message: "Invalid Username."
+      };
+      return;
+    }
+    const otp: string = await generateOtp();
+    await sendMail({
+      to: user.email,
+      subject: "Vitae OTP",
+      text: otp,
+      html: undefined,
+    });
+    ctx.body = {
+      success: true,
+      message: "6 digit code sent to your email.",
+      expireIn: configs.otp.timeOut
+    };
+  } catch (error) {
+    console.log(error.message);
+    ctx.body = {
+      success: false,
+      message: "Invalid Username.",
+    };
+  }
+};
+
+export const verifyOTP = async (ctx, next) => {
+  try {
+    const { username } = ctx.state.user;
+    const { token } = ctx.request.body;
+    const { userService } = ServicesContext.getInstance();
+
+    const user: User = await userService.findUserByUsername(username);
+    if (user === undefined) {
+      ctx.body = {
+        success: false,
+        message: "Invalid Username."
+      };
+      return;
+    }
+
+    const isValid: boolean = verifyOtp(token);
+    ctx.body = {
+      success: true,
+      isValid,
     };
   } catch (error) {
     console.log(error.message);

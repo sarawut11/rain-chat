@@ -36,6 +36,7 @@ CREATE TABLE `user_info` (
   `role` varchar(20) DEFAULT 'FREE',
   `lastUpgradeTime` int(11) NOT NULL DEFAULT 0,
   `lastVitaePostTime` int(11) NOT NULL DEFAULT 0,
+  `ban` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 # Dump of table group_info
@@ -130,6 +131,7 @@ CREATE TABLE `ads_info` (
   `link` varchar(200) DEFAULT '',
   `lastTime` int(11) DEFAULT 0,
   `time` int(11) NOT NULL,
+  `reviewer` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 # Dump of table wallet_transaction_info
@@ -156,6 +158,15 @@ CREATE TABLE `inner_transaction_info` (
   `userId` int(11) NOT NULL,
   `type` tinyint(1) NOT NULL DEFAULT 0,
   `amount` double NOT NULL DEFAULT 0,
+  `time` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+DROP TABLE IF EXISTS `contact_ban_info`;
+CREATE TABLE `contact_ban_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userId` int(11) NOT NULL,
+  `blockerId` varchar(200) NOT NULL DEFAULT '',
+  `type` tinyint(1) NOT NULL DEFAULT 0,
   `time` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;

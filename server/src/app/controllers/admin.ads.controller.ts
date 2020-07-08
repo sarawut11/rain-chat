@@ -28,7 +28,7 @@ export const getHomeAnalytics = async (ctx, next) => {
     let upgradedMembersCount = 0;
     let moderatorsCount = 0;
     let onlineModeratorsCount = 0;
-    const allUsers: User[] = await userService.fuzzyMatchUsers("%%");
+    const allUsers: User[] = await userService.findMatchUsers("%%");
     allUsers.forEach(user => {
       if (user.role === User.ROLE.FREE) freeMembersCount++;
       if (user.role === User.ROLE.UPGRADED_USER) upgradedMembersCount++;

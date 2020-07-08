@@ -62,7 +62,7 @@ export const rejectAds = async (ctx, next) => {
 
 export const approveAds = async (ctx, next) => {
   try {
-    const { username } = ctx.state.user;
+    const { username, id } = ctx.state.user;
     const { adsId } = ctx.params;
     const { adsService } = ServicesContext.getInstance();
 
@@ -77,7 +77,7 @@ export const approveAds = async (ctx, next) => {
       return;
     }
 
-    await adsService.updateStatus(adsId, Ads.STATUS.Approved);
+    await adsService.approveAds(adsId, id);
 
     const ads = await adsService.findAdsById(adsId);
 
@@ -97,15 +97,14 @@ export const approveAds = async (ctx, next) => {
 
 const isModerator = (username): Promise<any> => new Promise(async (resolve, reject) => {
   const { userService } = ServicesContext.getInstance();
-  const RowDataPacket = await userService.getUserInfoByUsername(username);
-  if (RowDataPacket.length <= 0) {
+  const userInfo: User = await userService.getUserInfoByUsername(username);
+  if (userInfo === undefined) {
     resolve({
       success: false,
       message: "Invalid Username."
     });
     return;
   }
-  const userInfo = RowDataPacket[0];
   if (userInfo.role !== User.ROLE.MODERATOR) {
     resolve({
       success: false,
@@ -132,15 +131,14 @@ const checkAdsStatus = (adsId): Promise<{
     return;
   }
   const { adsService } = ServicesContext.getInstance();
-  const RowDataPacket = await adsService.findAdsById(adsId);
-  if (RowDataPacket.length === 0) {
+  const existingAds: Ads = await adsService.findAdsById(adsId);
+  if (existingAds === undefined) {
     resolve({
       success: false,
       message: "Ads doesn't exist"
     });
     return;
   }
-  const existingAds = RowDataPacket[0];
   if (existingAds.status === Ads.STATUS.Approved) {
     resolve({
       success: false,

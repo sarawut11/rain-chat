@@ -83,7 +83,7 @@ class HomePageList extends Component {
   }
 
   searchInDB({ searchUser }) {
-    window.socket.emit('fuzzyMatch', { field: this._filedStr, searchUser }, data => {
+    window.socket.emit('findMatch', { field: this._filedStr, searchUser }, data => {
       if (data.searchUser) {
         this.setState(state => ({
           showSearchUser: false,

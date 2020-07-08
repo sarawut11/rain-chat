@@ -12,6 +12,9 @@ const api = new Router()
   // Profile
   .get("/user/:username", APIController.getProfileInfo)
   .put("/user/:username", APIController.updateProfileInfo)
+  .post("/user/wallet-address", APIController.saveWalletAddress)
+  .get("/user/otp/request", APIController.generateOTP)
+  .post("/user/otp/verify", APIController.verifyOTP)
 
   // Ads
   .get("/campaign/impcost", APIController.getCostPerImpression)
@@ -51,6 +54,7 @@ const api = new Router()
   .get("/admin/financial", APIController.getFinancialAnalytics)
 
   // Wallet
+  .post("/wallet/withdraw", APIController.walletWithdraw)
   .post("/walletnotify", APIController.walletNotify);
 
 export const apiRoutes = new Router()

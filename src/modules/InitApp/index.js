@@ -12,6 +12,7 @@ import {
   addGroupMessagesAction,
   addGroupMessageAndInfoAction,
   setAllGroupChatsAction,
+  deleteGroupChatAction,
 } from '../../containers/GroupChatPage/groupChatAction';
 import { setAdsAction } from '../../containers/AdsPage/adsAction';
 import { setUserInfoAction } from '../../redux/actions/userAction';
@@ -25,11 +26,12 @@ import {
 import BrowserNotification from '../BrowserNotification';
 import Chat from '../Chat';
 import { showAds, notifyRainComing, notifyRainReward } from '../../utils/ads';
+import request from '../../utils/request';
 
 class InitApp {
   constructor(props) {
     this.WEBSITE_ADDRESS =
-      process.env.NODE_ENV === 'production' ? 'https://production_link' : 'http://localhost:3000';
+      process.env.NODE_ENV === 'production' ? 'https://production_link' : request.apiUrl;
     this._userInfo = JSON.parse(localStorage.getItem('userInfo'));
     this._hasCalledMe = false;
     this._browserNotification = new BrowserNotification();
@@ -147,6 +149,18 @@ class InitApp {
       this._browserNotificationHandle(data);
       // TODO: mute notifications switch
     });
+    window.socket.on('kickedFromGroup', data => {
+      const { groupId } = data;
+      const myInfo = JSON.parse(localStorage.getItem('userInfo'));
+      const { userId } = myInfo;
+      window.socket.emit('leaveGroup', { userId, groupId });
+      const homePageList = store.getState().homePageListState;
+      const allGroupChats = store.getState().allGroupChatsState;
+      store.dispatch(deleteHomePageListAction({ homePageList, chatId: groupId }));
+      store.dispatch(deleteGroupChatAction({ allGroupChats, chatId: groupId }));
+      window.location.href = '/group_chat/vitae-rain-group';
+      console.log(`You are kicked from Group:${groupId}`);
+    });
   }
 
   _listeningBeDelete() {
@@ -196,13 +210,13 @@ class InitApp {
   }
 
   _listeningRain() {
-    window.socket.on('rainComing', () => {
-      console.log('Rain is coming soon');
-      notifyRainComing();
+    window.socket.on('rainComing', ({ after }) => {
+      console.log(`Rain is coming after ${after}seconds`);
+      notifyRainComing(after);
     });
-    window.socket.on('showAds', ({ ads }) => {
-      console.log('Show Ads', ads);
-      showAds(ads);
+    window.socket.on('showAds', ({ ads, duration }) => {
+      console.log('Show Ads', ads, '| Duration -', duration);
+      showAds(ads, duration);
     });
     window.socket.on('getRain', ({ reward }) => {
       console.log('Getting Reward:', reward);

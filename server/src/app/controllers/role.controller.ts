@@ -33,10 +33,12 @@ export const getAllUsers = async (ctx, next) => {
 
 export const getMembershipPrice = async (ctx, next) => {
   try {
-    const price = _getMembershipPrice();
+    const vitaePrice = _getMembershipPrice();
     ctx.body = {
       success: true,
-      price
+      vitaePrice,
+      usdPrice: configs.membership.price,
+      walletAddress: "testing wallet address"
     };
   } catch (error) {
     console.log(error.message);
@@ -51,7 +53,7 @@ export const upgradeMembership = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
     const { expectAmount } = ctx.request.body;
-    const { userService, transactionService } = ServicesContext.getInstance();
+    const { transactionService } = ServicesContext.getInstance();
 
     const checkUser = await checkUserInfo(username);
     if (checkUser.success === false) {
@@ -85,8 +87,7 @@ export const upgradeMembership = async (ctx, next) => {
 const confirmMembership = async (userId, amount, confirmTime) => {
   const { userService, transactionService } = ServicesContext.getInstance();
 
-  const RowDataPacket = await userService.findUserById(userId);
-  const userInfo = RowDataPacket[0];
+  const userInfo = await userService.findUserById(userId);
 
   // Update UserInfo & Transaction Info
   await userService.updateMembership(userId, User.ROLE.UPGRADED_USER);

@@ -29,6 +29,8 @@
       referral,
       role,
       token,
+      ban,
+      walletAddress,
       isVitaePostEnabled
     }
   }
@@ -135,6 +137,48 @@
       name,
       intro,
     }
+  }
+  ```
+### /user/wallet-address (POST)
+  Update wallet address
+
+  ***Request Body ***
+  | Fields        | Description       |
+  | ------------- | ----------------- |
+  | walletAddress | Avatar Image File |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    userInfo: { // when success == true
+    }
+  }
+  ```
+### /user/otp/request (GET)
+  Generate Otp token and the token will be sent to user's email
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    expireIn: 60 // seconds
+  }
+  ```
+### /user/otp/verify (POST)
+  Verify OTP token
+
+  ***Request Body ***
+  | Fields | Description             |
+  | ------ | ----------------------- |
+  | token  | OTP token sent to email |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    isValid: true/false,
   }
   ```
 ## 1.4 Ads
@@ -480,6 +524,18 @@
   }
   ```
 ## 1.6 Role Management API
+### /membership/price (GET)
+  Get membership price in vitae token
+
+  ***Response***
+  ```
+  {
+    success: ture/false,
+    vitaePrice, // membership price in vitae
+    usdPrice,   // membership price in usd
+    walletAddress, // Company wallet address
+  }
+  ```
 ### /membership/role/users (GET)
   Get first 10 users for each role
 
@@ -676,6 +732,23 @@
       }, ...
     ],
     maintenanceAmount,    // Company Maintenance Revenue
+  }
+  ```
+## 1.8 Wallet
+### /wallet/withdraw (POST)
+  Request withdraw
+
+  ***Request Body ***
+  | Fields        | Description                |
+  | ------------- | -------------------------- |
+  | walletAddress | wallet address to withdraw |
+  | amount        | amount to withdraw         |
+  
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
   }
   ```
 # 2. Socket Events

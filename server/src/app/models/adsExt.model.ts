@@ -17,9 +17,12 @@ export class AdsExt {
   public time: number;
 
   // User Info
-  public name: string;
-  public username: string;
-  public avatar: string;
+  public creatorName: string;
+  public creatorUsername: string;
+  public creatorAvatar: string;
+  public reviewerName: string;
+  public reviewerUsername: string;
+  public reviewerAvatar: string;
   public email: string;
   public intro: string;
   public role: string;

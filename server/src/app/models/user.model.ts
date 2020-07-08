@@ -1,5 +1,6 @@
 export class User {
   public id: number;
+  public userId: number;
   public username: string;
   public password: string;
   public name: string;
@@ -14,6 +15,8 @@ export class User {
   public role: string;
   public lastUpgradeTime: number;
   public lastVitaePostTime: number;
+  public ban: number;
+  public walletAddress: string;
 
   public static readonly ROLE = {
     COMPANY: "COMPANY",
@@ -21,5 +24,10 @@ export class User {
     MODERATOR: "MODERATOR",
     FREE: "FREE",
     UPGRADED_USER: "UPGRADED",
+  };
+
+  public static readonly BAN = {
+    NONE: 0,
+    BANNED: 1,
   };
 }

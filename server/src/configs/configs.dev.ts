@@ -21,7 +21,7 @@ export default {
   client_secret: "",
   token: {
     jwt_secret: "chat-sec",
-    expireIn: 60 * 60 * 1 // One hour
+    expireIn: 60 * 60 * 24 // One hour
   },
   crypto_key: "VITAE-RAIN-CHAT",
   default_admin: {
@@ -73,5 +73,14 @@ export default {
   cmc: {
     api_key: "6325368a-751f-45c0-bf8a-5f6afacfa81e",
     polling_interval_seconds: 5
-  }
+  },
+  otp: {
+    timeOut: 60, // seconds
+  },
+  mail: {
+    host: "",
+    service: "gmail",
+    user: "kirillvasilyevdev@gmail.com",
+    pass: "intelinside1995",
+  },
 };

@@ -10,11 +10,11 @@ export const query = (sql, values?): Promise<any> =>
         console.log("query connec error!", err);
         // resolve(err);
       } else {
-        connection.query(sql, values, (err, rows) => {
-          if (err) {
-            console.error("QUERY ERROR:", err.message);
+        connection.query(sql, values, (error, rows) => {
+          if (error) {
+            console.error("QUERY ERROR:", error.message);
             console.log(sql);
-            reject(err);
+            reject(error);
           } else {
             resolve(rows);
           }
