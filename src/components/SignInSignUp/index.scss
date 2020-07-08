@@ -1,9 +1,8 @@
-@import "../../assets/base.scss";
+@import '../../assets/base.scss';
 .formContent {
   -webkit-border-radius: 12px 12px 12px 12px;
   border-radius: 12px 12px 12px 12px;
   background: #fff;
-  padding: 32px;
   width: 100%;
   max-width: 330px;
   position: relative;
@@ -40,7 +39,8 @@
   .userAvatarWrapper {
     margin: 10px 0 20px;
   }
-  .active, .inactive {
+  .active,
+  .inactive {
     text-align: center;
     font-size: 18px;
     text-transform: uppercase;
@@ -52,9 +52,9 @@
   .active {
     color: $blue;
   }
-  input[type=button] {
+  input[type='button'] {
     display: inline-block;
-    background-color: #44C97D;
+    background-color: #44c97d;
     border: none;
     color: white;
     padding: 10px 30px;
@@ -67,10 +67,9 @@
     border-radius: 4px 4px 4px 4px;
   }
 
-  input[type=password],
-  input[type=text] {
+  input[type='password'],
+  input[type='text'] {
     background-color: #f6f6f6;
-    border: none;
     color: #0d0d0d;
     padding: 8px 18px;
     text-align: center;
@@ -87,21 +86,21 @@
     border-radius: 4px 4px 4px 4px;
   }
 
-  input[type=text]:focus {
+  input[type='text']:focus {
     background-color: #fff;
     border-bottom: 1px solid #5fbae9;
   }
 
-  input[type=password]:focus {
+  input[type='password']:focus {
     background-color: #fff;
     border-bottom: 1px solid #5fbae9;
   }
 
-  input[type=text]:placeholder {
+  input[type='text']:placeholder {
     color: $lightGray;
   }
 
-  input[type=password]:placeholder {
+  input[type='password']:placeholder {
     color: $lightGray;
   }
 

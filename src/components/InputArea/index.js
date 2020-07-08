@@ -38,18 +38,13 @@ class InputArea extends Component {
       const duration = res.duration;
       if (res && res.success) {
         showAds(res.ads, duration, true);
+        setTimeout(cb, duration);
       } else {
-        antNotification.error({
-          message: 'Failed to get static ads.',
-        });
+        cb();
       }
-
-      setTimeout(cb, duration);
     } catch (error) {
       console.log(error);
-      antNotification.error({
-        message: 'Failed to get static ads.',
-      });
+      cb();
     }
   }
 
@@ -65,6 +60,7 @@ class InputArea extends Component {
         if (window.location.href.includes('vitae-rain-group')) {
           _this._postMessage();
         } else {
+          console.log(message, inputMsg);
           sendMessage(message || inputMsg, attachments);
 
           // _this.state.inputMsg = '';

@@ -15,7 +15,7 @@ function getBase64(img, callback) {
   reader.readAsDataURL(img);
 }
 
-class Avatar extends React.Component {
+class AdsUpload extends React.Component {
   state = {
     loading: false,
     image: {},
@@ -105,4 +105,4 @@ class Avatar extends React.Component {
   }
 }
 
-export default Avatar;
+export default AdsUpload;

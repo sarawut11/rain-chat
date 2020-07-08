@@ -1,5 +1,6 @@
 import io from 'socket.io-client';
 import { notification as antNotification } from 'antd';
+import { filterParams } from 'qiniu-js';
 import store from '../../redux/store';
 import {
   updateHomePageListAction,
@@ -14,6 +15,7 @@ import {
   deleteGroupChatAction,
 } from '../../containers/GroupChatPage/groupChatAction';
 import { setAdsAction } from '../../containers/AdsPage/adsAction';
+import { setUserInfoAction } from '../../redux/actions/userAction';
 import { enableVitaePost, disableVitaePost } from '../../redux/actions/enableVitaePost';
 import {
   addPrivateChatMessagesAction,
@@ -198,6 +200,8 @@ class InitApp {
         this._userInfo,
         allMessage,
       );
+
+      store.dispatch(setUserInfoAction({ data: this._userInfo }));
     });
     window.socket.on('initSocket', (socketId, fn) => {
       const clientHomePageList = JSON.parse(localStorage.getItem(`homePageList-${this.userId}`));
@@ -273,7 +277,7 @@ class InitApp {
       window.socket.on('error', error => {
         console.log('window.socket on error', error);
         // notification(error, 'error');
-        antNotification.error({ message: error.message });
+        antNotification.error({ message: error });
         if (error.code === 401) {
           window.location.href = '/login';
         }
