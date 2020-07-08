@@ -43,7 +43,6 @@ class MembershipCountDown extends Component {
   };
 
   render() {
-    console.log('\n\n-----      MembershipCountDown       ----------\n\n', this);
     const {
       membershipUpgradePending,
       vitaePrice,

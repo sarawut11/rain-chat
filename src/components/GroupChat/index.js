@@ -47,7 +47,7 @@ class GroupChat extends Component {
       // time: Date.parse(new Date()) / 1000 // time
     };
     this._sendByMe = true;
-    console.log('data:\n', data);
+
     const response = await request.socketEmitAndGetResponse('sendGroupMsg', data, () => {
       notification('Failed to send message', 'error', 2);
     });

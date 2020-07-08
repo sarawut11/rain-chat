@@ -108,10 +108,10 @@ class UserUpgrader extends Component {
   };
 
   render() {
-    console.log('\n\n----       User Upgrade       -----\n\n', this);
     const { loadingPrice, visible, vitaePrice, usdPrice, walletAddress } = this.state;
     const { membershipUpgradePending } = this.props.membershipUpgradeInfo;
     const { userInfo } = this.props;
+
     return (
       <div>
         {membershipUpgradePending ? (
