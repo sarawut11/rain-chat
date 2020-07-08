@@ -2,6 +2,13 @@ import { SET_USER_INFO } from '../actions/userAction';
 
 const initialState = {
   userInfo: {},
+  membershipUpgradeInfo: {
+    usdPrice: null,
+    vitaePrice: null,
+    walletAddress: null,
+    membershipUpgradePending: false,
+    deadline: null,
+  },
 };
 
 const userReducer = (previousState = initialState, action) => {

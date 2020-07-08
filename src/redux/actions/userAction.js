@@ -1,12 +1,21 @@
 const SET_USER_INFO = 'SET_USER_INFO';
 
-const setUserInfoAction = (userInfo = {}) => {
-  console.log('\n---    set user info   ---\n', userInfo);
+const setUserInfoAction = (data = {}) => {
+  console.log('\n---    set user info   ---\n', data);
 
   return {
     type: SET_USER_INFO,
-    data: { userInfo },
+    data: { userInfo: data.data },
   };
 };
 
-export { SET_USER_INFO, setUserInfoAction };
+const setMembershipUpgradeInfo = membershipUpgradeInfo => {
+  console.log('\n---    membershipUpgradeInfo   ---\n', membershipUpgradeInfo);
+
+  return {
+    type: SET_USER_INFO,
+    data: { membershipUpgradeInfo },
+  };
+};
+
+export { SET_USER_INFO, setUserInfoAction, setMembershipUpgradeInfo };

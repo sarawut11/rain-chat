@@ -277,7 +277,7 @@ class InitApp {
       window.socket.on('error', error => {
         console.log('window.socket on error', error);
         // notification(error, 'error');
-        antNotification.error({ message: error.message });
+        antNotification.error({ message: error });
         if (error.code === 401) {
           window.location.href = '/login';
         }

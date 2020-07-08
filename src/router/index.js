@@ -27,7 +27,7 @@ function MainView(props) {
     MainViewClassName = 'layout-left-mobile';
   }
 
-  if (pathname === '/ads' || pathname === '/admin') {
+  if (pathname === '/ads' || pathname === '/admin' || pathname === '/setting') {
     MainViewClassName = 'layout-left layout-all-left';
   }
 
@@ -60,7 +60,7 @@ function RightView(props) {
     RightViewClassName = 'layout-right';
   }
 
-  if (pathname === '/ads' || pathname === '/admin') {
+  if (pathname === '/ads' || pathname === '/admin' || pathname === '/setting') {
     RightViewClassName = 'layout-no-right';
   }
 
@@ -74,7 +74,7 @@ function RightView(props) {
         path="/private_chat/:userId"
         component={loadable(() => import('../containers/PrivateChatPage'))}
       />
-      {['/', '/setting'].map((path, index) => (
+      {['/'].map((path, index) => (
         <Route
           path={path}
           exact
