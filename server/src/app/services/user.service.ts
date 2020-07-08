@@ -251,6 +251,7 @@ export class UserService {
   }
 
   unbanUsersFromRainGroup(userIds: number[]) {
+    if (userIds.length === 0) return undefined;
     const array = getInArraySQL(userIds);
     const sql = `
       UPDATE ${this.USER_TABLE}

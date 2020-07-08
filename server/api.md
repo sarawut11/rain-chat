@@ -531,7 +531,9 @@
   ```
   {
     success: ture/false,
-    price: // membership price in vitae
+    vitaePrice, // membership price in vitae
+    usdPrice,   // membership price in usd
+    walletAddress, // Company wallet address
   }
   ```
 ### /membership/role/users (GET)
