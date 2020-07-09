@@ -2,6 +2,33 @@ import { rpcInterface } from "../utils/wallet/RpcInterface";
 import { ServicesContext } from "../context";
 import { User, Transaction } from "../models";
 
+export const getCompanyWallet = async (ctx, next) => {
+  try {
+    const { username } = ctx.state.user;
+    const { userService } = ServicesContext.getInstance();
+
+    const userInfo: User = await userService.findUserByUsername(username);
+    if (userInfo === undefined) {
+      ctx.body = {
+        success: false,
+        message: "Invalid username"
+      };
+      return;
+    }
+
+    ctx.body = {
+      success: true,
+      walletAddress: "testing company wallet"
+    };
+  } catch (error) {
+    console.error(error.message);
+    ctx.body = {
+      success: false,
+      message: "Failed"
+    };
+  }
+};
+
 export const walletNotify = async (ctx, next) => {
   try {
     const { txid } = ctx.request.body;

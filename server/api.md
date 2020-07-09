@@ -735,6 +735,17 @@
   }
   ```
 ## 1.8 Wallet
+### /wallet/company-address (GET)
+  Get company wallet address
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    walletAddress: // company wallet address
+  }
+  ```
 ### /wallet/withdraw (POST)
   Request withdraw
 
