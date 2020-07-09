@@ -37,6 +37,8 @@ export default {
     vitae_post_time: 1000 * 10 * 1    // I love vitae post after 1 hour
   },
   companyUserId: 0,
+  companyUsername: "COMPANY",
+  companyRainAddress: "CompanyRainAddress",
   company_revenue: {
     company_expenses: 0.2,
     owner_share: 0.3,

@@ -30,12 +30,11 @@ export class RainContext {
   async campaignRainAds() {
     try {
       const { userService, adsService } = ServicesContext.getInstance();
-      const RowDataPacket: Ads[] = await adsService.findAdsToCampaign(Ads.TYPE.RainRoomAds);
-      if (RowDataPacket.length <= 0) {
+      const ads: Ads = await adsService.findAdsToCampaign(Ads.TYPE.RainRoomAds);
+      if (ads === undefined) {
         console.log("No Ads to rain");
         return;
       }
-      const ads = RowDataPacket[0];
       if (Number(ads.impressions) <= 0) {
         console.log("Insufficient impressions");
         return;
@@ -146,12 +145,11 @@ export class RainContext {
   // ========== Static Ads ========== //
   async campaignStaticAds() {
     const { adsService, userService } = ServicesContext.getInstance();
-    const RowDataPacket: Ads[] = await adsService.findAdsToCampaign(Ads.TYPE.StaticAds);
-    if (RowDataPacket.length === 0) {
+    const ads: Ads = await adsService.findAdsToCampaign(Ads.TYPE.StaticAds);
+    if (ads === undefined) {
       console.log("No Static Ads to campaign");
       return;
     }
-    const ads: Ads = RowDataPacket[0];
     console.log("Campaign Static Ads:", ads.id);
     socketServer.broadcast(socketEventNames.ShowStaticAds, {
       ads: {

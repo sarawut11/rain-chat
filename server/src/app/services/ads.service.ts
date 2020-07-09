@@ -2,11 +2,12 @@ import * as moment from "moment";
 import { query } from "../utils/db";
 import { isNullOrUndefined } from "util";
 import { Ads } from "../models";
+import configs from "@configs";
 
 export class AdsService {
 
   readonly TABLE_NAME = "ads_info";
-  readonly COLUMNS = {
+  readonly COL = {
     id: "id",
     userId: "userId",
     type: "type",
@@ -28,62 +29,77 @@ export class AdsService {
   insertAds({ userId, assetLink, link, buttonLabel, title, description, time, type }) {
     const sql = `
       INSERT INTO ${this.TABLE_NAME}(
-        userId,assetLink,link,buttonLabel,title,description,type,time
+        ${this.COL.userId},
+        ${this.COL.assetLink},
+        ${this.COL.link},
+        ${this.COL.buttonLabel},
+        ${this.COL.title},
+        ${this.COL.description},
+        ${this.COL.type},
+        ${this.COL.time}
       ) values(?,?,?,?,?,?,?,?);`;
     return query(sql, [userId, assetLink, link, buttonLabel, title, description, type, time]);
   }
 
   async findAdsById(adsId: number): Promise<Ads> {
-    const sql = `SELECT * FROM ${this.TABLE_NAME} WHERE ${this.COLUMNS.id} = ?;`;
+    const sql = `SELECT * FROM ${this.TABLE_NAME} WHERE ${this.COL.id} = ?;`;
     const ads: Ads[] = await query(sql, adsId);
     if (ads.length === 0) return undefined;
     return ads[0];
   }
 
-  updateAds(adsId, userId, { assetLink, link, buttonLabel, title, description }) {
+  updateAds(adsId: number, userId: number, { assetLink, link, buttonLabel, title, description }) {
     let params = [link, buttonLabel, title, description, adsId, userId];
     if (!isNullOrUndefined(assetLink))
       params = [assetLink, ...params];
     const sql = `
       UPDATE ${this.TABLE_NAME}
       SET
-        ${isNullOrUndefined(assetLink) ? "" : `${this.COLUMNS.assetLink} = ?,`}
-        ${this.COLUMNS.link} = ?,
-        ${this.COLUMNS.buttonLabel} = ?,
-        ${this.COLUMNS.title} = ?,
-        ${this.COLUMNS.description} = ?
-      WHERE id = ? and userId = ?;`;
+        ${isNullOrUndefined(assetLink) ? "" : `${this.COL.assetLink} = ?,`}
+        ${this.COL.link} = ?,
+        ${this.COL.buttonLabel} = ?,
+        ${this.COL.title} = ?,
+        ${this.COL.description} = ?
+      WHERE
+        ${this.COL.id} = ? AND
+        ${this.COL.userId} = ?;`;
     return query(sql, params);
   }
 
-  deleteAds(adsId) {
-    const sql = "DELETE FROM ads_info WHERE id = ?;";
+  deleteAds(adsId: number) {
+    const sql = `DELETE FROM ${this.TABLE_NAME} WHERE ${this.COL.id} = ?;`;
     return query(sql, adsId);
   }
 
-  setImpressions(adsId, userId, impressions, costPerImp, paidAmount) {
+  setImpressions(adsId: number, userId: number, impressions: number, costPerImp: number, paidAmount: number) {
     const sql = `
       UPDATE ${this.TABLE_NAME}
       SET
-        ${this.COLUMNS.impressions} = ?,
-        ${this.COLUMNS.costPerImp} = ?,
-        ${this.COLUMNS.status} = ?,
-        ${this.COLUMNS.paidAmount} = ?
+        ${this.COL.impressions} = ?,
+        ${this.COL.costPerImp} = ?,
+        ${this.COL.status} = ?,
+        ${this.COL.paidAmount} = ?
       WHERE id = ? AND userId = ?;`;
     return query(sql, [impressions, costPerImp, Ads.STATUS.Paid, paidAmount, adsId, userId]);
   }
 
-  cancelAds(adsId, userId) {
-    const sql = "UPDATE ads_info SET status = ? WHERE id = ? and userId = ?;";
+  cancelAds(adsId: number, userId: number) {
+    const sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET ${this.COL.status} = ?
+      WHERE
+        ${this.COL.id} = ? AND
+        ${this.COL.userId} = ?;`;
     return query(sql, [Ads.STATUS.Created, adsId, userId]);
   }
 
-  findAdsByUserId(userId) {
-    const sql = "SELECT * FROM ads_info WHERE userId = ?;";
-    return query(sql, userId);
+  async findAdsByUserId(userId: number): Promise<Ads[]> {
+    const sql = `SELECT * FROM ${this.TABLE_NAME} WHERE ${this.COL.userId} = ?;`;
+    const ads: Ads[] = await query(sql, userId);
+    return ads;
   }
 
-  findAllAds() {
+  async findAllAds(): Promise<Ads[]> {
     const sql = `
       SELECT ads.*,
         creator.username as creatorUsername,
@@ -95,11 +111,23 @@ export class AdsService {
       FROM ${this.TABLE_NAME} AS ads
       JOIN user_info as creator ON ads.userId = creator.id
       JOIN user_info as reviewer ON ads.reviewer = reviewer.id;`;
-    return query(sql);
+    const ads: Ads[] = await query(sql);
+    ads.forEach(ad => {
+      // Pending or Created ads
+      if (ad.reviewerUsername === configs.companyUsername) {
+        ad.reviewerUsername = "";
+        ad.reviewerName = "";
+        ad.reviewerAvatar = "";
+      }
+    });
+    return ads;
   }
 
-  updateStatus(id, status) {
-    const sql = `UPDATE ${this.TABLE_NAME} SET status = ? WHERE id = ?;`;
+  updateStatus(id: number, status: number) {
+    const sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET ${this.COL.status} = ?
+      WHERE ${this.COL.id} = ?;`;
     return query(sql, [status, id]);
   }
 
@@ -107,30 +135,32 @@ export class AdsService {
     const sql = `
       UPDATE ${this.TABLE_NAME}
       SET
-        ${this.COLUMNS.status} = ? AND
-        ${this.COLUMNS.reviewer} = ?
-      WHERE ${this.COLUMNS.id} = ?;`;
+        ${this.COL.status} = ? AND
+        ${this.COL.reviewer} = ?
+      WHERE ${this.COL.id} = ?;`;
     return query(sql, [Ads.STATUS.Approved, reviewerId, adsId]);
   }
 
-  findAdsToCampaign(type) {
+  async findAdsToCampaign(type: number): Promise<Ads> {
     const sql = `
       SELECT * FROM ${this.TABLE_NAME}
       WHERE
-        ${this.COLUMNS.type} = ? AND
-        ${this.COLUMNS.status} = ? AND
-        ${this.COLUMNS.impressions} > ${this.COLUMNS.givenImp}
-      ORDER BY lastTime ASC LIMIT 1;`;
-    return query(sql, [type, Ads.STATUS.Paid]);
+        ${this.COL.type} = ? AND
+        ${this.COL.status} = ? AND
+        ${this.COL.impressions} > ${this.COL.givenImp}
+      ORDER BY ${this.COL.lastTime} ASC LIMIT 1;`;
+    const ads: Ads[] = await query(sql, [type, Ads.STATUS.Paid]);
+    if (ads.length === 0) return undefined;
+    return ads[0];
   }
 
-  campaignAds(id, impression) {
+  campaignAds(id: number, impression: number) {
     const sql = `
       UPDATE ${this.TABLE_NAME}
       SET
-        ${this.COLUMNS.givenImp} = ${this.COLUMNS.givenImp} + ?,
-        ${this.COLUMNS.lastTime} = ?
-      WHERE id = ?;`;
+        ${this.COL.givenImp} = ${this.COL.givenImp} + ?,
+        ${this.COL.lastTime} = ?
+      WHERE ${this.COL.id} = ?;`;
     return query(sql, [impression, moment().utc().unix(), id]);
   }
 
@@ -138,8 +168,8 @@ export class AdsService {
     const sql = `
       UPDATE ${this.TABLE_NAME}
       SET
-        ${this.COLUMNS.givenImp} = ${this.COLUMNS.givenImp} + ?
-      WHERE ${this.COLUMNS.id} = ?;`;
+        ${this.COL.givenImp} = ${this.COL.givenImp} + ?
+      WHERE ${this.COL.id} = ?;`;
     return query(sql, [impressions, id]);
   }
 }

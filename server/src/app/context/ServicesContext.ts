@@ -6,7 +6,8 @@ import {
   BanService,
   AdsService,
   TransactionService,
-  InnerTransactionService
+  InnerTransactionService,
+  OtpService,
 } from "./../services";
 
 export class ServicesContext {
@@ -96,6 +97,16 @@ export class ServicesContext {
   }
   public setInnerTransactionService(service: InnerTransactionService): ServicesContext {
     this._innerTransactionService = service;
+    return this;
+  }
+
+  // Otp service
+  private _otpService: OtpService;
+  public get otpService() {
+    return this._otpService;
+  }
+  public setOtpService(service: OtpService): ServicesContext {
+    this._otpService = service;
     return this;
   }
 }

@@ -124,8 +124,8 @@ const confirmMembership = async (userId, amount, confirmTime) => {
   const thirdSponsorShare = sponsorRevenue * configs.membership.revenue.sponsor_3_rate;
 
   const firstSponsorId = userInfo.sponsor;
-  const secondSponsorId = (await userService.findUserById(firstSponsorId))[0].sponsor;
-  const thirdSponsorId = (await userService.findUserById(secondSponsorId))[0].sponsor;
+  const secondSponsorId = (await userService.findUserById(firstSponsorId)).sponsor;
+  const thirdSponsorId = (await userService.findUserById(secondSponsorId)).sponsor;
   await userService.addBalance(firstSponsorId, firstSponsorShare);
   await userService.addBalance(secondSponsorId, secondSponsorShare);
   await userService.addBalance(thirdSponsorId, thirdSponsorShare);

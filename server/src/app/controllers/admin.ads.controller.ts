@@ -1,5 +1,5 @@
 import { ServicesContext } from "../context";
-import { User, Ads, AdsExt } from "../models";
+import { User, Ads } from "../models";
 import { Transaction } from "../models/transaction.model";
 import { isOwner } from "../utils/utils";
 
@@ -66,7 +66,7 @@ export const getAdsAnalytics = async (ctx, next) => {
       return;
     }
 
-    const allAds: AdsExt[] = await adsService.findAllAds();
+    const allAds: Ads[] = await adsService.findAllAds();
     const staticAds: AdsAnalytics = new AdsAnalytics();
     const rainAds: AdsAnalytics = new AdsAnalytics();
     allAds.forEach(ads => {

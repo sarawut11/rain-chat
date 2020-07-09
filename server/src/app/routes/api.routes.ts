@@ -16,6 +16,10 @@ const api = new Router()
   .get("/user/otp/request", APIController.generateOTP)
   .post("/user/otp/verify", APIController.verifyOTP)
 
+  // Rain
+  .post("/rain/send-vitae/balance", APIController.rainFromBalance)
+  // .post("/rain/send-vitae/purchase", APIController.sendVitaePurchase)
+
   // Ads
   .get("/campaign/impcost", APIController.getCostPerImpression)
 
@@ -54,6 +58,7 @@ const api = new Router()
   .get("/admin/financial", APIController.getFinancialAnalytics)
 
   // Wallet
+  .get("/wallet/company-rain-address", APIController.getCompanyRainAddress)
   .post("/wallet/withdraw", APIController.walletWithdraw)
   .post("/walletnotify", APIController.walletNotify);
 

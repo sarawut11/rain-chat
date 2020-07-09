@@ -49,7 +49,7 @@ export const rejectAds = async (ctx, next) => {
     ctx.body = {
       success: true,
       message: "Successfully Rejected",
-      ads: ads[0],
+      ads,
     };
   } catch (error) {
     console.error(error.message);
@@ -84,7 +84,7 @@ export const approveAds = async (ctx, next) => {
     ctx.body = {
       success: true,
       message: "Successfully Approved",
-      ads: ads[0],
+      ads,
     };
   } catch (error) {
     console.error(error.message);
