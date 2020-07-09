@@ -27,6 +27,7 @@ import {
   Timeline,
   Tabs,
   Empty,
+  Badge,
 } from 'antd';
 import {
   EditOutlined,
@@ -519,13 +520,52 @@ class Ads extends Component {
     );
   };
 
+  renderTabPaneBadge = (isModerator, text, adsList) => {
+    let color = '#44c97d';
+
+    switch (text) {
+      case 'Created':
+        color = 'pink';
+        break;
+      case 'Rejected':
+        color = 'red';
+        break;
+      case 'Pending':
+        color = 'magenta';
+        break;
+      case 'Approved':
+        color = 'blue';
+        break;
+      case 'Awaiting Purchase':
+        color = 'orange';
+        break;
+      case 'Purchased':
+        color = '#44c97d';
+        break;
+      default:
+        color = '#44c97d';
+    }
+    if (isModerator && text === 'Pending') {
+      text = 'Requested';
+    }
+
+    if (adsList && adsList.length > 0) {
+      return (
+        <span>
+          {text}
+          <Badge count={adsList.length} overflowCount={99} style={{ backgroundColor: color }} />
+        </span>
+      );
+    }
+
+    return text;
+  };
+
   render() {
     const { createAdsVisible, editAdsVisible, editingAds, loading, user_info } = this.state;
     const { ads, createAdsAction, editAdsAction } = this.props;
 
     const isModerator = user_info.role === 'MODERATOR';
-
-    console.log('Ads render', this);
 
     return (
       <div className="campaign-container">
@@ -549,12 +589,13 @@ class Ads extends Component {
 
         {ads && ads.adsList && !loading ? (
           <Row gutter={[0, 16]}>
-            {!isModerator && (
-              <Col span={24}>
-                <h1 className="campaign-container-title">
-                  <LikeOutlined />
-                  Advertise
-                </h1>
+            <Col span={24}>
+              <h1 className="campaign-container-title">
+                <LikeOutlined />
+                Advertise
+              </h1>
+
+              {!isModerator && (
                 <Button
                   className="camp-add-button"
                   type="primary"
@@ -563,13 +604,16 @@ class Ads extends Component {
                 >
                   Create ads
                 </Button>
-              </Col>
-            )}
+              )}
+            </Col>
 
             <Col span={24}>
               <Tabs defaultActiveKey="1">
                 {!isModerator && (
-                  <TabPane tab="Created" key="1">
+                  <TabPane
+                    tab={this.renderTabPaneBadge(isModerator, 'Created', ads.createdAdsList)}
+                    key="1"
+                  >
                     {ads.createdAdsList && ads.createdAdsList.length > 0 && !isModerator ? (
                       <div>
                         <Divider orientation="left" plain>
@@ -594,8 +638,12 @@ class Ads extends Component {
                     )}
                   </TabPane>
                 )}
+
                 {!isModerator && (
-                  <TabPane tab="Rejected" key="6">
+                  <TabPane
+                    tab={this.renderTabPaneBadge(isModerator, 'Rejected', ads.rejectedAdsList)}
+                    key="6"
+                  >
                     {ads.rejectedAdsList && ads.rejectedAdsList.length > 0 && !isModerator ? (
                       <div>
                         <Divider orientation="left" plain>
@@ -620,33 +668,39 @@ class Ads extends Component {
                     )}
                   </TabPane>
                 )}
-                {!isModerator && (
-                  <TabPane tab="Pending" key="2">
-                    {ads.pendingAdsList && ads.pendingAdsList.length > 0 ? (
-                      <div>
-                        <Divider orientation="left" plain>
-                          <h3>Pending ads</h3>
-                        </Divider>
-                        <List
-                          grid={{
-                            gutter: 16,
-                            xs: 1,
-                            sm: 2,
-                            md: 2,
-                            lg: 3,
-                            xl: 3,
-                            xxl: 4,
-                          }}
-                          dataSource={ads.pendingAdsList}
-                          renderItem={this.renderItem}
-                        />
-                      </div>
-                    ) : (
-                      <Empty description="No Pending Ads" />
-                    )}
-                  </TabPane>
-                )}
-                <TabPane tab="Approved" key="3">
+
+                <TabPane
+                  tab={this.renderTabPaneBadge(isModerator, 'Pending', ads.pendingAdsList)}
+                  key="2"
+                >
+                  {ads.pendingAdsList && ads.pendingAdsList.length > 0 ? (
+                    <div>
+                      <Divider orientation="left" plain>
+                        <h3>{isModerator ? 'Requested ads' : 'Pending ads'}</h3>
+                      </Divider>
+                      <List
+                        grid={{
+                          gutter: 16,
+                          xs: 1,
+                          sm: 2,
+                          md: 2,
+                          lg: 3,
+                          xl: 3,
+                          xxl: 4,
+                        }}
+                        dataSource={ads.pendingAdsList}
+                        renderItem={this.renderItem}
+                      />
+                    </div>
+                  ) : (
+                    <Empty description="No Pending Ads" />
+                  )}
+                </TabPane>
+
+                <TabPane
+                  tab={this.renderTabPaneBadge(isModerator, 'Approved', ads.approvedAdsList)}
+                  key="3"
+                >
                   {ads.approvedAdsList && ads.approvedAdsList.length > 0 ? (
                     <div>
                       <Divider orientation="left" plain>
@@ -670,7 +724,15 @@ class Ads extends Component {
                     <Empty description="No Approved Ads" />
                   )}
                 </TabPane>
-                <TabPane tab="Awaiting Purchase" key="4">
+
+                <TabPane
+                  tab={this.renderTabPaneBadge(
+                    isModerator,
+                    'Awaiting Purchase',
+                    ads.pendingPurchaseAdsList,
+                  )}
+                  key="4"
+                >
                   {ads.pendingPurchaseAdsList && ads.pendingPurchaseAdsList.length > 0 ? (
                     <div>
                       <Divider orientation="left" plain>
@@ -694,7 +756,11 @@ class Ads extends Component {
                     <Empty description="No Awaiting Purchased Ads" />
                   )}
                 </TabPane>
-                <TabPane tab="Purchased" key="5">
+
+                <TabPane
+                  tab={this.renderTabPaneBadge(isModerator, 'Purchased', ads.paidAdsList)}
+                  key="5"
+                >
                   {ads.paidAdsList && ads.paidAdsList.length > 0 ? (
                     <div>
                       <Divider orientation="left" plain>
