@@ -192,16 +192,10 @@ class InitApp {
         console.log(e);
       }
 
-      if (this._userInfo.role !== 'MODERATOR') store.dispatch(setAdsAction({ data: adsList }));
-      console.log(
-        'initMessage success. ',
-        'time=>',
-        new Date().toLocaleString(),
-        this._userInfo,
-        allMessage,
-      );
+      if (allMessage.userInfo.role !== 'MODERATOR') store.dispatch(setAdsAction({ data: adsList }));
+      console.log('initMessage success. ', 'time=>', new Date().toLocaleString(), allMessage);
 
-      store.dispatch(setUserInfoAction({ data: this._userInfo }));
+      store.dispatch(setUserInfoAction({ data: allMessage.userInfo }));
     });
     window.socket.on('initSocket', (socketId, fn) => {
       const clientHomePageList = JSON.parse(localStorage.getItem(`homePageList-${this.userId}`));

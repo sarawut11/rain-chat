@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import { Button, Tooltip } from 'antd';
-import { SendOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
+import VitaeToRain from '../VitaeToRain';
 import './style.scss';
 
 class ChatHeader extends Component {
@@ -39,11 +38,7 @@ class ChatHeader extends Component {
           {title}
         </div>
         {groupId && groupId === 'vitae-rain-group' ? (
-          <Tooltip title="Send Vitae to Rain" color="green" key="send-vitae-btn">
-            <Button type="primary">
-              <SendOutlined />
-            </Button>
-          </Tooltip>
+          <VitaeToRain />
         ) : (
           showShareIcon && (
             <svg onClick={this._showShareModal} className="icon shareIcon" aria-hidden="true">
