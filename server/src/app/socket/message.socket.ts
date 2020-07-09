@@ -46,8 +46,7 @@ export const getAllMessage = async ({ userId, clientHomePageList }) => {
     const res2 = await userService.getGroupList(userId);
     const groupList = JSON.parse(JSON.stringify(res2));
     const homePageList = groupList.concat(privateList);
-    const res3 = await adsService.findAdsByUserId(userId);
-    const adsList = JSON.parse(JSON.stringify(res3));
+    const adsList = await adsService.findAdsByUserId(userId);
     const privateChat = new Map();
     const groupChat = new Map();
     if (homePageList && homePageList.length) {

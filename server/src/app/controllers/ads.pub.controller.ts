@@ -371,18 +371,18 @@ export const getStaticAds = async (ctx: ParameterizedContext, next) => {
   try {
     const { adsService } = ServicesContext.getInstance();
 
-    const ads: Ads[] = await adsService.findAdsToCampaign(Ads.TYPE.StaticAds);
-    if (ads.length === 0) {
+    const ads: Ads = await adsService.findAdsToCampaign(Ads.TYPE.StaticAds);
+    if (ads === undefined) {
       ctx.body = {
         success: false,
         message: "No static ads."
       };
       return;
     }
-    await adsService.consumeImpression(ads[0].id, 1);
+    await adsService.consumeImpression(ads.id, 1);
     ctx.body = {
       success: true,
-      ads: ads[0],
+      ads,
       duration: configs.ads.static_ads_interval
     };
   } catch (error) {
