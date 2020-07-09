@@ -735,6 +735,17 @@
   }
   ```
 ## 1.8 Wallet
+### /wallet/company-rain-address (GET)
+  Get company rain address
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    rainAddress: // company rain address
+  }
+  ```
 ### /wallet/withdraw (POST)
   Request withdraw
 
