@@ -56,7 +56,6 @@ class Withdraw extends Component {
         notification.error({
           message: res.message,
         });
-        this.setState({ visible: true });
       }
     } catch (error) {
       console.log(error);
@@ -93,7 +92,6 @@ class Withdraw extends Component {
           message: 'Code is not valid',
         });
         this.setState({ codeValid: false });
-        this.setState({ currentStep: 1 });
       }
     } catch (error) {
       console.log(error);
