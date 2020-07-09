@@ -766,6 +766,10 @@
 ### /rain/send-vitae/balance (POST)
   Send vitae rain from balance
 
+  ***Request Body***
+  | Fields | Description                       |
+  | ------ | --------------------------------- |
+  | amount | Vitae amount to rain from balance |
   ***Response***
   ```
   {
@@ -773,21 +777,6 @@
     message,
     userInfo: { // Updated user info, balance will be updated
     }
-  }
-  ```
-### /rain/send-vitae/purchase (POST)
-  Send vitae rain by purchase
-
-  ***Request Body***
-  | Fields             | Description          |
-  | ------------------ | -------------------- |
-  | companyRainAddress | Company Rain Address |
-  | amount             | Vitae amount to rain |
-  ***Response***
-  ```
-  {
-    success: true/false,
-    message,
   }
   ```
 # 2. Socket Events
