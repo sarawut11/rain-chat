@@ -12,3 +12,4 @@ export * from "./ads.pub.controller";
 export * from "./ads.mod.controller";
 export * from "./wallet.controller";
 export * from "./role.controller";
+export * from "./rain.controller";
