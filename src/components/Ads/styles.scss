@@ -2,6 +2,13 @@
   padding: 40px;
   width: 100%;
 
+  .campaign-container-title {
+    display: inline-block;
+    .anticon {
+      margin-right: 10px;
+    }
+  }
+
   .ant-card-body {
     padding-bottom: 0px;
   }
@@ -12,6 +19,10 @@
     .ant-timeline-item {
       padding-bottom: 5px;
     }
+  }
+
+  .ant-tabs {
+    width: 100%;
   }
 }
 

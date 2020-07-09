@@ -6,7 +6,7 @@ import { SettingOutlined } from '@ant-design/icons';
 import UserUpgrader from './UserUpgrader';
 import './styles.scss';
 
-function Setting({ initApp, history }) {
+function Setting({ initApp, history, userInfo }) {
   const logout = () => {
     window.socket.disconnect();
     localStorage.removeItem('userInfo');
@@ -29,12 +29,16 @@ function Setting({ initApp, history }) {
           Settings
         </h1>
         <Row gutter={[20, 20]}>
-          <Col span={24}>
-            <Divider>Upgrade Membership</Divider>
-          </Col>
-          <Col span={24}>
-            <UserUpgrader />
-          </Col>
+          {userInfo.role === 'FREE' && (
+            <Col span={24}>
+              <Divider>Upgrade Membership</Divider>
+            </Col>
+          )}
+          {userInfo.role === 'FREE' && (
+            <Col span={24}>
+              <UserUpgrader />
+            </Col>
+          )}
           <Col span={24}>
             <Divider />
           </Col>
@@ -46,14 +50,5 @@ function Setting({ initApp, history }) {
     </div>
   );
 }
-
-Setting.propTypes = {
-  initApp: PropTypes.func,
-  history: PropTypes.object.isRequired,
-};
-
-Setting.defaultProps = {
-  initApp() {},
-};
 
 export default withRouter(Setting);
