@@ -407,13 +407,6 @@ export class UserService {
   }
 
   // Membership Revenue
-  resetBalance(userId: number) {
-    const sql = `
-      UPDATE ${this.USER_TABLE}
-      SET ${this.USER_COL.balance} = ?
-      WHERE ${this.USER_COL.id} = ?`;
-    return query(sql, [0, userId]);
-  }
   addBalance(userId: number, amount: number) {
     const sql = `
       UPDATE ${this.USER_TABLE}
