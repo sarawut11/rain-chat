@@ -22,18 +22,19 @@ class AdsUpload extends React.Component {
   };
 
   beforeUpload = file => {
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    this.props.setFileList([]);
-    return isLt2M;
+    // const isLt2M = file.size / 1024 / 1024 < 2;
+    // this.props.setFileList([]);
+    // return isLt2M;
+    return true;
   };
 
   handleChange = info => {
-    const isLt2M = info.file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      message.error('File must smaller than 2MB!');
-      this.props.setFileList([]);
-      return;
-    }
+    // const isLt2M = info.file.size / 1024 / 1024 < 2;
+    // if (!isLt2M) {
+    //   message.error('File must smaller than 2MB!');
+    //   this.props.setFileList([]);
+    //   return;
+    // }
 
     const fileList = [...info.fileList];
     if (fileList && fileList.length > 0) {
@@ -61,10 +62,10 @@ class AdsUpload extends React.Component {
     const fr = new FileReader();
     const scope = this;
     this.props.setFileList([]);
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      return false;
-    }
+    // const isLt2M = file.size / 1024 / 1024 < 2;
+    // if (!isLt2M) {
+    //   return false;
+    // }
 
     fr.onload = function() {
       const src = fr.result;
