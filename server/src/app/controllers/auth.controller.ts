@@ -5,7 +5,7 @@ import { generateToken, authVerify } from "../middlewares/verify";
 import { ServicesContext } from "../context";
 import { socketServer } from "../socket/app.socket";
 import configs from "@configs";
-import { User, Ban } from "../models";
+import { User, Ban, Otp } from "../models";
 import { isVitaePostEnabled, generateOtp, verifyOtp, sendMail } from "../utils";
 
 export const loginUser = async (ctx, next) => {
@@ -193,8 +193,8 @@ export const generateOTP = async (ctx, next) => {
       };
       return;
     }
-    const otp: string = await generateOtp();
-    await sendMail({
+    const otp: string = await generateOtp(user.id, Otp.TYPE.WITHDRAW);
+    sendMail({
       to: user.email,
       subject: "Vitae OTP",
       text: otp,
@@ -229,9 +229,10 @@ export const verifyOTP = async (ctx, next) => {
       return;
     }
 
-    const isValid: boolean = verifyOtp(token);
+    const isValid: boolean = await verifyOtp(user.id, Otp.TYPE.WITHDRAW, token);
     ctx.body = {
       success: true,
+      message: isValid ? "Verified" : "Token invalid or expired",
       isValid,
     };
   } catch (error) {

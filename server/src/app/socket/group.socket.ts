@@ -14,7 +14,7 @@ export const sendGroupMsg = async (io, socket, data, cbFn) => {
     const user: User = await userService.getUserBySocketId(socket.id);
     if (user === undefined) return;
     if (user.ban === User.BAN.BANNED) return;
-    if (user.role === User.ROLE.FREE) {
+    if (user.role === User.ROLE.FREE && data.groupId === configs.rain.group_id) {
       if (!isVitaePostEnabled(user))
         return;
       await userService.resetLastVitaePostTime(user.id);
