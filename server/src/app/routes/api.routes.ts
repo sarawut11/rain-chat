@@ -16,6 +16,10 @@ const api = new Router()
   .get("/user/otp/request", APIController.generateOTP)
   .post("/user/otp/verify", APIController.verifyOTP)
 
+  // Rain
+  .post("/rain/send-vitae/balance", APIController.rainFromBalance)
+  // .post("/rain/send-vitae/purchase", APIController.sendVitaePurchase)
+
   // Ads
   .get("/campaign/impcost", APIController.getCostPerImpression)
 

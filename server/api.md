@@ -762,6 +762,23 @@
     message: "Success or Failed Message",
   }
   ```
+## 1.9 Rain
+### /rain/send-vitae/balance (POST)
+  Send vitae rain from balance
+
+  ***Request Body***
+  | Fields | Description                       |
+  | ------ | --------------------------------- |
+  | amount | Vitae amount to rain from balance |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message,
+    userInfo: { // Updated user info, balance will be updated
+    }
+  }
+  ```
 # 2. Socket Events
 > Note
 > - Client : Frontend (Client) -> Backend (Server)

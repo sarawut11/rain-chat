@@ -1,34 +1,6 @@
 import { rpcInterface } from "../utils/wallet/RpcInterface";
 import { ServicesContext } from "../context";
 import { User, Transaction } from "../models";
-import configs from "@configs";
-
-export const getCompanyRainAddress = async (ctx, next) => {
-  try {
-    const { username } = ctx.state.user;
-    const { userService } = ServicesContext.getInstance();
-
-    const userInfo: User = await userService.findUserByUsername(username);
-    if (userInfo === undefined) {
-      ctx.body = {
-        success: false,
-        message: "Invalid username"
-      };
-      return;
-    }
-
-    ctx.body = {
-      success: true,
-      rainAddress: configs.companyRainAddress
-    };
-  } catch (error) {
-    console.error(error.message);
-    ctx.body = {
-      success: false,
-      message: "Failed"
-    };
-  }
-};
 
 export const walletNotify = async (ctx, next) => {
   try {
