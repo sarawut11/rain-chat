@@ -383,6 +383,7 @@
   {
     success: true/false,
     message: "Success or Failed Message",
+    expireTime,     // expiration time in seconds
     ads: {
       id,           // Ads Id
       userId,       // Advertiser's id
@@ -600,6 +601,7 @@
   {
     success: true/false,
     message,
+    expireTime,   // expiration time in seconds
   }
   ```
 ## 1.7 Admin Dashboard API
@@ -1007,5 +1009,18 @@
     adsInfo: {
       // all ads info here
     }
+  }
+  ```
+
+## 2.6 Transaction
+### transactionExpired (Server)
+  Notify user about the expired transaction
+
+  ***Data***
+  ```
+  {
+    type,           // Transaction Type
+    expectAmount,   // Transaction Amount
+    time,           // Requested Time
   }
   ```

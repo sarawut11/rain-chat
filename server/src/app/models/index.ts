@@ -1,3 +1,4 @@
+export * from "./default.model";
 export * from "./ads.model";
 export * from "./user.model";
 export * from "./user.relation.model";

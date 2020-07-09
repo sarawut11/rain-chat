@@ -231,6 +231,12 @@ class InitApp {
     });
   }
 
+  _listeningTransaction() {
+    window.socket.on('transactionExpired', ({ type, expectAmount, time }) => {
+      console.log('Transaction Request Expired', type, expectAmount, time);
+    });
+  }
+
   subscribeSocket() {
     window.socket.removeAllListeners();
     this._listeningInitMessage();
