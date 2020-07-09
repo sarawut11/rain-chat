@@ -110,7 +110,7 @@ class VitaeToRain extends Component {
       const _this = this;
 
       Modal.confirm({
-        title: `You send ${amount} vitae to ${walletAddress}`,
+        title: `${amount} vitae tokens from your balance will be rained`,
         icon: <ExclamationCircleOutlined />,
         content: null,
         onOk() {
@@ -160,7 +160,10 @@ class VitaeToRain extends Component {
           title="Send Vitae To Rain"
           visible={visible}
           onOk={this.handleOk}
+          cancelButtonProps={{ style: { display: 'none' } }}
+          okButtonProps={{ style: { display: 'block', margin: 'auto' } }}
           onCancel={this.handleCancel}
+          okText={vitaeToRainMode === SEND_ACTUAL_TOKEN ? 'OK' : 'Rain'}
           className="vitae-to-rain-modal"
         >
           <Row gutter={[20, 20]}>
@@ -191,7 +194,7 @@ class VitaeToRain extends Component {
             </Col>
 
             {vitaeToRainMode === RAIN_FROM_BALANCE && (
-              <Col span={24}>
+              <Col span={24} style={{ height: 60 }}>
                 <Form labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
                   <Form.Item
                     label="Amount"
