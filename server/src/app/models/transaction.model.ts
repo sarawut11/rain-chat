@@ -11,8 +11,9 @@ export class Transaction {
   public details: string;
 
   public static readonly STATUS = {
+    EXPIRED: -1,
     REQUESTED: 0,
-    PENDING: 1,
+    PENDING_CONFIRM: 1,
     INSUFFICIENT_BALANCE: 2,
     CONFIRMED: 3
   };

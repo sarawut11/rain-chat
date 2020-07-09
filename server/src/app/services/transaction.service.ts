@@ -1,7 +1,9 @@
 import { query } from "../utils/db";
 import * as moment from "moment";
 import * as uniqid from "uniqid";
-import { Transaction } from "../models/transaction.model";
+import { Transaction, DefaultModel } from "../models";
+import { TransactionContext } from "../context";
+import configs from "@configs";
 
 export class TransactionService {
 
@@ -19,7 +21,7 @@ export class TransactionService {
     time: "time",
   };
 
-  createTransactionRequest(userId: number, type: number, expectAmount: number, details?: string) {
+  async createTransactionRequest(userId: number, type: number, expectAmount: number, details?: string) {
     const sql = `
     INSERT INTO ${this.TABLE_NAME}(
       ${this.columns.userId},
@@ -30,7 +32,12 @@ export class TransactionService {
       ${this.columns.time},
       ${this.columns.details})
     values(?,?,?,?,?,?,?);`;
-    return query(sql, [userId, uniqid(), type, Transaction.STATUS.REQUESTED, expectAmount, moment().utc().unix(), details]);
+    const result: DefaultModel = await query(sql, [userId, uniqid(), type, Transaction.STATUS.REQUESTED, expectAmount, moment().utc().unix(), details]);
+
+    setTimeout(() => {
+      TransactionContext.getInstance().expireTransactionRequest(result.insertId);
+    }, configs.transactionTimeout);
+    return result;
   }
 
   confirmTransactionRequest(userId: number, type: number, amount: number, confirmTime: number) {
@@ -47,6 +54,16 @@ export class TransactionService {
     return query(sql, [Transaction.STATUS.CONFIRMED, amount, confirmTime, userId, type]);
   }
 
+  expireTransactionRequest(tranId: number) {
+    const sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET
+        ${this.columns.status} = ?
+      WHERE
+        ${this.columns.id} = ?;`;
+    return query(sql, [Transaction.STATUS.EXPIRED, tranId]);
+  }
+
   getLastPendingTransaction(userId: number, type: number) {
     const sql = `
       SELECT * FROM ${this.TABLE_NAME}
@@ -58,7 +75,15 @@ export class TransactionService {
     return query(sql, [userId, type, Transaction.STATUS.REQUESTED]);
   }
 
-  getTransactions(type?: number) {
+  async getTransactionById(tranId: number): Promise<Transaction> {
+    const sql = `
+      SELECT * FROM ${this.TABLE_NAME} WHERE ${this.columns.id} = ?;`;
+    const trans: Transaction[] = await query(sql, tranId);
+    if (trans.length === 0) return undefined;
+    return trans[0];
+  }
+
+  async getTransactions(type?: number): Promise<Transaction[]> {
     let sql = `
       SELECT * FROM ${this.TABLE_NAME}
       WHERE
