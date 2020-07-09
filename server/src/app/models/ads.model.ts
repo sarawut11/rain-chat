@@ -1,4 +1,5 @@
 export class Ads {
+  // Ads Info
   public id: number;
   public userId: number;
   public type: number;
@@ -15,6 +16,17 @@ export class Ads {
   public lastTime: number;
   public time: number;
   public reviewer: number;
+
+  // Extension Section
+  public creatorName: string;
+  public creatorUsername: string;
+  public creatorAvatar: string;
+  public reviewerName: string;
+  public reviewerUsername: string;
+  public reviewerAvatar: string;
+  public email: string;
+  public intro: string;
+  public role: string;
 
   public static readonly TYPE = {
     RainRoomAds: 0,
