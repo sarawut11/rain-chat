@@ -420,13 +420,13 @@ class Ads extends Component {
           actions={actions}
         >
           <Row justify="end">
-            {status === ADS_APPROVED && <Tag color="#87d068">approved</Tag>}
-            {status === ADS_PENDING && <Tag color="#2db7f5">pending</Tag>}
-            {status === ADS_CREATED && <Tag color="geekblue">created</Tag>}
-            {status === ADS_REJECTED && <Tag color="#f50">rejected</Tag>}
-            {status === ADS_PAID && <Tag color="#87d068">purchased</Tag>}
-            {status === ADS_PENDING_PURCHASE && <Tag color="#2db7f5">awaiting deposit</Tag>}
-            {status === ADS_PENDING_CONFIRM && <Tag color="#2db7f5">pending deposit</Tag>}
+            {status === ADS_APPROVED && <Tag color="blue">approved</Tag>}
+            {status === ADS_PENDING && <Tag color="magenta">pending</Tag>}
+            {status === ADS_CREATED && <Tag color="gold">created</Tag>}
+            {status === ADS_REJECTED && <Tag color="red">rejected</Tag>}
+            {status === ADS_PAID && <Tag color="#44c97d">purchased</Tag>}
+            {status === ADS_PENDING_PURCHASE && <Tag color="orange">awaiting deposit</Tag>}
+            {status === ADS_PENDING_CONFIRM && <Tag color="pink">pending deposit</Tag>}
           </Row>
           {item.creatorUsername && (
             <Row justify="end">
@@ -525,7 +525,7 @@ class Ads extends Component {
 
     switch (text) {
       case 'Created':
-        color = 'pink';
+        color = 'gold';
         break;
       case 'Rejected':
         color = 'red';
