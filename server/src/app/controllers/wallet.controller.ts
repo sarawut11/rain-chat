@@ -1,8 +1,9 @@
 import { rpcInterface } from "../utils/wallet/RpcInterface";
 import { ServicesContext } from "../context";
 import { User, Transaction } from "../models";
+import configs from "@configs";
 
-export const getCompanyWallet = async (ctx, next) => {
+export const getCompanyRainAddress = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
     const { userService } = ServicesContext.getInstance();
@@ -18,7 +19,7 @@ export const getCompanyWallet = async (ctx, next) => {
 
     ctx.body = {
       success: true,
-      walletAddress: "testing company wallet"
+      walletAddress: configs.companyRainAddress
     };
   } catch (error) {
     console.error(error.message);

@@ -54,7 +54,7 @@ const api = new Router()
   .get("/admin/financial", APIController.getFinancialAnalytics)
 
   // Wallet
-  .get("/wallet/company-address", APIController.getCompanyWallet)
+  .get("/wallet/company-rain-address", APIController.getCompanyRainAddress)
   .post("/wallet/withdraw", APIController.walletWithdraw)
   .post("/walletnotify", APIController.walletNotify);
 

@@ -735,8 +735,8 @@
   }
   ```
 ## 1.8 Wallet
-### /wallet/company-address (GET)
-  Get company wallet address
+### /wallet/company-rain-address (GET)
+  Get company rain address
 
   ***Response***
   ```
