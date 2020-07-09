@@ -43,6 +43,22 @@ ul {
   border-color: #44c97d;
 }
 
+.ant-steps-item-custom.ant-steps-item-process .ant-steps-item-icon > .ant-steps-icon {
+  color: #44c97d;
+}
+
+.ant-steps-item-finish .ant-steps-item-icon > .ant-steps-icon {
+  color: #44c97d;
+}
+
+.ant-steps-navigation .ant-steps-item::before {
+  background-color: #44c97d;
+}
+
+.ant-input.error-input {
+  border-color: red;
+}
+
 @media screen and (max-width: 647px) {
   .layout-wrapper {
     min-width: 100%;
