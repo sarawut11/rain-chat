@@ -10,6 +10,7 @@ import { enableVitaePostReducer } from './reducers/enableVitaePost';
 import { staticAdsReducer } from './reducers/staticAdsReducer';
 import { bShowAdsReducer } from './reducers/bShowAdsReducer';
 import { userReducer } from './reducers/userReducer';
+import { sendVitaeToRainReducer } from './reducers/sendVitaeToRainReducer';
 import { fetchAllGroupChatsReducer } from '../containers/GroupChatPage/groupChatReducer';
 import { fetchAllPrivateChatsReducer } from '../containers/PrivateChatPage/privateChatReducer';
 import { setGlobalSettingsReducer } from '../containers/SettingPage/settingReducer';
@@ -30,4 +31,5 @@ export default combineReducers({
   staticAdsState: staticAdsReducer,
   bShowAds: bShowAdsReducer,
   user: userReducer,
+  vitaeToRain: sendVitaeToRainReducer,
 });
