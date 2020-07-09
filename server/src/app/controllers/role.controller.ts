@@ -73,7 +73,8 @@ export const upgradeMembership = async (ctx, next) => {
     await confirmMembership(userInfo.userId, expectAmount, moment().utc().unix());
     ctx.body = {
       success: true,
-      message: "Your membership request is in pending."
+      message: "Your membership request is in pending.",
+      expireTime: configs.transactionTimeout
     };
   } catch (error) {
     console.log(error.message);

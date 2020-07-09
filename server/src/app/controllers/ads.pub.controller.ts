@@ -2,7 +2,7 @@ import * as mime from "mime-types";
 import * as moment from "moment";
 import * as aws from "../utils/aws";
 import { ParameterizedContext } from "koa";
-import { ServicesContext, CMCContext, RainContext } from "../context";
+import { ServicesContext, CMCContext, RainContext, TransactionContext } from "../context";
 import { Ads, User, Transaction, InnerTransaction } from "../models";
 import configs from "@configs";
 import { socketServer } from "../socket/app.socket";
@@ -312,7 +312,7 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
       impressions,
       costPerImp,
     };
-    await transactionService.createTransactionRequest(existingAds.userId, Transaction.TYPE.ADS, expectAmount, JSON.stringify(adsTransactionDetails));
+    const transInfo = await transactionService.createTransactionRequest(existingAds.userId, Transaction.TYPE.ADS, expectAmount, JSON.stringify(adsTransactionDetails));
 
     // Expire ads after 5 mins when it is still in pending purchase
     setTimeout(async () => {
@@ -321,7 +321,8 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
         await adsService.updateStatus(adsId, Ads.STATUS.Approved);
         await socketServer.updateAdsStatus(adsId);
       }
-    }, 1000 * 60 * 5); // 5 mins
+      TransactionContext.getInstance().expireTransactionRequest(transInfo.insertId);
+    }, configs.transactionTimeout); // 5 mins
 
     // Test -> Share revenue at this point | Move to wallet controller later
     await confirmAds(adsId, expectAmount, existingAds.type);
@@ -332,7 +333,8 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
     ctx.body = {
       success: true,
       message: "Successfully requested.",
-      ads: updatedAds
+      ads: updatedAds,
+      expireTime: configs.transactionTimeout,
     };
   } catch (error) {
     console.error(error.message);

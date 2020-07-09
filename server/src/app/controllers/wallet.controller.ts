@@ -67,8 +67,9 @@ export const walletWithdraw = async (ctx, next) => {
     // }
 
     // Withraw amount from wallet
-    await transactionService.createTransactionRequest(userInfo.id, Transaction.TYPE.WITHDRAW, amount);
+    // At withdraw api response => if success, write tx info to innerTransaction table
     // ...
+
     ctx.body = {
       success: true,
       message: "Pending"
