@@ -161,11 +161,24 @@ CREATE TABLE `inner_transaction_info` (
   `time` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+# Dump of table contact_ban_info
+# ------------------------------------------------------------
 DROP TABLE IF EXISTS `contact_ban_info`;
 CREATE TABLE `contact_ban_info` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `userId` int(11) NOT NULL,
   `blockerId` varchar(200) NOT NULL DEFAULT '',
+  `type` tinyint(1) NOT NULL DEFAULT 0,
+  `time` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+# Dump of table otp_info
+# ------------------------------------------------------------
+DROP TABLE IF EXISTS `otp_info`;
+CREATE TABLE `otp_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userId` int(11) NOT NULL,
+  `code` varchar(6) NOT NULL DEFAULT '',
   `type` tinyint(1) NOT NULL DEFAULT 0,
   `time` int(11) NOT NULL,
   PRIMARY KEY (`id`)

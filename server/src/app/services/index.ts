@@ -9,3 +9,4 @@ export * from "./ban.service";
 export * from "./ads.service";
 export * from "./transaction.service";
 export * from "./transaction.inner.service";
+export * from "./otp.service";
