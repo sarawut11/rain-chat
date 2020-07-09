@@ -55,6 +55,10 @@ ul {
   background-color: #44c97d;
 }
 
+.ant-input.error-input {
+  border-color: red;
+}
+
 @media screen and (max-width: 647px) {
   .layout-wrapper {
     min-width: 100%;

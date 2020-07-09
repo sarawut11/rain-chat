@@ -39,6 +39,9 @@ class Withdraw extends Component {
     walletAddress: null,
     currentStep: 0,
     sendCodeLoading: false,
+    codeValid: true,
+    addressValid: true,
+    amountValid: true,
   };
 
   sendOtpCode = async () => {
@@ -53,6 +56,7 @@ class Withdraw extends Component {
         notification.error({
           message: res.message,
         });
+        this.setState({ visible: true });
       }
     } catch (error) {
       console.log(error);
@@ -66,6 +70,13 @@ class Withdraw extends Component {
 
   verifyOtpCode = async () => {
     const { verificationCode } = this.state;
+
+    if (verificationCode === null || verificationCode.length !== 6) {
+      this.setState({ codeValid: false });
+      return;
+    }
+
+    this.setState({ codeValid: true });
 
     try {
       const res = await Request.axios('post', `/api/v1/user/otp/verify`, {
@@ -81,6 +92,8 @@ class Withdraw extends Component {
         notification.error({
           message: 'Code is not valid',
         });
+        this.setState({ codeValid: false });
+        this.setState({ currentStep: 1 });
       }
     } catch (error) {
       console.log(error);
@@ -120,6 +133,9 @@ class Withdraw extends Component {
       amount: 0,
       verificationCode: null,
       walletAddress: null,
+      codeValid: true,
+      addressValid: true,
+      amountValid: true,
     });
     this.sendOtpCode();
   };
@@ -131,10 +147,17 @@ class Withdraw extends Component {
     if (currentStep === 0) {
       await this.verifyOtpCode();
     } else if (currentStep === 1) {
+      this.setState({ addressValid: true, amountValid: true });
       if (amount === 0 || walletAddress === null || walletAddress === '') {
         notification.error({
           message: 'Input correct address and amount.',
         });
+        if (amount === 0) {
+          this.setState({ amountValid: false });
+        }
+        if (walletAddress === null || walletAddress === '') {
+          this.setState({ addressValid: false });
+        }
       } else {
         confirm({
           title: `You withdraw ${amount}vitae to ${walletAddress}.`,
@@ -168,14 +191,14 @@ class Withdraw extends Component {
     });
   };
 
-  _handleAmountChange = value => {
+  handleAmountChange = value => {
     this.setState({
       amount: value,
     });
   };
 
   renderOtpStep = () => {
-    const { verificationCode } = this.state;
+    const { verificationCode, codeValid } = this.state;
     return (
       <div className="withdraw-step-content">
         <Row gutter={[20, 20]} justify="space-around">
@@ -189,6 +212,8 @@ class Withdraw extends Component {
               style={{ width: 200, margin: 'auto', display: 'block' }}
               onChange={this._handleInputChange}
               maxLength={6}
+              placeholder="Verification Code"
+              className={codeValid ? '' : 'error-input'}
             />
           </Col>
         </Row>
@@ -197,7 +222,8 @@ class Withdraw extends Component {
   };
 
   renderWithdrawStep = () => {
-    const { walletAddress, amount } = this.state;
+    const { walletAddress, amount, addressValid, amountValid } = this.state;
+
     return (
       <div className="withdraw-step-content">
         <Row gutter={[20, 20]}>
@@ -207,19 +233,29 @@ class Withdraw extends Component {
 
           <Col span={24}>
             <Form labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
-              <Form.Item label="Address">
+              <Form.Item
+                label="Address"
+                validateStatus={addressValid ? '' : 'error'}
+                help={addressValid ? '' : 'Input valid address'}
+              >
                 <Input
                   name="walletAddress"
                   value={walletAddress}
                   onChange={this._handleInputChange}
+                  placeholder="Wallet address"
                 />
               </Form.Item>
 
-              <Form.Item label="Amount">
+              <Form.Item
+                label="Amount"
+                validateStatus={amountValid ? '' : 'error'}
+                help={amountValid ? '' : 'Input valid amount'}
+              >
                 <InputNumber
                   style={{ width: '100%' }}
                   value={amount}
                   onChange={this.handleAmountChange}
+                  placeholder="Withdraw amount"
                 />
               </Form.Item>
             </Form>
