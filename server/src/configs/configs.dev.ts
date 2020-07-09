@@ -38,6 +38,7 @@ export default {
   },
   companyUserId: 0,
   companyUsername: "COMPANY",
+  companyRainAddress: "CompanyRainAddress",
   company_revenue: {
     company_expenses: 0.2,
     owner_share: 0.3,

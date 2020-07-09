@@ -743,7 +743,7 @@
   {
     success: true/false,
     message: "Success or Failed Message",
-    walletAddress: // company wallet address
+    rainAddress: // company rain address
   }
   ```
 ### /wallet/withdraw (POST)

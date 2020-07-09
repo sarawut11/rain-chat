@@ -19,7 +19,7 @@ export const getCompanyRainAddress = async (ctx, next) => {
 
     ctx.body = {
       success: true,
-      walletAddress: configs.companyRainAddress
+      rainAddress: configs.companyRainAddress
     };
   } catch (error) {
     console.error(error.message);
