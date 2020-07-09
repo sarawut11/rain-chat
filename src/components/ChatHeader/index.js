@@ -38,11 +38,6 @@ class ChatHeader extends Component {
           {title}
         </div>
         {groupId && groupId === 'vitae-rain-group' ? (
-          // <Tooltip title="Send Vitae to Rain" color="green" key="send-vitae-btn">
-          //   <Button type="primary">
-          //     <SendOutlined />
-          //   </Button>
-          // </Tooltip>
           <VitaeToRain />
         ) : (
           showShareIcon && (

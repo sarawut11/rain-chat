@@ -139,7 +139,6 @@ class VitaeToRain extends Component {
   };
 
   render() {
-    console.log('\n\n--------     VitaeRainDlg     ----------\n\n', this);
     const { visible, loadingModal, amount, amountValid } = this.state;
     const { vitaeToRainMode, walletAddress } = this.props.vitaeToRainInfo;
     const { balance } = this.props.userInfo;
