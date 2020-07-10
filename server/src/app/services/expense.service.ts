@@ -13,6 +13,8 @@ export class ExpenseService {
     rejectCount: "rejectCount",
     requestTime: "requestTime",
     confirmTime: "confirmTime",
+    confirmer: "confirmer",
+    rejector: "rejector",
     status: "status",
   };
 
@@ -22,9 +24,10 @@ export class ExpenseService {
         ${this.COL.userId},
         ${this.COL.docPath},
         ${this.COL.amount},
+        ${this.COL.confirmer},
         ${this.COL.requestTime}
       ) VALUES (?,?,?,?);`;
-    const result = await query(sql, [userId, docPath, amount, moment().utc().unix()]);
+    const result = await query(sql, [userId, docPath, amount, userId, moment().utc().unix()]);
     return result;
   }
 
@@ -47,23 +50,39 @@ export class ExpenseService {
     return expenses;
   }
 
-  async updateConfirmCount(expId: number): Promise<DefaultModel> {
+  async updateConfirmCount(expId: number, userId: number): Promise<DefaultModel> {
+    const existingExpense = await this.getExpenseById(expId);
+    const confirmerIds = existingExpense.confirmer.split(",");
+    // Already confirmed
+    if (confirmerIds.includes(userId.toString())) return undefined;
+
+    confirmerIds.push(userId.toString());
+    const newConfirmer = confirmerIds.join(",");
     const sql = `
       UPDATE ${this.TABLE_NAME}
       SET
-        ${this.COL.confirmCount} = ${this.COL.confirmCount} + 1
+        ${this.COL.confirmCount} = ?,
+        ${this.COL.confirmer} = ?
       WHERE ${this.COL.id} = ?;`;
-    const result = await query(sql, expId);
+    const result = await query(sql, [confirmerIds.length, newConfirmer, expId]);
     return result;
   }
 
-  async updateRejectCount(expId: number): Promise<DefaultModel> {
+  async updateRejectCount(expId: number, userId: number): Promise<DefaultModel> {
+    const existingExpense = await this.getExpenseById(expId);
+    const rejectorIds = existingExpense.rejector.split(",");
+    // Already rejected
+    if (rejectorIds.includes(userId.toString())) return undefined;
+
+    rejectorIds.push(userId.toString());
+    const newRejector = rejectorIds.join(",");
     const sql = `
       UPDATE ${this.TABLE_NAME}
       SET
-        ${this.COL.rejectCount} = ${this.COL.rejectCount} + 1
+        ${this.COL.rejectCount} = ?,
+        ${this.COL.rejector} = ?
       WHERE ${this.COL.id} = ?;`;
-    const result = await query(sql, expId);
+    const result = await query(sql, [rejectorIds.length, newRejector, expId]);
     return result;
   }
 }

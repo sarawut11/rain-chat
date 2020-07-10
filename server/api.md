@@ -791,9 +791,10 @@
     amount,
     confirmCount,
     rejectCount,
+    confirmer,      // Confirmers' userId array with comma, e.g 1,2,3,4
+    rejector,       // Rejectors' userId array
     requestTime,
     confirmTime,
-    status,         // 0: Created, 1: Requested, 2: Reject, 3: Confirmed
   }
   ```
 ### /expense/get-all (GET)
@@ -804,6 +805,7 @@
   {
     success: true/false,
     message,
+    ownerCount,
     expenses: []
   }
   ```
@@ -821,6 +823,38 @@
     success: true/false,
     message: "Success or Failed Message",
     expenseInfo: {   
+    }
+  }
+  ```
+### /expense/confirm (POST)
+  Confirm expense
+
+  ***Request Body (Form-Data)***
+  | Fields    | Description           |
+  | --------- | --------------------- |
+  | expenseId | Expense id to confirm |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    expenseInfo: {
+    }
+  }
+  ```
+### /expense/reject (POST)
+  Reject expense
+
+  ***Request Body (Form-Data)***
+  | Fields    | Description          |
+  | --------- | -------------------- |
+  | expenseId | Expense id to reject |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    expenseInfo: {
     }
   }
   ```

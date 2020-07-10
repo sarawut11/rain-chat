@@ -13,7 +13,7 @@ export const getModsAnalytics = async (ctx, next) => {
       return;
     }
 
-    const moders: User[] = await userService.getModers();
+    const moders: User[] = await userService.findUsersByRole(User.ROLE.MODERATOR);
     const modersCount = moders.length;
     const onlineModersCount = moders.filter(moder => moder.socketid !== "").length;
 

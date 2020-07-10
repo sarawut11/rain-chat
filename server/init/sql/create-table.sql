@@ -191,10 +191,12 @@ CREATE TABLE `expense_info` (
   `userId` int(11) NOT NULL,
   `docPath` varchar(200) NOT NULL DEFAULT '',
   `amount` double NOT NULL DEFAULT 0,
-  `confirmCount` int(11) NOT NULL DEFAULT 0,
+  `confirmCount` int(11) NOT NULL DEFAULT 1,
   `rejectCount` int(11) NOT NULL DEFAULT 0,
   `requestTime` int(11) NOT NULL DEFAULT 0,
   `confirmTime` int(11) NOT NULL DEFAULT 0,
+  `confirmer` varchar(200) NOT NULL DEFAULT '',
+  `rejector` varchar(200) NOT NULL DEFAULT '',
   `status` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;

@@ -6,6 +6,8 @@ export class Expense {
   public confirmCount: number;
   public requestTime: number;
   public confirmTime: number;
+  public confirmer: string;
+  public rejector: string;
   public status: number;
 
   public static readonly STATUS = {
