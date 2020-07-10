@@ -807,7 +807,7 @@
     expenses: []
   }
   ```
-### /expense/request (POST)
+### /expense/create (POST)
   Create new expense request
 
   ***Request Body (Form-Data)***

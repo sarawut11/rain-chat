@@ -46,7 +46,7 @@ const api = new Router()
 
   // Expense
   .get("/expense/get-all", APIController.getAllExpenses)
-  .post("/expense/request", APIController.createExpenseRequest)
+  .post("/expense/create", APIController.createExpenseRequest)
 
   // Admin Dashboard
   .get("/admin/home", APIController.getHomeAnalytics)
