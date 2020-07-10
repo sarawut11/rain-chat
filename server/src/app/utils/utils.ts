@@ -8,7 +8,11 @@ export const isVitaePostEnabled = (user: User): boolean => {
   return enabled;
 };
 
-export const isOwner = (username): Promise<any> => new Promise(async (resolve, reject) => {
+export const isOwner = (username): Promise<{
+  success: boolean,
+  message?: string,
+  userInfo?: User
+}> => new Promise(async (resolve, reject) => {
   const { userService } = ServicesContext.getInstance();
   const userInfo: User = await userService.getUserInfoByUsername(username);
   if (userInfo === undefined) {
@@ -32,7 +36,11 @@ export const isOwner = (username): Promise<any> => new Promise(async (resolve, r
 });
 
 
-export const checkUserInfo = (username, role?): Promise<any> => new Promise(async (resolve, reject) => {
+export const checkUserInfo = (username, role?): Promise<{
+  success: boolean,
+  message?: string,
+  userInfo?: User
+}> => new Promise(async (resolve, reject) => {
   const { userService } = ServicesContext.getInstance();
   const userInfo: User = await userService.getUserInfoByUsername(username);
   if (userInfo === undefined) {
