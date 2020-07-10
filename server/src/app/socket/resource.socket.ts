@@ -28,4 +28,8 @@ export const socketEventNames = {
   EnableVitaePost: "enableVitaePost",
 
   TransactionExpired: "transactionExpired",
+
+  ExpenseCreated: "expenseCreated",
+  ExpenseConfirmed: "expenseConfirmed",
+  ExpenseRejected: "expenseRejected",
 };

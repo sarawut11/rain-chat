@@ -237,6 +237,18 @@ class InitApp {
     });
   }
 
+  _listenExpense() {
+    window.socket.on('expenseCreated', ({ creatorUsername, amount }) => {
+      console.log(`${creatorUsername} created financial expense request of ${amount} vitae.`);
+    });
+    window.socket.on('expenseConfirmed', ({ creatorUsername, confirmerUsername }) => {
+      console.log(`${confirmerUsername} confirmed ${creatorUsername}'s financial expense request.`);
+    });
+    window.socket.on('expenseRejected', ({ creatorUsername, rejectorUsername }) => {
+      console.log(`${rejectorUsername} rejected ${creatorUsername}'s financial expense request.`);
+    });
+  }
+
   subscribeSocket() {
     window.socket.removeAllListeners();
     this._listeningInitMessage();
@@ -244,6 +256,8 @@ class InitApp {
     this._listeningGroupChatMsg();
     this._listeningBeDelete();
     this._listeningRain();
+    this._listeningTransaction();
+    this._listenExpense();
     console.log('subscribeSocket success. ', 'time=>', new Date().toLocaleString());
   }
 

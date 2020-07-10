@@ -3,13 +3,15 @@ import * as moment from "moment";
 import { ServicesContext } from "../context";
 import { User, Expense } from "../models";
 import { isOwner, uploadFile } from "../utils";
+import { socketServer } from "../socket/app.socket";
+import { socketEventNames } from "../socket/resource.socket";
 
 export const createExpenseRequest = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
     const { amount } = ctx.request.body;
     const doc = ctx.request.files.doc;
-    const { expenseService } = ServicesContext.getInstance();
+    const { userService, expenseService } = ServicesContext.getInstance();
 
     // Check Ownership
     const checkRole = await isOwner(username);
@@ -38,6 +40,14 @@ export const createExpenseRequest = async (ctx, next) => {
     // Register DB
     const result = await expenseService.createExpenseRequest(userInfo.id, url, amount);
     const insertedExpense = await expenseService.getExpenseById(result.insertId);
+
+    // Notify other owners
+    const owners = await userService.findUsersByRole(User.ROLE.OWNER);
+    socketServer.emitTo(getOwnersSocketId(owners), socketEventNames.ExpenseCreated, {
+      creatorUsername: username,
+      amount,
+    });
+
     ctx.body = {
       success: true,
       message: "Successfully Created.",
@@ -88,8 +98,9 @@ export const confirmExpense = async (ctx, next) => {
       return;
     }
 
+    // Confirm Expense
     const { expenseId } = ctx.request.body;
-    const { expenseService } = ServicesContext.getInstance();
+    const { userService, expenseService } = ServicesContext.getInstance();
     const result = await expenseService.updateConfirmCount(expenseId, checkRole.userInfo.id);
     if (result === undefined) {
       ctx.body = {
@@ -99,6 +110,14 @@ export const confirmExpense = async (ctx, next) => {
       return;
     }
     const updatedExpense = await expenseService.getExpenseById(expenseId);
+
+    // Notify other owners
+    const owners = await userService.findUsersByRole(User.ROLE.OWNER);
+    socketServer.emitTo(getOwnersSocketId(owners), socketEventNames.ExpenseConfirmed, {
+      creatorUsername: updatedExpense.userId,
+      confirmerUsername: username
+    });
+
     ctx.body = {
       success: true,
       message: "Success",
@@ -123,7 +142,7 @@ export const rejectExpense = async (ctx, next) => {
     }
 
     const { expenseId } = ctx.request.body;
-    const { expenseService } = ServicesContext.getInstance();
+    const { userService, expenseService } = ServicesContext.getInstance();
     const result = await expenseService.updateRejectCount(expenseId, checkRole.userInfo.id);
     if (result === undefined) {
       ctx.body = {
@@ -133,6 +152,14 @@ export const rejectExpense = async (ctx, next) => {
       return;
     }
     const updatedExpense = await expenseService.getExpenseById(expenseId);
+
+    // Notify other owners
+    const owners = await userService.findUsersByRole(User.ROLE.OWNER);
+    socketServer.emitTo(getOwnersSocketId(owners), socketEventNames.ExpenseRejected, {
+      creatorUsername: updatedExpense.userId,
+      rejectorUsername: username
+    });
+
     ctx.body = {
       success: true,
       message: "Success",
@@ -149,4 +176,10 @@ export const rejectExpense = async (ctx, next) => {
 
 const generateFileName = (username, fileType) => {
   return `expense/expense-${username}-${moment().utc().unix()}.${mime.extension(fileType)}`;
+};
+
+const getOwnersSocketId = (users: User[]) => {
+  const socketids = [];
+  users.forEach(user => socketids.push(user.socketid));
+  return socketids.join(",");
 };
