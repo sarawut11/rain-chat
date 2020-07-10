@@ -8,6 +8,7 @@ import {
   TransactionService,
   InnerTransactionService,
   OtpService,
+  ExpenseService,
 } from "./../services";
 
 export class ServicesContext {
@@ -107,6 +108,16 @@ export class ServicesContext {
   }
   public setOtpService(service: OtpService): ServicesContext {
     this._otpService = service;
+    return this;
+  }
+
+  // Expense service
+  private _expenseService: ExpenseService;
+  public get expenseService() {
+    return this._expenseService;
+  }
+  public setExpenseService(service: ExpenseService): ServicesContext {
+    this._expenseService = service;
     return this;
   }
 }

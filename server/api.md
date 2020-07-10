@@ -781,6 +781,49 @@
     }
   }
   ```
+## 1.10 Expense
+### Expense Model Info
+  ```
+  {
+    id,
+    userId,
+    docPath,
+    amount,
+    confirmCount,
+    rejectCount,
+    requestTime,
+    confirmTime,
+    status,         // 0: Created, 1: Requested, 2: Reject, 3: Confirmed
+  }
+  ```
+### /expense/get-all (GET)
+  Get all expenses
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message,
+    expenses: []
+  }
+  ```
+### /expense/create (POST)
+  Create new expense request
+
+  ***Request Body (Form-Data)***
+  | Fields | Description                   |
+  | ------ | ----------------------------- |
+  | doc    | Description for Expense usage |
+  | amount | Expense amount                |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    expenseInfo: {   
+    }
+  }
+  ```
 # 2. Socket Events
 > Note
 > - Client : Frontend (Client) -> Backend (Server)

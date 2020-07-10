@@ -1,12 +1,11 @@
 import * as mime from "mime-types";
 import * as moment from "moment";
-import * as aws from "../utils/aws";
 import { ParameterizedContext } from "koa";
 import { ServicesContext, CMCContext, RainContext, TransactionContext } from "../context";
 import { Ads, User, Transaction, InnerTransaction } from "../models";
 import configs from "@configs";
 import { socketServer } from "../socket/app.socket";
-import { shareRevenue } from "../utils/utils";
+import { shareRevenue, uploadFile, deleteFile } from "../utils";
 
 export const registerAds = async (ctx, next) => {
   try {
@@ -35,7 +34,7 @@ export const registerAds = async (ctx, next) => {
 
     // Upload Asset
     const fileName = generateFileName(username, asset.type);
-    const { url } = await aws.uploadFile({
+    const { url } = await uploadFile({
       fileName,
       filePath: asset.path,
       fileType: asset.type,
@@ -143,8 +142,8 @@ export const updateAds = async (ctx, next) => {
     // Delete existing asset and upload new asset
     let assetLink: string;
     if (asset !== undefined) {
-      await aws.deleteFile(existingAds.assetLink);
-      const { url } = await aws.uploadFile({
+      await deleteFile(existingAds.assetLink);
+      const { url } = await uploadFile({
         fileName: generateFileName(username, asset.type),
         filePath: asset.path,
         fileType: asset.type,
@@ -190,7 +189,7 @@ export const deleteAds = async (ctx, next) => {
     }
 
     const { existingAds } = checkResult;
-    await aws.deleteFile(existingAds.assetLink);
+    await deleteFile(existingAds.assetLink);
     await adsService.deleteAds(adsId);
     ctx.body = {
       success: true,

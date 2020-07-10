@@ -7,3 +7,4 @@ export * from "./group.model";
 export * from "./transaction.model";
 export * from "./transaction.inner.model";
 export * from "./otp.model";
+export * from "./expense.model";

@@ -180,7 +180,22 @@ CREATE TABLE `otp_info` (
   `userId` int(11) NOT NULL,
   `code` varchar(6) NOT NULL DEFAULT '',
   `type` tinyint(1) NOT NULL DEFAULT 0,
-  `time` int(11) NOT NULL,
+  `time` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+# Dump of table expense_info
+# ------------------------------------------------------------
+DROP TABLE IF EXISTS `expense_info`;
+CREATE TABLE `expense_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userId` int(11) NOT NULL,
+  `docPath` varchar(200) NOT NULL DEFAULT '',
+  `amount` double NOT NULL DEFAULT 0,
+  `confirmCount` int(11) NOT NULL DEFAULT 0,
+  `rejectCount` int(11) NOT NULL DEFAULT 0,
+  `requestTime` int(11) NOT NULL DEFAULT 0,
+  `confirmTime` int(11) NOT NULL DEFAULT 0,
+  `status` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;

@@ -13,3 +13,4 @@ export * from "./ads.mod.controller";
 export * from "./wallet.controller";
 export * from "./role.controller";
 export * from "./rain.controller";
+export * from "./expense.controller";

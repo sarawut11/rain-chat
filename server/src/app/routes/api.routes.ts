@@ -44,6 +44,10 @@ const api = new Router()
   .post("/membership/role/update/moderator", APIController.setModerator)
   .post("/membership/role/upgrade/request", APIController.upgradeMembership)
 
+  // Expense
+  .get("/expense/get-all", APIController.getAllExpenses)
+  .post("/expense/create", APIController.createExpenseRequest)
+
   // Admin Dashboard
   .get("/admin/home", APIController.getHomeAnalytics)
   .get("/admin/ads", APIController.getAdsAnalytics)

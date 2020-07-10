@@ -16,7 +16,8 @@ import {
   AdsService,
   TransactionService,
   InnerTransactionService,
-  OtpService
+  OtpService,
+  ExpenseService
 } from "./services";
 
 const corsArgs = configs.production ? { origin: "https://production_link" } : {};
@@ -45,6 +46,7 @@ export const App = Server.init(app => {
       .setGroupChatService(new GroupChatService())
       .setAdsService(new AdsService())
       .setOtpService(new OtpService())
+      .setExpenseService(new ExpenseService())
       .setTransactionService(new TransactionService())
       .setInnerTransactionService(new InnerTransactionService());
     RainContext.getInstance();
