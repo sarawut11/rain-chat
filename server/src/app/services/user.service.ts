@@ -178,6 +178,11 @@ export class UserService {
     return users;
   }
 
+  async getUserCountByRole(role: string): Promise<number> {
+    const users: User[] = await this.findUsersByRole(role);
+    return users.length;
+  }
+
   updateRole(username, role) {
     const sql = "UPDATE user_info SET role = ? WHERE username = ? limit 1 ; ";
     return query(sql, [role, username]);
@@ -212,12 +217,6 @@ export class UserService {
         ${this.USER_COL.role} = ? OR
         ${this.USER_COL.role} = ?;`;
     return query(sql, [User.ROLE.FREE, User.ROLE.UPGRADED_USER]);
-  }
-
-  async getModers(): Promise<User[]> {
-    const sql = `SELECT * FROM ${this.USER_TABLE} WHERE ${this.USER_COL.role} = ?;`;
-    const users: User[] = await query(sql, User.ROLE.MODERATOR);
-    return users;
   }
 
   // Check if the user id is a friend of the local user by checking the user id. If yes, return userId and remark.
