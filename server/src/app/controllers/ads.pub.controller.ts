@@ -2,7 +2,7 @@ import * as mime from "mime-types";
 import * as moment from "moment";
 import { ParameterizedContext } from "koa";
 import { ServicesContext, CMCContext, RainContext, TransactionContext } from "../context";
-import { Ads, User, Transaction, InnerTransaction } from "../models";
+import { Ads, User, Transaction, InnerTransaction, TransactionDetail } from "../models";
 import configs from "@configs";
 import { socketServer } from "../socket/app.socket";
 import { shareRevenue, uploadFile, deleteFile } from "../utils";
@@ -306,13 +306,20 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
       return;
     }
 
-    const adsTransactionDetails = {
+    const adsTransactionDetails = new TransactionDetail({
       adsId,
       impressions,
       costPerImp,
       adsType: existingAds.type
-    };
-    const transInfo = await transactionService.createTransactionRequest(existingAds.userId, Transaction.TYPE.ADS, expectAmount, JSON.stringify(adsTransactionDetails));
+    });
+    const transInfo = await transactionService.createTransactionRequest(existingAds.userId, Transaction.TYPE.ADS, expectAmount, adsTransactionDetails);
+    if (transInfo === undefined) {
+      ctx.body = {
+        success: false,
+        message: "You still have incompleted transaction requests."
+      };
+      return;
+    }
 
     // Expire ads after 5 mins when it is still in pending purchase
     setTimeout(async () => {

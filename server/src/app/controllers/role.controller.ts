@@ -68,7 +68,14 @@ export const upgradeMembership = async (ctx, next) => {
       };
     }
 
-    await transactionService.createTransactionRequest(userInfo.userId, Transaction.TYPE.MEMBERSHIP, expectAmount);
+    const transInfo = await transactionService.createTransactionRequest(userInfo.userId, Transaction.TYPE.MEMBERSHIP, expectAmount);
+    if (transInfo === undefined) {
+      ctx.body = {
+        success: false,
+        message: "You still have incompleted transaction requests."
+      };
+      return;
+    }
 
     ctx.body = {
       success: true,
