@@ -1,7 +1,6 @@
 import { query } from "../utils/db";
 import * as moment from "moment";
-import * as uniqid from "uniqid";
-import { Transaction, DefaultModel } from "../models";
+import { Transaction, DefaultModel, TransactionDetail } from "../models";
 import { TransactionContext } from "../context";
 import configs from "@configs";
 
@@ -21,9 +20,13 @@ export class TransactionService {
     time: "time",
   };
 
-  async createTransactionRequest(userId: number, type: number, expectAmount: number, details?: string) {
-    // Decline create transaction request when the user has unfinished transaction(request and insufficient)
-    // to keep only one pending transaction at a time.
+  async createTransactionRequest(userId: number, type: number, expectAmount: number, details?: TransactionDetail): Promise<DefaultModel> {
+    // To keep only one pending transaction at a time.
+    const trans: Transaction = await this.getLastRequestedTransaction(userId);
+    if (trans !== undefined) {
+      console.log(`Register Transaction => Failed, User:${userId} still have pending or insufficient request.`);
+      return undefined;
+    }
     const sql = `
     INSERT INTO ${this.TABLE_NAME}(
       ${this.columns.userId},
@@ -33,7 +36,7 @@ export class TransactionService {
       ${this.columns.time},
       ${this.columns.details})
     values(?,?,?,?,?,?);`;
-    const result: DefaultModel = await query(sql, [userId, type, Transaction.STATUS.REQUESTED, expectAmount, moment().utc().unix(), details]);
+    const result: DefaultModel = await query(sql, [userId, type, Transaction.STATUS.REQUESTED, expectAmount, moment().utc().unix(), JSON.stringify(details)]);
 
     setTimeout(() => {
       TransactionContext.getInstance().expireTransactionRequest(result.insertId);
@@ -49,17 +52,6 @@ export class TransactionService {
       WHERE
         ${this.columns.id} = ?;`;
     return query(sql, [Transaction.STATUS.EXPIRED, tranId]);
-  }
-
-  getLastPendingTransaction(userId: number, type: number) {
-    const sql = `
-      SELECT * FROM ${this.TABLE_NAME}
-      WHERE
-        ${this.columns.userId} = ? AND
-        ${this.columns.type} = ? AND
-        ${this.columns.status} = ?
-      ORDER BY ${this.columns.time} DESC LIMIT 1;`;
-    return query(sql, [userId, type, Transaction.STATUS.REQUESTED]);
   }
 
   async getLastRequestedTransaction(userId: number): Promise<Transaction> {

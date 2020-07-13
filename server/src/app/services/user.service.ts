@@ -3,7 +3,7 @@ import { query } from "../utils/db";
 import { getInArraySQL } from "../utils/utils";
 import { isNullOrUndefined } from "util";
 import configs from "@configs";
-import { User, UserRelation } from "../models";
+import { User, UserRelation, DefaultModel } from "../models";
 
 export class UserService {
   readonly USER_TABLE = "user_info";
@@ -52,7 +52,7 @@ export class UserService {
   }
 
   // Register User
-  insertUser(value) {
+  async insertUser({ name, email, username, password, sponsorId, refcode, walletAddress }): Promise<DefaultModel> {
     const sql = `
       INSERT INTO ${this.USER_TABLE}(
         ${this.USER_COL.name},
@@ -63,7 +63,7 @@ export class UserService {
         ${this.USER_COL.refcode},
         ${this.USER_COL.walletAddress}
       ) values(?,?,?,?,?,?,?);`;
-    return query(sql, value);
+    return query(sql, [name, email, username, password, sponsorId, refcode, walletAddress]);
   }
 
   async findUserById(id: number): Promise<User> {

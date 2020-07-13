@@ -2,7 +2,7 @@ import * as moment from "moment";
 import configs from "@configs";
 import { rpcInterface } from "../utils/wallet/RpcInterface";
 import { ServicesContext, RainContext } from "../context";
-import { User, Transaction, InnerTransaction, Ads } from "../models";
+import { User, Transaction, InnerTransaction, Ads, TransactionDetail, WalletNotify } from "../models";
 import { shareRevenue } from "../utils";
 
 export const walletNotify = async (ctx, next) => {
@@ -22,7 +22,7 @@ export const walletNotify = async (ctx, next) => {
     const { txid } = ctx.request.body;
     const { userService, transactionService } = ServicesContext.getInstance();
 
-    const txInfo = await rpcInterface.getTransaction(txid);
+    const txInfo: WalletNotify = await rpcInterface.getTransaction(txid);
     console.log("Tx Info: ", txInfo);
 
     if (txInfo.confirmations > 0) {
@@ -55,8 +55,10 @@ export const walletNotify = async (ctx, next) => {
           if (tranInfo.type === Transaction.TYPE.MEMBERSHIP) {
             await confirmMembership(userInfo.userId, txInfo.amount, moment().utc().unix());
           } else if (tranInfo.type === Transaction.TYPE.ADS) {
-            const { adsId, impressions, costPerImp, adsType } = JSON.parse(tranInfo.details);
-            await confirmAds(adsId, txInfo.amount, adsType, impressions, costPerImp);
+            const details: TransactionDetail = JSON.parse(tranInfo.details);
+            await confirmAds(details.adsId, txInfo.amount, details.adsType, details.impressions, details.costPerImp);
+          } else if (tranInfo.type === Transaction.TYPE.VITAE_RAIN) {
+            await confirmSendVitaePurchase(txInfo.amount);
           }
         }
       }
@@ -78,7 +80,7 @@ export const walletWithdraw = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
     const { walletAddress, amount } = ctx.request.body;
-    const { userService, transactionService, innerTranService } = ServicesContext.getInstance();
+    const { userService, transactionService } = ServicesContext.getInstance();
 
     const userInfo: User = await userService.findUserByUsername(username);
     if (userInfo === undefined) {
@@ -126,7 +128,7 @@ export const walletWithdraw = async (ctx, next) => {
 
 
 const confirmMembership = async (userId, amount, confirmTime) => {
-  const { userService, transactionService } = ServicesContext.getInstance();
+  const { userService } = ServicesContext.getInstance();
 
   const userInfo = await userService.findUserById(userId);
 
@@ -178,7 +180,7 @@ const confirmMembership = async (userId, amount, confirmTime) => {
 
 
 const confirmAds = async (adsId: number, paidAmount: number, adsType: number, impressions: number, costPerImp: number) => {
-  const { adsService, transactionService } = ServicesContext.getInstance();
+  const { adsService } = ServicesContext.getInstance();
 
   // Update Ads Status
   const existingAds = await adsService.findAdsById(adsId);
@@ -187,10 +189,9 @@ const confirmAds = async (adsId: number, paidAmount: number, adsType: number, im
     return;
   }
 
-  // Update Transaction Table
+  // Set Ads Impressions
   const realCostPerImp = configs.ads.revenue.imp_revenue * costPerImp;
   await adsService.setImpressions(adsId, existingAds.userId, impressions, realCostPerImp, paidAmount);
-  await transactionService.confirmTransactionRequest(existingAds.userId, Transaction.TYPE.ADS, paidAmount, moment().utc().unix());
 
   // Revenue Share Model
   // ===== Company Share ===== //
@@ -220,4 +221,8 @@ const confirmAds = async (adsId: number, paidAmount: number, adsType: number, im
     const restShare = paidAmount - companyRevenue;
     RainContext.getInstance().rainUsersByLastActivity(restShare);
   }
+};
+
+const confirmSendVitaePurchase = async (amount) => {
+  RainContext.getInstance().rainUsersByLastActivity(amount);
 };

@@ -120,7 +120,13 @@ export const registerUser = async (ctx, next) => {
     }
     // Register DB
     const walletAddress = await rpcInterface.getNewAddress();
-    await userService.insertUser([name, email, username, md5(password), sponsorUser.id, uniqid(), walletAddress]);
+    await userService.insertUser({
+      name, email, username,
+      password: md5(password),
+      sponsorId: sponsorUser.id,
+      refcode: uniqid(),
+      walletAddress
+    });
     // Join Rain Group & Broadcast
     const userInfo: User = await userService.getUserInfoByUsername(username);
     await groupService.joinGroup(userInfo.userId, configs.rain.group_id);

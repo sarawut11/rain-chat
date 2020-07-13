@@ -139,7 +139,7 @@
     }
   }
   ```
-### /user/wallet-address (POST)
+### /user/withdraw-address/save (POST)
   Update wallet address
 
   ***Request Body ***
@@ -779,6 +779,21 @@
     message,
     userInfo: { // Updated user info, balance will be updated
     }
+  }
+  ```
+### /rain/send-vitae/purchase (POST)
+  Send vitae rain by purchasing vitae tokens
+
+  ***Request Body***
+  | Fields             | Description                       |
+  | ------------------ | --------------------------------- |
+  | companyRainAddress | company rain address              |
+  | amount             | Vitae amount to rain from balance |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message,
   }
   ```
 ## 1.10 Expense
