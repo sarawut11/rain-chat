@@ -310,6 +310,7 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
       adsId,
       impressions,
       costPerImp,
+      adsType: existingAds.type
     };
     const transInfo = await transactionService.createTransactionRequest(existingAds.userId, Transaction.TYPE.ADS, expectAmount, JSON.stringify(adsTransactionDetails));
 
@@ -322,11 +323,6 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
       }
       TransactionContext.getInstance().expireTransactionRequest(transInfo.insertId);
     }, configs.transactionTimeout); // 5 mins
-
-    // Test -> Share revenue at this point | Move to wallet controller later
-    await confirmAds(adsId, expectAmount, existingAds.type);
-    // Save transaction info
-    // =====================
 
     const updatedAds: Ads = await adsService.findAdsById(adsId);
     ctx.body = {
@@ -392,51 +388,6 @@ export const getStaticAds = async (ctx: ParameterizedContext, next) => {
       success: false,
       message: "Failed"
     };
-  }
-};
-
-const confirmAds = async (adsId: number, paidAmount: number, type: number) => {
-  const { adsService, transactionService } = ServicesContext.getInstance();
-
-  // Update Ads Status
-  const existingAds = await adsService.findAdsById(adsId);
-  const tran: Transaction[] = await transactionService.getLastPendingTransaction(existingAds.userId, Transaction.TYPE.ADS);
-  if (tran.length === 0)
-    return;
-
-  // Update Transaction Table
-  const adsDetails = JSON.parse(tran[0].details);
-  const realCostPerImp = configs.ads.revenue.imp_revenue * adsDetails.costPerImp;
-  await adsService.setImpressions(adsId, existingAds.userId, adsDetails.impressions, realCostPerImp, paidAmount);
-  await transactionService.confirmTransactionRequest(existingAds.userId, Transaction.TYPE.ADS, paidAmount, moment().utc().unix());
-
-  // Revenue Share Model
-  // ===== Company Share ===== //
-  // 25% | Company Revenue
-  // ---------------------------------
-  // 20% -----> Company Expenses
-  // 30% -----> Owner Share
-  // 25% -----> Moderator Share
-  // 25% -----> Membership Users Share
-  const companyRevenue = paidAmount * configs.ads.revenue.company_revenue;
-  const companyExpense = companyRevenue * configs.company_revenue.company_expenses;
-  const ownerShare = companyRevenue * configs.company_revenue.owner_share;
-  const moderatorShare = companyRevenue * configs.company_revenue.moderator_share;
-  const membersShare = companyRevenue * configs.company_revenue.membership_share;
-
-  await shareRevenue(companyExpense, User.ROLE.COMPANY, InnerTransaction.TYPE.ADS_PURCHASE_SHARE);
-  await shareRevenue(ownerShare, User.ROLE.OWNER, InnerTransaction.TYPE.ADS_PURCHASE_SHARE);
-  await shareRevenue(moderatorShare, User.ROLE.MODERATOR, InnerTransaction.TYPE.ADS_PURCHASE_SHARE);
-  await shareRevenue(membersShare, User.ROLE.UPGRADED_USER, InnerTransaction.TYPE.ADS_PURCHASE_SHARE);
-
-  // ===== Rain Rest ===== //
-  // 75% | Ads Operation
-  // ---------------------------------
-  // Rain Room Ads -> buy impressions
-  // Static Ads -> Rain Last 200 Users
-  if (type === Ads.TYPE.StaticAds) {
-    const restShare = paidAmount - companyRevenue;
-    RainContext.getInstance().rainUsersByLastActivity(restShare);
   }
 };
 

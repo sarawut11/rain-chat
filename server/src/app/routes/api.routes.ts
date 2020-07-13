@@ -12,7 +12,7 @@ const api = new Router()
   // Profile
   .get("/user/:username", APIController.getProfileInfo)
   .put("/user/:username", APIController.updateProfileInfo)
-  .post("/user/wallet-address", APIController.saveWalletAddress)
+  .post("/user/wallet-address", APIController.saveWalletAddress)  // Change api route to "save-address"
   .get("/user/otp/request", APIController.generateOTP)
   .post("/user/otp/verify", APIController.verifyOTP)
 
