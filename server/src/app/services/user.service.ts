@@ -60,8 +60,9 @@ export class UserService {
         ${this.USER_COL.username},
         ${this.USER_COL.password},
         ${this.USER_COL.sponsorId},
-        ${this.USER_COL.refcode}
-      ) values(?,?,?,?,?,?);`;
+        ${this.USER_COL.refcode},
+        ${this.USER_COL.walletAddress}
+      ) values(?,?,?,?,?,?,?);`;
     return query(sql, value);
   }
 
@@ -170,6 +171,14 @@ export class UserService {
       SET ${this.USER_COL.walletAddress} = ?
       WHERE ${this.USER_COL.username} = ? LIMIT 1;`;
     return query(sql, [walletAddress, username]);
+  }
+
+  async findUserByWalletAddress(walletAddress: string): Promise<User> {
+    const sql = `
+      SELECT * FROM ${this.USER_TABLE} WHERE ${this.USER_COL.walletAddress} = ? LIMIT 1;`;
+    const user: User[] = await query(sql, walletAddress);
+    if (user.length === 0) return undefined;
+    return user[0];
   }
 
   async findUsersByRole(role: string): Promise<User[]> {

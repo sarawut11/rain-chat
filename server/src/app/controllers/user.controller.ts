@@ -79,7 +79,8 @@ export const saveWalletAddress = async (ctx, next) => {
     const { walletAddress } = ctx.request.body;
     const { userService } = ServicesContext.getInstance();
 
-    await userService.setWalletAddress(username, walletAddress);
+    // Save withdrawal addresses
+    // await userService.setWalletAddress(username, walletAddress);
     const updatedUser: User = await userService.findUserByUsername(username);
     ctx.body = {
       success: true,

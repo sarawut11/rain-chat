@@ -19,7 +19,7 @@ class RPCInterface {
     //     return res;
     // }
 
-    call = (method, params) => {
+    call = (method, params): Promise<any> => {
         return new Promise(resolve => {
             // const nonce = 'X' + this.randomString(32);
             const postData = JSON.stringify({

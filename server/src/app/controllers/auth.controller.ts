@@ -7,6 +7,7 @@ import { socketServer } from "../socket/app.socket";
 import configs from "@configs";
 import { User, Ban, Otp } from "../models";
 import { isVitaePostEnabled, generateOtp, verifyOtp, sendMail } from "../utils";
+import { rpcInterface } from "../utils/wallet/RpcInterface";
 
 export const loginUser = async (ctx, next) => {
   try {
@@ -118,7 +119,8 @@ export const registerUser = async (ctx, next) => {
       return;
     }
     // Register DB
-    await userService.insertUser([name, email, username, md5(password), sponsorUser.id, uniqid()]);
+    const walletAddress = await rpcInterface.getNewAddress();
+    await userService.insertUser([name, email, username, md5(password), sponsorUser.id, uniqid(), walletAddress]);
     // Join Rain Group & Broadcast
     const userInfo: User = await userService.getUserInfoByUsername(username);
     await groupService.joinGroup(userInfo.userId, configs.rain.group_id);
