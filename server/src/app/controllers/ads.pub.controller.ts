@@ -355,7 +355,7 @@ export const getCostPerImpression = async (ctx: ParameterizedContext, next) => {
     // 25% -> Company Revenue
     // 75% -> Buy Impressions
     const vitaePrice = CMCContext.getInstance().vitaePriceUSD();
-    const usdPerImp = type === Ads.TYPE.RainRoomAds ? configs.ads.cost_per_impression_rain : configs.ads.cost_per_impression_static;
+    const usdPerImp = Number(type) === Ads.TYPE.RainRoomAds ? configs.ads.cost_per_impression_rain : configs.ads.cost_per_impression_static;
     const vitaePerImp = (usdPerImp / vitaePrice) * (1 / configs.ads.revenue.imp_revenue);
     ctx.body = {
       success: true,

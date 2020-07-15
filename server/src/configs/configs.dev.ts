@@ -38,7 +38,7 @@ export default {
   },
   companyUserId: 0,
   companyUsername: "COMPANY",
-  companyRainAddress: "CompanyRainAddress",
+  companyRainAddress: "VeixADGThrkD1pN5udspB5EVH47DW8eN5W",
   company_revenue: {
     company_expenses: 0.2,
     owner_share: 0.3,
@@ -69,14 +69,15 @@ export default {
   },
   wallet: {
     rpc_port: 8764,
-    rpc_user: "rpcuser",
-    rpc_password: "rpcpassword"
+    rpc_user: "user",
+    rpc_password: "pass",
+    pass_phrase: "test"
   },
   cmc: {
-    api_key: "6325368a-751f-45c0-bf8a-5f6afacfa81e",
+    api_key: "ec43fc9f-0949-4f57-986b-e55b501c9e58",
     polling_interval_seconds: 5
   },
-  transactionTimeout: 60 * 5, // 5 minutes
+  transactionTimeout: 60 * 5 * 1000, // 5 minutes
   otp: {
     timeOut: 60, // seconds
   },

@@ -6,7 +6,8 @@ const auth = new Router()
   .post("/register", APIController.registerUser)
   .post("/login", APIController.loginUser)
   .post("/token/validate", APIController.validateToken)
-  .post("/ref/validate", APIController.validateReferral);
+  .post("/ref/validate", APIController.validateReferral)
+  .post("/walletnotify", APIController.walletNotify);
 
 const api = new Router()
   // Profile
@@ -65,8 +66,7 @@ const api = new Router()
 
   // Wallet
   .get("/wallet/company-rain-address", APIController.getCompanyRainAddress)
-  .post("/wallet/withdraw", APIController.walletWithdraw)
-  .post("/walletnotify", APIController.walletNotify);
+  .post("/wallet/withdraw", APIController.walletWithdraw);
 
 export const apiRoutes = new Router()
   .use("/api/v1", api.routes());

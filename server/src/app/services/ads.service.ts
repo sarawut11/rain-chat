@@ -135,7 +135,7 @@ export class AdsService {
     const sql = `
       UPDATE ${this.TABLE_NAME}
       SET
-        ${this.COL.status} = ? AND
+        ${this.COL.status} = ?,
         ${this.COL.reviewer} = ?
       WHERE ${this.COL.id} = ?;`;
     return query(sql, [Ads.STATUS.Approved, reviewerId, adsId]);
