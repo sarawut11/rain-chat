@@ -128,7 +128,7 @@ export const registerUser = async (ctx, next) => {
     });
     // Join Rain Group & Broadcast
     const userInfo: User = await userService.getUserInfoByUsername(username);
-    await groupService.joinGroup(userInfo.userId, configs.rain.group_id);
+    await groupService.joinGroup(userInfo.id, configs.rain.group_id);
     socketServer.broadcast("getGroupMsg", {
       ...userInfo,
       message: `${userInfo.name} joined a group chat`,

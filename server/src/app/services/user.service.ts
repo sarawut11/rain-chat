@@ -134,7 +134,7 @@ export class UserService {
   async getUserInfoByUsername(username: string): Promise<User> {
     const sql =
       `SELECT
-        ${this.USER_COL.id} AS userId,
+        ${this.USER_COL.id},
         ${this.USER_COL.username},
         ${this.USER_COL.name},
         ${this.USER_COL.avatar},
