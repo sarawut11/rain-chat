@@ -36,6 +36,7 @@ export const walletNotify = async (ctx, next) => {
           };
           return;
         }
+
         const userInfo: User = await userService.findUserByWalletAddress(receiveAddress);
         if (userInfo === undefined) {
           console.log("Transasction Notify => Deposit from unknown user");
@@ -61,7 +62,7 @@ export const walletNotify = async (ctx, next) => {
         } else {
           await transactionService.confirmTransaction(tranInfo.id, txid, txInfo.amount, txInfo.timereceived);
           if (tranInfo.type === Transaction.TYPE.MEMBERSHIP) {
-            await confirmMembership(userInfo.id, txInfo.amount, moment().utc().unix());
+            await confirmMembership(userInfo, txInfo.amount);
           } else if (tranInfo.type === Transaction.TYPE.ADS) {
             const details: TransactionDetail = JSON.parse(tranInfo.details);
             await confirmAds(details.adsId, txInfo.amount, details.adsType, details.impressions, details.costPerImp);
@@ -69,8 +70,10 @@ export const walletNotify = async (ctx, next) => {
         }
       } else if (txInfo.details[0].category === WalletNotifyDetail.CATEGORY.send) {
         // Withdraw Notify
-
+        console.log("Transaction Notify => Withdraw sent");
       }
+    } else {
+      console.log("Transaction Notify => Confirmation: 0");
     }
     ctx.body = {
       success: true,
@@ -140,13 +143,11 @@ export const walletWithdraw = async (ctx, next) => {
 };
 
 
-const confirmMembership = async (userId, amount, confirmTime) => {
+const confirmMembership = async (userInfo: User, amount: number) => {
   const { userService } = ServicesContext.getInstance();
 
-  const userInfo = await userService.findUserById(userId);
-
   // Update UserInfo & Transaction Info
-  await userService.updateMembership(userId, User.ROLE.UPGRADED_USER);
+  await userService.updateMembership(userInfo.id, User.ROLE.UPGRADED_USER);
 
   // Revenue Share Model
   // ===== Company Share ===== //

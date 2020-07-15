@@ -10,33 +10,23 @@ class RPCInterface {
         this.authHeader = "Basic " + Buffer.from(configs.wallet.rpc_user + ":" + configs.wallet.rpc_password).toString("base64");
     }
 
-    // randomString = length => {
-    //     let res = "";
-    //     const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    //     for (let i = 0; i < length; i++) {
-    //         res += characters.charAt(Math.floor(Math.random() * characters.length));
-    //     }
-    //     return res;
-    // }
-
     call = (method, params): Promise<any> => {
-        return new Promise(resolve => {
-            // const nonce = 'X' + this.randomString(32);
+        return new Promise((resolve, reject) => {
             const postData = JSON.stringify({
                 method,
                 params,
                 id: 1
               });
-            // const data = '{ "jsonrpc" : "1.0", "id" : "' + nonce + '", "method" : "' + method + '", "params" : ' + JSON.stringify(params) + ' }';
             axios.post(this.url, postData, {
                 headers: {
                     "content-type": "application/json",
                     "Authorization": this.authHeader
                 }
             }).then(res => {
-                resolve(res.data);
+                resolve(res.data.result);
             }).catch(err => {
-                console.log("RPC Call Error: ", err);
+                console.log("RPC Call Error: ", err.response.data.error);
+                reject(err.response.data.error);
             });
         });
     }
@@ -48,10 +38,11 @@ class RPCInterface {
 
     validateAddress = async (address) => {
         const res = await this.call("validateaddress", [address]);
-        return res;
+        return res.isvalid;
     }
 
     sendToAddress = async (address, amount) => {
+        await this.call("walletpassphrase", [configs.wallet.pass_phrase, 5]);
         const res = await this.call("sendtoaddress", [address, amount]);
         return res;
     }
