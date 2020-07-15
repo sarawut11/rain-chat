@@ -30,7 +30,7 @@ export const createExpenseRequest = async (ctx, next) => {
 
     // Upload Document
     const userInfo: User = checkRole.userInfo;
-    const fileName = generateFileName(username, doc.type);
+    const fileName = generateFileName(username);
     const { url } = await uploadFile({
       fileName,
       filePath: doc.path,
@@ -174,8 +174,8 @@ export const rejectExpense = async (ctx, next) => {
   }
 };
 
-const generateFileName = (username, fileType) => {
-  return `expense/expense-${username}-${moment().utc().unix()}.${mime.extension(fileType)}`;
+const generateFileName = (username: string) => {
+  return `expense/expense-${username}-${moment().utc().unix()}.pdf`;
 };
 
 const getOwnersSocketId = (users: User[]) => {

@@ -26,7 +26,7 @@ export class ExpenseService {
         ${this.COL.amount},
         ${this.COL.confirmer},
         ${this.COL.requestTime}
-      ) VALUES (?,?,?,?);`;
+      ) VALUES (?,?,?,?,?);`;
     const result = await query(sql, [userId, docPath, amount, userId, moment().utc().unix()]);
     return result;
   }

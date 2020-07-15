@@ -113,7 +113,7 @@ export const cancelModer = async (ctx, next) => {
 
 export const setModerator = async (ctx, next) => {
   try {
-    const { username } = ctx.state.user;
+    const { username, id: userId } = ctx.state.user;
     const { username: assigneeUsername } = ctx.request.body;
     const { userService } = ServicesContext.getInstance();
 
@@ -127,8 +127,7 @@ export const setModerator = async (ctx, next) => {
       ctx.body = checkUser;
       return;
     }
-    const { userInfo } = checkUser;
-    await userService.updateMembership(userInfo.userId, User.ROLE.MODERATOR);
+    await userService.updateMembership(userId, User.ROLE.MODERATOR);
     const updatedUser: User = await userService.findUserByUsername(username);
     ctx.body = {
       success: true,
