@@ -37,7 +37,7 @@ export const loginUser = async (ctx, next) => {
       };
       return;
     }
-    const { id, username: userName, email: userEmail, name, balance, intro, avatar, refcode, role, ban, walletAddress } = user;
+    const { id, username: userName, email: userEmail, name, balance, intro, avatar, refcode, role, ban } = user;
     const bans: Ban[] = await banService.getBanInfo(id, configs.rain.group_id, Ban.TYPE.GROUP);
     if (bans.length >= 3) {
       ctx.body = {
@@ -69,7 +69,6 @@ export const loginUser = async (ctx, next) => {
         role,
         token,
         ban,
-        walletAddress,
         isVitaePostEnabled: isVitaePostEnabled(user)
       },
     };
