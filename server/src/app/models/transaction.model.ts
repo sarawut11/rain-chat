@@ -21,7 +21,7 @@ export class Transaction {
   public static readonly TYPE = {
     ADS: 0,
     MEMBERSHIP: 1,
-    VITAE_RAIN: 2,
+    VITAE_RAIN: 2, // Send-Vitae Purchase
     WITHDRAW: 3,
   };
 }

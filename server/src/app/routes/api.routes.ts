@@ -19,7 +19,6 @@ const api = new Router()
 
   // Rain
   .post("/rain/send-vitae/balance", APIController.rainFromBalance)
-  .post("/rain/send-vitae/purchase", APIController.sendVitaePurchase)
 
   // Ads
   .get("/campaign/impcost", APIController.getCostPerImpression)

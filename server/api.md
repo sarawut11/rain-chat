@@ -799,21 +799,6 @@
     }
   }
   ```
-### /rain/send-vitae/purchase (POST)
-  Send vitae rain by purchasing vitae tokens
-
-  ***Request Body***
-  | Fields             | Description                       |
-  | ------------------ | --------------------------------- |
-  | companyRainAddress | company rain address              |
-  | amount             | Vitae amount to rain from balance |
-  ***Response***
-  ```
-  {
-    success: true/false,
-    message,
-  }
-  ```
 ## 1.10 Expense
 ### Expense Model Info
   ```

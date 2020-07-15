@@ -28,6 +28,14 @@ export const walletNotify = async (ctx, next) => {
     if (txInfo.confirmations > 0) {
       if (txInfo.details[0].category === WalletNotifyDetail.CATEGORY.receive) {
         const receiveAddress = txInfo.details[0].address;
+        if (receiveAddress === configs.companyRainAddress) {
+          await confirmSendVitaePurchase(txInfo.amount, txid, txInfo.timereceived);
+          ctx.body = {
+            success: true,
+            message: "Success"
+          };
+          return;
+        }
         const userInfo: User = await userService.findUserByWalletAddress(receiveAddress);
         if (userInfo === undefined) {
           console.log("Transasction Notify => Deposit from unknown user");
@@ -57,8 +65,6 @@ export const walletNotify = async (ctx, next) => {
           } else if (tranInfo.type === Transaction.TYPE.ADS) {
             const details: TransactionDetail = JSON.parse(tranInfo.details);
             await confirmAds(details.adsId, txInfo.amount, details.adsType, details.impressions, details.costPerImp);
-          } else if (tranInfo.type === Transaction.TYPE.VITAE_RAIN) {
-            await confirmSendVitaePurchase(txInfo.amount);
           }
         }
       } else if (txInfo.details[0].category === WalletNotifyDetail.CATEGORY.send) {
@@ -112,11 +118,12 @@ export const walletWithdraw = async (ctx, next) => {
     }
 
     await rpcInterface.sendToAddress(walletAddress, amount);
-    await transactionService.createTransactionRequest(userInfo.id, Transaction.TYPE.WITHDRAW, amount);
+    const requestInfo = await transactionService.createTransactionRequest(userInfo.id, Transaction.TYPE.WITHDRAW, amount);
 
     // Descrese balance | Move it to wallet notify later
     await userService.addBalance(userInfo.id, -amount);
     const updatedUser: User = await userService.findUserByUsername(username);
+    await transactionService.confirmTransaction(requestInfo.insertId, "", amount, moment().utc().unix());
 
     ctx.body = {
       success: true,
@@ -229,6 +236,12 @@ const confirmAds = async (adsId: number, paidAmount: number, adsType: number, im
   }
 };
 
-const confirmSendVitaePurchase = async (amount: number) => {
-  RainContext.getInstance().rainUsersByLastActivity(amount);
+const confirmSendVitaePurchase = async (amount: number, txId: string, confirmTime: number) => {
+  // Record Transaction
+  const { transactionService } = ServicesContext.getInstance();
+  const requestInfo = await transactionService.createTransactionRequest(configs.companyUserId, Transaction.TYPE.VITAE_RAIN, amount);
+  await transactionService.confirmTransaction(requestInfo.insertId, txId, amount, confirmTime);
+
+  // Rain purchased amount to last active users
+  await RainContext.getInstance().rainUsersByLastActivity(amount);
 };
