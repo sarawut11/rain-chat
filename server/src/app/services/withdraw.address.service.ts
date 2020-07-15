@@ -1,7 +1,6 @@
 import * as moment from "moment";
 import { query } from "../utils/db";
-import { DefaultModel } from "../models";
-import { WithdrawAddress } from "../models/withdraw.model";
+import { DefaultModel, WithdrawAddress } from "../models";
 
 export class WithdrawAddressService {
   readonly TABLE_NAME = "withdraw_address_info";
