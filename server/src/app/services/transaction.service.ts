@@ -23,7 +23,7 @@ export class TransactionService {
   async createTransactionRequest(userId: number, type: number, expectAmount: number, details?: TransactionDetail): Promise<DefaultModel> {
     // To keep only one pending transaction at a time.
     const trans: Transaction = await this.getLastRequestedTransaction(userId);
-    if (trans !== undefined) {
+    if (trans !== undefined && userId !== configs.companyUserId) {
       console.log(`Register Transaction => Failed, User:${userId} still have pending or insufficient request.`);
       return undefined;
     }
@@ -59,9 +59,11 @@ export class TransactionService {
       SELECT * FROM ${this.TABLE_NAME}
       WHERE
         ${this.columns.userId} = ? AND
-        ${this.columns.status} IN (?,?)
+        ${this.columns.status} IN (?,?) AND
+        ${this.columns.type} != ?
       LIMIT 1;`;
-    const trans: Transaction[] = await query(sql, [userId, Transaction.STATUS.REQUESTED, Transaction.STATUS.INSUFFICIENT_BALANCE]);
+    const params = [userId, Transaction.STATUS.REQUESTED, Transaction.STATUS.INSUFFICIENT_BALANCE, Transaction.TYPE.WITHDRAW];
+    const trans: Transaction[] = await query(sql, params);
     if (trans.length === 0) return undefined;
     return trans[0];
   }
