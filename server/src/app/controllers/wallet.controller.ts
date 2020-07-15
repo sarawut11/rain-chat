@@ -2,7 +2,7 @@ import * as moment from "moment";
 import configs from "@configs";
 import { rpcInterface } from "../utils/wallet/RpcInterface";
 import { ServicesContext, RainContext } from "../context";
-import { User, Transaction, InnerTransaction, Ads, TransactionDetail, WalletNotify } from "../models";
+import { User, Transaction, InnerTransaction, Ads, TransactionDetail, WalletNotify, WalletNotifyDetail } from "../models";
 import { shareRevenue } from "../utils";
 
 export const walletNotify = async (ctx, next) => {
@@ -23,10 +23,10 @@ export const walletNotify = async (ctx, next) => {
     const { userService, transactionService } = ServicesContext.getInstance();
 
     const txInfo: WalletNotify = await rpcInterface.getTransaction(txid);
-    console.log("Tx Info: ", txInfo);
+    console.log("Transaction Notify => ", txInfo);
 
     if (txInfo.confirmations > 0) {
-      if (txInfo.details[0].category === "receive") {
+      if (txInfo.details[0].category === WalletNotifyDetail.CATEGORY.receive) {
         const receiveAddress = txInfo.details[0].address;
         const userInfo: User = await userService.findUserByWalletAddress(receiveAddress);
         if (userInfo === undefined) {
@@ -53,7 +53,7 @@ export const walletNotify = async (ctx, next) => {
         } else {
           await transactionService.confirmTransaction(tranInfo.id, txid, txInfo.amount, txInfo.timereceived);
           if (tranInfo.type === Transaction.TYPE.MEMBERSHIP) {
-            await confirmMembership(userInfo.userId, txInfo.amount, moment().utc().unix());
+            await confirmMembership(userInfo.id, txInfo.amount, moment().utc().unix());
           } else if (tranInfo.type === Transaction.TYPE.ADS) {
             const details: TransactionDetail = JSON.parse(tranInfo.details);
             await confirmAds(details.adsId, txInfo.amount, details.adsType, details.impressions, details.costPerImp);
@@ -61,6 +61,9 @@ export const walletNotify = async (ctx, next) => {
             await confirmSendVitaePurchase(txInfo.amount);
           }
         }
+      } else if (txInfo.details[0].category === WalletNotifyDetail.CATEGORY.send) {
+        // Withdraw Notify
+
       }
     }
     ctx.body = {
@@ -108,14 +111,17 @@ export const walletWithdraw = async (ctx, next) => {
       return;
     }
 
-    // Withraw amount from wallet
-    // At withdraw api response => if success, write tx info to innerTransaction table
-    // ...
     await rpcInterface.sendToAddress(walletAddress, amount);
+    await transactionService.createTransactionRequest(userInfo.id, Transaction.TYPE.WITHDRAW, amount);
+
+    // Descrese balance | Move it to wallet notify later
+    await userService.addBalance(userInfo.id, -amount);
+    const updatedUser: User = await userService.findUserByUsername(username);
 
     ctx.body = {
       success: true,
-      message: "Pending"
+      message: "Success",
+      userInfo: updatedUser
     };
   } catch (error) {
     console.error(error.message);
@@ -223,6 +229,6 @@ const confirmAds = async (adsId: number, paidAmount: number, adsType: number, im
   }
 };
 
-const confirmSendVitaePurchase = async (amount) => {
+const confirmSendVitaePurchase = async (amount: number) => {
   RainContext.getInstance().rainUsersByLastActivity(amount);
 };
