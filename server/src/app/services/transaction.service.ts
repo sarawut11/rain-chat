@@ -1,7 +1,6 @@
 import { query } from "../utils/db";
 import * as moment from "moment";
-import * as uniqid from "uniqid";
-import { Transaction, DefaultModel } from "../models";
+import { Transaction, DefaultModel, TransactionDetail } from "../models";
 import { TransactionContext } from "../context";
 import configs from "@configs";
 
@@ -21,37 +20,28 @@ export class TransactionService {
     time: "time",
   };
 
-  async createTransactionRequest(userId: number, type: number, expectAmount: number, details?: string) {
+  async createTransactionRequest(userId: number, type: number, expectAmount: number, details?: TransactionDetail): Promise<DefaultModel> {
+    // To keep only one pending transaction at a time.
+    const trans: Transaction = await this.getLastRequestedTransaction(userId);
+    if (trans !== undefined && userId !== configs.companyUserId) {
+      console.log(`Register Transaction => Failed, User:${userId} still have pending or insufficient request.`);
+      return undefined;
+    }
     const sql = `
     INSERT INTO ${this.TABLE_NAME}(
       ${this.columns.userId},
-      ${this.columns.transactionId},
       ${this.columns.type},
       ${this.columns.status},
       ${this.columns.expectAmount},
       ${this.columns.time},
       ${this.columns.details})
-    values(?,?,?,?,?,?,?);`;
-    const result: DefaultModel = await query(sql, [userId, uniqid(), type, Transaction.STATUS.REQUESTED, expectAmount, moment().utc().unix(), details]);
+    values(?,?,?,?,?,?);`;
+    const result: DefaultModel = await query(sql, [userId, type, Transaction.STATUS.REQUESTED, expectAmount, moment().utc().unix(), JSON.stringify(details)]);
 
     setTimeout(() => {
       TransactionContext.getInstance().expireTransactionRequest(result.insertId);
     }, configs.transactionTimeout);
     return result;
-  }
-
-  confirmTransactionRequest(userId: number, type: number, amount: number, confirmTime: number) {
-    const sql = `
-    UPDATE ${this.TABLE_NAME}
-    SET
-      ${this.columns.status} = ?,
-      ${this.columns.paidAmount} = ?,
-      ${this.columns.confirmTime} = ?
-    WHERE
-      ${this.columns.userId} = ? AND
-      ${this.columns.type} = ?
-    ORDER BY ${this.columns.time} DESC LIMIT 1;`;
-    return query(sql, [Transaction.STATUS.CONFIRMED, amount, confirmTime, userId, type]);
   }
 
   expireTransactionRequest(tranId: number) {
@@ -64,15 +54,18 @@ export class TransactionService {
     return query(sql, [Transaction.STATUS.EXPIRED, tranId]);
   }
 
-  getLastPendingTransaction(userId: number, type: number) {
+  async getLastRequestedTransaction(userId: number): Promise<Transaction> {
     const sql = `
       SELECT * FROM ${this.TABLE_NAME}
       WHERE
         ${this.columns.userId} = ? AND
-        ${this.columns.type} = ? AND
-        ${this.columns.status} = ?
-      ORDER BY ${this.columns.time} DESC LIMIT 1;`;
-    return query(sql, [userId, type, Transaction.STATUS.REQUESTED]);
+        ${this.columns.status} IN (?,?) AND
+        ${this.columns.type} != ?
+      LIMIT 1;`;
+    const params = [userId, Transaction.STATUS.REQUESTED, Transaction.STATUS.INSUFFICIENT_BALANCE, Transaction.TYPE.WITHDRAW];
+    const trans: Transaction[] = await query(sql, params);
+    if (trans.length === 0) return undefined;
+    return trans[0];
   }
 
   async getTransactionById(tranId: number): Promise<Transaction> {
@@ -98,5 +91,56 @@ export class TransactionService {
     let totalAmount = 0;
     trans.forEach(tran => totalAmount += tran.paidAmount);
     return totalAmount;
+  }
+
+  async confirmTransaction(recordId: number, tranId: string, paidAmount: number, confirmTime: number) {
+    const sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET
+        ${this.columns.transactionId} = ?,
+        ${this.columns.paidAmount} = ?,
+        ${this.columns.confirmTime} = ?,
+        ${this.columns.status} = ?
+      WHERE ${this.columns.id} = ?;`;
+    return query(sql, [tranId, paidAmount, confirmTime, Transaction.STATUS.CONFIRMED, recordId]);
+  }
+
+  async setInsufficientTransaction(tranId: string, paidAmount: number, confirmTime: number, tranInfo: Transaction) {
+    const sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET
+        ${this.columns.transactionId} = ?,
+        ${this.columns.paidAmount} = ${this.columns.paidAmount} + ?,
+        ${this.columns.confirmTime} = ?,
+        ${this.columns.status} = ?
+      WHERE ${this.columns.id} = ?;
+
+      INSERT INTO ${this.TABLE_NAME}(
+        ${this.columns.userId},
+        ${this.columns.type},
+        ${this.columns.status},
+        ${this.columns.expectAmount},
+        ${this.columns.time},
+        ${this.columns.details})
+      values(?,?,?,?,?,?);`;
+    return query(sql, [
+      tranId, paidAmount, confirmTime, Transaction.STATUS.INSUFFICIENT_BALANCE, tranInfo.id,
+      tranInfo.userId, tranInfo.type, Transaction.STATUS.REQUESTED, tranInfo.expectAmount - paidAmount, moment().utc().unix(), tranInfo.details
+    ]);
+  }
+
+  // Consider deleting this function later
+  confirmTransactionRequest(userId: number, type: number, amount: number, confirmTime: number) {
+    const sql = `
+    UPDATE ${this.TABLE_NAME}
+    SET
+      ${this.columns.status} = ?,
+      ${this.columns.paidAmount} = ?,
+      ${this.columns.confirmTime} = ?
+    WHERE
+      ${this.columns.userId} = ? AND
+      ${this.columns.type} = ?
+    ORDER BY ${this.columns.time} DESC LIMIT 1;`;
+    return query(sql, [Transaction.STATUS.CONFIRMED, amount, confirmTime, userId, type]);
   }
 }

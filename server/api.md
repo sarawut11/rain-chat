@@ -30,7 +30,6 @@
       role,
       token,
       ban,
-      walletAddress,
       isVitaePostEnabled
     }
   }
@@ -139,20 +138,39 @@
     }
   }
   ```
-### /user/wallet-address (POST)
-  Update wallet address
+### /user/withdraw-address/add (POST)
+  Add withdraw address
 
   ***Request Body ***
-  | Fields        | Description       |
-  | ------------- | ----------------- |
-  | walletAddress | Avatar Image File |
+  | Fields        | Description             |
+  | ------------- | ----------------------- |
+  | walletAddress | withdraw wallet address |
+  | label         | label of the address    |
   ***Response***
   ```
   {
     success: true/false,
     message: "Success or Failed Message",
-    userInfo: { // when success == true
-    }
+    addresses: [{
+      userId,
+      withdrawAddress,
+      label
+    }, ...]
+  }
+  ```
+### /user/withdraw-address (GET)
+  Get all withdraw addresses
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    addresses: [{
+      userId,
+      withdrawAddress,
+      label
+    }, ...]
   }
   ```
 ### /user/otp/request (GET)

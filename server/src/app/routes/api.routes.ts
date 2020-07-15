@@ -12,13 +12,13 @@ const api = new Router()
   // Profile
   .get("/user/:username", APIController.getProfileInfo)
   .put("/user/:username", APIController.updateProfileInfo)
-  .post("/user/wallet-address", APIController.saveWalletAddress)
+  .post("/user/withdraw-address/add", APIController.addWithdrawAddress)
+  .get("/user/withdraw-address", APIController.getWithdrawAddresses)
   .get("/user/otp/request", APIController.generateOTP)
   .post("/user/otp/verify", APIController.verifyOTP)
 
   // Rain
   .post("/rain/send-vitae/balance", APIController.rainFromBalance)
-  // .post("/rain/send-vitae/purchase", APIController.sendVitaePurchase)
 
   // Ads
   .get("/campaign/impcost", APIController.getCostPerImpression)

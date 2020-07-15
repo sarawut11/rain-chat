@@ -1,9 +1,8 @@
-import { ServicesContext, CMCContext, RainContext } from "../context";
+import { ServicesContext, CMCContext } from "../context";
 import configs from "@configs";
-import * as moment from "moment";
-import { User, InnerTransaction } from "../models";
+import { User } from "../models";
 import { Transaction } from "../models/transaction.model";
-import { checkUserInfo, isOwner, shareRevenue } from "../utils/utils";
+import { checkUserInfo, isOwner } from "../utils/utils";
 
 export const getAllUsers = async (ctx, next) => {
   try {
@@ -33,12 +32,15 @@ export const getAllUsers = async (ctx, next) => {
 
 export const getMembershipPrice = async (ctx, next) => {
   try {
+    const { username } = ctx.state.user;
+    const { userService } = ServicesContext.getInstance();
+    const userInfo: User = await userService.findUserByUsername(username);
     const vitaePrice = _getMembershipPrice();
     ctx.body = {
       success: true,
       vitaePrice,
       usdPrice: configs.membership.price,
-      walletAddress: "testing wallet address"
+      walletAddress: userInfo.walletAddress,
     };
   } catch (error) {
     console.log(error.message);
@@ -68,9 +70,15 @@ export const upgradeMembership = async (ctx, next) => {
       };
     }
 
-    await transactionService.createTransactionRequest(userInfo.userId, Transaction.TYPE.MEMBERSHIP, expectAmount);
-    // Test call
-    await confirmMembership(userInfo.userId, expectAmount, moment().utc().unix());
+    const transInfo = await transactionService.createTransactionRequest(userInfo.userId, Transaction.TYPE.MEMBERSHIP, expectAmount);
+    if (transInfo === undefined) {
+      ctx.body = {
+        success: false,
+        message: "You still have incompleted transaction requests."
+      };
+      return;
+    }
+
     ctx.body = {
       success: true,
       message: "Your membership request is in pending.",
@@ -83,58 +91,6 @@ export const upgradeMembership = async (ctx, next) => {
       message: error.message
     };
   }
-};
-
-const confirmMembership = async (userId, amount, confirmTime) => {
-  const { userService, transactionService } = ServicesContext.getInstance();
-
-  const userInfo = await userService.findUserById(userId);
-
-  // Update UserInfo & Transaction Info
-  await userService.updateMembership(userId, User.ROLE.UPGRADED_USER);
-  await transactionService.confirmTransactionRequest(userId, Transaction.TYPE.MEMBERSHIP, amount, confirmTime);
-
-  // Revenue Share Model
-  // ===== Company Share ===== //
-  // 14.99 -> 4.99 | Company Revenue
-  // ---------------------------------
-  // 20% -----> Company Expenses
-  // 30% -----> Owner Share
-  // 25% -----> Moderator Share
-  // 25% -----> Membership Users Share
-  const companyRevenue = amount * configs.membership.revenue.company_revenue;
-  const companyExpense = companyRevenue * configs.company_revenue.company_expenses;
-  const ownerShare = companyRevenue * configs.company_revenue.owner_share;
-  const moderatorShare = companyRevenue * configs.company_revenue.moderator_share;
-  const membersShare = companyRevenue * configs.company_revenue.membership_share;
-
-  await shareRevenue(companyExpense, User.ROLE.COMPANY, InnerTransaction.TYPE.MEMBERSHIP_PURCHASE_SHARE);
-  await shareRevenue(ownerShare, User.ROLE.OWNER, InnerTransaction.TYPE.MEMBERSHIP_PURCHASE_SHARE);
-  await shareRevenue(moderatorShare, User.ROLE.MODERATOR, InnerTransaction.TYPE.MEMBERSHIP_PURCHASE_SHARE);
-  await shareRevenue(membersShare, User.ROLE.UPGRADED_USER, InnerTransaction.TYPE.MEMBERSHIP_PURCHASE_SHARE);
-
-  // ====== Sponsor Share ===== //
-  // 14.99 -> 5 | Sponsor Revenue
-  // ---------------------------------
-  // 50% -----> First Sponsor
-  // 25% -----> Second Sponsor (first sponsor's sponsor)
-  // 25% -----> Third Sponsor (second sponsor's sponsor)
-  const sponsorRevenue = amount * configs.membership.revenue.sponsor_revenue;
-  const firstSponsorShare = sponsorRevenue * configs.membership.revenue.sponsor_1_rate;
-  const secondSponsorShare = sponsorRevenue * configs.membership.revenue.sponsor_2_rate;
-  const thirdSponsorShare = sponsorRevenue * configs.membership.revenue.sponsor_3_rate;
-
-  const firstSponsorId = userInfo.sponsor;
-  const secondSponsorId = (await userService.findUserById(firstSponsorId)).sponsor;
-  const thirdSponsorId = (await userService.findUserById(secondSponsorId)).sponsor;
-  await userService.addBalance(firstSponsorId, firstSponsorShare);
-  await userService.addBalance(secondSponsorId, secondSponsorShare);
-  await userService.addBalance(thirdSponsorId, thirdSponsorShare);
-
-  // ===== Rain Rest ===== //
-  // 14.99 -> 5 | Rain Last 200 Users
-  const restShare = amount - sponsorRevenue - companyRevenue;
-  RainContext.getInstance().rainUsersByLastActivity(restShare);
 };
 
 const getUsersByRole = (page = 0, count = 10, role?, name?, username?, email?, searchString?): Promise<any> => new Promise(async (resolve, reject) => {

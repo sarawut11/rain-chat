@@ -7,6 +7,7 @@ import { socketServer } from "../socket/app.socket";
 import configs from "@configs";
 import { User, Ban, Otp } from "../models";
 import { isVitaePostEnabled, generateOtp, verifyOtp, sendMail } from "../utils";
+import { rpcInterface } from "../utils/wallet/RpcInterface";
 
 export const loginUser = async (ctx, next) => {
   try {
@@ -36,7 +37,7 @@ export const loginUser = async (ctx, next) => {
       };
       return;
     }
-    const { id, username: userName, email: userEmail, name, balance, intro, avatar, refcode, role, ban, walletAddress } = user;
+    const { id, username: userName, email: userEmail, name, balance, intro, avatar, refcode, role, ban } = user;
     const bans: Ban[] = await banService.getBanInfo(id, configs.rain.group_id, Ban.TYPE.GROUP);
     if (bans.length >= 3) {
       ctx.body = {
@@ -68,7 +69,6 @@ export const loginUser = async (ctx, next) => {
         role,
         token,
         ban,
-        walletAddress,
         isVitaePostEnabled: isVitaePostEnabled(user)
       },
     };
@@ -118,7 +118,14 @@ export const registerUser = async (ctx, next) => {
       return;
     }
     // Register DB
-    await userService.insertUser([name, email, username, md5(password), sponsorUser.id, uniqid()]);
+    const walletAddress = await rpcInterface.getNewAddress();
+    await userService.insertUser({
+      name, email, username,
+      password: md5(password),
+      sponsorId: sponsorUser.id,
+      refcode: uniqid(),
+      walletAddress
+    });
     // Join Rain Group & Broadcast
     const userInfo: User = await userService.getUserInfoByUsername(username);
     await groupService.joinGroup(userInfo.userId, configs.rain.group_id);

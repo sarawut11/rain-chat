@@ -3,7 +3,7 @@ import { query } from "../utils/db";
 import { getInArraySQL } from "../utils/utils";
 import { isNullOrUndefined } from "util";
 import configs from "@configs";
-import { User, UserRelation } from "../models";
+import { User, UserRelation, DefaultModel } from "../models";
 
 export class UserService {
   readonly USER_TABLE = "user_info";
@@ -52,7 +52,7 @@ export class UserService {
   }
 
   // Register User
-  insertUser(value) {
+  async insertUser({ name, email, username, password, sponsorId, refcode, walletAddress }): Promise<DefaultModel> {
     const sql = `
       INSERT INTO ${this.USER_TABLE}(
         ${this.USER_COL.name},
@@ -60,9 +60,10 @@ export class UserService {
         ${this.USER_COL.username},
         ${this.USER_COL.password},
         ${this.USER_COL.sponsorId},
-        ${this.USER_COL.refcode}
-      ) values(?,?,?,?,?,?);`;
-    return query(sql, value);
+        ${this.USER_COL.refcode},
+        ${this.USER_COL.walletAddress}
+      ) values(?,?,?,?,?,?,?);`;
+    return query(sql, [name, email, username, password, sponsorId, refcode, walletAddress]);
   }
 
   async findUserById(id: number): Promise<User> {
@@ -164,12 +165,12 @@ export class UserService {
     return query(sql, [avatar, username]);
   }
 
-  setWalletAddress(username: string, walletAddress: string) {
+  async findUserByWalletAddress(walletAddress: string): Promise<User> {
     const sql = `
-      UPDATE ${this.USER_TABLE}
-      SET ${this.USER_COL.walletAddress} = ?
-      WHERE ${this.USER_COL.username} = ? LIMIT 1;`;
-    return query(sql, [walletAddress, username]);
+      SELECT * FROM ${this.USER_TABLE} WHERE ${this.USER_COL.walletAddress} = ? LIMIT 1;`;
+    const user: User[] = await query(sql, walletAddress);
+    if (user.length === 0) return undefined;
+    return user[0];
   }
 
   async findUsersByRole(role: string): Promise<User[]> {

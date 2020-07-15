@@ -200,6 +200,17 @@ CREATE TABLE `expense_info` (
   `status` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+# Dump of table withdraw_address_info
+# ------------------------------------------------------------
+DROP TABLE IF EXISTS `withdraw_address_info`;
+CREATE TABLE `withdraw_address_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userId` int(11) NOT NULL,
+  `withdrawAddress` varchar(255) NOT NULL DEFAULT '',
+  `label` varchar(200) NOT NULL DEFAULT '',
+  `time` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

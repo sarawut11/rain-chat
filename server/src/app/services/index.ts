@@ -11,3 +11,4 @@ export * from "./transaction.service";
 export * from "./transaction.inner.service";
 export * from "./otp.service";
 export * from "./expense.service";
+export * from "./withdraw.address.service";

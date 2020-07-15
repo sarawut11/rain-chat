@@ -17,7 +17,8 @@ import {
   TransactionService,
   InnerTransactionService,
   OtpService,
-  ExpenseService
+  ExpenseService,
+  WithdrawAddressService
 } from "./services";
 
 const corsArgs = configs.production ? { origin: "https://production_link" } : {};
@@ -47,6 +48,7 @@ export const App = Server.init(app => {
       .setAdsService(new AdsService())
       .setOtpService(new OtpService())
       .setExpenseService(new ExpenseService())
+      .setWithdrawAddressService(new WithdrawAddressService())
       .setTransactionService(new TransactionService())
       .setInnerTransactionService(new InnerTransactionService());
     RainContext.getInstance();
