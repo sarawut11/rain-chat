@@ -12,7 +12,8 @@ const api = new Router()
   // Profile
   .get("/user/:username", APIController.getProfileInfo)
   .put("/user/:username", APIController.updateProfileInfo)
-  .post("/user/withdraw-address/save", APIController.saveWalletAddress)
+  .post("/user/withdraw-address/add", APIController.addWithdrawAddress)
+  .get("/user/withdraw-address", APIController.getWithdrawAddresses)
   .get("/user/otp/request", APIController.generateOTP)
   .post("/user/otp/verify", APIController.verifyOTP)
 

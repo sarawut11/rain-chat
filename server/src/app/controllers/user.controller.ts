@@ -73,19 +73,39 @@ export const updateProfileInfo = async (ctx, next) => {
   }
 };
 
-export const saveWalletAddress = async (ctx, next) => {
+export const addWithdrawAddress = async (ctx, next) => {
   try {
-    const { username } = ctx.state.user;
-    const { walletAddress } = ctx.request.body;
-    const { userService } = ServicesContext.getInstance();
+    const { id: userId } = ctx.state.user;
+    const { walletAddress, label } = ctx.request.body;
+    const { withdrawAddressService } = ServicesContext.getInstance();
 
     // Save withdrawal addresses
-    // await userService.setWalletAddress(username, walletAddress);
-    const updatedUser: User = await userService.findUserByUsername(username);
+    await withdrawAddressService.addWithdrawAddress(userId, walletAddress, label);
+    const addresses = await withdrawAddressService.getAddressByUserid(userId);
     ctx.body = {
       success: true,
       message: "Success",
-      userInfo: updatedUser
+      addresses
+    };
+  } catch (error) {
+    console.log(error.message);
+    ctx.body = {
+      success: false,
+      message: error.message
+    };
+  }
+};
+
+export const getWithdrawAddresses = async (ctx, next) => {
+  try {
+    const { id: userId } = ctx.state.user;
+    const { withdrawAddressService } = ServicesContext.getInstance();
+
+    const addresses = await withdrawAddressService.getAddressByUserid(userId);
+    ctx.body = {
+      success: true,
+      message: "Success",
+      addresses
     };
   } catch (error) {
     console.log(error.message);

@@ -1,7 +1,6 @@
-import { ServicesContext, CMCContext, RainContext } from "../context";
+import { ServicesContext, CMCContext } from "../context";
 import configs from "@configs";
-import * as moment from "moment";
-import { User, InnerTransaction } from "../models";
+import { User } from "../models";
 import { Transaction } from "../models/transaction.model";
 import { checkUserInfo, isOwner } from "../utils/utils";
 
@@ -33,12 +32,15 @@ export const getAllUsers = async (ctx, next) => {
 
 export const getMembershipPrice = async (ctx, next) => {
   try {
+    const { username } = ctx.state.user;
+    const { userService } = ServicesContext.getInstance();
+    const userInfo: User = await userService.findUserByUsername(username);
     const vitaePrice = _getMembershipPrice();
     ctx.body = {
       success: true,
       vitaePrice,
       usdPrice: configs.membership.price,
-      walletAddress: "testing wallet address"
+      walletAddress: userInfo.walletAddress,
     };
   } catch (error) {
     console.log(error.message);

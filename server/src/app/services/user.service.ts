@@ -165,14 +165,6 @@ export class UserService {
     return query(sql, [avatar, username]);
   }
 
-  setWalletAddress(username: string, walletAddress: string) {
-    const sql = `
-      UPDATE ${this.USER_TABLE}
-      SET ${this.USER_COL.walletAddress} = ?
-      WHERE ${this.USER_COL.username} = ? LIMIT 1;`;
-    return query(sql, [walletAddress, username]);
-  }
-
   async findUserByWalletAddress(walletAddress: string): Promise<User> {
     const sql = `
       SELECT * FROM ${this.USER_TABLE} WHERE ${this.USER_COL.walletAddress} = ? LIMIT 1;`;

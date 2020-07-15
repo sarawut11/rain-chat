@@ -9,6 +9,7 @@ import {
   InnerTransactionService,
   OtpService,
   ExpenseService,
+  WithdrawAddressService,
 } from "./../services";
 
 export class ServicesContext {
@@ -118,6 +119,16 @@ export class ServicesContext {
   }
   public setExpenseService(service: ExpenseService): ServicesContext {
     this._expenseService = service;
+    return this;
+  }
+
+  // WithdrawAddress service
+  private _withdrawAddressService: WithdrawAddressService;
+  public get withdrawAddressService() {
+    return this._withdrawAddressService;
+  }
+  public setWithdrawAddressService(service: WithdrawAddressService): ServicesContext {
+    this._withdrawAddressService = service;
     return this;
   }
 }
