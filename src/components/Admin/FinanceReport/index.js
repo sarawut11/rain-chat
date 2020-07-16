@@ -51,7 +51,6 @@ class FinanceReport extends Component {
   };
 
   async componentDidMount() {
-    // const user_info = JSON.parse(localStorage.getItem('userInfo'));
     const user_info = this.props.userInfo.userInfo;
 
     if (user_info.role === 'OWNER') {
@@ -99,7 +98,7 @@ class FinanceReport extends Component {
   onAccept = expenseId => async () => {
     console.log('onAccept\n', expenseId);
     try {
-      const res = await Request.axios('post', `/api/v1/expense/confirm`, { expenseId });
+      const res = await Request.axios('post', `/api/v1/expense/approve`, { expenseId });
 
       if (res && res.success) {
         this.props.updateExpense({ expenseInfo: res.expenseInfo });
@@ -201,8 +200,8 @@ class FinanceReport extends Component {
     const expenseTableCol = [
       {
         title: 'Date',
-        dataIndex: 'requestTime',
-        key: 'requestTime',
+        dataIndex: 'time',
+        key: 'time',
         render(time) {
           const date = new Date(time * 1000);
           return <span>{date.toLocaleString()}</span>;
@@ -226,28 +225,50 @@ class FinanceReport extends Component {
       },
       {
         title: 'Creator',
-        dataIndex: 'userId',
-        key: 'userId',
+        dataIndex: 'username',
+        key: 'username',
       },
       {
-        title: 'Confirmer',
-        dataIndex: 'confirmer',
-        key: 'confirmer',
-        render: (confirmer, expense) => (
-          <div>
-            {expense.username},{confirmer} ({expense.confirmCount}/{ownerCount})
-          </div>
-        ),
+        title: 'Confirmers',
+        dataIndex: 'approves',
+        key: 'approves',
+        render(approves) {
+          let approvesStr = '';
+
+          approves.forEach(approve => {
+            if (approvesStr === '') {
+              approvesStr = `${approve.username}`;
+            } else {
+              approvesStr += `, ${approve.username}`;
+            }
+          });
+          return (
+            <div>
+              {approvesStr} ({approves.length}/{ownerCount})
+            </div>
+          );
+        },
       },
       {
-        title: 'Rejector',
-        dataIndex: 'rejector',
-        key: 'rejector',
-        render: (rejector, expense) => (
-          <div>
-            {rejector} ({expense.rejectCount}/{ownerCount})
-          </div>
-        ),
+        title: 'Rejectors',
+        dataIndex: 'rejects',
+        key: 'rejects',
+        render(rejects) {
+          let rejectsStr = '';
+
+          rejects.forEach(reject => {
+            if (rejectsStr === '') {
+              rejectsStr = `${reject.username}`;
+            } else {
+              rejectsStr += `, ${reject.username}`;
+            }
+          });
+          return (
+            <div>
+              {rejectsStr} ({rejects.length}/{ownerCount})
+            </div>
+          );
+        },
       },
       {
         title: 'Status',
@@ -267,12 +288,34 @@ class FinanceReport extends Component {
         dataIndex: 'id',
         key: 'expenseId',
         render: (id, expense) => {
+          let alreadyDecided = false;
+
+          if (expense.approves) {
+            expense.approves.forEach(approve => {
+              if (userInfo.username === approve.username) {
+                alreadyDecided = true;
+              }
+            });
+          }
+
+          if (expense.rejects) {
+            expense.rejects.forEach(reject => {
+              if (userInfo.username === reject.username) {
+                alreadyDecided = true;
+              }
+            });
+          }
+
+          if (alreadyDecided) {
+            return null;
+          }
+
           return (
             <div>
-              {userInfo.username !== expense.username && (
+              {userInfo.username !== expense.username && expense.status === EXPENSE_CREATED && (
                 <div>
                   <Button type="primary" onClick={this.onAccept(id)}>
-                    Accept
+                    Approve
                   </Button>
                   <Button danger onClick={this.onReject(id)} className="expense-reject-btn">
                     Reject
@@ -284,8 +327,6 @@ class FinanceReport extends Component {
         },
       },
     ];
-
-    console.log('\n\n------   expenses render   --------\n\n', this);
 
     return (
       <div>

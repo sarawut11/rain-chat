@@ -11,7 +11,7 @@ const expenseReducer = (previousState = initialState, action) => {
       try {
         const { expenses, ownerCount } = action.data;
         const nexExpenses = expenses.sort((a, b) => {
-          return b.requestTime - a.requestTime;
+          return b.time - a.time;
         });
         return { ...previousState, expenses: nexExpenses, ownerCount };
       } catch (e) {
