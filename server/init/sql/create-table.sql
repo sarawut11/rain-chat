@@ -195,7 +195,7 @@ CREATE TABLE `expense_info` (
   `status` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
-# Dump of table expense_info
+# Dump of table expense_confirm_info
 # ------------------------------------------------------------
 DROP TABLE IF EXISTS `expense_confirm_info`;
 CREATE TABLE `expense_confirm_info` (
