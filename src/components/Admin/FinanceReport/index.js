@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Descriptions, notification, Spin, Row, Col, Collapse, Table, Button } from 'antd';
-import { setExpensesInfo } from '../../../redux/actions/expenseAction';
+import { setExpensesInfo, updateExpense } from '../../../redux/actions/expenseAction';
 import { setAdminAction } from '../../../containers/AdminPage/adminAction';
 import Request from '../../../utils/request';
 import ExpenseUpload from './ExpenseUpload';
@@ -19,6 +19,9 @@ function mapStateToProps(state) {
 const mapDispatchToProps = dispatch => ({
   setExpensesInfo(arg) {
     dispatch(setExpensesInfo(arg));
+  },
+  updateExpense(arg) {
+    dispatch(updateExpense(arg));
   },
   setAdmin(arg) {
     dispatch(setAdminAction(arg));
@@ -87,12 +90,50 @@ class FinanceReport extends Component {
     }
   }
 
-  onAccept = expenseId => () => {
+  onAccept = expenseId => async () => {
     console.log('onAccept\n', expenseId);
+    try {
+      const res = await Request.axios('post', `/api/v1/expense/confirm`, { expenseId });
+
+      if (res && res.success) {
+        this.props.updateExpense({ expenseInfo: res.expenseInfo });
+        notification.success({
+          message: res.message,
+        });
+      } else {
+        notification.error({
+          message: res.message,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      notification.error({
+        message: 'Failed to accept.',
+      });
+    }
   };
 
-  onReject = expenseId => () => {
+  onReject = expenseId => async () => {
     console.log('onReject\n', expenseId);
+    try {
+      const res = await Request.axios('post', `/api/v1/expense/reject`, { expenseId });
+
+      if (res && res.success) {
+        this.props.updateExpense({ expenseInfo: res.expenseInfo });
+        notification.success({
+          message: res.message,
+        });
+      } else {
+        notification.error({
+          message: res.message,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      notification.error({
+        message: 'Failed to reject.',
+      });
+    }
   };
 
   render() {
