@@ -1,3 +1,5 @@
+import { ExpenseConfirm } from "./expense.confirm.model";
+
 export class Expense {
   public id: number;
   public userId: number;
@@ -5,6 +7,9 @@ export class Expense {
   public amount: number;
   public time: number;
   public status: number;
+
+  public approves: ExpenseConfirm[];
+  public rejects: ExpenseConfirm[];
 
   public static readonly STATUS = {
     CREATED: 0,

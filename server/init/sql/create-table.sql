@@ -201,6 +201,7 @@ DROP TABLE IF EXISTS `expense_confirm_info`;
 CREATE TABLE `expense_confirm_info` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `userId` int(11) NOT NULL,
+  `username` varchar(200) NOT NULL,
   `expenseId` varchar(200) NOT NULL DEFAULT '',
   `status` tinyint(1) NOT NULL DEFAULT 0,
   `comment` varchar(255) NOT NULL DEFAULT '',

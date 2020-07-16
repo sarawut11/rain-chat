@@ -809,6 +809,17 @@
     amount,
     time,
     status,         // 0: Created, 1: Requested, 2: Rejected, 3: Approved
+    approves: [
+      {
+        userId,
+        username,
+        expenseId,
+        status,    // 1: Approve, 2: Reject
+        comment,
+        time,
+      }, ...
+    ],
+    rejects: []   // same as approves
   }
   ```
 ### /expense/get-all (GET)
