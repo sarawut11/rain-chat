@@ -44,6 +44,13 @@
   .expense-upload-container {
     max-width: 500px;
     margin-bottom: 20px;
+    margin-top: 20px;
+  }
+
+  .expense-table {
+    .ant-table-content {
+      overflow-x: auto;
+    }
   }
 }
 
@@ -54,6 +61,15 @@
 .chat-report-container {
   max-width: 750px;
   margin: auto;
+}
+
+.expense-upload {
+  margin-left: calc(50% - 125px);
+}
+
+.expense-amount-form {
+  margin-left: calc(50% - 75px);
+  margin-top: 20px;
 }
 
 @media screen and (max-width: 647px) {

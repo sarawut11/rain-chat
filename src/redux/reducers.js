@@ -11,6 +11,7 @@ import { staticAdsReducer } from './reducers/staticAdsReducer';
 import { bShowAdsReducer } from './reducers/bShowAdsReducer';
 import { userReducer } from './reducers/userReducer';
 import { sendVitaeToRainReducer } from './reducers/sendVitaeToRainReducer';
+import { expenseReducer } from './reducers/expenseReducer';
 import { fetchAllGroupChatsReducer } from '../containers/GroupChatPage/groupChatReducer';
 import { fetchAllPrivateChatsReducer } from '../containers/PrivateChatPage/privateChatReducer';
 import { setGlobalSettingsReducer } from '../containers/SettingPage/settingReducer';
@@ -32,4 +33,5 @@ export default combineReducers({
   bShowAds: bShowAdsReducer,
   user: userReducer,
   vitaeToRain: sendVitaeToRainReducer,
+  expenseInfo: expenseReducer,
 });

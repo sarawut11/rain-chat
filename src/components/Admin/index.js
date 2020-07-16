@@ -35,7 +35,7 @@ class Admin extends Component {
           <TabPane tab="Wallet" key="wallet">
             <Wallet />
           </TabPane>
-          <TabPane tab="Finance Report" key="finance-report">
+          <TabPane tab="Finance Report" key="finance-report" id="finance-report">
             <FinanceReport />
           </TabPane>
         </Tabs>

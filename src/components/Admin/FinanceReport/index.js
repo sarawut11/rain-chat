@@ -1,30 +1,25 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-  Descriptions,
-  notification,
-  Spin,
-  Row,
-  Col,
-  Collapse,
-  Table,
-  Upload,
-  message,
-  Button,
-} from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { Descriptions, notification, Spin, Row, Col, Collapse, Table, Button } from 'antd';
+import { setExpensesInfo } from '../../../redux/actions/expenseAction';
 import { setAdminAction } from '../../../containers/AdminPage/adminAction';
 import Request from '../../../utils/request';
+import ExpenseUpload from './ExpenseUpload';
 
 const { Panel } = Collapse;
 
 function mapStateToProps(state) {
   return {
     adminState: state.adminState,
+    expenseInfo: state.expenseInfo,
+    userInfo: state.user,
   };
 }
 
 const mapDispatchToProps = dispatch => ({
+  setExpensesInfo(arg) {
+    dispatch(setExpensesInfo(arg));
+  },
   setAdmin(arg) {
     dispatch(setAdminAction(arg));
   },
@@ -40,24 +35,6 @@ const renderModerItem = item => (
   </Row>
 );
 
-const uploadDummyProps = {
-  name: 'file',
-  action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
-  headers: {
-    authorization: 'authorization-text',
-  },
-  onChange(info) {
-    if (info.file.status !== 'uploading') {
-      console.log(info.file, info.fileList);
-    }
-    if (info.file.status === 'done') {
-      message.success(`${info.file.name} file uploaded successfully`);
-    } else if (info.file.status === 'error') {
-      message.error(`${info.file.name} file upload failed.`);
-    }
-  },
-};
-
 class FinanceReport extends Component {
   state = {
     // eslint-disable-next-line react/no-unused-state
@@ -65,10 +42,29 @@ class FinanceReport extends Component {
   };
 
   async componentDidMount() {
-    const user_info = JSON.parse(localStorage.getItem('userInfo'));
+    // const user_info = JSON.parse(localStorage.getItem('userInfo'));
+    const user_info = this.props.userInfo.userInfo;
 
     if (user_info.role === 'OWNER') {
       this.setState({ loading: true });
+
+      try {
+        const res = await Request.axios('get', `/api/v1/expense/get-all`);
+
+        if (res && res.success) {
+          const { ownerCount, expenses } = res;
+          this.props.setExpensesInfo({ ownerCount, expenses });
+        } else {
+          notification.error({
+            message: res.message,
+          });
+        }
+      } catch (error) {
+        console.log(error);
+        notification.error({
+          message: 'Failed to get expense data.',
+        });
+      }
 
       try {
         const res = await Request.axios('get', `/api/v1/admin/moders`);
@@ -91,6 +87,14 @@ class FinanceReport extends Component {
     }
   }
 
+  onAccept = expenseId => () => {
+    console.log('onAccept\n', expenseId);
+  };
+
+  onReject = expenseId => () => {
+    console.log('onReject\n', expenseId);
+  };
+
   render() {
     const {
       adRevenue,
@@ -101,6 +105,10 @@ class FinanceReport extends Component {
       paidExpenses,
       unpaidExpenses,
     } = this.props.adminState;
+
+    const { expenses, ownerCount } = this.props.expenseInfo;
+
+    const { userInfo } = this.props.userInfo;
 
     const { loading } = this.state;
 
@@ -145,6 +153,72 @@ class FinanceReport extends Component {
       },
     ];
 
+    const expenseTableCol = [
+      {
+        title: 'Date',
+        dataIndex: 'requestTime',
+        key: 'requestTime',
+        render(time) {
+          const date = new Date(time * 1000);
+          return <span>{date.toLocaleString()}</span>;
+        },
+      },
+      {
+        title: 'Document',
+        dataIndex: 'docPath',
+        key: 'docPath',
+        render: docPath => (
+          // eslint-disable-next-line react/jsx-no-target-blank
+          <a href={docPath} target="_blank">
+            Download
+          </a>
+        ),
+      },
+      {
+        title: 'Amount',
+        dataIndex: 'amount',
+        key: 'amount',
+      },
+      {
+        title: 'Creator',
+        dataIndex: 'userId',
+        key: 'userId',
+      },
+      {
+        title: 'Confirmer',
+        dataIndex: 'confirmer',
+        key: 'confirmer',
+      },
+      {
+        title: 'Rejector',
+        dataIndex: 'rejector',
+        key: 'rejector',
+      },
+      {
+        title: '',
+        dataIndex: 'id',
+        key: 'expenseId',
+        render: (id, expense) => {
+          return (
+            <div>
+              {userInfo.username !== expense.username && (
+                <div>
+                  <Button type="primary" onClick={this.onAccept(id)}>
+                    Accept
+                  </Button>
+                  <Button danger onClick={this.onReject(id)} style={{ marginLeft: 10 }}>
+                    Reject
+                  </Button>
+                </div>
+              )}
+            </div>
+          );
+        },
+      },
+    ];
+
+    console.log('\n\n------   expenses render   --------\n\n', this);
+
     return (
       <div>
         <h2>Financial Report</h2>
@@ -179,18 +253,19 @@ class FinanceReport extends Component {
 
             <Col span={24}>
               <div className="ant-descriptions-title">Expenses</div>
-              <div className="expense-upload-container">
-                <Upload {...uploadDummyProps}>
-                  <Button>
-                    <UploadOutlined /> Click to upload expense pdf file
-                  </Button>
-                </Upload>
-              </div>
               <Descriptions bordered>
                 <Descriptions.Item label="TotalExpenses">{totalExpenses}</Descriptions.Item>
                 <Descriptions.Item label="Expenses Unpaid">{unpaidExpenses}</Descriptions.Item>
                 <Descriptions.Item label="Expenses Paid">{paidExpenses}</Descriptions.Item>
               </Descriptions>
+
+              <div className="expense-upload-container">
+                <ExpenseUpload />
+              </div>
+
+              <div className="expense-table">
+                <Table dataSource={expenses} columns={expenseTableCol} bordered />
+              </div>
             </Col>
           </Row>
         )}
