@@ -14,7 +14,7 @@ export const isOwner = (username): Promise<{
   userInfo?: User
 }> => new Promise(async (resolve, reject) => {
   const { userService } = ServicesContext.getInstance();
-  const userInfo: User = await userService.getUserInfoByUsername(username);
+  const userInfo: User = await userService.findUserByUsername(username);
   if (userInfo === undefined) {
     resolve({
       success: false,
@@ -42,7 +42,7 @@ export const checkUserInfo = (username, role?): Promise<{
   userInfo?: User
 }> => new Promise(async (resolve, reject) => {
   const { userService } = ServicesContext.getInstance();
-  const userInfo: User = await userService.getUserInfoByUsername(username);
+  const userInfo: User = await userService.findUserByUsername(username);
   if (userInfo === undefined) {
     resolve({
       success: false,
@@ -50,7 +50,7 @@ export const checkUserInfo = (username, role?): Promise<{
     });
     return;
   }
-  if (userInfo.userId === 1) { // Default Admin
+  if (userInfo.id === 1) { // Default Admin
     resolve({
       success: false,
       message: "Can't modify this user's info"

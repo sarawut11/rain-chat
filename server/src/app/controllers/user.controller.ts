@@ -38,7 +38,7 @@ export const updateProfileInfo = async (ctx, next) => {
     const { name, intro } = ctx.request.body;
     const { userService } = ServicesContext.getInstance();
 
-    const fileName = `avatar/avatar-${username}`;
+    const fileName = `avatar/avatar-${username}.png`;
     let avatarUrl: string;
     if (avatar !== undefined) {
       const { url } = await aws.uploadFile({

@@ -53,7 +53,7 @@ export const getMembershipPrice = async (ctx, next) => {
 
 export const upgradeMembership = async (ctx, next) => {
   try {
-    const { username } = ctx.state.user;
+    const { username, id: userId } = ctx.state.user;
     const { expectAmount } = ctx.request.body;
     const { transactionService } = ServicesContext.getInstance();
 
@@ -70,7 +70,7 @@ export const upgradeMembership = async (ctx, next) => {
       };
     }
 
-    const transInfo = await transactionService.createTransactionRequest(userInfo.userId, Transaction.TYPE.MEMBERSHIP, expectAmount);
+    const transInfo = await transactionService.createTransactionRequest(userId, Transaction.TYPE.MEMBERSHIP, expectAmount);
     if (transInfo === undefined) {
       ctx.body = {
         success: false,
