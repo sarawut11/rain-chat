@@ -813,6 +813,7 @@
     rejector,       // Rejectors' userId array
     requestTime,
     confirmTime,
+    status,         // 0: Created, 1: Requested, 2: Rejected, 3: Confirmed
   }
   ```
 ### /expense/get-all (GET)
