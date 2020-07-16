@@ -1,8 +1,10 @@
 import { ServicesContext, CMCContext } from "../context";
-import configs from "@configs";
 import { User } from "../models";
 import { Transaction } from "../models/transaction.model";
-import { checkUserInfo, isOwner } from "../utils/utils";
+import { checkUserInfo, isOwner } from "../utils";
+
+const MEMBERSHIP_PRICE_USD: number = Number(process.env.MEMBERSHIP_PRICE_USD);
+const TRANSACTION_REQUEST_TIMEOUT: number = Number(process.env.TRANSACTION_REQUEST_TIMEOUT);
 
 export const getAllUsers = async (ctx, next) => {
   try {
@@ -35,11 +37,11 @@ export const getMembershipPrice = async (ctx, next) => {
     const { username } = ctx.state.user;
     const { userService } = ServicesContext.getInstance();
     const userInfo: User = await userService.findUserByUsername(username);
-    const vitaePrice = _getMembershipPrice();
+    const vitaePrice = _getMembershipPriceInVitae();
     ctx.body = {
       success: true,
       vitaePrice,
-      usdPrice: configs.membership.price,
+      usdPrice: MEMBERSHIP_PRICE_USD,
       walletAddress: userInfo.walletAddress,
     };
   } catch (error) {
@@ -82,7 +84,7 @@ export const upgradeMembership = async (ctx, next) => {
     ctx.body = {
       success: true,
       message: "Your membership request is in pending.",
-      expireTime: configs.transactionTimeout
+      expireTime: TRANSACTION_REQUEST_TIMEOUT
     };
   } catch (error) {
     console.log(error.message);
@@ -103,6 +105,6 @@ const getUsersByRole = (page = 0, count = 10, role?, name?, username?, email?, s
   resolve(users);
 });
 
-const _getMembershipPrice = () => {
-  return configs.membership.price / CMCContext.getInstance().vitaePriceUSD();
+const _getMembershipPriceInVitae = () => {
+  return MEMBERSHIP_PRICE_USD / CMCContext.getInstance().vitaePriceUSD();
 };

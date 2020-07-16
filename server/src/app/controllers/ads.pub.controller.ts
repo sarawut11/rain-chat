@@ -1,11 +1,14 @@
-import * as mime from "mime-types";
-import * as moment from "moment";
 import { ParameterizedContext } from "koa";
-import { ServicesContext, CMCContext, RainContext, TransactionContext } from "../context";
-import { Ads, User, Transaction, InnerTransaction, TransactionDetail } from "../models";
-import configs from "@configs";
+import { ServicesContext, CMCContext, TransactionContext } from "../context";
+import { Ads, User, Transaction, TransactionDetail } from "../models";
 import { socketServer } from "../socket/app.socket";
-import { shareRevenue, uploadFile, deleteFile } from "../utils";
+import { uploadFile, deleteFile, now } from "../utils";
+
+const TRANSACTION_REQUEST_TIMEOUT = Number(process.env.TRANSACTION_REQUEST_TIMEOUT);
+const COST_PER_IMPRESSION_RAIN_ADS = Number(process.env.COST_PER_IMPRESSION_RAIN_ADS);
+const COST_PER_IMPRESSION_STATIC_ADS = Number(process.env.COST_PER_IMPRESSION_STATIC_ADS);
+const ADS_REV_IMP_REVENUE = Number(process.env.ADS_REV_IMP_REVENUE);
+const STATIC_ADS_INTERVAL = Number(process.env.STATIC_ADS_INTERVAL);
 
 export const registerAds = async (ctx, next) => {
   try {
@@ -33,7 +36,7 @@ export const registerAds = async (ctx, next) => {
     }
 
     // Upload Asset
-    const fileName = generateFileName(username, asset.type);
+    const fileName = generateFileName(username);
     const { url } = await uploadFile({
       fileName,
       filePath: asset.path,
@@ -48,7 +51,7 @@ export const registerAds = async (ctx, next) => {
       buttonLabel,
       title,
       description,
-      time: moment().utc().unix(),
+      time: now(),
       type
     });
     const insertAds: Ads = await adsService.findAdsById(res.insertId);
@@ -144,7 +147,7 @@ export const updateAds = async (ctx, next) => {
     if (asset !== undefined) {
       await deleteFile(existingAds.assetLink);
       const { url } = await uploadFile({
-        fileName: generateFileName(username, asset.type),
+        fileName: generateFileName(username),
         filePath: asset.path,
         fileType: asset.type,
       });
@@ -329,14 +332,14 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
         await socketServer.updateAdsStatus(adsId);
       }
       TransactionContext.getInstance().expireTransactionRequest(transInfo.insertId);
-    }, configs.transactionTimeout); // 5 mins
+    }, TRANSACTION_REQUEST_TIMEOUT);
 
     const updatedAds: Ads = await adsService.findAdsById(adsId);
     ctx.body = {
       success: true,
       message: "Successfully requested.",
       ads: updatedAds,
-      expireTime: configs.transactionTimeout,
+      expireTime: TRANSACTION_REQUEST_TIMEOUT,
     };
   } catch (error) {
     console.error(error.message);
@@ -355,8 +358,8 @@ export const getCostPerImpression = async (ctx: ParameterizedContext, next) => {
     // 25% -> Company Revenue
     // 75% -> Buy Impressions
     const vitaePrice = CMCContext.getInstance().vitaePriceUSD();
-    const usdPerImp = Number(type) === Ads.TYPE.RainRoomAds ? configs.ads.cost_per_impression_rain : configs.ads.cost_per_impression_static;
-    const vitaePerImp = (usdPerImp / vitaePrice) * (1 / configs.ads.revenue.imp_revenue);
+    const usdPerImp = Number(type) === Ads.TYPE.RainRoomAds ? COST_PER_IMPRESSION_RAIN_ADS : COST_PER_IMPRESSION_STATIC_ADS;
+    const vitaePerImp = (usdPerImp / vitaePrice) * (1 / ADS_REV_IMP_REVENUE);
     ctx.body = {
       success: true,
       message: "Success",
@@ -387,7 +390,7 @@ export const getStaticAds = async (ctx: ParameterizedContext, next) => {
     ctx.body = {
       success: true,
       ads,
-      duration: configs.ads.static_ads_interval
+      duration: STATIC_ADS_INTERVAL
     };
   } catch (error) {
     console.error(error.message);
@@ -428,6 +431,6 @@ const checkAdsId = (username, adsId): Promise<{
   });
 });
 
-const generateFileName = (username, fileType) => {
-  return `campaign/campaign-${username}-${moment().utc().unix()}.${mime.extension(fileType)}`;
+const generateFileName = (username) => {
+  return `campaign/campaign-${username}-${now()}.png`;
 };

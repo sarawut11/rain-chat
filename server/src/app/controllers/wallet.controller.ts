@@ -1,23 +1,24 @@
-import * as moment from "moment";
-import configs from "@configs";
-import { rpcInterface } from "../utils/wallet/RpcInterface";
 import { ServicesContext, RainContext } from "../context";
 import { User, Transaction, InnerTransaction, Ads, TransactionDetail, WalletNotify, WalletNotifyDetail } from "../models";
-import { shareRevenue } from "../utils";
+import { now, rpcInterface, shareRevenue } from "../utils";
+
+const COMPANY_USERID: number = Number(process.env.COMPANY_USERID);
+const COMPANY_RAIN_ADDRESS = process.env.COMPANY_RAIN_ADDRESS;
+const COMPANY_REV_COMPANY_EXPENSE = Number(process.env.COMPANY_REV_COMPANY_EXPENSE);
+const COMPANY_REV_OWNER_SHARE = Number(process.env.COMPANY_REV_OWNER_SHARE);
+const COMPANY_REV_MODER_SHARE = Number(process.env.COMPANY_REV_MODER_SHARE);
+const COMPANY_REV_MEMBER_SHARE = Number(process.env.COMPANY_REV_MEMBER_SHARE);
+
+const MEMBERSHIP_REV_COMPANY_SHARE = Number(process.env.MEMBERSHIP_REV_COMPANY_SHARE);
+const MEMBERSHIP_REV_SPONSOR_SHARE = Number(process.env.MEMBERSHIP_REV_SPONSOR_SHARE);
+const SPONSOR_SHARE_FIRST = Number(process.env.SPONSOR_SHARE_FIRST);
+const SPONSOR_SHARE_SECOND = Number(process.env.SPONSOR_SHARE_SECOND);
+const SPONSOR_SHARE_THIRD = Number(process.env.SPONSOR_SHARE_THIRD);
+
+const ADS_REV_COMPANY_SHARE = Number(process.env.ADS_REV_COMPANY_SHARE);
+const ADS_REV_IMP_REVENUE = Number(process.env.ADS_REV_IMP_REVENUE);
 
 export const walletNotify = async (ctx, next) => {
-  // ====== Update Transaction Info =====
-  // amount: txInfo.amount
-  // confirmations: txInfo.confirmations
-  // category: txInfo.details[0].category => "send" | "receive"
-  // receiveAddress: txInfo.details[0].address when category == "receive"
-  // We don't need to consider about send category
-  // Find who owns the receive address
-  // Check transaction table if the owner requested purchase
-  // Get purchase type, amount from the table
-  // Compare purchase amount and actual amount
-  // If actual amount >= purchase amount, update db and transaction table according to the purchase type
-  // If actual amount < purchase amount, update proper transaction table record to show "insufficient tokens, contact support" in frontend
   try {
     const { txid } = ctx.request.body;
     const { userService, transactionService } = ServicesContext.getInstance();
@@ -28,7 +29,7 @@ export const walletNotify = async (ctx, next) => {
     if (txInfo.confirmations > 0) {
       if (txInfo.details[0].category === WalletNotifyDetail.CATEGORY.receive) {
         const receiveAddress = txInfo.details[0].address;
-        if (receiveAddress === configs.companyRainAddress) {
+        if (receiveAddress === COMPANY_RAIN_ADDRESS) {
           await confirmSendVitaePurchase(txInfo.amount, txid, txInfo.timereceived);
           ctx.body = {
             success: true,
@@ -126,7 +127,7 @@ export const walletWithdraw = async (ctx, next) => {
     // Descrese balance | Move it to wallet notify later
     await userService.addBalance(userInfo.id, -amount);
     const updatedUser: User = await userService.findUserByUsername(username);
-    await transactionService.confirmTransaction(requestInfo.insertId, "", amount, moment().utc().unix());
+    await transactionService.confirmTransaction(requestInfo.insertId, "", amount, now());
 
     ctx.body = {
       success: true,
@@ -157,16 +158,13 @@ const confirmMembership = async (userInfo: User, amount: number) => {
   // 30% -----> Owner Share
   // 25% -----> Moderator Share
   // 25% -----> Membership Users Share
-  const companyRevenue = amount * configs.membership.revenue.company_revenue;
-  const companyExpense = companyRevenue * configs.company_revenue.company_expenses;
-  const ownerShare = companyRevenue * configs.company_revenue.owner_share;
-  const moderatorShare = companyRevenue * configs.company_revenue.moderator_share;
-  const membersShare = companyRevenue * configs.company_revenue.membership_share;
+  const companyRevenue = amount * MEMBERSHIP_REV_COMPANY_SHARE;
+  const rev = getCompanyRevenue(companyRevenue);
 
-  await shareRevenue(companyExpense, User.ROLE.COMPANY, InnerTransaction.TYPE.MEMBERSHIP_PURCHASE_SHARE);
-  await shareRevenue(ownerShare, User.ROLE.OWNER, InnerTransaction.TYPE.MEMBERSHIP_PURCHASE_SHARE);
-  await shareRevenue(moderatorShare, User.ROLE.MODERATOR, InnerTransaction.TYPE.MEMBERSHIP_PURCHASE_SHARE);
-  await shareRevenue(membersShare, User.ROLE.UPGRADED_USER, InnerTransaction.TYPE.MEMBERSHIP_PURCHASE_SHARE);
+  await shareRevenue(rev.companyExpense, User.ROLE.COMPANY, InnerTransaction.TYPE.MEMBERSHIP_PURCHASE_SHARE);
+  await shareRevenue(rev.ownerShare, User.ROLE.OWNER, InnerTransaction.TYPE.MEMBERSHIP_PURCHASE_SHARE);
+  await shareRevenue(rev.moderatorShare, User.ROLE.MODERATOR, InnerTransaction.TYPE.MEMBERSHIP_PURCHASE_SHARE);
+  await shareRevenue(rev.memberShare, User.ROLE.UPGRADED_USER, InnerTransaction.TYPE.MEMBERSHIP_PURCHASE_SHARE);
 
   // ====== Sponsor Share ===== //
   // 14.99 -> 5 | Sponsor Revenue
@@ -174,10 +172,10 @@ const confirmMembership = async (userInfo: User, amount: number) => {
   // 50% -----> First Sponsor
   // 25% -----> Second Sponsor (first sponsor's sponsor)
   // 25% -----> Third Sponsor (second sponsor's sponsor)
-  const sponsorRevenue = amount * configs.membership.revenue.sponsor_revenue;
-  const firstSponsorShare = sponsorRevenue * configs.membership.revenue.sponsor_1_rate;
-  const secondSponsorShare = sponsorRevenue * configs.membership.revenue.sponsor_2_rate;
-  const thirdSponsorShare = sponsorRevenue * configs.membership.revenue.sponsor_3_rate;
+  const sponsorRevenue = amount * MEMBERSHIP_REV_SPONSOR_SHARE;
+  const firstSponsorShare = sponsorRevenue * SPONSOR_SHARE_FIRST;
+  const secondSponsorShare = sponsorRevenue * SPONSOR_SHARE_SECOND;
+  const thirdSponsorShare = sponsorRevenue * SPONSOR_SHARE_THIRD;
 
   const firstSponsorId = userInfo.sponsor;
   const secondSponsorId = (await userService.findUserById(firstSponsorId)).sponsor;
@@ -204,7 +202,7 @@ const confirmAds = async (adsId: number, paidAmount: number, adsType: number, im
   }
 
   // Set Ads Impressions
-  const realCostPerImp = configs.ads.revenue.imp_revenue * costPerImp;
+  const realCostPerImp = ADS_REV_IMP_REVENUE * costPerImp;
   await adsService.setImpressions(adsId, existingAds.userId, impressions, realCostPerImp, paidAmount);
 
   // Revenue Share Model
@@ -215,16 +213,13 @@ const confirmAds = async (adsId: number, paidAmount: number, adsType: number, im
   // 30% -----> Owner Share
   // 25% -----> Moderator Share
   // 25% -----> Membership Users Share
-  const companyRevenue = paidAmount * configs.ads.revenue.company_revenue;
-  const companyExpense = companyRevenue * configs.company_revenue.company_expenses;
-  const ownerShare = companyRevenue * configs.company_revenue.owner_share;
-  const moderatorShare = companyRevenue * configs.company_revenue.moderator_share;
-  const membersShare = companyRevenue * configs.company_revenue.membership_share;
+  const companyRevenue = paidAmount * ADS_REV_COMPANY_SHARE;
+  const rev = getCompanyRevenue(companyRevenue);
 
-  await shareRevenue(companyExpense, User.ROLE.COMPANY, InnerTransaction.TYPE.ADS_PURCHASE_SHARE);
-  await shareRevenue(ownerShare, User.ROLE.OWNER, InnerTransaction.TYPE.ADS_PURCHASE_SHARE);
-  await shareRevenue(moderatorShare, User.ROLE.MODERATOR, InnerTransaction.TYPE.ADS_PURCHASE_SHARE);
-  await shareRevenue(membersShare, User.ROLE.UPGRADED_USER, InnerTransaction.TYPE.ADS_PURCHASE_SHARE);
+  await shareRevenue(rev.companyExpense, User.ROLE.COMPANY, InnerTransaction.TYPE.ADS_PURCHASE_SHARE);
+  await shareRevenue(rev.ownerShare, User.ROLE.OWNER, InnerTransaction.TYPE.ADS_PURCHASE_SHARE);
+  await shareRevenue(rev.moderatorShare, User.ROLE.MODERATOR, InnerTransaction.TYPE.ADS_PURCHASE_SHARE);
+  await shareRevenue(rev.memberShare, User.ROLE.UPGRADED_USER, InnerTransaction.TYPE.ADS_PURCHASE_SHARE);
 
   // ===== Rain Rest ===== //
   // 75% | Ads Operation
@@ -240,9 +235,18 @@ const confirmAds = async (adsId: number, paidAmount: number, adsType: number, im
 const confirmSendVitaePurchase = async (amount: number, txId: string, confirmTime: number) => {
   // Record Transaction
   const { transactionService } = ServicesContext.getInstance();
-  const requestInfo = await transactionService.createTransactionRequest(configs.companyUserId, Transaction.TYPE.VITAE_RAIN, amount);
+  const requestInfo = await transactionService.createTransactionRequest(COMPANY_USERID, Transaction.TYPE.VITAE_RAIN, amount);
   await transactionService.confirmTransaction(requestInfo.insertId, txId, amount, confirmTime);
 
   // Rain purchased amount to last active users
   await RainContext.getInstance().rainUsersByLastActivity(amount);
+};
+
+const getCompanyRevenue = (revenue: number) => {
+  return {
+    companyExpense: revenue * COMPANY_REV_COMPANY_EXPENSE,
+    ownerShare: revenue * COMPANY_REV_OWNER_SHARE,
+    moderatorShare: revenue * COMPANY_REV_MODER_SHARE,
+    memberShare: revenue * COMPANY_REV_MEMBER_SHARE,
+  };
 };

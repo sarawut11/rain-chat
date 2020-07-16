@@ -1,5 +1,4 @@
-import { query } from "../utils/db";
-import configs from "@configs";
+import { query } from "../utils";
 
 export class GroupChatService {
   readonly RAIN_G_TNAME = "rain_group_msg";
@@ -12,12 +11,13 @@ export class GroupChatService {
     time: "time",
     attachments: "attachments",
   };
+  readonly RAIN_GROUP_ID = process.env.RAIN_GROUP_ID;
 
   getGroupMsg(groupId, start, count) {
     const sql =
       `SELECT * FROM (
         SELECT g.message,g.attachments,g.time,g.fromUser,g.groupId,i.avatar,i.name
-        FROM ${groupId === configs.rain.group_id ? this.RAIN_G_TNAME : this.TABLE_NAME}
+        FROM ${groupId === this.RAIN_GROUP_ID ? this.RAIN_G_TNAME : this.TABLE_NAME}
         As g inner join user_info AS i ON g.fromUser = i.id
         WHERE groupId = ? order by time desc limit ?,?)
       As n order by n.time;`;
@@ -52,7 +52,7 @@ export class GroupChatService {
   saveGroupMsg({ fromUser, groupId, message, time, attachments }) {
     const data = [fromUser, groupId, message, time, attachments];
     const sql =
-      `INSERT INTO ${groupId === configs.rain.group_id ? this.RAIN_G_TNAME : this.TABLE_NAME}(
+      `INSERT INTO ${groupId === this.RAIN_GROUP_ID ? this.RAIN_G_TNAME : this.TABLE_NAME}(
         ${this.COLUMNS.fromUser},
         ${this.COLUMNS.groupId},
         ${this.COLUMNS.message},
@@ -66,7 +66,7 @@ export class GroupChatService {
     const data = [sortTime, groupId];
     const sql = `
       SELECT count(time) as unread
-      FROM ${groupId === configs.rain.group_id ? this.RAIN_G_TNAME : this.TABLE_NAME} as p
+      FROM ${groupId === this.RAIN_GROUP_ID ? this.RAIN_G_TNAME : this.TABLE_NAME} as p
       WHERE
         p.${this.COLUMNS.time} > ? AND
         p.${this.COLUMNS.groupId} = ?;`;

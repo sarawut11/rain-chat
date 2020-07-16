@@ -1,8 +1,9 @@
 import { authenticator } from "otplib";
 import { ServicesContext } from "../context";
-import configs from "@configs";
 import { Otp } from "../models";
-import * as moment from "moment";
+import { now } from "./utils";
+
+const OTP_TIMEOUT = Number(process.env.OTP_TIMEOUT);
 
 export const generateOtp = async (userId: number, type: number): Promise<string> => {
   const { otpService } = ServicesContext.getInstance();
@@ -18,8 +19,8 @@ export const verifyOtp = async (userId: number, type: number, token: string): Pr
   if (otp === undefined)
     return false;
 
-  const passedTime = moment().utc().unix() - otp.time;
-  if (passedTime > configs.otp.timeOut)
+  const passedTime = now() - otp.time;
+  if (passedTime > OTP_TIMEOUT / 1000)
     return false;
 
   return token === otp.code;

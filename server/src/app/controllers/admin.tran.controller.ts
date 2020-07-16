@@ -1,7 +1,8 @@
 import { ServicesContext } from "../context";
 import { User, InnerTransaction } from "../models";
 import { isOwner } from "../utils";
-import configs from "@configs";
+
+const COMPANY_USERID = Number(process.env.COMPANY_USERID);
 
 export const getFinancialAnalytics = async (ctx, next) => {
   try {
@@ -43,7 +44,7 @@ export const getFinancialAnalytics = async (ctx, next) => {
     });
 
     // Get Company Maintenance Amount
-    const maintenanceAmount: number = await innerTranService.getAmount(configs.companyUserId);
+    const maintenanceAmount: number = await innerTranService.getAmount(COMPANY_USERID);
 
     ctx.body = {
       success: true,
