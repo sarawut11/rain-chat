@@ -1,19 +1,21 @@
+import { ExpenseConfirm } from "./expense.confirm.model";
+
 export class Expense {
   public id: number;
   public userId: number;
   public docPath: string;
   public amount: number;
-  public confirmCount: number;
-  public requestTime: number;
-  public confirmTime: number;
-  public confirmer: string;
-  public rejector: string;
+  public time: number;
   public status: number;
+
+  public username: string;
+  public approves: ExpenseConfirm[];
+  public rejects: ExpenseConfirm[];
 
   public static readonly STATUS = {
     CREATED: 0,
     REQUESTED: 1,
     REJECTED: 2,
-    CONFIRMED: 3,
+    APPROVED: 3,
   };
 }

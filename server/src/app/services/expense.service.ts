@@ -1,5 +1,4 @@
-import { query } from "../utils/db";
-import * as moment from "moment";
+import { query, now } from "../utils";
 import { DefaultModel, Expense } from "../models";
 
 export class ExpenseService {
@@ -9,12 +8,7 @@ export class ExpenseService {
     userId: "userId",
     docPath: "docPath",
     amount: "amount",
-    confirmCount: "confirmCount",
-    rejectCount: "rejectCount",
-    requestTime: "requestTime",
-    confirmTime: "confirmTime",
-    confirmer: "confirmer",
-    rejector: "rejector",
+    time: "time",
     status: "status",
   };
 
@@ -24,10 +18,9 @@ export class ExpenseService {
         ${this.COL.userId},
         ${this.COL.docPath},
         ${this.COL.amount},
-        ${this.COL.confirmer},
-        ${this.COL.requestTime}
-      ) VALUES (?,?,?,?,?);`;
-    const result = await query(sql, [userId, docPath, amount, userId, moment().utc().unix()]);
+        ${this.COL.time}
+      ) VALUES (?,?,?,?);`;
+    const result = await query(sql, [userId, docPath, amount, now()]);
     return result;
   }
 
@@ -50,39 +43,13 @@ export class ExpenseService {
     return expenses;
   }
 
-  async updateConfirmCount(expId: number, userId: number): Promise<DefaultModel> {
-    const existingExpense = await this.getExpenseById(expId);
-    const confirmerIds = existingExpense.confirmer.split(",");
-    // Already confirmed
-    if (confirmerIds.includes(userId.toString())) return undefined;
-
-    confirmerIds.push(userId.toString());
-    const newConfirmer = confirmerIds.join(",");
+  async updateExpenseStatus(expenseId: number, status: number): Promise<DefaultModel> {
     const sql = `
       UPDATE ${this.TABLE_NAME}
       SET
-        ${this.COL.confirmCount} = ?,
-        ${this.COL.confirmer} = ?
+        ${this.COL.status} = ?
       WHERE ${this.COL.id} = ?;`;
-    const result = await query(sql, [confirmerIds.length, newConfirmer, expId]);
-    return result;
-  }
-
-  async updateRejectCount(expId: number, userId: number): Promise<DefaultModel> {
-    const existingExpense = await this.getExpenseById(expId);
-    const rejectorIds = existingExpense.rejector.split(",");
-    // Already rejected
-    if (rejectorIds.includes(userId.toString())) return undefined;
-
-    rejectorIds.push(userId.toString());
-    const newRejector = rejectorIds.join(",");
-    const sql = `
-      UPDATE ${this.TABLE_NAME}
-      SET
-        ${this.COL.rejectCount} = ?,
-        ${this.COL.rejector} = ?
-      WHERE ${this.COL.id} = ?;`;
-    const result = await query(sql, [rejectorIds.length, newRejector, expId]);
+    const result = await query(sql, [status, expenseId]);
     return result;
   }
 }

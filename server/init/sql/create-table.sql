@@ -191,13 +191,21 @@ CREATE TABLE `expense_info` (
   `userId` int(11) NOT NULL,
   `docPath` varchar(200) NOT NULL DEFAULT '',
   `amount` double NOT NULL DEFAULT 0,
-  `confirmCount` int(11) NOT NULL DEFAULT 1,
-  `rejectCount` int(11) NOT NULL DEFAULT 0,
-  `requestTime` int(11) NOT NULL DEFAULT 0,
-  `confirmTime` int(11) NOT NULL DEFAULT 0,
-  `confirmer` varchar(200) NOT NULL DEFAULT '',
-  `rejector` varchar(200) NOT NULL DEFAULT '',
+  `time` int(11) NOT NULL DEFAULT 0,
   `status` tinyint(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+# Dump of table expense_info
+# ------------------------------------------------------------
+DROP TABLE IF EXISTS `expense_confirm_info`;
+CREATE TABLE `expense_confirm_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userId` int(11) NOT NULL,
+  `username` varchar(200) NOT NULL,
+  `expenseId` varchar(200) NOT NULL DEFAULT '',
+  `status` tinyint(1) NOT NULL DEFAULT 0,
+  `comment` varchar(255) NOT NULL DEFAULT '',
+  `time` varchar(200) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 # Dump of table withdraw_address_info

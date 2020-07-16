@@ -1,7 +1,6 @@
-import * as mime from "mime-types";
 import * as moment from "moment";
 import { ServicesContext } from "../context";
-import { User, Expense } from "../models";
+import { User, Expense, ExpenseConfirm } from "../models";
 import { isOwner, uploadFile } from "../utils";
 import { socketServer } from "../socket/app.socket";
 import { socketEventNames } from "../socket/resource.socket";
@@ -23,7 +22,7 @@ export const createExpenseRequest = async (ctx, next) => {
     if (doc === undefined) {
       ctx.body = {
         success: false,
-        message: "Attach a video or an image and try again."
+        message: "Attach a document for approval and try again."
       };
       return;
     }
@@ -73,12 +72,15 @@ export const getAllExpenses = async (ctx, next) => {
 
     const { userService, expenseService } = ServicesContext.getInstance();
     const expenses: Expense[] = await expenseService.getAllExpenses();
+    const fullExpenses = await Promise.all(expenses.map(expense => {
+      return getFullExpenseInfo(expense.id);
+    }));
     const ownerCount = await userService.getUserCountByRole(User.ROLE.OWNER);
     ctx.body = {
       success: true,
       message: "Success",
       ownerCount,
-      expenses,
+      expenses: fullExpenses,
     };
   } catch (error) {
     console.log(error.message);
@@ -89,31 +91,35 @@ export const getAllExpenses = async (ctx, next) => {
   }
 };
 
-export const confirmExpense = async (ctx, next) => {
+export const approveExpense = async (ctx, next) => {
   try {
-    const { username } = ctx.state.user;
+    const { username, id: userId } = ctx.state.user;
     const checkRole = await isOwner(username);
     if (checkRole.success === false) {
       ctx.body = checkRole;
       return;
     }
 
-    // Confirm Expense
+    // Approve Expense
     const { expenseId } = ctx.request.body;
-    const { userService, expenseService } = ServicesContext.getInstance();
-    const result = await expenseService.updateConfirmCount(expenseId, checkRole.userInfo.id);
-    if (result === undefined) {
+    const { userService, expenseConfirmService } = ServicesContext.getInstance();
+    const confirmResult = expenseConfirmService.approveExpense(userId, username, expenseId);
+    if (confirmResult === undefined) {
       ctx.body = {
         success: false,
         message: "You already confirmed this expense."
       };
       return;
     }
-    const updatedExpense = await expenseService.getExpenseById(expenseId);
+
+    // Check total confirmers count
+    const owners = await userService.findUsersByRole(User.ROLE.OWNER);
+    await checkApproves(expenseId, owners);
+    const updatedExpense = await getFullExpenseInfo(expenseId);
 
     // Notify other owners
-    const owners = await userService.findUsersByRole(User.ROLE.OWNER);
-    socketServer.emitTo(getOwnersSocketId(owners), socketEventNames.ExpenseConfirmed, {
+    const otherOwners = owners.filter(owner => owner.id !== userId);
+    socketServer.emitTo(getOwnersSocketId(otherOwners), socketEventNames.ExpenseConfirmed, {
       creatorUsername: updatedExpense.userId,
       confirmerUsername: username
     });
@@ -134,28 +140,33 @@ export const confirmExpense = async (ctx, next) => {
 
 export const rejectExpense = async (ctx, next) => {
   try {
-    const { username } = ctx.state.user;
+    const { username, id: userId } = ctx.state.user;
     const checkRole = await isOwner(username);
     if (checkRole.success === false) {
       ctx.body = checkRole;
       return;
     }
 
+    // Reject Expense
     const { expenseId } = ctx.request.body;
-    const { userService, expenseService } = ServicesContext.getInstance();
-    const result = await expenseService.updateRejectCount(expenseId, checkRole.userInfo.id);
-    if (result === undefined) {
+    const { userService, expenseService, expenseConfirmService } = ServicesContext.getInstance();
+    const rejectResult = await expenseConfirmService.rejectExpense(userId, username, expenseId);
+    if (rejectResult === undefined) {
       ctx.body = {
         success: false,
         message: "You already rejected this expense."
       };
       return;
     }
-    const updatedExpense = await expenseService.getExpenseById(expenseId);
+
+    // Update Expense Status
+    await expenseService.updateExpenseStatus(expenseId, Expense.STATUS.REJECTED);
+    const updatedExpense = await getFullExpenseInfo(expenseId);
 
     // Notify other owners
     const owners = await userService.findUsersByRole(User.ROLE.OWNER);
-    socketServer.emitTo(getOwnersSocketId(owners), socketEventNames.ExpenseRejected, {
+    const otherOwners = owners.filter(owner => owner.id !== userId);
+    socketServer.emitTo(getOwnersSocketId(otherOwners), socketEventNames.ExpenseRejected, {
       creatorUsername: updatedExpense.userId,
       rejectorUsername: username
     });
@@ -182,4 +193,24 @@ const getOwnersSocketId = (users: User[]) => {
   const socketids = [];
   users.forEach(user => socketids.push(user.socketid));
   return socketids.join(",");
+};
+
+const checkApproves = async (expenseId: number, owners: User[]) => {
+  const { expenseService, expenseConfirmService } = ServicesContext.getInstance();
+  const confirmCount = await expenseConfirmService.getExpenseConfirmsCount(expenseId, ExpenseConfirm.STATUS.Approve);
+  if (owners.length === confirmCount) {
+    await expenseService.updateExpenseStatus(expenseId, Expense.STATUS.APPROVED);
+  }
+};
+
+const getFullExpenseInfo = async (expenseId: number): Promise<Expense> => {
+  const { userService, expenseService, expenseConfirmService } = ServicesContext.getInstance();
+
+  const expenseInfo = await expenseService.getExpenseById(expenseId);
+  const creator = await userService.findUserById(expenseInfo.userId);
+  expenseInfo.username = creator.username;
+  const confirms = await expenseConfirmService.getExpenseConfirms(expenseId);
+  expenseInfo.approves = confirms.filter(confirm => confirm.status === ExpenseConfirm.STATUS.Approve);
+  expenseInfo.rejects = confirms.filter(confirm => confirm.status === ExpenseConfirm.STATUS.Reject);
+  return expenseInfo;
 };

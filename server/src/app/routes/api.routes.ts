@@ -48,7 +48,7 @@ const api = new Router()
   // Expense
   .get("/expense/get-all", APIController.getAllExpenses)
   .post("/expense/create", APIController.createExpenseRequest)
-  .post("/expense/confirm", APIController.confirmExpense)
+  .post("/expense/approve", APIController.approveExpense)
   .post("/expense/reject", APIController.rejectExpense)
 
   // Admin Dashboard
