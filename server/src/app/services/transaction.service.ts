@@ -86,7 +86,7 @@ export class TransactionService {
     return query(sql, Transaction.STATUS.CONFIRMED);
   }
 
-  async getTotalPurchaseAmount(type: number) {
+  async getTotalPurchaseAmount(type: number): Promise<number> {
     const trans: Transaction[] = await this.getTransactions(type);
     let totalAmount = 0;
     trans.forEach(tran => totalAmount += tran.paidAmount);
@@ -142,5 +142,29 @@ export class TransactionService {
       ${this.columns.type} = ?
     ORDER BY ${this.columns.time} DESC LIMIT 1;`;
     return query(sql, [Transaction.STATUS.CONFIRMED, amount, confirmTime, userId, type]);
+  }
+
+  async getTotalRainDonation(): Promise<number> {
+    const sql = `
+      SELECT * FROM ${this.TABLE_NAME}
+      WHERE
+        ${this.columns.type} = ? AND
+        ${this.columns.status} = ?;`;
+    const trans: Transaction[] = await query(sql, [Transaction.TYPE.VITAE_RAIN, Transaction.STATUS.CONFIRMED]);
+    let totalDonation = 0;
+    trans.forEach(tran => totalDonation += tran.paidAmount);
+    return totalDonation;
+  }
+
+  async getTotalWithdrawn(): Promise<number> {
+    const sql = `
+      SELECT * FROM ${this.TABLE_NAME}
+      WHERE
+        ${this.columns.type} = ? AND
+        ${this.columns.status} = ?;`;
+    const trans: Transaction[] = await query(sql, [Transaction.TYPE.WITHDRAW, Transaction.STATUS.CONFIRMED]);
+    let amount = 0;
+    trans.forEach(tran => amount += tran.paidAmount);
+    return amount;
   }
 }

@@ -6,7 +6,7 @@ import { InnerTransaction } from "../models";
 export class InnerTransactionService {
 
   readonly TABLE_NAME = "inner_transaction_info";
-  readonly COLUMNS = {
+  readonly COL = {
     id: "id",
     userId: "userId",
     type: "type",
@@ -20,10 +20,10 @@ export class InnerTransactionService {
     reward /= userIds.length;
     let sql = `
       INSERT INTO ${this.TABLE_NAME} (
-        ${this.COLUMNS.userId},
-        ${this.COLUMNS.type},
-        ${this.COLUMNS.amount},
-        ${this.COLUMNS.time}
+        ${this.COL.userId},
+        ${this.COL.type},
+        ${this.COL.amount},
+        ${this.COL.time}
       ) VALUE
     `;
     const time = moment().utc().unix();
@@ -38,14 +38,14 @@ export class InnerTransactionService {
   getTransByType(type: number) {
     const sql = `
       SELECT * FROM ${this.TABLE_NAME}
-      WHERE ${this.COLUMNS.type} = ?;`;
+      WHERE ${this.COL.type} = ?;`;
     return query(sql, type);
   }
 
   getUserTrans(userId: number) {
     const sql = `
       SELECT * FROM ${this.TABLE_NAME}
-      WHERE ${this.COLUMNS.userId} = ?;`;
+      WHERE ${this.COL.userId} = ?;`;
     return query(sql, userId);
   }
 
@@ -53,8 +53,8 @@ export class InnerTransactionService {
     const sql = `
       SELECT * FROM ${this.TABLE_NAME}
       WHERE
-        ${this.COLUMNS.userId} = ? AND
-        ${this.COLUMNS.type} = ?;`;
+        ${this.COL.userId} = ? AND
+        ${this.COL.type} = ?;`;
     return query(sql, [userId, type]);
   }
 
@@ -63,8 +63,8 @@ export class InnerTransactionService {
     const sql = `
       SELECT * FROM ${this.TABLE_NAME}
       WHERE
-        ${this.COLUMNS.userId} IN (${userIdArray}) AND
-        ${this.COLUMNS.type} = ?;`;
+        ${this.COL.userId} IN (${userIdArray}) AND
+        ${this.COL.type} = ?;`;
     return query(sql, [type]);
   }
 
@@ -112,5 +112,16 @@ export class InnerTransactionService {
       payment,
       weekPayments
     };
+  }
+
+  async getTotalRainedAmount(): Promise<number> {
+    const sql = `
+      SELECT ${this.COL.amount}
+      FROM ${this.TABLE_NAME}
+      WHERE ${this.COL.type} = ?;`;
+    const trans: InnerTransaction[] = await query(sql, InnerTransaction.TYPE.RAIN);
+    let amount = 0;
+    trans.forEach(tran => amount += tran.amount);
+    return amount;
   }
 }

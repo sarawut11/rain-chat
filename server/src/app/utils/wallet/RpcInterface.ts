@@ -16,7 +16,7 @@ class RPCInterface {
                 method,
                 params,
                 id: 1
-              });
+            });
             axios.post(this.url, postData, {
                 headers: {
                     "content-type": "application/json",
@@ -49,6 +49,11 @@ class RPCInterface {
 
     getTransaction = async (txid) => {
         const res = await this.call("gettransaction", [txid]);
+        return res;
+    }
+
+    getBalance = async (): Promise<number> => {
+        const res = await this.call("getbalance", []);
         return res;
     }
 }

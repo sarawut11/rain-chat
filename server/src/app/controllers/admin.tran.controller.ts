@@ -1,6 +1,6 @@
 import { ServicesContext } from "../context";
 import { User, InnerTransaction } from "../models";
-import { isOwner } from "../utils/utils";
+import { isOwner } from "../utils";
 import configs from "@configs";
 
 export const getFinancialAnalytics = async (ctx, next) => {
