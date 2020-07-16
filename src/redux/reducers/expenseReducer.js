@@ -3,17 +3,27 @@ import { SET_EXPENSES, UPDATE_EXPENSE, CREATE_EXPENSE } from '../actions/expense
 const initialState = {
   ownerCount: 0,
   expenses: [],
+  totalExpenses: 0,
+  paidExpenses: 0,
+  unpaidExpenses: 0,
 };
 
 const expenseReducer = (previousState = initialState, action) => {
   switch (action.type) {
     case SET_EXPENSES:
       try {
-        const { expenses, ownerCount } = action.data;
+        const { expenses, ownerCount, totalExpenses, paidExpenses, unpaidExpenses } = action.data;
         const nexExpenses = expenses.sort((a, b) => {
           return b.time - a.time;
         });
-        return { ...previousState, expenses: nexExpenses, ownerCount };
+        return {
+          ...previousState,
+          expenses: nexExpenses,
+          ownerCount,
+          totalExpenses,
+          paidExpenses,
+          unpaidExpenses,
+        };
       } catch (e) {
         return { ...previousState, ...action.data };
       }

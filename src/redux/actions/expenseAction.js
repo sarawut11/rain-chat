@@ -5,7 +5,7 @@ const CREATE_EXPENSE = 'CREATE_EXPENSE';
 const setExpensesInfo = (data = {}) => {
   return {
     type: SET_EXPENSES,
-    data: { expenses: data.expenses, ownerCount: data.ownerCount },
+    data: { ...data },
   };
 };
 

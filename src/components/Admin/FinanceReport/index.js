@@ -60,8 +60,14 @@ class FinanceReport extends Component {
         const res = await Request.axios('get', `/api/v1/expense/get-all`);
 
         if (res && res.success) {
-          const { ownerCount, expenses } = res;
-          this.props.setExpensesInfo({ ownerCount, expenses });
+          const { ownerCount, expenses, totalExpenses, paidExpenses, unpaidExpenses } = res;
+          this.props.setExpensesInfo({
+            ownerCount,
+            expenses,
+            totalExpenses,
+            paidExpenses,
+            unpaidExpenses,
+          });
         } else {
           notification.error({
             message: res.message,
@@ -142,17 +148,15 @@ class FinanceReport extends Component {
   };
 
   render() {
+    const { adRevenue, upgradedRevenue, ownerPayment, moders } = this.props.adminState;
+
     const {
-      adRevenue,
-      upgradedRevenue,
-      ownerPayment,
-      moders,
+      ownerCount,
+      expenses,
       totalExpenses,
       paidExpenses,
       unpaidExpenses,
-    } = this.props.adminState;
-
-    const { ownerCount, expenses } = this.props.expenseInfo;
+    } = this.props.expenseInfo;
     const { userInfo } = this.props.userInfo;
     const { loading } = this.state;
 
@@ -235,16 +239,19 @@ class FinanceReport extends Component {
         render(approves) {
           let approvesStr = '';
 
-          approves.forEach(approve => {
-            if (approvesStr === '') {
-              approvesStr = `${approve.username}`;
-            } else {
-              approvesStr += `, ${approve.username}`;
-            }
-          });
+          if (approves) {
+            approves.forEach(approve => {
+              if (approvesStr === '') {
+                approvesStr = `${approve.username}`;
+              } else {
+                approvesStr += `, ${approve.username}`;
+              }
+            });
+          }
+
           return (
             <div>
-              {approvesStr} ({approves.length}/{ownerCount})
+              {approvesStr} ({approves ? approves.length : 0}/{ownerCount})
             </div>
           );
         },
@@ -256,16 +263,19 @@ class FinanceReport extends Component {
         render(rejects) {
           let rejectsStr = '';
 
-          rejects.forEach(reject => {
-            if (rejectsStr === '') {
-              rejectsStr = `${reject.username}`;
-            } else {
-              rejectsStr += `, ${reject.username}`;
-            }
-          });
+          if (rejects) {
+            rejects.forEach(reject => {
+              if (rejectsStr === '') {
+                rejectsStr = `${reject.username}`;
+              } else {
+                rejectsStr += `, ${reject.username}`;
+              }
+            });
+          }
+
           return (
             <div>
-              {rejectsStr} ({rejects.length}/{ownerCount})
+              {rejectsStr} ({rejects ? rejects.length : 0}/{ownerCount})
             </div>
           );
         },
