@@ -115,8 +115,6 @@ class ExpenseUpload extends React.Component {
       </Button>
     );
 
-    console.log('\n\n---   expense upload render   ---\n\n', this);
-
     return (
       <div>
         <Button type="primary" onClick={this.showModal}>
