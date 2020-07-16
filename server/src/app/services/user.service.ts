@@ -416,6 +416,16 @@ export class UserService {
     return query(sql, [amount, userId]);
   }
 
+  async getBalance(userId: number): Promise<number> {
+    const sql = `
+      SELECT ${this.USER_COL.balance}
+      FROM ${this.USER_TABLE}
+      WHERE ${this.USER_COL.id} = ?;`;
+    const user: User[] = await query(sql, userId);
+    if (user.length === 0) return 0;
+    return user[0].balance;
+  }
+
   shareRevenue(amount: number, role: string) {
     const sql = `
       UPDATE ${this.USER_TABLE} as a

@@ -10,7 +10,7 @@ export const createExpenseRequest = async (ctx, next) => {
     const { username } = ctx.state.user;
     const { amount } = ctx.request.body;
     const doc = ctx.request.files.doc;
-    const { userService, expenseService } = ServicesContext.getInstance();
+    const { userService, expenseService, expenseConfirmService } = ServicesContext.getInstance();
 
     // Check Ownership
     const checkRole = await isOwner(username);
@@ -38,11 +38,15 @@ export const createExpenseRequest = async (ctx, next) => {
 
     // Register DB
     const result = await expenseService.createExpenseRequest(userInfo.id, url, amount);
-    const insertedExpense = await expenseService.getExpenseById(result.insertId);
+    await expenseConfirmService.approveExpense(userInfo.id, username, result.insertId);
+
+    // Check Total Confirmer Count
+    const owners = await userService.findUsersByRole(User.ROLE.OWNER);
+    await checkApproves(result.insertId, owners.length);
+    const insertedExpense = await getFullExpenseInfo(result.insertId);
 
     // Notify other owners
-    const owners = await userService.findUsersByRole(User.ROLE.OWNER);
-    socketServer.emitTo(getOwnersSocketId(owners), socketEventNames.ExpenseCreated, {
+    socketServer.emitTo(getOwnersSocketId(owners, userInfo.id), socketEventNames.ExpenseCreated, {
       creatorUsername: username,
       amount,
     });
@@ -76,10 +80,20 @@ export const getAllExpenses = async (ctx, next) => {
       return getFullExpenseInfo(expense.id);
     }));
     const ownerCount = await userService.getUserCountByRole(User.ROLE.OWNER);
+    let totalExpenses = 0;
+    fullExpenses.forEach(expense => totalExpenses += expense.amount);
+    const paidExpenses = fullExpenses.filter(expense => expense.status === Expense.STATUS.APPROVED).length;
+    const unpaidExpenses = fullExpenses.filter(expense => expense.status !== Expense.STATUS.APPROVED).length;
+    const companyExpense = await userService.getBalance(Number(process.env.COMPANY_USERID));
+
     ctx.body = {
       success: true,
       message: "Success",
       ownerCount,
+      companyExpense,
+      totalExpenses,
+      paidExpenses,
+      unpaidExpenses,
       expenses: fullExpenses,
     };
   } catch (error) {
@@ -114,12 +128,11 @@ export const approveExpense = async (ctx, next) => {
 
     // Check total confirmers count
     const owners = await userService.findUsersByRole(User.ROLE.OWNER);
-    await checkApproves(expenseId, owners);
+    await checkApproves(expenseId, owners.length);
     const updatedExpense = await getFullExpenseInfo(expenseId);
 
     // Notify other owners
-    const otherOwners = owners.filter(owner => owner.id !== userId);
-    socketServer.emitTo(getOwnersSocketId(otherOwners), socketEventNames.ExpenseConfirmed, {
+    socketServer.emitTo(getOwnersSocketId(owners, userId), socketEventNames.ExpenseConfirmed, {
       creatorUsername: updatedExpense.userId,
       confirmerUsername: username
     });
@@ -165,11 +178,62 @@ export const rejectExpense = async (ctx, next) => {
 
     // Notify other owners
     const owners = await userService.findUsersByRole(User.ROLE.OWNER);
-    const otherOwners = owners.filter(owner => owner.id !== userId);
-    socketServer.emitTo(getOwnersSocketId(otherOwners), socketEventNames.ExpenseRejected, {
+    socketServer.emitTo(getOwnersSocketId(owners, userId), socketEventNames.ExpenseRejected, {
       creatorUsername: updatedExpense.userId,
       rejectorUsername: username
     });
+
+    ctx.body = {
+      success: true,
+      message: "Success",
+      expenseInfo: updatedExpense
+    };
+  } catch (error) {
+    console.log(error.message);
+    ctx.body = {
+      success: false,
+      message: "Failed!",
+    };
+  }
+};
+
+export const withdrawExpense = async (ctx, next) => {
+  try {
+    const { username, id: userId } = ctx.state.user;
+    const checkRole = await isOwner(username);
+    if (checkRole.success === false) {
+      ctx.body = checkRole;
+      return;
+    }
+
+    // Check Expense Status
+    const { expenseId } = ctx.request.body;
+    const { userService, expenseService } = ServicesContext.getInstance();
+    const expenseInfo = await expenseService.getExpenseById(expenseId);
+    if (expenseInfo.status !== Expense.STATUS.APPROVED) {
+      ctx.body = {
+        success: false,
+        message: "This expense is not approved yet."
+      };
+      return;
+    }
+
+    // Check Company Balance
+    const companyId = Number(process.env.COMPANY_USERID);
+    const companyBalance = await userService.getBalance(companyId);
+    if (expenseInfo.amount > companyBalance) {
+      ctx.body = {
+        success: false,
+        message: "Insufficient balance"
+      };
+      return;
+    }
+
+    // Withdraw
+    await userService.addBalance(companyId, -expenseInfo.amount);
+    await userService.addBalance(userId, expenseInfo.amount);
+    await expenseService.updateExpenseStatus(expenseId, Expense.STATUS.WITHDRAWN);
+    const updatedExpense = await getFullExpenseInfo(expenseId);
 
     ctx.body = {
       success: true,
@@ -189,16 +253,16 @@ const generateFileName = (username: string) => {
   return `expense/expense-${username}-${moment().utc().unix()}.pdf`;
 };
 
-const getOwnersSocketId = (users: User[]) => {
+const getOwnersSocketId = (users: User[], userId: number) => {
   const socketids = [];
-  users.forEach(user => socketids.push(user.socketid));
+  users.filter(user => user.id !== userId).forEach(user => socketids.push(user.socketid));
   return socketids.join(",");
 };
 
-const checkApproves = async (expenseId: number, owners: User[]) => {
+const checkApproves = async (expenseId: number, ownerCount: number) => {
   const { expenseService, expenseConfirmService } = ServicesContext.getInstance();
   const confirmCount = await expenseConfirmService.getExpenseConfirmsCount(expenseId, ExpenseConfirm.STATUS.Approve);
-  if (owners.length === confirmCount) {
+  if (ownerCount === confirmCount) {
     await expenseService.updateExpenseStatus(expenseId, Expense.STATUS.APPROVED);
   }
 };

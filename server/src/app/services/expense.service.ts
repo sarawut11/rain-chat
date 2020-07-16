@@ -46,8 +46,7 @@ export class ExpenseService {
   async updateExpenseStatus(expenseId: number, status: number): Promise<DefaultModel> {
     const sql = `
       UPDATE ${this.TABLE_NAME}
-      SET
-        ${this.COL.status} = ?
+      SET ${this.COL.status} = ?
       WHERE ${this.COL.id} = ?;`;
     const result = await query(sql, [status, expenseId]);
     return result;

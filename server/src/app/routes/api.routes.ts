@@ -50,6 +50,7 @@ const api = new Router()
   .post("/expense/create", APIController.createExpenseRequest)
   .post("/expense/approve", APIController.approveExpense)
   .post("/expense/reject", APIController.rejectExpense)
+  .post("/expense/withdraw", APIController.withdrawExpense)
 
   // Admin Dashboard
   .get("/admin/home", APIController.getHomeAnalytics)

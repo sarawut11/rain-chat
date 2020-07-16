@@ -17,5 +17,6 @@ export class Expense {
     REQUESTED: 1,
     REJECTED: 2,
     APPROVED: 3,
+    WITHDRAWN: 4,
   };
 }

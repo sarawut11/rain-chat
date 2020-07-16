@@ -57,6 +57,7 @@
     - [/expense/create (POST)](#expensecreate-post)
     - [/expense/approve (POST)](#expenseapprove-post)
     - [/expense/reject (POST)](#expensereject-post)
+    - [/expense/withdraw (POST)](#expensewithdraw-post)
 - [2. Socket Events](#2-socket-events)
   - [2.1 Initialize Socket](#21-initialize-socket)
     - [connect (Client)](#connect-client)
@@ -928,7 +929,7 @@
     docPath,
     amount,
     time,
-    status,         // 0: Created, 1: Requested, 2: Rejected, 3: Approved
+    status,         // 0: Created, 1: Requested, 2: Rejected, 3: Approved, 4: Withdrawn
     approves: [
       {
         userId,
@@ -951,6 +952,10 @@
     success: true/false,
     message,
     ownerCount,
+    companyExpense,
+    totalExpenses,
+    paidExpenses,
+    unpaidExpenses,
     expenses: []
   }
   ```
@@ -974,7 +979,7 @@
 ### /expense/approve (POST)
   Approve expense
 
-  ***Request Body (Form-Data)***
+  ***Request Body***
   | Fields    | Description           |
   | --------- | --------------------- |
   | expenseId | Expense id to approve |
@@ -990,10 +995,26 @@
 ### /expense/reject (POST)
   Reject expense
 
-  ***Request Body (Form-Data)***
+  ***Request Body***
   | Fields    | Description          |
   | --------- | -------------------- |
   | expenseId | Expense id to reject |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    expenseInfo: {
+    }
+  }
+  ```
+### /expense/withdraw (POST)
+  Withdraw expense
+
+  ***Request Body***
+  | Fields    | Description           |
+  | --------- | --------------------- |
+  | expenseId | Expense id to approve |
   ***Response***
   ```
   {
