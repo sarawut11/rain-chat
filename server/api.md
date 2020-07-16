@@ -1,6 +1,6 @@
 # Headers
 1. API Endpoints
-  * [1.1 Authentication][#11-authentication]
+  * [1.1 Authentication](#11-authentication)
 
 # API / Socket Documentation
 > **Note**
