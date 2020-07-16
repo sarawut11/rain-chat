@@ -43,7 +43,7 @@ export const createExpenseRequest = async (ctx, next) => {
     // Check Total Confirmer Count
     const owners = await userService.findUsersByRole(User.ROLE.OWNER);
     await checkApproves(result.insertId, owners.length);
-    const insertedExpense = getFullExpenseInfo(result.insertId);
+    const insertedExpense = await getFullExpenseInfo(result.insertId);
 
     // Notify other owners
     socketServer.emitTo(getOwnersSocketId(owners, userInfo.id), socketEventNames.ExpenseCreated, {
@@ -84,11 +84,13 @@ export const getAllExpenses = async (ctx, next) => {
     fullExpenses.forEach(expense => totalExpenses += expense.amount);
     const paidExpenses = fullExpenses.filter(expense => expense.status === Expense.STATUS.APPROVED).length;
     const unpaidExpenses = fullExpenses.filter(expense => expense.status !== Expense.STATUS.APPROVED).length;
+    const companyExpense = await userService.getBalance(Number(process.env.COMPANY_USERID));
 
     ctx.body = {
       success: true,
       message: "Success",
       ownerCount,
+      companyExpense,
       totalExpenses,
       paidExpenses,
       unpaidExpenses,
@@ -180,6 +182,58 @@ export const rejectExpense = async (ctx, next) => {
       creatorUsername: updatedExpense.userId,
       rejectorUsername: username
     });
+
+    ctx.body = {
+      success: true,
+      message: "Success",
+      expenseInfo: updatedExpense
+    };
+  } catch (error) {
+    console.log(error.message);
+    ctx.body = {
+      success: false,
+      message: "Failed!",
+    };
+  }
+};
+
+export const withdrawExpense = async (ctx, next) => {
+  try {
+    const { username, id: userId } = ctx.state.user;
+    const checkRole = await isOwner(username);
+    if (checkRole.success === false) {
+      ctx.body = checkRole;
+      return;
+    }
+
+    // Check Expense Status
+    const { expenseId } = ctx.request.body;
+    const { userService, expenseService } = ServicesContext.getInstance();
+    const expenseInfo = await expenseService.getExpenseById(expenseId);
+    if (expenseInfo.status !== Expense.STATUS.APPROVED) {
+      ctx.body = {
+        success: false,
+        message: "This expense is not approved yet."
+      };
+      return;
+    }
+
+    // Check Company Balance
+    const companyId = Number(process.env.COMPANY_USERID);
+    const companyBalance = await userService.getBalance(companyId);
+    if (expenseInfo.amount > companyBalance) {
+      ctx.body = {
+        success: false,
+        message: "Insufficient balance"
+      };
+      return;
+    }
+
+    // Withdraw
+    await userService.addBalance(companyId, -expenseInfo.amount);
+    await userService.addBalance(userId, expenseInfo.amount);
+    await expenseService.updateExpenseStatus(expenseId, Expense.STATUS.WITHDRAWN);
+    const updatedExpense = await getFullExpenseInfo(expenseId);
 
     ctx.body = {
       success: true,
