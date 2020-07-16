@@ -8,6 +8,7 @@ export class Expense {
   public time: number;
   public status: number;
 
+  public username: string;
   public approves: ExpenseConfirm[];
   public rejects: ExpenseConfirm[];
 

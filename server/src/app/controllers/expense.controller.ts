@@ -204,9 +204,11 @@ const checkApproves = async (expenseId: number, owners: User[]) => {
 };
 
 const getFullExpenseInfo = async (expenseId: number): Promise<Expense> => {
-  const { expenseService, expenseConfirmService } = ServicesContext.getInstance();
+  const { userService, expenseService, expenseConfirmService } = ServicesContext.getInstance();
 
   const expenseInfo = await expenseService.getExpenseById(expenseId);
+  const creator = await userService.findUserById(expenseInfo.userId);
+  expenseInfo.username = creator.username;
   const confirms = await expenseConfirmService.getExpenseConfirms(expenseId);
   expenseInfo.approves = confirms.filter(confirm => confirm.status === ExpenseConfirm.STATUS.Approve);
   expenseInfo.rejects = confirms.filter(confirm => confirm.status === ExpenseConfirm.STATUS.Reject);
