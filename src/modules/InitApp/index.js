@@ -1,6 +1,5 @@
 import io from 'socket.io-client';
 import { notification as antNotification } from 'antd';
-import { filterParams } from 'qiniu-js';
 import store from '../../redux/store';
 import {
   updateHomePageListAction,

@@ -95,7 +95,7 @@ class VitaeToRain extends Component {
 
   handleOk = async () => {
     const { amount } = this.state;
-    const { vitaeToRainMode, walletAddress } = this.props.vitaeToRainInfo;
+    const { vitaeToRainMode } = this.props.vitaeToRainInfo;
     const { balance } = this.props.userInfo;
 
     if (vitaeToRainMode === SEND_ACTUAL_TOKEN) {

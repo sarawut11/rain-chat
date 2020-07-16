@@ -44,6 +44,17 @@
   .expense-upload-container {
     max-width: 500px;
     margin-bottom: 20px;
+    margin-top: 20px;
+  }
+
+  .expense-table {
+    .ant-table-content {
+      overflow-x: auto;
+    }
+  }
+
+  .expense-reject-btn {
+    margin-left: 20px;
   }
 }
 
@@ -56,10 +67,24 @@
   margin: auto;
 }
 
+.expense-upload {
+  margin-left: calc(50% - 125px);
+}
+
+.expense-amount-form {
+  margin-left: calc(50% - 75px);
+  margin-top: 20px;
+}
+
 @media screen and (max-width: 647px) {
   .dashboard-container {
     padding: 20px;
     width: 100%;
     margin-bottom: 48px;
+
+    .expense-reject-btn {
+      margin-top: 10px;
+      margin-left: 0px;
+    }
   }
 }
