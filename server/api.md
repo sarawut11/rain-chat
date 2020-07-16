@@ -45,6 +45,7 @@
     - [/admin/moders/cancel (POST)](#adminmoderscancel-post)
     - [/admin/chat (GET)](#adminchat-get)
     - [/admin/financial (GET)](#adminfinancial-get)
+    - [/admin/wallet (GET)](#adminwallet-get)
   - [1.8 Wallet](#18-wallet)
     - [/wallet/company-rain-address (GET)](#walletcompany-rain-address-get)
     - [/wallet/withdraw (POST)](#walletwithdraw-post)
@@ -854,6 +855,19 @@
       }, ...
     ],
     maintenanceAmount,    // Company Maintenance Revenue
+  }
+  ```
+### /admin/wallet (GET)
+  Get wallet analytics
+  
+  ***Response***
+  ```
+  {
+    success: true/false,
+    currentBalance,
+    totalRainDonation,
+    totalRained,
+    totalWithdrawn,
   }
   ```
 
