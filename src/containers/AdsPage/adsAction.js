@@ -17,6 +17,7 @@ const CREATE_ADS = 'CREATE_ADS';
 const UPDATE_ADS = 'UPDATE_ADS';
 const DELETE_ADS = 'DELETE_ADS';
 const REQUEST_ADS = 'REQUEST_ADS';
+const UPDATE_ADS_STATUS = 'UPDATE_ADS_STATUS';
 
 const formatAdsList = adsList => {
   let createdAdsList = [...adsList];
@@ -60,7 +61,6 @@ const formatAdsList = adsList => {
 };
 
 const setAdsAction = (ads = {}) => {
-  console.log('\n---    set ads action   ---\n', ads);
   const adsList = [...ads.data];
 
   return {
@@ -83,7 +83,6 @@ const createAdsAction = ads => {
 };
 
 const editAdsAction = ads => {
-  console.log('edit ads action', ads);
   const { adsState } = ads;
   const adsList = [...adsState.adsList];
   adsList.forEach((item, index) => {
@@ -145,15 +144,22 @@ const requestAdsAction = ads => {
   return { type: REQUEST_ADS, data: adsStateCopy };
 };
 
+const updateAdsStatus = (adsId, status) => {
+  return { type: UPDATE_ADS_STATUS, data: { adsId: Number(adsId), status } };
+};
+
 export {
   SET_ADS,
   CREATE_ADS,
   UPDATE_ADS,
   DELETE_ADS,
   REQUEST_ADS,
+  UPDATE_ADS_STATUS,
   setAdsAction,
   createAdsAction,
   editAdsAction,
   deleteAdsAction,
   requestAdsAction,
+  updateAdsStatus,
+  formatAdsList,
 };

@@ -17,7 +17,7 @@ const mapDispatchToProps = dispatch => ({
 
 const StaticAdsPanel = props => {
   const { ads } = props.staticAds;
-  console.log('static ads panel render', this);
+
   return (
     <div className="static-campaign-container">
       {ads && (
