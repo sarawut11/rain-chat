@@ -1,3 +1,7 @@
+# Headers
+# 1. API Endpoints
+## 1.1 Authentication
+
 # API / Socket Documentation
 > **Note**
 > - All Date / Time formats are in unix timestamp format in UTC timezone
