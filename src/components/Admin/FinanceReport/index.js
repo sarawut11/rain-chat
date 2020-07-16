@@ -10,6 +10,7 @@ import {
   EXPENSE_REQUESTED,
   EXPENSE_CONFIRMED,
   EXPENSE_REJECTED,
+  EXPENSE_WITHDREW,
 } from './constant';
 
 const { Panel } = Collapse;
@@ -313,6 +314,7 @@ class FinanceReport extends Component {
             {status === EXPENSE_REQUESTED && <Tag color="#108ee9">requested</Tag>}
             {status === EXPENSE_CONFIRMED && <Tag color="#87d068">confirmed</Tag>}
             {status === EXPENSE_REJECTED && <Tag color="#f50">rejected</Tag>}
+            {status === EXPENSE_WITHDREW && <Tag color="#108ee9">withdrew</Tag>}
           </div>
         ),
       },
