@@ -9,6 +9,7 @@ import {
   InnerTransactionService,
   OtpService,
   ExpenseService,
+  ExpenseConfirmService,
   WithdrawAddressService,
 } from "./../services";
 
@@ -119,6 +120,16 @@ export class ServicesContext {
   }
   public setExpenseService(service: ExpenseService): ServicesContext {
     this._expenseService = service;
+    return this;
+  }
+
+  // Expense Confirm service
+  private _expenseConfirmService: ExpenseConfirmService;
+  public get expenseConfirmService() {
+    return this._expenseConfirmService;
+  }
+  public setExpenseConfirmService(service: ExpenseConfirmService): ServicesContext {
+    this._expenseConfirmService = service;
     return this;
   }
 

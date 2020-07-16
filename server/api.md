@@ -807,13 +807,8 @@
     userId,
     docPath,
     amount,
-    confirmCount,
-    rejectCount,
-    confirmer,      // Confirmers' userId array with comma, e.g 1,2,3,4
-    rejector,       // Rejectors' userId array
-    requestTime,
-    confirmTime,
-    status,         // 0: Created, 1: Requested, 2: Rejected, 3: Confirmed
+    time,
+    status,         // 0: Created, 1: Requested, 2: Rejected, 3: Approved
   }
   ```
 ### /expense/get-all (GET)
@@ -845,13 +840,13 @@
     }
   }
   ```
-### /expense/confirm (POST)
-  Confirm expense
+### /expense/approve (POST)
+  Approve expense
 
   ***Request Body (Form-Data)***
   | Fields    | Description           |
   | --------- | --------------------- |
-  | expenseId | Expense id to confirm |
+  | expenseId | Expense id to approve |
   ***Response***
   ```
   {

@@ -1,7 +1,7 @@
 import * as mime from "mime-types";
 import * as moment from "moment";
 import { ServicesContext } from "../context";
-import { User, Expense } from "../models";
+import { User, Expense, ExpenseConfirm } from "../models";
 import { isOwner, uploadFile } from "../utils";
 import { socketServer } from "../socket/app.socket";
 import { socketEventNames } from "../socket/resource.socket";
@@ -89,30 +89,36 @@ export const getAllExpenses = async (ctx, next) => {
   }
 };
 
-export const confirmExpense = async (ctx, next) => {
+export const approveExpense = async (ctx, next) => {
   try {
-    const { username } = ctx.state.user;
+    const { username, id: userId } = ctx.state.user;
     const checkRole = await isOwner(username);
     if (checkRole.success === false) {
       ctx.body = checkRole;
       return;
     }
 
-    // Confirm Expense
+    // Approve Expense
     const { expenseId } = ctx.request.body;
-    const { userService, expenseService } = ServicesContext.getInstance();
-    const result = await expenseService.updateConfirmCount(expenseId, checkRole.userInfo.id);
-    if (result === undefined) {
+    const { userService, expenseService, expenseConfirmService } = ServicesContext.getInstance();
+    const confirmResult = expenseConfirmService.approveExpense(userId, expenseId);
+    if (confirmResult === undefined) {
       ctx.body = {
         success: false,
         message: "You already confirmed this expense."
       };
       return;
     }
+
+    // Check total confirmers count
+    const owners = await userService.findUsersByRole(User.ROLE.OWNER);
+    const confirmCount = await expenseConfirmService.getExpenseConfirmsCount(expenseId, ExpenseConfirm.STATUS.Approve);
+    if (owners.length === confirmCount) {
+      await expenseService.updateExpenseStatus(expenseId, Expense.STATUS.APPROVED);
+    }
     const updatedExpense = await expenseService.getExpenseById(expenseId);
 
     // Notify other owners
-    const owners = await userService.findUsersByRole(User.ROLE.OWNER);
     socketServer.emitTo(getOwnersSocketId(owners), socketEventNames.ExpenseConfirmed, {
       creatorUsername: updatedExpense.userId,
       confirmerUsername: username
@@ -134,23 +140,27 @@ export const confirmExpense = async (ctx, next) => {
 
 export const rejectExpense = async (ctx, next) => {
   try {
-    const { username } = ctx.state.user;
+    const { username, id: userId } = ctx.state.user;
     const checkRole = await isOwner(username);
     if (checkRole.success === false) {
       ctx.body = checkRole;
       return;
     }
 
+    // Reject Expense
     const { expenseId } = ctx.request.body;
-    const { userService, expenseService } = ServicesContext.getInstance();
-    const result = await expenseService.updateRejectCount(expenseId, checkRole.userInfo.id);
-    if (result === undefined) {
+    const { userService, expenseService, expenseConfirmService } = ServicesContext.getInstance();
+    const rejectResult = await expenseConfirmService.rejectExpense(userId, expenseId);
+    if (rejectResult === undefined) {
       ctx.body = {
         success: false,
         message: "You already rejected this expense."
       };
       return;
     }
+
+    // Update Expense Status
+    await expenseService.updateExpenseStatus(expenseId, Expense.STATUS.REJECTED);
     const updatedExpense = await expenseService.getExpenseById(expenseId);
 
     // Notify other owners

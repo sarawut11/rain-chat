@@ -18,6 +18,7 @@ import {
   InnerTransactionService,
   OtpService,
   ExpenseService,
+  ExpenseConfirmService,
   WithdrawAddressService
 } from "./services";
 
@@ -48,6 +49,7 @@ export const App = Server.init(app => {
       .setAdsService(new AdsService())
       .setOtpService(new OtpService())
       .setExpenseService(new ExpenseService())
+      .setExpenseConfirmService(new ExpenseConfirmService())
       .setWithdrawAddressService(new WithdrawAddressService())
       .setTransactionService(new TransactionService())
       .setInnerTransactionService(new InnerTransactionService());

@@ -3,17 +3,13 @@ export class Expense {
   public userId: number;
   public docPath: string;
   public amount: number;
-  public confirmCount: number;
-  public requestTime: number;
-  public confirmTime: number;
-  public confirmer: string;
-  public rejector: string;
+  public time: number;
   public status: number;
 
   public static readonly STATUS = {
     CREATED: 0,
     REQUESTED: 1,
     REJECTED: 2,
-    CONFIRMED: 3,
+    APPROVED: 3,
   };
 }
