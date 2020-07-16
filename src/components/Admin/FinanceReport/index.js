@@ -147,6 +147,29 @@ class FinanceReport extends Component {
     }
   };
 
+  onWithdraw = expenseId => async () => {
+    console.log('onWithdraw\n', expenseId);
+    try {
+      const res = await Request.axios('post', `/api/v1/expense/withdraw`, { expenseId });
+
+      if (res && res.success) {
+        this.props.updateExpense({ expenseInfo: res.expenseInfo });
+        notification.success({
+          message: res.message,
+        });
+      } else {
+        notification.error({
+          message: res.message,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      notification.error({
+        message: 'Failed to withdraw.',
+      });
+    }
+  };
+
   render() {
     const { adRevenue, upgradedRevenue, ownerPayment, moders } = this.props.adminState;
 
@@ -316,20 +339,23 @@ class FinanceReport extends Component {
             });
           }
 
-          if (alreadyDecided) {
-            return null;
-          }
-
           return (
             <div>
-              {userInfo.username !== expense.username && expense.status === EXPENSE_CREATED && (
+              {userInfo.username !== expense.username &&
+                expense.status === EXPENSE_CREATED &&
+                !alreadyDecided && (
+                  <div>
+                    <Button type="primary" onClick={this.onAccept(id)}>
+                      Approve
+                    </Button>
+                    <Button danger onClick={this.onReject(id)} className="expense-reject-btn">
+                      Reject
+                    </Button>
+                  </div>
+                )}
+              {userInfo.username === expense.username && expense.status === EXPENSE_CONFIRMED && (
                 <div>
-                  <Button type="primary" onClick={this.onAccept(id)}>
-                    Approve
-                  </Button>
-                  <Button danger onClick={this.onReject(id)} className="expense-reject-btn">
-                    Reject
-                  </Button>
+                  <Button onClick={this.onWithdraw(id)}>Withdraw</Button>
                 </div>
               )}
             </div>
@@ -337,6 +363,8 @@ class FinanceReport extends Component {
         },
       },
     ];
+
+    console.log('\n\n -----      Expense render       ------ \n\n', this);
 
     return (
       <div>
