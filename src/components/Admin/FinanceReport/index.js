@@ -312,9 +312,9 @@ class FinanceReport extends Component {
           <div>
             {status === EXPENSE_CREATED && <Tag color="#2db7f5">created</Tag>}
             {status === EXPENSE_REQUESTED && <Tag color="#108ee9">requested</Tag>}
-            {status === EXPENSE_CONFIRMED && <Tag color="#87d068">confirmed</Tag>}
+            {status === EXPENSE_CONFIRMED && <Tag color="#108ee9">confirmed</Tag>}
             {status === EXPENSE_REJECTED && <Tag color="#f50">rejected</Tag>}
-            {status === EXPENSE_WITHDREW && <Tag color="#108ee9">withdrew</Tag>}
+            {status === EXPENSE_WITHDREW && <Tag color="#87d068">withdrew</Tag>}
           </div>
         ),
       },
