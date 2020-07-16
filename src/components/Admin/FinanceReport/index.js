@@ -233,11 +233,21 @@ class FinanceReport extends Component {
         title: 'Confirmer',
         dataIndex: 'confirmer',
         key: 'confirmer',
+        render: (confirmer, expense) => (
+          <div>
+            {expense.username},{confirmer} ({expense.confirmCount}/{ownerCount})
+          </div>
+        ),
       },
       {
         title: 'Rejector',
         dataIndex: 'rejector',
         key: 'rejector',
+        render: (rejector, expense) => (
+          <div>
+            {rejector} ({expense.rejectCount}/{ownerCount})
+          </div>
+        ),
       },
       {
         title: 'Status',
