@@ -1,14 +1,16 @@
 import { ServicesContext } from "../context";
 import * as moment from "moment";
-import configs from "@configs";
 import { User } from "../models";
+
+const VITAE_POST_TIME = Number(process.env.VITAE_POST_TIME);
+const COMPANY_USERID = Number(process.env.COMPANY_USERID);
 
 export const now = (): number => {
   return moment().utc().unix();
 };
 
 export const isVitaePostEnabled = (user: User): boolean => {
-  const enabled: boolean = (moment().utc().unix() - configs.rain.vitae_post_time / 1000) >= user.lastVitaePostTime;
+  const enabled: boolean = (now() - VITAE_POST_TIME / 1000) >= user.lastVitaePostTime;
   return enabled;
 };
 
@@ -87,7 +89,7 @@ export const shareRevenue = async (amount: number, role: string, type: number) =
   if (role === User.ROLE.COMPANY) {
     // Deposit Company Wallet directly later ...
     // Add Inner Transactions
-    await innerTranService.addTrans([configs.companyUserId], amount, type);
+    await innerTranService.addTrans([COMPANY_USERID], amount, type);
   }
   else {
     // Add Inner Transactions

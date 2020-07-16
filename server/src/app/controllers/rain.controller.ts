@@ -1,7 +1,5 @@
 import { ServicesContext, RainContext } from "../context";
-import { Transaction, User, TransactionDetail } from "../models";
-import configs from "@configs";
-import * as moment from "moment";
+import { User } from "../models";
 
 export const getCompanyRainAddress = async (ctx, next) => {
   try {
@@ -19,7 +17,7 @@ export const getCompanyRainAddress = async (ctx, next) => {
 
     ctx.body = {
       success: true,
-      rainAddress: configs.companyRainAddress
+      rainAddress: process.env.COMPANY_RAIN_ADDRESS
     };
   } catch (error) {
     console.error(error.message);

@@ -1,9 +1,9 @@
-import * as moment from "moment";
-import { query } from "../utils/db";
-import { getInArraySQL } from "../utils/utils";
+import { query, getInArraySQL, now } from "../utils";
 import { isNullOrUndefined } from "util";
-import configs from "@configs";
 import { User, UserRelation, DefaultModel } from "../models";
+
+const RAIN_GROUP_ID = process.env.RAIN_GROUP_ID;
+const POP_RAIN_BALANCE_LIMIT = Number(process.env.POP_RAIN_BALANCE_LIMIT);
 
 export class UserService {
   readonly USER_TABLE = "user_info";
@@ -302,7 +302,7 @@ export class UserService {
     UNION
     ( SELECT i.groupId ,i.name , i.createTime, g.message, g.time, g.attachments
       FROM  group_info AS i INNER JOIN rain_group_msg as g on i.groupId = ? ORDER BY TIME DESC LIMIT 1 );`;
-    return query(sql, [userId, configs.rain.group_id, configs.rain.group_id]);
+    return query(sql, [userId, RAIN_GROUP_ID, RAIN_GROUP_ID]);
   }
 
   // Find homepage private chat list by userId
@@ -351,9 +351,8 @@ export class UserService {
   }
 
   async getUsersByPopLimited(): Promise<User[]> {
-    const limit = configs.rain.pop_rain_balance_limit;
     const sql = `SELECT * FROM ${this.USER_TABLE} WHERE ${this.USER_COL.popBalance} >= ?;`;
-    const users: User[] = await query(sql, limit);
+    const users: User[] = await query(sql, POP_RAIN_BALANCE_LIMIT);
     return users;
   }
 
@@ -462,7 +461,7 @@ export class UserService {
         ${this.USER_COL.lastUpgradeTime} = ?
       WHERE ${this.USER_COL.id} = ?;
     `;
-    return query(sql, [role, moment().utc().unix(), userId]);
+    return query(sql, [role, now(), userId]);
   }
 
   getUsersByExpired(role, expireTime) {
@@ -487,7 +486,7 @@ export class UserService {
       UPDATE ${this.USER_TABLE}
       SET ${this.USER_COL.lastVitaePostTime} = ?
       WHERE ${this.USER_COL.id} = ?`;
-    return query(sql, [moment().utc().unix(), userId]);
+    return query(sql, [now(), userId]);
   }
 
   // Add as a friend unilaterally (may later add the function of turning on friend verification)

@@ -1,14 +1,13 @@
 import * as AWS from "aws-sdk";
 import * as fs from "fs";
-import configs from "@configs";
 
 const config = {
-  accessKeyId: configs.aws_bucket.access_key,
-  secretAccessKey: configs.aws_bucket.secret_access_key,
-  region: configs.aws_bucket.bucket_region,
-  endpoint: configs.aws_bucket.bucket_endpoint
+  accessKeyId: process.env.AWS_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_BUCKET_REGION,
+  endpoint: process.env.AWS_BUCKET_ENDPOINT,
 };
-const bucket = configs.aws_bucket.bucket_name;
+const bucket = process.env.AWS_BUCKET_NAME;
 const s3 = new AWS.S3(config);
 
 export const uploadFile = ({ fileName, filePath, fileType }): Promise<any> =>

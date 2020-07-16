@@ -1,13 +1,18 @@
 import { socketServer } from "../socket/app.socket";
 import { ServicesContext } from "./ServicesContext";
-import configs from "@configs";
 import { Ads, User } from "../models";
 import { socketEventNames } from "../socket/resource.socket";
-import { InnerTransaction } from "../models/transaction.inner.model";
+import { InnerTransaction } from "../models";
 
 export class RainContext {
   static instance: RainContext;
   static usersToRainAds: number[];
+
+  readonly RAIN_ADS_COMING_AFTER: number = Number(process.env.RAIN_ADS_COMING_AFTER);
+  readonly RAIN_ADS_DURATION: number = Number(process.env.RAIN_ADS_DURATION);
+  readonly RAIN_ADS_INTERVAL: number = Number(process.env.RAIN_ADS_INTERVAL);
+  readonly STATIC_ADS_INTERVAL: number = Number(process.env.STATIC_ADS_INTERVAL);
+  readonly POP_RAIN_LAST_POST_USER: number = Number(process.env.POP_RAIN_LAST_POST_USER);
 
   static getInstance(): RainContext {
     if (!RainContext.instance) {
@@ -19,13 +24,13 @@ export class RainContext {
 
   constructor() {
     // Ads Rain
-    const adsTimeInterval = configs.ads.ads_time_interval + configs.ads.ads_duration;
+    const adsTimeInterval = this.RAIN_ADS_INTERVAL + this.RAIN_ADS_DURATION;
     setInterval(() => this.campaignRainAds(), adsTimeInterval);
 
     // Static Ads
-    const staticAdsTimeInterval = configs.ads.static_ads_interval;
-    setInterval(() => this.campaignStaticAds(), staticAdsTimeInterval);
+    setInterval(() => this.campaignStaticAds(), this.STATIC_ADS_INTERVAL);
   }
+
   // ========== Ads Rain Section ========== //
   async campaignRainAds() {
     try {
@@ -43,9 +48,9 @@ export class RainContext {
       // Broadcast RainComing event
       console.log("Rain is coming");
       socketServer.broadcast("rainComing", {
-        after: configs.ads.rain_coming_delay
+        after: this.RAIN_ADS_COMING_AFTER
       });
-      await delay(configs.ads.rain_coming_delay);
+      await delay(this.RAIN_ADS_COMING_AFTER);
 
       // Show Ads First
       console.log("Raining - id:", ads.id);
@@ -60,9 +65,9 @@ export class RainContext {
           buttonLabel: ads.buttonLabel,
           type: ads.type,
         },
-        duration: configs.ads.ads_duration
+        duration: this.RAIN_ADS_DURATION
       });
-      await delay(configs.ads.ads_duration);
+      await delay(this.RAIN_ADS_DURATION);
 
       // Rain Rewards after ads duration
       const impressions = ads.impressions;
@@ -130,7 +135,7 @@ export class RainContext {
 
   async rainUsersByLastActivity(amount) {
     const { userService } = ServicesContext.getInstance();
-    const lastActiveUsers: User[] = await userService.getUsersByLastActivity(configs.rain.pop_rain_last_post);
+    const lastActiveUsers: User[] = await userService.getUsersByLastActivity(this.POP_RAIN_LAST_POST_USER);
     amount /= lastActiveUsers.length;
     const userIds: number[] = [];
     lastActiveUsers.forEach(user => userIds.push(user.id));

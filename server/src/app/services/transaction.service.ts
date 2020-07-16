@@ -1,8 +1,9 @@
-import { query } from "../utils/db";
-import * as moment from "moment";
+import { query, now } from "../utils";
 import { Transaction, DefaultModel, TransactionDetail } from "../models";
 import { TransactionContext } from "../context";
-import configs from "@configs";
+
+const COMPANY_USERID = Number(process.env.COMPANY_USERID);
+const TRANSACTION_REQUEST_TIMEOUT = Number(process.env.TRANSACTION_REQUEST_TIMEOUT);
 
 export class TransactionService {
 
@@ -23,7 +24,7 @@ export class TransactionService {
   async createTransactionRequest(userId: number, type: number, expectAmount: number, details?: TransactionDetail): Promise<DefaultModel> {
     // To keep only one pending transaction at a time.
     const trans: Transaction = await this.getLastRequestedTransaction(userId);
-    if (trans !== undefined && userId !== configs.companyUserId) {
+    if (trans !== undefined && userId !== COMPANY_USERID) {
       console.log(`Register Transaction => Failed, User:${userId} still have pending or insufficient request.`);
       return undefined;
     }
@@ -36,11 +37,11 @@ export class TransactionService {
       ${this.columns.time},
       ${this.columns.details})
     values(?,?,?,?,?,?);`;
-    const result: DefaultModel = await query(sql, [userId, type, Transaction.STATUS.REQUESTED, expectAmount, moment().utc().unix(), JSON.stringify(details)]);
+    const result: DefaultModel = await query(sql, [userId, type, Transaction.STATUS.REQUESTED, expectAmount, now(), JSON.stringify(details)]);
 
     setTimeout(() => {
       TransactionContext.getInstance().expireTransactionRequest(result.insertId);
-    }, configs.transactionTimeout);
+    }, TRANSACTION_REQUEST_TIMEOUT);
     return result;
   }
 
@@ -125,7 +126,7 @@ export class TransactionService {
       values(?,?,?,?,?,?);`;
     return query(sql, [
       tranId, paidAmount, confirmTime, Transaction.STATUS.INSUFFICIENT_BALANCE, tranInfo.id,
-      tranInfo.userId, tranInfo.type, Transaction.STATUS.REQUESTED, tranInfo.expectAmount - paidAmount, moment().utc().unix(), tranInfo.details
+      tranInfo.userId, tranInfo.type, Transaction.STATUS.REQUESTED, tranInfo.expectAmount - paidAmount, now(), tranInfo.details
     ]);
   }
 

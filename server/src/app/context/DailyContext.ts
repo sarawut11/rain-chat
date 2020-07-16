@@ -1,8 +1,9 @@
 import * as moment from "moment";
 import { CronJob } from "cron";
-import configs from "@configs";
 import { ServicesContext } from "./ServicesContext";
 import { User, Ban } from "../models";
+
+const RAIN_GROUP_ID = process.env.RAIN_GROUP_ID;
 
 export class DailyContext {
   static instance: DailyContext;
@@ -50,7 +51,7 @@ export class DailyContext {
       const bannedUsers = await userService.getUsersByRainBanned();
       if (bannedUsers.length === 0) return;
       const banNumbers: number[] = await Promise.all<number>(bannedUsers.map(user => {
-        return banService.numberOfBan(user.id, configs.rain.group_id, Ban.TYPE.GROUP);
+        return banService.numberOfBan(user.id, RAIN_GROUP_ID, Ban.TYPE.GROUP);
       }));
 
       // Filter Users to restore

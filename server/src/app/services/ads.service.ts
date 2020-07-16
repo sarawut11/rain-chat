@@ -1,8 +1,8 @@
-import * as moment from "moment";
-import { query } from "../utils/db";
+import { query, now } from "../utils";
 import { isNullOrUndefined } from "util";
 import { Ads } from "../models";
-import configs from "@configs";
+
+const COMPANY_USERNAME = process.env.COMPANY_USERNAME;
 
 export class AdsService {
 
@@ -114,7 +114,7 @@ export class AdsService {
     const ads: Ads[] = await query(sql);
     ads.forEach(ad => {
       // Pending or Created ads
-      if (ad.reviewerUsername === configs.companyUsername) {
+      if (ad.reviewerUsername === COMPANY_USERNAME) {
         ad.reviewerUsername = "";
         ad.reviewerName = "";
         ad.reviewerAvatar = "";
@@ -161,7 +161,7 @@ export class AdsService {
         ${this.COL.givenImp} = ${this.COL.givenImp} + ?,
         ${this.COL.lastTime} = ?
       WHERE ${this.COL.id} = ?;`;
-    return query(sql, [impression, moment().utc().unix(), id]);
+    return query(sql, [impression, now(), id]);
   }
 
   consumeImpression(id: number, impressions: number) {

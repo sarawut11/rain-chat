@@ -1,12 +1,14 @@
 import * as uuid from "uuid/v1";
 import * as moment from "moment";
 import { ServicesContext } from "../context";
-import { getGroupItem } from "./message.socket";
 import { User, Group } from "../models";
-import { isVitaePostEnabled } from "../utils/utils";
 import { socketServer } from "./app.socket";
+import { getGroupItem } from "./message.socket";
 import { socketEventNames } from "./resource.socket";
-import configs from "@configs";
+import { isVitaePostEnabled } from "../utils";
+
+const RAIN_GROUP_ID = process.env.RAIN_GROUP_ID;
+const VITAE_POST_TIME = Number(process.env.VITAE_POST_TIME);
 
 export const sendGroupMsg = async (io, socket, data, cbFn) => {
   try {
@@ -14,13 +16,13 @@ export const sendGroupMsg = async (io, socket, data, cbFn) => {
     const user: User = await userService.getUserBySocketId(socket.id);
     if (user === undefined) return;
     if (user.ban === User.BAN.BANNED) return;
-    if (user.role === User.ROLE.FREE && data.groupId === configs.rain.group_id) {
+    if (user.role === User.ROLE.FREE && data.groupId === RAIN_GROUP_ID) {
       if (!isVitaePostEnabled(user))
         return;
       await userService.resetLastVitaePostTime(user.id);
       setTimeout(() => {
         socketServer.emitTo(socket.id, socketEventNames.EnableVitaePost, {});
-      }, configs.rain.vitae_post_time);
+      }, VITAE_POST_TIME);
     }
     if (!data) return;
     data.attachments = JSON.stringify(data.attachments);
@@ -176,7 +178,7 @@ export const banMember = async (io, socket, { userId, groupId }, cbfn) => {
     const user: User = await userService.getUserBySocketId(socket.id);
     if (user === undefined) return;
 
-    if (groupId === configs.rain.group_id) { // Vitae Rain Group
+    if (groupId === RAIN_GROUP_ID) { // Vitae Rain Group
       // Check Group Ownership
       if (user.role !== User.ROLE.OWNER && user.role !== User.ROLE.MODERATOR) return;
 
