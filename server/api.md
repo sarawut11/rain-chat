@@ -130,6 +130,7 @@
     message: "Valid or Invalid Message"
   }
   ```
+
 ## 1.3 Profile
 ### /user/:username (GET)
   Get profile info of user with username.
@@ -234,6 +235,7 @@
     isValid: true/false,
   }
   ```
+
 ## 1.4 Ads
 > **Ads Status**
 > - 0: Created
@@ -494,6 +496,7 @@
     }
   }
   ```
+
 ## 1.5 Moderator / Ads API
 ### /campaign/mod/all (GET)
   Get all ads
@@ -577,6 +580,7 @@
     }
   }
   ```
+
 ## 1.6 Role Management API
 ### /membership/price (GET)
   Get membership price in vitae token
@@ -657,6 +661,7 @@
     expireTime,   // expiration time in seconds
   }
   ```
+
 ## 1.7 Admin Dashboard API
 ### /admin/home (GET)
   ***Response***
@@ -789,6 +794,7 @@
     maintenanceAmount,    // Company Maintenance Revenue
   }
   ```
+
 ## 1.8 Wallet
 ### /wallet/company-rain-address (GET)
   Get company rain address
@@ -817,6 +823,7 @@
     message: "Success or Failed Message",
   }
   ```
+
 ## 1.9 Rain
 ### /rain/send-vitae/balance (POST)
   Send vitae rain from balance
@@ -834,6 +841,7 @@
     }
   }
   ```
+
 ## 1.10 Expense
 ### Expense Model Info
   ```
@@ -919,6 +927,7 @@
     }
   }
   ```
+
 # 2. Socket Events
 > Note
 > - Client : Frontend (Client) -> Backend (Server)
