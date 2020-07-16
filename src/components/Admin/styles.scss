@@ -52,6 +52,10 @@
       overflow-x: auto;
     }
   }
+
+  .expense-reject-btn {
+    margin-left: 20px;
+  }
 }
 
 .ant-list-item-meta {
@@ -77,5 +81,10 @@
     padding: 20px;
     width: 100%;
     margin-bottom: 48px;
+
+    .expense-reject-btn {
+      margin-top: 10px;
+      margin-left: 0px;
+    }
   }
 }

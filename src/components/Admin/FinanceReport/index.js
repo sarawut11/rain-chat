@@ -1,10 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Descriptions, notification, Spin, Row, Col, Collapse, Table, Button } from 'antd';
+import { Descriptions, notification, Spin, Row, Col, Collapse, Table, Button, Tag } from 'antd';
 import { setExpensesInfo, updateExpense } from '../../../redux/actions/expenseAction';
 import { setAdminAction } from '../../../containers/AdminPage/adminAction';
 import Request from '../../../utils/request';
 import ExpenseUpload from './ExpenseUpload';
+import {
+  EXPENSE_CREATED,
+  EXPENSE_REQUESTED,
+  EXPENSE_CONFIRMED,
+  EXPENSE_REJECTED,
+} from './constant';
 
 const { Panel } = Collapse;
 
@@ -236,6 +242,19 @@ class FinanceReport extends Component {
         key: 'rejector',
       },
       {
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status',
+        render: status => (
+          <div>
+            {status === EXPENSE_CREATED && <Tag color="#2db7f5">created</Tag>}
+            {status === EXPENSE_REQUESTED && <Tag color="#108ee9">requested</Tag>}
+            {status === EXPENSE_CONFIRMED && <Tag color="#87d068">confirmed</Tag>}
+            {status === EXPENSE_REJECTED && <Tag color="#f50">rejected</Tag>}
+          </div>
+        ),
+      },
+      {
         title: '',
         dataIndex: 'id',
         key: 'expenseId',
@@ -247,7 +266,7 @@ class FinanceReport extends Component {
                   <Button type="primary" onClick={this.onAccept(id)}>
                     Accept
                   </Button>
-                  <Button danger onClick={this.onReject(id)} style={{ marginLeft: 10 }}>
+                  <Button danger onClick={this.onReject(id)} className="expense-reject-btn">
                     Reject
                   </Button>
                 </div>
