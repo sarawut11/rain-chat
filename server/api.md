@@ -1,6 +1,9 @@
 # Headers
-1. API Endpoints
+1. [API Endpoints](#1-api-endpoints)
   * [1.1 Authentication](#11-authentication)
+    * [/login (POST)](#login-post)
+    * [/register (POST)](#register-post)
+    * [/token/validate (POST)](#tokenvalidate-post)
 
 # API / Socket Documentation
 > **Note**
