@@ -1,11 +1,10 @@
 import * as nodemailer from "nodemailer";
-import configs from "@configs";
 
 const transporter = nodemailer.createTransport({
-  service: configs.mail.service,
+  service: process.env.MAIL_SERVICE,
   auth: {
-    user: configs.mail.user,
-    pass: configs.mail.pass,
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
   },
 });
 

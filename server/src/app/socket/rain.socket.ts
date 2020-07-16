@@ -1,7 +1,7 @@
-import { socketServer } from "./app.socket";
 import { ServicesContext, RainContext } from "../context";
 import { authVerify } from "../middlewares/verify";
 import { Ads, User } from "../models";
+import { socketServer } from "./app.socket";
 import { socketEventNames } from "./resource.socket";
 
 export const subscribeAdsReward = (token) => {

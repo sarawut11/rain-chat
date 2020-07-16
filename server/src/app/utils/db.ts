@@ -1,7 +1,13 @@
 import { createPool } from "mysql";
-import configs from "@configs";
 
-const pool = createPool({ ...configs.dbConnection, multipleStatements: true });
+const pool = createPool({
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT),
+  database: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  multipleStatements: true
+});
 
 export const query = (sql, values?): Promise<any> =>
   new Promise((resolve, reject) => {

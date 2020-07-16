@@ -26,4 +26,10 @@ export const socketEventNames = {
   UpdateAdsStatus: "updateAdsStatus",
   UpdateAdsImpressions: "updateAdsImpressions",
   EnableVitaePost: "enableVitaePost",
+
+  TransactionExpired: "transactionExpired",
+
+  ExpenseCreated: "expenseCreated",
+  ExpenseConfirmed: "expenseConfirmed",
+  ExpenseRejected: "expenseRejected",
 };

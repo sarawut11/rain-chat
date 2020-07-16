@@ -1,7 +1,9 @@
-import { query } from "../utils/db";
-import * as moment from "moment";
-import * as uniqid from "uniqid";
-import { Transaction } from "../models/transaction.model";
+import { query, now } from "../utils";
+import { Transaction, DefaultModel, TransactionDetail } from "../models";
+import { TransactionContext } from "../context";
+
+const COMPANY_USERID = Number(process.env.COMPANY_USERID);
+const TRANSACTION_REQUEST_TIMEOUT = Number(process.env.TRANSACTION_REQUEST_TIMEOUT);
 
 export class TransactionService {
 
@@ -19,20 +21,116 @@ export class TransactionService {
     time: "time",
   };
 
-  createTransactionRequest(userId: number, type: number, expectAmount: number, details?: string) {
+  async createTransactionRequest(userId: number, type: number, expectAmount: number, details?: TransactionDetail): Promise<DefaultModel> {
+    // To keep only one pending transaction at a time.
+    const trans: Transaction = await this.getLastRequestedTransaction(userId);
+    if (trans !== undefined && userId !== COMPANY_USERID) {
+      console.log(`Register Transaction => Failed, User:${userId} still have pending or insufficient request.`);
+      return undefined;
+    }
     const sql = `
     INSERT INTO ${this.TABLE_NAME}(
       ${this.columns.userId},
-      ${this.columns.transactionId},
       ${this.columns.type},
       ${this.columns.status},
       ${this.columns.expectAmount},
       ${this.columns.time},
       ${this.columns.details})
-    values(?,?,?,?,?,?,?);`;
-    return query(sql, [userId, uniqid(), type, Transaction.STATUS.REQUESTED, expectAmount, moment().utc().unix(), details]);
+    values(?,?,?,?,?,?);`;
+    const result: DefaultModel = await query(sql, [userId, type, Transaction.STATUS.REQUESTED, expectAmount, now(), JSON.stringify(details)]);
+
+    setTimeout(() => {
+      TransactionContext.getInstance().expireTransactionRequest(result.insertId);
+    }, TRANSACTION_REQUEST_TIMEOUT);
+    return result;
   }
 
+  expireTransactionRequest(tranId: number) {
+    const sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET
+        ${this.columns.status} = ?
+      WHERE
+        ${this.columns.id} = ?;`;
+    return query(sql, [Transaction.STATUS.EXPIRED, tranId]);
+  }
+
+  async getLastRequestedTransaction(userId: number): Promise<Transaction> {
+    const sql = `
+      SELECT * FROM ${this.TABLE_NAME}
+      WHERE
+        ${this.columns.userId} = ? AND
+        ${this.columns.status} IN (?,?) AND
+        ${this.columns.type} != ?
+      LIMIT 1;`;
+    const params = [userId, Transaction.STATUS.REQUESTED, Transaction.STATUS.INSUFFICIENT_BALANCE, Transaction.TYPE.WITHDRAW];
+    const trans: Transaction[] = await query(sql, params);
+    if (trans.length === 0) return undefined;
+    return trans[0];
+  }
+
+  async getTransactionById(tranId: number): Promise<Transaction> {
+    const sql = `
+      SELECT * FROM ${this.TABLE_NAME} WHERE ${this.columns.id} = ?;`;
+    const trans: Transaction[] = await query(sql, tranId);
+    if (trans.length === 0) return undefined;
+    return trans[0];
+  }
+
+  async getTransactions(type?: number): Promise<Transaction[]> {
+    let sql = `
+      SELECT * FROM ${this.TABLE_NAME}
+      WHERE
+        ${this.columns.status} = ?`;
+    if (type !== undefined)
+      sql += `AND ${this.columns.type} = '${type}';`;
+    return query(sql, Transaction.STATUS.CONFIRMED);
+  }
+
+  async getTotalPurchaseAmount(type: number): Promise<number> {
+    const trans: Transaction[] = await this.getTransactions(type);
+    let totalAmount = 0;
+    trans.forEach(tran => totalAmount += tran.paidAmount);
+    return totalAmount;
+  }
+
+  async confirmTransaction(recordId: number, tranId: string, paidAmount: number, confirmTime: number) {
+    const sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET
+        ${this.columns.transactionId} = ?,
+        ${this.columns.paidAmount} = ?,
+        ${this.columns.confirmTime} = ?,
+        ${this.columns.status} = ?
+      WHERE ${this.columns.id} = ?;`;
+    return query(sql, [tranId, paidAmount, confirmTime, Transaction.STATUS.CONFIRMED, recordId]);
+  }
+
+  async setInsufficientTransaction(tranId: string, paidAmount: number, confirmTime: number, tranInfo: Transaction) {
+    const sql = `
+      UPDATE ${this.TABLE_NAME}
+      SET
+        ${this.columns.transactionId} = ?,
+        ${this.columns.paidAmount} = ${this.columns.paidAmount} + ?,
+        ${this.columns.confirmTime} = ?,
+        ${this.columns.status} = ?
+      WHERE ${this.columns.id} = ?;
+
+      INSERT INTO ${this.TABLE_NAME}(
+        ${this.columns.userId},
+        ${this.columns.type},
+        ${this.columns.status},
+        ${this.columns.expectAmount},
+        ${this.columns.time},
+        ${this.columns.details})
+      values(?,?,?,?,?,?);`;
+    return query(sql, [
+      tranId, paidAmount, confirmTime, Transaction.STATUS.INSUFFICIENT_BALANCE, tranInfo.id,
+      tranInfo.userId, tranInfo.type, Transaction.STATUS.REQUESTED, tranInfo.expectAmount - paidAmount, now(), tranInfo.details
+    ]);
+  }
+
+  // Consider deleting this function later
   confirmTransactionRequest(userId: number, type: number, amount: number, confirmTime: number) {
     const sql = `
     UPDATE ${this.TABLE_NAME}
@@ -47,31 +145,27 @@ export class TransactionService {
     return query(sql, [Transaction.STATUS.CONFIRMED, amount, confirmTime, userId, type]);
   }
 
-  getLastPendingTransaction(userId: number, type: number) {
+  async getTotalRainDonation(): Promise<number> {
     const sql = `
       SELECT * FROM ${this.TABLE_NAME}
       WHERE
-        ${this.columns.userId} = ? AND
         ${this.columns.type} = ? AND
-        ${this.columns.status} = ?
-      ORDER BY ${this.columns.time} DESC LIMIT 1;`;
-    return query(sql, [userId, type, Transaction.STATUS.REQUESTED]);
+        ${this.columns.status} = ?;`;
+    const trans: Transaction[] = await query(sql, [Transaction.TYPE.VITAE_RAIN, Transaction.STATUS.CONFIRMED]);
+    let totalDonation = 0;
+    trans.forEach(tran => totalDonation += tran.paidAmount);
+    return totalDonation;
   }
 
-  getTransactions(type?: number) {
-    let sql = `
+  async getTotalWithdrawn(): Promise<number> {
+    const sql = `
       SELECT * FROM ${this.TABLE_NAME}
       WHERE
-        ${this.columns.status} = ?`;
-    if (type !== undefined)
-      sql += `AND ${this.columns.type} = '${type}';`;
-    return query(sql, Transaction.STATUS.CONFIRMED);
-  }
-
-  async getTotalPurchaseAmount(type: number) {
-    const trans: Transaction[] = await this.getTransactions(type);
-    let totalAmount = 0;
-    trans.forEach(tran => totalAmount += tran.paidAmount);
-    return totalAmount;
+        ${this.columns.type} = ? AND
+        ${this.columns.status} = ?;`;
+    const trans: Transaction[] = await query(sql, [Transaction.TYPE.WITHDRAW, Transaction.STATUS.CONFIRMED]);
+    let amount = 0;
+    trans.forEach(tran => amount += tran.paidAmount);
+    return amount;
   }
 }

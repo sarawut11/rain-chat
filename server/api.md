@@ -1,4 +1,103 @@
-# API / Socket Documentation
+# Headers
+- [Headers](#headers)
+- [1. API Endpoints](#1-api-endpoints)
+  - [1.1 Authentication](#11-authentication)
+    - [/login (POST)](#login-post)
+    - [/register (POST)](#register-post)
+    - [/token/validate (POST)](#tokenvalidate-post)
+  - [1.2 Referral / Sponsor](#12-referral--sponsor)
+    - [/ref/generate (POST)](#refgenerate-post)
+    - [/ref/validate (POST)](#refvalidate-post)
+  - [1.3 Profile](#13-profile)
+    - [/user/:username (GET)](#userusername-get)
+    - [/user/:username (PUT)](#userusername-put)
+    - [/user/withdraw-address/add (POST)](#userwithdraw-addressadd-post)
+    - [/user/withdraw-address (GET)](#userwithdraw-address-get)
+    - [/user/otp/request (GET)](#userotprequest-get)
+    - [/user/otp/verify (POST)](#userotpverify-post)
+  - [1.4 Ads](#14-ads)
+    - [/campaign/pub/create (POST)](#campaignpubcreate-post)
+    - [/campaign/pub/all (GET)](#campaignpuball-get)
+    - [/campaign/pub/:adsId (GET)](#campaignpubadsid-get)
+    - [/campaign/pub/:adsId (PUT)](#campaignpubadsid-put)
+    - [/campaign/pub/:adsId (DELETE)](#campaignpubadsid-delete)
+    - [/campaign/pub/:adsId/request (POST)](#campaignpubadsidrequest-post)
+    - [/campaign/pub/:adsId/cancel (POST)](#campaignpubadsidcancel-post)
+    - [/campaign/pub/:adsId/purchase (POST)](#campaignpubadsidpurchase-post)
+    - [/campaign/impcost?type=x (GET)](#campaignimpcosttypex-get)
+    - [/campaign/static (GET)](#campaignstatic-get)
+  - [1.5 Moderator / Ads API](#15-moderator--ads-api)
+    - [/campaign/mod/all (GET)](#campaignmodall-get)
+    - [/campaign/mod/:adsId/reject (POST)](#campaignmodadsidreject-post)
+    - [/campaign/mod/:adsId/approve (POST)](#campaignmodadsidapprove-post)
+  - [1.6 Role Management API](#16-role-management-api)
+    - [/membership/price (GET)](#membershipprice-get)
+    - [/membership/role/users (GET)](#membershiproleusers-get)
+    - [/membership/role/users?role=x&page=y&count=z (GET)](#membershiproleusersrolexpageycountz-get)
+    - [/membership/role/update/moderator (POST)](#membershiproleupdatemoderator-post)
+    - [/membership/role/upgrade/request (POST)](#membershiproleupgraderequest-post)
+  - [1.7 Admin Dashboard API](#17-admin-dashboard-api)
+    - [/admin/home (GET)](#adminhome-get)
+    - [/admin/ads (GET)](#adminads-get)
+    - [/admin/moders (GET)](#adminmoders-get)
+    - [/admin/moders/usernamelist (GET)](#adminmodersusernamelist-get)
+    - [/admin/moders/set (POST)](#adminmodersset-post)
+    - [/admin/moders/cancel (POST)](#adminmoderscancel-post)
+    - [/admin/chat (GET)](#adminchat-get)
+    - [/admin/financial (GET)](#adminfinancial-get)
+    - [/admin/wallet (GET)](#adminwallet-get)
+  - [1.8 Wallet](#18-wallet)
+    - [/wallet/company-rain-address (GET)](#walletcompany-rain-address-get)
+    - [/wallet/withdraw (POST)](#walletwithdraw-post)
+  - [1.9 Rain](#19-rain)
+    - [/rain/send-vitae/balance (POST)](#rainsend-vitaebalance-post)
+  - [1.10 Expense](#110-expense)
+    - [Expense Model Info](#expense-model-info)
+    - [/expense/get-all (GET)](#expenseget-all-get)
+    - [/expense/create (POST)](#expensecreate-post)
+    - [/expense/approve (POST)](#expenseapprove-post)
+    - [/expense/reject (POST)](#expensereject-post)
+    - [/expense/withdraw (POST)](#expensewithdraw-post)
+- [2. Socket Events](#2-socket-events)
+  - [2.1 Initialize Socket](#21-initialize-socket)
+    - [connect (Client)](#connect-client)
+    - [reconnect (Client)](#reconnect-client)
+    - [disconnect (Client)](#disconnect-client)
+    - [initSocket (Server)](#initsocket-server)
+    - [initSocketSuccess (Server)](#initsocketsuccess-server)
+  - [2.2 Private Chat](#22-private-chat)
+    - [sendPrivateMsg (Client)](#sendprivatemsg-client)
+    - [getPrivateMsg (Server)](#getprivatemsg-server)
+    - [getOnePrivateChatMessages (Client)](#getoneprivatechatmessages-client)
+    - [addAsTheContact (Client)](#addasthecontact-client)
+    - [getUserInfo (Client)](#getuserinfo-client)
+    - [deleteContact (Client)](#deletecontact-client)
+    - [beDeleted (Server)](#bedeleted-server)
+    - [updateProfileInfo (Server)](#updateprofileinfo-server)
+  - [2.3 Group Chat](#23-group-chat)
+    - [sendGroupMsg (Client)](#sendgroupmsg-client)
+    - [getGroupMsg (Server)](#getgroupmsg-server)
+    - [getOneGroupMessages (Client)](#getonegroupmessages-client)
+    - [getOneGroupItem (Server)](#getonegroupitem-server)
+    - [createGroup (Client)](#creategroup-client)
+    - [joinGroup (Client)](#joingroup-client)
+    - [leaveGroup (Client)](#leavegroup-client)
+    - [updateGroupInfo (Client)](#updategroupinfo-client)
+    - [getGroupMember (Client)](#getgroupmember-client)
+    - [enableVitaePost (Server)](#enablevitaepost-server)
+  - [2.4 Search / Contact](#24-search--contact)
+    - [fuzzyMatch (Client)](#fuzzymatch-client)
+  - [2.5 Rain](#25-rain)
+    - [rainComing (Server)](#raincoming-server)
+    - [showAds (Server)](#showads-server)
+    - [showStaticAds (Server)](#showstaticads-server)
+    - [subscribeAdsReward (Client)](#subscribeadsreward-client)
+    - [getRain (Server)](#getrain-server)
+    - [updateAdsStatus (Server)](#updateadsstatus-server)
+    - [updateAdsImpressions (Server)](#updateadsimpressions-server)
+  - [2.6 Transaction](#26-transaction)
+    - [transactionExpired (Server)](#transactionexpired-server)
+
 > **Note**
 > - All Date / Time formats are in unix timestamp format in UTC timezone
 > - All apis requires JWT token in the authorization header request except *login*, *register*, *ref/validate* apis.
@@ -30,7 +129,6 @@
       role,
       token,
       ban,
-      walletAddress,
       isVitaePostEnabled
     }
   }
@@ -96,6 +194,7 @@
     message: "Valid or Invalid Message"
   }
   ```
+
 ## 1.3 Profile
 ### /user/:username (GET)
   Get profile info of user with username.
@@ -139,20 +238,39 @@
     }
   }
   ```
-### /user/wallet-address (POST)
-  Update wallet address
+### /user/withdraw-address/add (POST)
+  Add withdraw address
 
   ***Request Body ***
-  | Fields        | Description       |
-  | ------------- | ----------------- |
-  | walletAddress | Avatar Image File |
+  | Fields        | Description             |
+  | ------------- | ----------------------- |
+  | walletAddress | withdraw wallet address |
+  | label         | label of the address    |
   ***Response***
   ```
   {
     success: true/false,
     message: "Success or Failed Message",
-    userInfo: { // when success == true
-    }
+    addresses: [{
+      userId,
+      withdrawAddress,
+      label
+    }, ...]
+  }
+  ```
+### /user/withdraw-address (GET)
+  Get all withdraw addresses
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    addresses: [{
+      userId,
+      withdrawAddress,
+      label
+    }, ...]
   }
   ```
 ### /user/otp/request (GET)
@@ -181,6 +299,7 @@
     isValid: true/false,
   }
   ```
+
 ## 1.4 Ads
 > **Ads Status**
 > - 0: Created
@@ -383,6 +502,7 @@
   {
     success: true/false,
     message: "Success or Failed Message",
+    expireTime,     // expiration time in seconds
     ads: {
       id,           // Ads Id
       userId,       // Advertiser's id
@@ -440,6 +560,7 @@
     }
   }
   ```
+
 ## 1.5 Moderator / Ads API
 ### /campaign/mod/all (GET)
   Get all ads
@@ -523,6 +644,7 @@
     }
   }
   ```
+
 ## 1.6 Role Management API
 ### /membership/price (GET)
   Get membership price in vitae token
@@ -600,8 +722,10 @@
   {
     success: true/false,
     message,
+    expireTime,   // expiration time in seconds
   }
   ```
+
 ## 1.7 Admin Dashboard API
 ### /admin/home (GET)
   ***Response***
@@ -734,6 +858,20 @@
     maintenanceAmount,    // Company Maintenance Revenue
   }
   ```
+### /admin/wallet (GET)
+  Get wallet analytics
+  
+  ***Response***
+  ```
+  {
+    success: true/false,
+    currentBalance,
+    totalRainDonation,
+    totalRained,
+    totalWithdrawn,
+  }
+  ```
+
 ## 1.8 Wallet
 ### /wallet/company-rain-address (GET)
   Get company rain address
@@ -762,6 +900,7 @@
     message: "Success or Failed Message",
   }
   ```
+
 ## 1.9 Rain
 ### /rain/send-vitae/balance (POST)
   Send vitae rain from balance
@@ -779,6 +918,113 @@
     }
   }
   ```
+
+## 1.10 Expense
+### Expense Model Info
+  ```
+  {
+    id,
+    userId,
+    username,
+    docPath,
+    amount,
+    time,
+    status,         // 0: Created, 1: Requested, 2: Rejected, 3: Approved, 4: Withdrawn
+    approves: [
+      {
+        userId,
+        username,
+        expenseId,
+        status,    // 1: Approve, 2: Reject
+        comment,
+        time,
+      }, ...
+    ],
+    rejects: []   // same as approves
+  }
+  ```
+### /expense/get-all (GET)
+  Get all expenses
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message,
+    ownerCount,
+    companyExpense,
+    totalExpenses,
+    paidExpenses,
+    unpaidExpenses,
+    expenses: []
+  }
+  ```
+### /expense/create (POST)
+  Create new expense request
+
+  ***Request Body (Form-Data)***
+  | Fields | Description                   |
+  | ------ | ----------------------------- |
+  | doc    | Description for Expense usage |
+  | amount | Expense amount                |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    expenseInfo: {   
+    }
+  }
+  ```
+### /expense/approve (POST)
+  Approve expense
+
+  ***Request Body***
+  | Fields    | Description           |
+  | --------- | --------------------- |
+  | expenseId | Expense id to approve |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    expenseInfo: {
+    }
+  }
+  ```
+### /expense/reject (POST)
+  Reject expense
+
+  ***Request Body***
+  | Fields    | Description          |
+  | --------- | -------------------- |
+  | expenseId | Expense id to reject |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    expenseInfo: {
+    }
+  }
+  ```
+### /expense/withdraw (POST)
+  Withdraw expense
+
+  ***Request Body***
+  | Fields    | Description           |
+  | --------- | --------------------- |
+  | expenseId | Expense id to approve |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    expenseInfo: {
+    }
+  }
+  ```
+
 # 2. Socket Events
 > Note
 > - Client : Frontend (Client) -> Backend (Server)
@@ -1007,5 +1253,18 @@
     adsInfo: {
       // all ads info here
     }
+  }
+  ```
+
+## 2.6 Transaction
+### transactionExpired (Server)
+  Notify user about the expired transaction
+
+  ***Data***
+  ```
+  {
+    type,           // Transaction Type
+    expectAmount,   // Transaction Amount
+    time,           // Requested Time
   }
   ```

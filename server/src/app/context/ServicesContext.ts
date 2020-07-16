@@ -8,6 +8,9 @@ import {
   TransactionService,
   InnerTransactionService,
   OtpService,
+  ExpenseService,
+  ExpenseConfirmService,
+  WithdrawAddressService,
 } from "./../services";
 
 export class ServicesContext {
@@ -107,6 +110,36 @@ export class ServicesContext {
   }
   public setOtpService(service: OtpService): ServicesContext {
     this._otpService = service;
+    return this;
+  }
+
+  // Expense service
+  private _expenseService: ExpenseService;
+  public get expenseService() {
+    return this._expenseService;
+  }
+  public setExpenseService(service: ExpenseService): ServicesContext {
+    this._expenseService = service;
+    return this;
+  }
+
+  // Expense Confirm service
+  private _expenseConfirmService: ExpenseConfirmService;
+  public get expenseConfirmService() {
+    return this._expenseConfirmService;
+  }
+  public setExpenseConfirmService(service: ExpenseConfirmService): ServicesContext {
+    this._expenseConfirmService = service;
+    return this;
+  }
+
+  // WithdrawAddress service
+  private _withdrawAddressService: WithdrawAddressService;
+  public get withdrawAddressService() {
+    return this._withdrawAddressService;
+  }
+  public setWithdrawAddressService(service: WithdrawAddressService): ServicesContext {
+    this._withdrawAddressService = service;
     return this;
   }
 }

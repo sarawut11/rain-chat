@@ -6,19 +6,20 @@ const auth = new Router()
   .post("/register", APIController.registerUser)
   .post("/login", APIController.loginUser)
   .post("/token/validate", APIController.validateToken)
-  .post("/ref/validate", APIController.validateReferral);
+  .post("/ref/validate", APIController.validateReferral)
+  .post("/walletnotify", APIController.walletNotify);
 
 const api = new Router()
   // Profile
   .get("/user/:username", APIController.getProfileInfo)
   .put("/user/:username", APIController.updateProfileInfo)
-  .post("/user/wallet-address", APIController.saveWalletAddress)
+  .post("/user/withdraw-address/add", APIController.addWithdrawAddress)
+  .get("/user/withdraw-address", APIController.getWithdrawAddresses)
   .get("/user/otp/request", APIController.generateOTP)
   .post("/user/otp/verify", APIController.verifyOTP)
 
   // Rain
   .post("/rain/send-vitae/balance", APIController.rainFromBalance)
-  // .post("/rain/send-vitae/purchase", APIController.sendVitaePurchase)
 
   // Ads
   .get("/campaign/impcost", APIController.getCostPerImpression)
@@ -44,6 +45,13 @@ const api = new Router()
   .post("/membership/role/update/moderator", APIController.setModerator)
   .post("/membership/role/upgrade/request", APIController.upgradeMembership)
 
+  // Expense
+  .get("/expense/get-all", APIController.getAllExpenses)
+  .post("/expense/create", APIController.createExpenseRequest)
+  .post("/expense/approve", APIController.approveExpense)
+  .post("/expense/reject", APIController.rejectExpense)
+  .post("/expense/withdraw", APIController.withdrawExpense)
+
   // Admin Dashboard
   .get("/admin/home", APIController.getHomeAnalytics)
   .get("/admin/ads", APIController.getAdsAnalytics)
@@ -56,11 +64,11 @@ const api = new Router()
   .get("/admin/chat", APIController.getChatAnalytics)
 
   .get("/admin/financial", APIController.getFinancialAnalytics)
+  .get("/admin/wallet", APIController.getWalletAnalytics)
 
   // Wallet
   .get("/wallet/company-rain-address", APIController.getCompanyRainAddress)
-  .post("/wallet/withdraw", APIController.walletWithdraw)
-  .post("/walletnotify", APIController.walletNotify);
+  .post("/wallet/withdraw", APIController.walletWithdraw);
 
 export const apiRoutes = new Router()
   .use("/api/v1", api.routes());

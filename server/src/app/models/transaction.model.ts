@@ -11,8 +11,9 @@ export class Transaction {
   public details: string;
 
   public static readonly STATUS = {
+    EXPIRED: -1,
     REQUESTED: 0,
-    PENDING: 1,
+    PENDING_CONFIRM: 1,
     INSUFFICIENT_BALANCE: 2,
     CONFIRMED: 3
   };
@@ -20,7 +21,7 @@ export class Transaction {
   public static readonly TYPE = {
     ADS: 0,
     MEMBERSHIP: 1,
-    VITAE_RAIN: 2,
+    VITAE_RAIN: 2, // Send-Vitae Purchase
     WITHDRAW: 3,
   };
 }

@@ -1,9 +1,9 @@
-import * as moment from "moment";
-import { query } from "../utils/db";
-import { getInArraySQL } from "../utils/utils";
+import { query, getInArraySQL, now } from "../utils";
 import { isNullOrUndefined } from "util";
-import configs from "@configs";
-import { User, UserRelation } from "../models";
+import { User, UserRelation, DefaultModel } from "../models";
+
+const RAIN_GROUP_ID = process.env.RAIN_GROUP_ID;
+const POP_RAIN_BALANCE_LIMIT = Number(process.env.POP_RAIN_BALANCE_LIMIT);
 
 export class UserService {
   readonly USER_TABLE = "user_info";
@@ -52,7 +52,7 @@ export class UserService {
   }
 
   // Register User
-  insertUser(value) {
+  async insertUser({ name, email, username, password, sponsorId, refcode, walletAddress }): Promise<DefaultModel> {
     const sql = `
       INSERT INTO ${this.USER_TABLE}(
         ${this.USER_COL.name},
@@ -60,9 +60,10 @@ export class UserService {
         ${this.USER_COL.username},
         ${this.USER_COL.password},
         ${this.USER_COL.sponsorId},
-        ${this.USER_COL.refcode}
-      ) values(?,?,?,?,?,?);`;
-    return query(sql, value);
+        ${this.USER_COL.refcode},
+        ${this.USER_COL.walletAddress}
+      ) values(?,?,?,?,?,?,?);`;
+    return query(sql, [name, email, username, password, sponsorId, refcode, walletAddress]);
   }
 
   async findUserById(id: number): Promise<User> {
@@ -133,7 +134,7 @@ export class UserService {
   async getUserInfoByUsername(username: string): Promise<User> {
     const sql =
       `SELECT
-        ${this.USER_COL.id} AS userId,
+        ${this.USER_COL.id},
         ${this.USER_COL.username},
         ${this.USER_COL.name},
         ${this.USER_COL.avatar},
@@ -164,18 +165,23 @@ export class UserService {
     return query(sql, [avatar, username]);
   }
 
-  setWalletAddress(username: string, walletAddress: string) {
+  async findUserByWalletAddress(walletAddress: string): Promise<User> {
     const sql = `
-      UPDATE ${this.USER_TABLE}
-      SET ${this.USER_COL.walletAddress} = ?
-      WHERE ${this.USER_COL.username} = ? LIMIT 1;`;
-    return query(sql, [walletAddress, username]);
+      SELECT * FROM ${this.USER_TABLE} WHERE ${this.USER_COL.walletAddress} = ? LIMIT 1;`;
+    const user: User[] = await query(sql, walletAddress);
+    if (user.length === 0) return undefined;
+    return user[0];
   }
 
   async findUsersByRole(role: string): Promise<User[]> {
     const sql = `SELECT * FROM ${this.USER_TABLE} WHERE ${this.USER_COL.role} = ?;`;
     const users: User[] = await query(sql, role);
     return users;
+  }
+
+  async getUserCountByRole(role: string): Promise<number> {
+    const users: User[] = await this.findUsersByRole(role);
+    return users.length;
   }
 
   updateRole(username, role) {
@@ -212,12 +218,6 @@ export class UserService {
         ${this.USER_COL.role} = ? OR
         ${this.USER_COL.role} = ?;`;
     return query(sql, [User.ROLE.FREE, User.ROLE.UPGRADED_USER]);
-  }
-
-  async getModers(): Promise<User[]> {
-    const sql = `SELECT * FROM ${this.USER_TABLE} WHERE ${this.USER_COL.role} = ?;`;
-    const users: User[] = await query(sql, User.ROLE.MODERATOR);
-    return users;
   }
 
   // Check if the user id is a friend of the local user by checking the user id. If yes, return userId and remark.
@@ -302,7 +302,7 @@ export class UserService {
     UNION
     ( SELECT i.groupId ,i.name , i.createTime, g.message, g.time, g.attachments
       FROM  group_info AS i INNER JOIN rain_group_msg as g on i.groupId = ? ORDER BY TIME DESC LIMIT 1 );`;
-    return query(sql, [userId, configs.rain.group_id, configs.rain.group_id]);
+    return query(sql, [userId, RAIN_GROUP_ID, RAIN_GROUP_ID]);
   }
 
   // Find homepage private chat list by userId
@@ -351,9 +351,8 @@ export class UserService {
   }
 
   async getUsersByPopLimited(): Promise<User[]> {
-    const limit = configs.rain.pop_rain_balance_limit;
     const sql = `SELECT * FROM ${this.USER_TABLE} WHERE ${this.USER_COL.popBalance} >= ?;`;
-    const users: User[] = await query(sql, limit);
+    const users: User[] = await query(sql, POP_RAIN_BALANCE_LIMIT);
     return users;
   }
 
@@ -416,6 +415,16 @@ export class UserService {
     return query(sql, [amount, userId]);
   }
 
+  async getBalance(userId: number): Promise<number> {
+    const sql = `
+      SELECT ${this.USER_COL.balance}
+      FROM ${this.USER_TABLE}
+      WHERE ${this.USER_COL.id} = ?;`;
+    const user: User[] = await query(sql, userId);
+    if (user.length === 0) return 0;
+    return user[0].balance;
+  }
+
   shareRevenue(amount: number, role: string) {
     const sql = `
       UPDATE ${this.USER_TABLE} as a
@@ -452,7 +461,7 @@ export class UserService {
         ${this.USER_COL.lastUpgradeTime} = ?
       WHERE ${this.USER_COL.id} = ?;
     `;
-    return query(sql, [role, moment().utc().unix(), userId]);
+    return query(sql, [role, now(), userId]);
   }
 
   getUsersByExpired(role, expireTime) {
@@ -477,7 +486,7 @@ export class UserService {
       UPDATE ${this.USER_TABLE}
       SET ${this.USER_COL.lastVitaePostTime} = ?
       WHERE ${this.USER_COL.id} = ?`;
-    return query(sql, [moment().utc().unix(), userId]);
+    return query(sql, [now(), userId]);
   }
 
   // Add as a friend unilaterally (may later add the function of turning on friend verification)

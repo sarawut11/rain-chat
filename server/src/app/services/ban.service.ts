@@ -1,7 +1,7 @@
-import * as moment from "moment";
-import { query } from "../utils/db";
-import { Ban } from "../models/ban.model";
-import configs from "@configs";
+import { query, now } from "../utils";
+import { Ban } from "../models";
+
+const RAIN_GROUP_ID = process.env.RAIN_GROUP_ID;
 
 export class BanService {
   readonly TABLE_NAME = "contact_ban_info";
@@ -21,7 +21,7 @@ export class BanService {
         ${this.COLUMNS.type},
         ${this.COLUMNS.time}
       ) VALUES (?,?,?,?);`;
-    return query(sql, [userId, groupId, Ban.TYPE.GROUP, moment().utc().unix()]);
+    return query(sql, [userId, groupId, Ban.TYPE.GROUP, now()]);
   }
 
   banFriend(userId: number, friendId: number) {
@@ -32,7 +32,7 @@ export class BanService {
         ${this.COLUMNS.type},
         ${this.COLUMNS.time}
       ) VALUES (?,?,?,?);`;
-    return query(sql, [userId, friendId, Ban.TYPE.DIRECT, moment().utc().unix()]);
+    return query(sql, [userId, friendId, Ban.TYPE.DIRECT, now()]);
   }
 
   getBanInfo(userId: number, blockerId: string, type: number) {
@@ -68,7 +68,7 @@ export class BanService {
   }
 
   async isPermBannedInRainGroup(userId: number): Promise<boolean> {
-    const banInfo: Ban[] = await this.getBanInfo(userId, configs.rain.group_id, Ban.TYPE.GROUP);
+    const banInfo: Ban[] = await this.getBanInfo(userId, RAIN_GROUP_ID, Ban.TYPE.GROUP);
     return banInfo.length === 3;
   }
 }

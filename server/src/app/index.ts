@@ -2,7 +2,6 @@ import * as compress from "koa-compress";
 import * as koaBody from "koa-body";
 import * as cors from "@koa/cors";
 import * as jwt from "koa-jwt";
-import configs from "@configs";
 
 import { ServicesContext, RainContext, CMCContext, DailyContext } from "./context";
 import { appRoutes, apiRoutes, authRoutes } from "./routes";
@@ -16,19 +15,20 @@ import {
   AdsService,
   TransactionService,
   InnerTransactionService,
-  OtpService
+  OtpService,
+  ExpenseService,
+  ExpenseConfirmService,
+  WithdrawAddressService
 } from "./services";
-
-const corsArgs = configs.production ? { origin: "https://production_link" } : {};
 
 export const App = Server.init(app => {
   app
     .use(compress())
-    .use(cors(corsArgs))
+    .use(cors({}))
     .use(koaBody({ multipart: true }))
     .use(authRoutes.routes())
     .use(jwt({
-      secret: configs.token.jwt_secret,
+      secret: process.env.JWT_SECRET,
     }))
     .use(appRoutes.routes())
     .use(apiRoutes.routes())
@@ -45,10 +45,13 @@ export const App = Server.init(app => {
       .setGroupChatService(new GroupChatService())
       .setAdsService(new AdsService())
       .setOtpService(new OtpService())
+      .setExpenseService(new ExpenseService())
+      .setExpenseConfirmService(new ExpenseConfirmService())
+      .setWithdrawAddressService(new WithdrawAddressService())
       .setTransactionService(new TransactionService())
       .setInnerTransactionService(new InnerTransactionService());
     RainContext.getInstance();
     DailyContext.getInstance();
     CMCContext.getInstance();
-    Server.run(configs.port);
+    Server.run(process.env.PORT);
   });

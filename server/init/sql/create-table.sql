@@ -180,7 +180,43 @@ CREATE TABLE `otp_info` (
   `userId` int(11) NOT NULL,
   `code` varchar(6) NOT NULL DEFAULT '',
   `type` tinyint(1) NOT NULL DEFAULT 0,
-  `time` int(11) NOT NULL,
+  `time` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+# Dump of table expense_info
+# ------------------------------------------------------------
+DROP TABLE IF EXISTS `expense_info`;
+CREATE TABLE `expense_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userId` int(11) NOT NULL,
+  `docPath` varchar(200) NOT NULL DEFAULT '',
+  `amount` double NOT NULL DEFAULT 0,
+  `time` int(11) NOT NULL DEFAULT 0,
+  `status` tinyint(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+# Dump of table expense_confirm_info
+# ------------------------------------------------------------
+DROP TABLE IF EXISTS `expense_confirm_info`;
+CREATE TABLE `expense_confirm_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userId` int(11) NOT NULL,
+  `username` varchar(200) NOT NULL,
+  `expenseId` varchar(200) NOT NULL DEFAULT '',
+  `status` tinyint(1) NOT NULL DEFAULT 0,
+  `comment` varchar(255) NOT NULL DEFAULT '',
+  `time` varchar(200) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+# Dump of table withdraw_address_info
+# ------------------------------------------------------------
+DROP TABLE IF EXISTS `withdraw_address_info`;
+CREATE TABLE `withdraw_address_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userId` int(11) NOT NULL,
+  `withdrawAddress` varchar(255) NOT NULL DEFAULT '',
+  `label` varchar(200) NOT NULL DEFAULT '',
+  `time` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;

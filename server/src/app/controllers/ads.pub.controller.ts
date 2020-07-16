@@ -1,12 +1,14 @@
-import * as mime from "mime-types";
-import * as moment from "moment";
-import * as aws from "../utils/aws";
 import { ParameterizedContext } from "koa";
-import { ServicesContext, CMCContext, RainContext } from "../context";
-import { Ads, User, Transaction, InnerTransaction } from "../models";
-import configs from "@configs";
+import { ServicesContext, CMCContext, TransactionContext } from "../context";
+import { Ads, User, Transaction, TransactionDetail } from "../models";
 import { socketServer } from "../socket/app.socket";
-import { shareRevenue } from "../utils/utils";
+import { uploadFile, deleteFile, now } from "../utils";
+
+const TRANSACTION_REQUEST_TIMEOUT = Number(process.env.TRANSACTION_REQUEST_TIMEOUT);
+const COST_PER_IMPRESSION_RAIN_ADS = Number(process.env.COST_PER_IMPRESSION_RAIN_ADS);
+const COST_PER_IMPRESSION_STATIC_ADS = Number(process.env.COST_PER_IMPRESSION_STATIC_ADS);
+const ADS_REV_IMP_REVENUE = Number(process.env.ADS_REV_IMP_REVENUE);
+const STATIC_ADS_INTERVAL = Number(process.env.STATIC_ADS_INTERVAL);
 
 export const registerAds = async (ctx, next) => {
   try {
@@ -34,8 +36,8 @@ export const registerAds = async (ctx, next) => {
     }
 
     // Upload Asset
-    const fileName = generateFileName(username, asset.type);
-    const { url } = await aws.uploadFile({
+    const fileName = generateFileName(username);
+    const { url } = await uploadFile({
       fileName,
       filePath: asset.path,
       fileType: asset.type,
@@ -49,7 +51,7 @@ export const registerAds = async (ctx, next) => {
       buttonLabel,
       title,
       description,
-      time: moment().utc().unix(),
+      time: now(),
       type
     });
     const insertAds: Ads = await adsService.findAdsById(res.insertId);
@@ -143,9 +145,9 @@ export const updateAds = async (ctx, next) => {
     // Delete existing asset and upload new asset
     let assetLink: string;
     if (asset !== undefined) {
-      await aws.deleteFile(existingAds.assetLink);
-      const { url } = await aws.uploadFile({
-        fileName: generateFileName(username, asset.type),
+      await deleteFile(existingAds.assetLink);
+      const { url } = await uploadFile({
+        fileName: generateFileName(username),
         filePath: asset.path,
         fileType: asset.type,
       });
@@ -190,7 +192,7 @@ export const deleteAds = async (ctx, next) => {
     }
 
     const { existingAds } = checkResult;
-    await aws.deleteFile(existingAds.assetLink);
+    await deleteFile(existingAds.assetLink);
     await adsService.deleteAds(adsId);
     ctx.body = {
       success: true,
@@ -307,12 +309,20 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
       return;
     }
 
-    const adsTransactionDetails = {
+    const adsTransactionDetails = new TransactionDetail({
       adsId,
       impressions,
       costPerImp,
-    };
-    await transactionService.createTransactionRequest(existingAds.userId, Transaction.TYPE.ADS, expectAmount, JSON.stringify(adsTransactionDetails));
+      adsType: existingAds.type
+    });
+    const transInfo = await transactionService.createTransactionRequest(existingAds.userId, Transaction.TYPE.ADS, expectAmount, adsTransactionDetails);
+    if (transInfo === undefined) {
+      ctx.body = {
+        success: false,
+        message: "You still have incompleted transaction requests."
+      };
+      return;
+    }
 
     // Expire ads after 5 mins when it is still in pending purchase
     setTimeout(async () => {
@@ -321,18 +331,15 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
         await adsService.updateStatus(adsId, Ads.STATUS.Approved);
         await socketServer.updateAdsStatus(adsId);
       }
-    }, 1000 * 60 * 5); // 5 mins
-
-    // Test -> Share revenue at this point | Move to wallet controller later
-    await confirmAds(adsId, expectAmount, existingAds.type);
-    // Save transaction info
-    // =====================
+      TransactionContext.getInstance().expireTransactionRequest(transInfo.insertId);
+    }, TRANSACTION_REQUEST_TIMEOUT);
 
     const updatedAds: Ads = await adsService.findAdsById(adsId);
     ctx.body = {
       success: true,
       message: "Successfully requested.",
-      ads: updatedAds
+      ads: updatedAds,
+      expireTime: TRANSACTION_REQUEST_TIMEOUT,
     };
   } catch (error) {
     console.error(error.message);
@@ -351,8 +358,8 @@ export const getCostPerImpression = async (ctx: ParameterizedContext, next) => {
     // 25% -> Company Revenue
     // 75% -> Buy Impressions
     const vitaePrice = CMCContext.getInstance().vitaePriceUSD();
-    const usdPerImp = type === Ads.TYPE.RainRoomAds ? configs.ads.cost_per_impression_rain : configs.ads.cost_per_impression_static;
-    const vitaePerImp = (usdPerImp / vitaePrice) * (1 / configs.ads.revenue.imp_revenue);
+    const usdPerImp = Number(type) === Ads.TYPE.RainRoomAds ? COST_PER_IMPRESSION_RAIN_ADS : COST_PER_IMPRESSION_STATIC_ADS;
+    const vitaePerImp = (usdPerImp / vitaePrice) * (1 / ADS_REV_IMP_REVENUE);
     ctx.body = {
       success: true,
       message: "Success",
@@ -383,7 +390,7 @@ export const getStaticAds = async (ctx: ParameterizedContext, next) => {
     ctx.body = {
       success: true,
       ads,
-      duration: configs.ads.static_ads_interval
+      duration: STATIC_ADS_INTERVAL
     };
   } catch (error) {
     console.error(error.message);
@@ -391,51 +398,6 @@ export const getStaticAds = async (ctx: ParameterizedContext, next) => {
       success: false,
       message: "Failed"
     };
-  }
-};
-
-const confirmAds = async (adsId: number, paidAmount: number, type: number) => {
-  const { adsService, transactionService } = ServicesContext.getInstance();
-
-  // Update Ads Status
-  const existingAds = await adsService.findAdsById(adsId);
-  const tran: Transaction[] = await transactionService.getLastPendingTransaction(existingAds.userId, Transaction.TYPE.ADS);
-  if (tran.length === 0)
-    return;
-
-  // Update Transaction Table
-  const adsDetails = JSON.parse(tran[0].details);
-  const realCostPerImp = configs.ads.revenue.imp_revenue * adsDetails.costPerImp;
-  await adsService.setImpressions(adsId, existingAds.userId, adsDetails.impressions, realCostPerImp, paidAmount);
-  await transactionService.confirmTransactionRequest(existingAds.userId, Transaction.TYPE.ADS, paidAmount, moment().utc().unix());
-
-  // Revenue Share Model
-  // ===== Company Share ===== //
-  // 25% | Company Revenue
-  // ---------------------------------
-  // 20% -----> Company Expenses
-  // 30% -----> Owner Share
-  // 25% -----> Moderator Share
-  // 25% -----> Membership Users Share
-  const companyRevenue = paidAmount * configs.ads.revenue.company_revenue;
-  const companyExpense = companyRevenue * configs.company_revenue.company_expenses;
-  const ownerShare = companyRevenue * configs.company_revenue.owner_share;
-  const moderatorShare = companyRevenue * configs.company_revenue.moderator_share;
-  const membersShare = companyRevenue * configs.company_revenue.membership_share;
-
-  await shareRevenue(companyExpense, User.ROLE.COMPANY, InnerTransaction.TYPE.ADS_PURCHASE_SHARE);
-  await shareRevenue(ownerShare, User.ROLE.OWNER, InnerTransaction.TYPE.ADS_PURCHASE_SHARE);
-  await shareRevenue(moderatorShare, User.ROLE.MODERATOR, InnerTransaction.TYPE.ADS_PURCHASE_SHARE);
-  await shareRevenue(membersShare, User.ROLE.UPGRADED_USER, InnerTransaction.TYPE.ADS_PURCHASE_SHARE);
-
-  // ===== Rain Rest ===== //
-  // 75% | Ads Operation
-  // ---------------------------------
-  // Rain Room Ads -> buy impressions
-  // Static Ads -> Rain Last 200 Users
-  if (type === Ads.TYPE.StaticAds) {
-    const restShare = paidAmount - companyRevenue;
-    RainContext.getInstance().rainUsersByLastActivity(restShare);
   }
 };
 
@@ -469,6 +431,6 @@ const checkAdsId = (username, adsId): Promise<{
   });
 });
 
-const generateFileName = (username, fileType) => {
-  return `campaign/campaign-${username}-${moment().utc().unix()}.${mime.extension(fileType)}`;
+const generateFileName = (username) => {
+  return `campaign/campaign-${username}-${now()}.png`;
 };

@@ -114,7 +114,7 @@ class Withdraw extends Component {
         this.setState({ currentStep: 2 });
       } else {
         notification.error({
-          message: 'Code is not valid',
+          message: res.message,
         });
       }
     } catch (error) {

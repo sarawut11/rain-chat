@@ -4,9 +4,11 @@ import * as moment from "moment";
 import { generateToken, authVerify } from "../middlewares/verify";
 import { ServicesContext } from "../context";
 import { socketServer } from "../socket/app.socket";
-import configs from "@configs";
 import { User, Ban, Otp } from "../models";
-import { isVitaePostEnabled, generateOtp, verifyOtp, sendMail } from "../utils";
+import { isVitaePostEnabled, generateOtp, verifyOtp, sendMail, rpcInterface } from "../utils";
+
+const RAIN_GROUP_ID = process.env.RAIN_GROUP_ID;
+const OTP_TIMEOUT = Number(process.env.OTP_TIMEOUT);
 
 export const loginUser = async (ctx, next) => {
   try {
@@ -36,8 +38,8 @@ export const loginUser = async (ctx, next) => {
       };
       return;
     }
-    const { id, username: userName, email: userEmail, name, balance, intro, avatar, refcode, role, ban, walletAddress } = user;
-    const bans: Ban[] = await banService.getBanInfo(id, configs.rain.group_id, Ban.TYPE.GROUP);
+    const { id, username: userName, email: userEmail, name, balance, intro, avatar, refcode, role, ban } = user;
+    const bans: Ban[] = await banService.getBanInfo(id, RAIN_GROUP_ID, Ban.TYPE.GROUP);
     if (bans.length >= 3) {
       ctx.body = {
         success: false,
@@ -68,7 +70,6 @@ export const loginUser = async (ctx, next) => {
         role,
         token,
         ban,
-        walletAddress,
         isVitaePostEnabled: isVitaePostEnabled(user)
       },
     };
@@ -118,14 +119,21 @@ export const registerUser = async (ctx, next) => {
       return;
     }
     // Register DB
-    await userService.insertUser([name, email, username, md5(password), sponsorUser.id, uniqid()]);
+    const walletAddress = await rpcInterface.getNewAddress();
+    await userService.insertUser({
+      name, email, username,
+      password: md5(password),
+      sponsorId: sponsorUser.id,
+      refcode: uniqid(),
+      walletAddress
+    });
     // Join Rain Group & Broadcast
     const userInfo: User = await userService.getUserInfoByUsername(username);
-    await groupService.joinGroup(userInfo.userId, configs.rain.group_id);
+    await groupService.joinGroup(userInfo.id, RAIN_GROUP_ID);
     socketServer.broadcast("getGroupMsg", {
       ...userInfo,
       message: `${userInfo.name} joined a group chat`,
-      groupId: configs.rain.group_id,
+      groupId: RAIN_GROUP_ID,
       tip: "joinGroup",
     }, error => console.log(error.message));
 
@@ -203,7 +211,7 @@ export const generateOTP = async (ctx, next) => {
     ctx.body = {
       success: true,
       message: "6 digit code sent to your email.",
-      expireIn: configs.otp.timeOut
+      expireIn: OTP_TIMEOUT
     };
   } catch (error) {
     console.log(error.message);

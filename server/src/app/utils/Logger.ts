@@ -1,5 +1,4 @@
 import * as winston from "winston";
-import configs from "@configs";
 // imports debug moduel
 import * as Debug from "debug";
 
@@ -34,9 +33,6 @@ const write = writeFunction => ({
  */
 export const winstonStream = stream(write(logger.info));
 
-// Configure the debug module
-process.env.DEBUG = configs.logger.debug;
-
 const debug = Debug("app:response");
 
 /**
@@ -55,7 +51,7 @@ export const Logger = (scope: string) => {
   const scopeDebug = Debug(scope);
   return {
     debug(message: string, ...args: any[]) {
-      if (configs.production) {
+      if (Boolean(process.env.PRODUCTION)) {
         logger.debug(format(scope, message), parse(args));
       }
       scopeDebug(message, parse(args));
