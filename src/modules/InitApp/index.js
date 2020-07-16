@@ -15,6 +15,7 @@ import {
 } from '../../containers/GroupChatPage/groupChatAction';
 import { setAdsAction } from '../../containers/AdsPage/adsAction';
 import { setUserInfoAction } from '../../redux/actions/userAction';
+import { setStaticAdsAction } from '../../redux/actions/staticAdsAction';
 import { enableVitaePost, disableVitaePost } from '../../redux/actions/enableVitaePost';
 import {
   addPrivateChatMessagesAction,
@@ -227,6 +228,7 @@ class InitApp {
     });
     window.socket.on('showStaticAds', ({ ads }) => {
       console.log('Static Ads:', ads);
+      store.dispatch(setStaticAdsAction(ads));
     });
   }
 
