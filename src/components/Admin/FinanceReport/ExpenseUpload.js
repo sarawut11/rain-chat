@@ -2,16 +2,24 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable func-names */
 import React from 'react';
+import { connect } from 'react-redux';
 import { Upload, message, notification, Button, Modal, Form, InputNumber } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import Request from '../../../utils/request';
+import { createExpense } from '../../../redux/actions/expenseAction';
 import '../styles.scss';
 
-function getBase64(img, callback) {
-  const reader = new FileReader();
-  reader.addEventListener('load', () => callback(reader.result));
-  reader.readAsDataURL(img);
+function mapStateToProps(state) {
+  return {
+    expenseInfo: state.expenseInfo,
+  };
 }
+
+const mapDispatchToProps = dispatch => ({
+  createExpense(arg) {
+    dispatch(createExpense(arg));
+  },
+});
 
 function beforeUpload(file) {
   console.log('file.type:\n', file.type);
@@ -46,6 +54,8 @@ class ExpenseUpload extends React.Component {
       const res = await Request.axios('post', `/api/v1/expense/create`, data);
 
       if (res && res.success) {
+        this.props.createExpense({ expenseInfo: res.expenseInfo });
+
         notification.success({
           message: res.message,
         });
@@ -137,4 +147,4 @@ class ExpenseUpload extends React.Component {
   }
 }
 
-export default ExpenseUpload;
+export default connect(mapStateToProps, mapDispatchToProps)(ExpenseUpload);

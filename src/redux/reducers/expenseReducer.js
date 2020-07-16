@@ -1,4 +1,4 @@
-import { SET_EXPENSES, UPDATE_EXPENSE } from '../actions/expenseAction';
+import { SET_EXPENSES, UPDATE_EXPENSE, CREATE_EXPENSE } from '../actions/expenseAction';
 
 const initialState = {
   ownerCount: 0,
@@ -8,7 +8,15 @@ const initialState = {
 const expenseReducer = (previousState = initialState, action) => {
   switch (action.type) {
     case SET_EXPENSES:
-      return { ...previousState, ...action.data };
+      try {
+        const { expenses, ownerCount } = action.data;
+        const nexExpenses = expenses.sort((a, b) => {
+          return b.requestTime - a.requestTime;
+        });
+        return { ...previousState, expenses: nexExpenses, ownerCount };
+      } catch (e) {
+        return { ...previousState, ...action.data };
+      }
 
     case UPDATE_EXPENSE:
       try {
@@ -19,6 +27,19 @@ const expenseReducer = (previousState = initialState, action) => {
           }
           return exp;
         });
+
+        return { ...previousState, expenses: newExpenses };
+      } catch (e) {
+        console.log(e);
+        return previousState;
+      }
+
+    case CREATE_EXPENSE:
+      try {
+        const { expenseInfo } = action.data;
+        const { expenses } = previousState;
+        const newExpenses = [...expenses];
+        newExpenses.unshift(expenseInfo);
 
         return { ...previousState, expenses: newExpenses };
       } catch (e) {

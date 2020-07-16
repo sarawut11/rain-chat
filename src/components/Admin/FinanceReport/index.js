@@ -153,10 +153,8 @@ class FinanceReport extends Component {
       unpaidExpenses,
     } = this.props.adminState;
 
-    const { expenses, ownerCount } = this.props.expenseInfo;
-
+    const { ownerCount, expenses } = this.props.expenseInfo;
     const { userInfo } = this.props.userInfo;
-
     const { loading } = this.state;
 
     const dataSource = [
@@ -324,7 +322,12 @@ class FinanceReport extends Component {
               </div>
 
               <div className="expense-table">
-                <Table dataSource={expenses} columns={expenseTableCol} bordered />
+                <Table
+                  dataSource={expenses}
+                  columns={expenseTableCol}
+                  bordered
+                  pagination={{ pageSize: 5 }}
+                />
               </div>
             </Col>
           </Row>

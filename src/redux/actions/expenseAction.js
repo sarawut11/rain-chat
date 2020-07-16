@@ -1,5 +1,6 @@
 const SET_EXPENSES = 'SET_EXPENSES';
 const UPDATE_EXPENSE = 'UPDATE_EXPENSE';
+const CREATE_EXPENSE = 'CREATE_EXPENSE';
 
 const setExpensesInfo = (data = {}) => {
   return {
@@ -15,4 +16,18 @@ const updateExpense = (data = {}) => {
   };
 };
 
-export { SET_EXPENSES, UPDATE_EXPENSE, setExpensesInfo, updateExpense };
+const createExpense = (data = {}) => {
+  return {
+    type: CREATE_EXPENSE,
+    data: { expenseInfo: data.expenseInfo },
+  };
+};
+
+export {
+  SET_EXPENSES,
+  UPDATE_EXPENSE,
+  CREATE_EXPENSE,
+  setExpensesInfo,
+  updateExpense,
+  createExpense,
+};
