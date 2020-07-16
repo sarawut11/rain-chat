@@ -1,6 +1,7 @@
 import { ServicesContext, RainContext } from "../context";
 import { User, Transaction, InnerTransaction, Ads, TransactionDetail, WalletNotify, WalletNotifyDetail } from "../models";
 import { now, rpcInterface, shareRevenue } from "../utils";
+import { socketServer } from "../socket/app.socket";
 
 const COMPANY_USERID: number = Number(process.env.COMPANY_USERID);
 const COMPANY_RAIN_ADDRESS = process.env.COMPANY_RAIN_ADDRESS;
@@ -204,6 +205,7 @@ const confirmAds = async (adsId: number, paidAmount: number, adsType: number, im
   // Set Ads Impressions
   const realCostPerImp = ADS_REV_IMP_REVENUE * costPerImp;
   await adsService.setImpressions(adsId, existingAds.userId, impressions, realCostPerImp, paidAmount);
+  await socketServer.updateAdsStatus(adsId);
 
   // Revenue Share Model
   // ===== Company Share ===== //

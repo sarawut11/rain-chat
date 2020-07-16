@@ -1,5 +1,6 @@
 import { ServicesContext } from "../context";
 import { isOwner, rpcInterface } from "../utils";
+import { Transaction } from "../models";
 
 export const getWalletAnalytics = async (ctx, next) => {
   try {
@@ -12,9 +13,9 @@ export const getWalletAnalytics = async (ctx, next) => {
 
     const { transactionService, innerTranService } = ServicesContext.getInstance();
     const currentBalance = await rpcInterface.getBalance();
-    const totalRainDonation = await transactionService.getTotalRainDonation();
+    const totalRainDonation = await transactionService.getTotalAmountByType(Transaction.TYPE.VITAE_RAIN);
     const totalRained = await innerTranService.getTotalRainedAmount();
-    const totalWithdrawn = await transactionService.getTotalWithdrawn();
+    const totalWithdrawn = await transactionService.getTotalAmountByType(Transaction.TYPE.WITHDRAW);
 
     ctx.body = {
       success: true,
