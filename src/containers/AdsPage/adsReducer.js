@@ -1,4 +1,12 @@
-import { SET_ADS, CREATE_ADS, UPDATE_ADS, DELETE_ADS, REQUEST_ADS } from './adsAction';
+import {
+  SET_ADS,
+  CREATE_ADS,
+  UPDATE_ADS,
+  DELETE_ADS,
+  REQUEST_ADS,
+  UPDATE_ADS_STATUS,
+  formatAdsList,
+} from './adsAction';
 
 const ADS = {
   ADSLIST: 'adsList',
@@ -26,6 +34,22 @@ const setAdsReducer = (previousState = initialState, action) => {
     case REQUEST_ADS:
     case SET_ADS:
       return { ...previousState, ...action.data };
+    case UPDATE_ADS_STATUS:
+      try {
+        const { adsList } = previousState;
+        const { adsId, status } = action.data;
+
+        adsList.forEach((ads, index) => {
+          if (ads.id === adsId) {
+            adsList[index].status = status;
+          }
+        });
+
+        return { ...previousState, ...formatAdsList(adsList) };
+      } catch (e) {
+        console.log(e);
+        return previousState;
+      }
     default:
       return previousState;
   }

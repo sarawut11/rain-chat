@@ -13,7 +13,7 @@ import {
   setAllGroupChatsAction,
   deleteGroupChatAction,
 } from '../../containers/GroupChatPage/groupChatAction';
-import { setAdsAction } from '../../containers/AdsPage/adsAction';
+import { setAdsAction, updateAdsStatus } from '../../containers/AdsPage/adsAction';
 import { setUserInfoAction } from '../../redux/actions/userAction';
 import { setStaticAdsAction } from '../../redux/actions/staticAdsAction';
 import { enableVitaePost, disableVitaePost } from '../../redux/actions/enableVitaePost';
@@ -193,7 +193,7 @@ class InitApp {
       }
 
       if (allMessage.userInfo.role !== 'MODERATOR') store.dispatch(setAdsAction({ data: adsList }));
-      console.log('initMessage success. ', 'time=>', new Date().toLocaleString(), allMessage);
+      // console.log('initMessage success. ', 'time=>', new Date().toLocaleString(), allMessage);
 
       store.dispatch(setUserInfoAction({ data: allMessage.userInfo }));
     });
@@ -205,29 +205,30 @@ class InitApp {
 
   _listeningRain() {
     window.socket.on('rainComing', ({ after }) => {
-      console.log(`Rain is coming after ${after}seconds`);
+      // console.log(`Rain is coming after ${after}seconds`);
       notifyRainComing(after);
     });
     window.socket.on('showAds', ({ ads, duration }) => {
-      console.log('Show Ads', ads, '| Duration -', duration);
+      // console.log('Show Ads', ads, '| Duration -', duration);
       showAds(ads, duration);
     });
     window.socket.on('getRain', ({ reward }) => {
-      console.log('Getting Reward:', reward);
+      // console.log('Getting Reward:', reward);
       notifyRainReward(reward);
     });
     window.socket.on('updateAdsStatus', ({ adsId, username, status }) => {
       console.log('Ads Status Updated:', username, adsId, status);
+      store.dispatch(updateAdsStatus(adsId, status));
     });
     window.socket.on('updateAdsImpressions', ({ adsInfo }) => {
-      console.log('Impression Updated:', adsInfo.impressions);
+      // console.log('Impression Updated:', adsInfo.impressions);
     });
     window.socket.on('enableVitaePost', () => {
-      console.log('Able to post to Vitae Rain Room');
+      // console.log('Able to post to Vitae Rain Room');
       store.dispatch(enableVitaePost());
     });
     window.socket.on('showStaticAds', ({ ads }) => {
-      console.log('Static Ads:', ads);
+      // console.log('Static Ads:', ads);
       store.dispatch(setStaticAdsAction(ads));
     });
   }
@@ -280,22 +281,25 @@ class InitApp {
   _init = async () => {
     this._connectSocket();
     this.subscribeSocket();
-    console.log('init app success. ', 'time=>', new Date().toLocaleString());
+    // console.log('init app success. ', 'time=>', new Date().toLocaleString());
   };
 
   init = async () => {
     if (this._userInfo && !this.initialized) {
       await this._init();
       this.initialized = true;
-      console.log('initialized');
+      // console.log('initialized');
       let afterReconnecting = false;
       window.socket.on('error', error => {
         console.log('window.socket on error', error);
         // notification(error, 'error');
         antNotification.error({ message: error });
-        if (error.code === 401) {
-          window.location.href = '/login';
-        }
+        // if (error.code === 401) {
+        //   window.location.href = '/login';
+        // }
+        window.socket.disconnect();
+        localStorage.removeItem('userInfo');
+        this._history.push('/login');
       });
       window.socket.on('reconnect', attemptNumber => {
         if (!afterReconnecting) {
@@ -304,14 +308,14 @@ class InitApp {
           afterReconnecting = true;
           console.log('not reconnecting, open automatically time=>', new Date().toLocaleString());
         }
-        console.log(
-          'reconnect successfully. attemptNumber =>',
-          attemptNumber,
-          'socket-id => ',
-          window.socket.id,
-          'time=>',
-          new Date().toLocaleString(),
-        );
+        // console.log(
+        //   'reconnect successfully. attemptNumber =>',
+        //   attemptNumber,
+        //   'socket-id => ',
+        //   window.socket.id,
+        //   'time=>',
+        //   new Date().toLocaleString(),
+        // );
       });
       window.socket.on('reconnecting', attemptNumber => {
         afterReconnecting = true;
@@ -336,7 +340,10 @@ class InitApp {
         console.log('reconnect_error. error =>', error, 'time=>', new Date().toLocaleString());
         // notification(error, 'error');
         antNotification.error({ message: 'Internal server error' });
-        window.location.href = '/login';
+
+        window.socket.disconnect();
+        localStorage.removeItem('userInfo');
+        this._history.push('/login');
       });
     }
   };
