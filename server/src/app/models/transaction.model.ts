@@ -23,5 +23,6 @@ export class Transaction {
     MEMBERSHIP: 1,
     VITAE_RAIN: 2, // Send-Vitae Purchase
     WITHDRAW: 3,
+    STOCKPILE_RAIN: 4,
   };
 }

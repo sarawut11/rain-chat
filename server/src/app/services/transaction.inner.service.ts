@@ -1,6 +1,5 @@
-import { query } from "../utils/db";
+import { query, getInArraySQL, now } from "../utils";
 import * as moment from "moment";
-import { getInArraySQL } from "../utils/utils";
 import { InnerTransaction } from "../models";
 
 export class InnerTransactionService {
@@ -26,7 +25,7 @@ export class InnerTransactionService {
         ${this.COL.time}
       ) VALUE
     `;
-    const time = moment().utc().unix();
+    const time = now();
     userIds.forEach(userId => {
       sql += `(?,?,?,?),`;
       data.push(userId, type, reward, time);
@@ -100,7 +99,7 @@ export class InnerTransactionService {
     for (let i = 0; i < weeks; i++) {
       const weekStartTime = moment().utc().startOf("week").subtract(i + 1, "week").unix();
       let weekEndTime = moment().utc().startOf("week").subtract(i, "week").unix();
-      if (i === 0) weekEndTime = moment().utc().unix();
+      if (i === 0) weekEndTime = now();
 
       let weekPayment = 0;
       trans.filter(tran => tran.time > weekStartTime && tran.time <= weekEndTime).forEach(tran => {

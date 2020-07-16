@@ -869,6 +869,8 @@
     totalRainDonation,
     totalRained,
     totalWithdrawn,
+    stockpileAddress,
+    stockpileBalance
   }
   ```
 
