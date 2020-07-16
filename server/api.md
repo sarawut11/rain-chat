@@ -929,7 +929,7 @@
     docPath,
     amount,
     time,
-    status,         // 0: Created, 1: Requested, 2: Rejected, 3: Approved
+    status,         // 0: Created, 1: Requested, 2: Rejected, 3: Approved, 4: Withdrawn
     approves: [
       {
         userId,
