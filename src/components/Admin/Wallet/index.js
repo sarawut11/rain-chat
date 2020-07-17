@@ -7,6 +7,7 @@ import Request from '../../../utils/request';
 function mapStateToProps(state) {
   return {
     adminState: state.adminState,
+    userInfo: state.user.userInfo,
   };
 }
 
@@ -23,13 +24,14 @@ class Wallet extends Component {
   };
 
   async componentDidMount() {
-    const user_info = JSON.parse(localStorage.getItem('userInfo'));
+    const user_info = this.props.userInfo;
+    console.log('componentDidMount', this, user_info);
 
     if (user_info.role === 'OWNER') {
       this.setState({ loading: true });
 
       try {
-        const res = await Request.axios('get', `/api/v1/admin/chat`);
+        const res = await Request.axios('get', `/api/v1/admin/wallet`);
 
         if (res && res.success) {
           this.props.setAdmin({ data: res });
@@ -51,11 +53,12 @@ class Wallet extends Component {
 
   render() {
     const {
-      totalRainDonations,
+      totalRainDonation,
       totalRained,
       totalWithdrawn,
       currentBalance,
-      walletAddress,
+      stockpileAddress,
+      stockpileBalance,
     } = this.props.adminState;
 
     const { loading } = this.state;
@@ -71,7 +74,7 @@ class Wallet extends Component {
                 {currentBalance || 0}
               </Descriptions.Item>
               <Descriptions.Item label="Total Rain Donations" span={3}>
-                {totalRainDonations}
+                {totalRainDonation}
               </Descriptions.Item>
               <Descriptions.Item label="Total Rained" span={3}>
                 {totalRained}
@@ -79,8 +82,11 @@ class Wallet extends Component {
               <Descriptions.Item label="Total Withdrawn" span={3}>
                 {totalWithdrawn}
               </Descriptions.Item>
-              <Descriptions.Item label="Wallet address" span={3}>
-                {walletAddress || 0}
+              <Descriptions.Item label="Stockpile address" span={3}>
+                {stockpileAddress}
+              </Descriptions.Item>
+              <Descriptions.Item label="Stockpile balance" span={3}>
+                {stockpileBalance}
               </Descriptions.Item>
             </Descriptions>
             <Row justify="center" style={{ marginTop: 40 }}>

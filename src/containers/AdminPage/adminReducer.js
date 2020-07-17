@@ -25,10 +25,15 @@ const initialState = {
   staticAds: {},
   rainAds: {},
 
-  totalRainDonations: 0,
+  // wallet tab
+  currentBalance: 0,
+  totalRainDonation: 0,
   totalRained: 0,
   totalWithdrawn: 0,
+  stockpileAddress: '',
+  stockpileBalance: 0,
 
+  // financial tab
   adRevenue: 0,
   upgradedRevenue: 0,
   ownerPayment: 0,
