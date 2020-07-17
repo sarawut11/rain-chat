@@ -110,14 +110,6 @@ export class AdsService {
       JOIN user_info as creator ON ads.userId = creator.id
       JOIN user_info as reviewer ON ads.reviewer = reviewer.id;`;
     const ads: Ads[] = await query(sql);
-    ads.forEach(ad => {
-      // Pending or Created ads
-      if (ad.reviewerUsername === "COMPANY") {
-        ad.reviewerUsername = "";
-        ad.reviewerName = "";
-        ad.reviewerAvatar = "";
-      }
-    });
     return ads;
   }
 
