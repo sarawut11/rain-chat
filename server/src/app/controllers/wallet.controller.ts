@@ -1,9 +1,13 @@
 import { ServicesContext, RainContext } from "../context";
 import { User, Transaction, InnerTransaction, Ads, TransactionDetail, WalletNotify, WalletNotifyDetail } from "../models";
 import { now, rpcInterface, shareRevenue } from "../utils";
+import { socketServer } from "../socket/app.socket";
 
 const COMPANY_USERID: number = Number(process.env.COMPANY_USERID);
 const COMPANY_RAIN_ADDRESS = process.env.COMPANY_RAIN_ADDRESS;
+const COMPANY_STOCKPILE_USERID: number = Number(process.env.COMPANY_STOCKPILE_USERID);
+const COMPANY_STOCKPILE_ADDRESS = process.env.COMPANY_STOCKPILE_ADDRESS;
+
 const COMPANY_REV_COMPANY_EXPENSE = Number(process.env.COMPANY_REV_COMPANY_EXPENSE);
 const COMPANY_REV_OWNER_SHARE = Number(process.env.COMPANY_REV_OWNER_SHARE);
 const COMPANY_REV_MODER_SHARE = Number(process.env.COMPANY_REV_MODER_SHARE);
@@ -31,6 +35,14 @@ export const walletNotify = async (ctx, next) => {
         const receiveAddress = txInfo.details[0].address;
         if (receiveAddress === COMPANY_RAIN_ADDRESS) {
           await confirmSendVitaePurchase(txInfo.amount, txid, txInfo.timereceived);
+          ctx.body = {
+            success: true,
+            message: "Success"
+          };
+          return;
+        }
+        if (receiveAddress === COMPANY_STOCKPILE_ADDRESS) {
+          await confirmStockpileCharge(txInfo.amount, txid, txInfo.timereceived);
           ctx.body = {
             success: true,
             message: "Success"
@@ -204,6 +216,7 @@ const confirmAds = async (adsId: number, paidAmount: number, adsType: number, im
   // Set Ads Impressions
   const realCostPerImp = ADS_REV_IMP_REVENUE * costPerImp;
   await adsService.setImpressions(adsId, existingAds.userId, impressions, realCostPerImp, paidAmount);
+  await socketServer.updateAdsStatus(adsId);
 
   // Revenue Share Model
   // ===== Company Share ===== //
@@ -240,6 +253,16 @@ const confirmSendVitaePurchase = async (amount: number, txId: string, confirmTim
 
   // Rain purchased amount to last active users
   await RainContext.getInstance().rainUsersByLastActivity(amount);
+};
+
+const confirmStockpileCharge = async (amount: number, txId: string, confirmTime: number) => {
+  // Record Transaction
+  const { userService, transactionService } = ServicesContext.getInstance();
+  const requestInfo = await transactionService.createTransactionRequest(COMPANY_STOCKPILE_USERID, Transaction.TYPE.STOCKPILE_RAIN, amount);
+  await transactionService.confirmTransaction(requestInfo.insertId, txId, amount, confirmTime);
+
+  // Add Stockpile balance
+  await userService.addBalance(COMPANY_STOCKPILE_USERID, amount);
 };
 
 const getCompanyRevenue = (revenue: number) => {

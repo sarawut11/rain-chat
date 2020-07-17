@@ -20,6 +20,7 @@ export class User {
 
   public static readonly ROLE = {
     COMPANY: "COMPANY",
+    STOCKPILE: "STOCKPILE",
     OWNER: "OWNER",
     MODERATOR: "MODERATOR",
     FREE: "FREE",

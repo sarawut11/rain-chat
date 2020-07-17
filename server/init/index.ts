@@ -7,7 +7,10 @@ import { query } from "./db";
 import { User } from "../src/app/models";
 
 const COMPANY_USERID = Number(process.env.COMPANY_USERID);
-const COMPANY_USERNAME = process.env.COMPANY_USERNAME;
+const COMPANY_RAIN_ADDRESS = process.env.COMPANY_RAIN_ADDRESS;
+const COMPANY_STOCKPILE_USERID = Number(process.env.COMPANY_STOCKPILE_USERID);
+const COMPANY_STOCKPILE_ADDRESS = process.env.COMPANY_STOCKPILE_ADDRESS;
+
 const RAIN_GROUP_ID = process.env.RAIN_GROUP_ID;
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
@@ -47,10 +50,12 @@ const initDB = async () => {
   }
 
   console.log("Initializing Default Values");
+  // Create Company Rain & Stockpile account
+  let sql = "INSERT INTO user_info (id, username, email, password, name, role, refcode, walletAddress) VALUES (?,?,?,?,?,?,?,?);";
+  await query(sql, [COMPANY_USERID, "COMPANY", "company@wallet.com", md5(uniqid()), "Company Wallet", User.ROLE.COMPANY, uniqid(), COMPANY_RAIN_ADDRESS]);
+  sql = "INSERT INTO user_info (id, username, email, password, name, role, refcode, walletAddress) VALUES (?,?,?,?,?,?,?,?);";
+  await query(sql, [COMPANY_STOCKPILE_USERID, "STOCKPILE", "company.stockpile@wallet.com", md5(uniqid()), "Company Stockpile", User.ROLE.STOCKPILE, uniqid(), COMPANY_STOCKPILE_ADDRESS]);
   // Create Default Owner ( Admin )
-  let sql = "INSERT INTO user_info (id, username, email, password, name, role, refcode) VALUES (?,?,?,?,?,?,?);";
-  await query(sql, [COMPANY_USERID, COMPANY_USERNAME, "company@wallet.com", md5(uniqid()), "Company Wallet", User.ROLE.COMPANY, uniqid()]);
-
   sql = "INSERT INTO user_info (username, email, password, name, role, refcode) VALUES (?,?,?,?,?,?);";
   await query(sql, [ADMIN_USERNAME, MAIL_USER, md5(ADMIN_PASSWORD), ADMIN_NAME, User.ROLE.OWNER, uniqid()]);
 

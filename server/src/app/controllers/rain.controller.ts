@@ -1,6 +1,8 @@
 import { ServicesContext, RainContext } from "../context";
 import { User } from "../models";
 
+const COMPANY_RAIN_ADDRESS = process.env.COMPANY_RAIN_ADDRESS;
+
 export const getCompanyRainAddress = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
@@ -17,7 +19,7 @@ export const getCompanyRainAddress = async (ctx, next) => {
 
     ctx.body = {
       success: true,
-      rainAddress: process.env.COMPANY_RAIN_ADDRESS
+      rainAddress: COMPANY_RAIN_ADDRESS
     };
   } catch (error) {
     console.error(error.message);

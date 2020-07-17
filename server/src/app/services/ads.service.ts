@@ -2,8 +2,6 @@ import { query, now } from "../utils";
 import { isNullOrUndefined } from "util";
 import { Ads } from "../models";
 
-const COMPANY_USERNAME = process.env.COMPANY_USERNAME;
-
 export class AdsService {
 
   readonly TABLE_NAME = "ads_info";
@@ -112,14 +110,6 @@ export class AdsService {
       JOIN user_info as creator ON ads.userId = creator.id
       JOIN user_info as reviewer ON ads.reviewer = reviewer.id;`;
     const ads: Ads[] = await query(sql);
-    ads.forEach(ad => {
-      // Pending or Created ads
-      if (ad.reviewerUsername === COMPANY_USERNAME) {
-        ad.reviewerUsername = "";
-        ad.reviewerName = "";
-        ad.reviewerAvatar = "";
-      }
-    });
     return ads;
   }
 

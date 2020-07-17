@@ -14,7 +14,7 @@ export const subscribeAdsReward = (token) => {
   rainContext.addUserToRainAds(id);
 };
 
-export const updateAdsStatus = async (adsId) => {
+export const updateAdsStatus = async (adsId: number) => {
   const { userService, adsService } = ServicesContext.getInstance();
   const ads: Ads = await adsService.findAdsById(adsId);
   const user: User = await userService.findUserById(ads.userId);
