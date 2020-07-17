@@ -38,12 +38,22 @@ const mapDispatchToProps = dispatch => ({
 const renderModerItem = item => (
   <Row style={{ width: '100%', margin: 0 }} gutter={[20, 10]} align="middle">
     <Col span={12}>Username: {item.username}</Col>
-    <Col span={12}>
-      Total Payment:
-      {item.totalPayment}
-    </Col>
+    <Col span={12}>Total Payment: {item.payment}</Col>
   </Row>
 );
+
+const columns = [
+  {
+    title: 'Date',
+    dataIndex: 'date',
+    key: 'date',
+  },
+  {
+    title: 'Payment',
+    dataIndex: 'payment',
+    key: 'payment',
+  },
+];
 
 class FinanceReport extends Component {
   state = {
@@ -82,7 +92,7 @@ class FinanceReport extends Component {
       }
 
       try {
-        const res = await Request.axios('get', `/api/v1/admin/moders`);
+        const res = await Request.axios('get', `/api/v1/admin/financial`);
 
         if (res && res.success) {
           this.props.setAdmin({ data: res });
@@ -171,8 +181,39 @@ class FinanceReport extends Component {
     }
   };
 
+  renderWeekPayments = weekPayments => {
+    const payments = [];
+
+    const d = new Date();
+    weekPayments.forEach((payment, index) => {
+      const to = d.setTime(
+        d.getTime() -
+          (d.getDay() ? d.getDay() : 7) * 24 * 60 * 60 * 1000 -
+          index * 24 * 60 * 60 * 1000,
+      );
+      const from = d.setTime(d.getTime() - 6 * 24 * 60 * 60 * 1000);
+
+      const toDate = new Date(to);
+      const fromDate = new Date(from);
+
+      payments[index] = {
+        key: index,
+        date: `${fromDate.toLocaleDateString()} ~ ${toDate.toLocaleDateString()}`,
+        payment,
+      };
+    });
+
+    return payments;
+  };
+
   render() {
-    const { adRevenue, upgradedRevenue, ownerPayment, moders } = this.props.adminState;
+    const {
+      totalAdsRevenue, // Total Ads Revenue
+      totalMemRevenue, // Total Membership Revenue
+      ownerPayments,
+      moderatorPayments,
+      maintenanceAmount, // Company Maintenance Revenue } = this.props.adminState;
+    } = this.props.adminState;
 
     const {
       ownerCount,
@@ -181,6 +222,7 @@ class FinanceReport extends Component {
       paidExpenses,
       unpaidExpenses,
     } = this.props.expenseInfo;
+
     const { userInfo } = this.props.userInfo;
     const { loading } = this.state;
 
@@ -377,24 +419,36 @@ class FinanceReport extends Component {
           <Row gutter={[0, 20]}>
             <Col span={24}>
               <Descriptions bordered title="Revenue">
-                <Descriptions.Item label="Ad revenue">{adRevenue}</Descriptions.Item>
-                <Descriptions.Item label="Upgraded revenue">{upgradedRevenue}</Descriptions.Item>
+                <Descriptions.Item label="Total Ads revenue">{totalAdsRevenue}</Descriptions.Item>
+                <Descriptions.Item label="Total Membership Revenue">
+                  {totalMemRevenue}
+                </Descriptions.Item>
+                <Descriptions.Item label="Company Maintenance Amount">
+                  {maintenanceAmount}
+                </Descriptions.Item>
               </Descriptions>
             </Col>
 
             <Col span={24}>
               <Descriptions bordered title="Owner Payments">
-                <Descriptions.Item label="Owner 1">{ownerPayment}</Descriptions.Item>
-                <Descriptions.Item label="Owner 2">{ownerPayment}</Descriptions.Item>
+                {ownerPayments.map(ownerPayment => (
+                  <Descriptions.Item label={ownerPayment.username}>
+                    {ownerPayment.payment}
+                  </Descriptions.Item>
+                ))}
               </Descriptions>
             </Col>
 
             <Col span={24}>
               <div className="ant-descriptions-title">Moderator Payments</div>
               <Collapse>
-                {moders.map(moder => (
+                {moderatorPayments.map(moder => (
                   <Panel header={renderModerItem(moder)} key={moder.username}>
-                    <Table dataSource={dataSource} columns={columns} pagination={false} />
+                    <Table
+                      dataSource={this.renderWeekPayments(moder.weekPayments)}
+                      columns={columns}
+                      pagination={false}
+                    />
                   </Panel>
                 ))}
               </Collapse>
