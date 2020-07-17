@@ -202,12 +202,16 @@ export const generateOTP = async (ctx, next) => {
       return;
     }
     const otp: string = await generateOtp(user.id, Otp.TYPE.WITHDRAW);
-    sendMail({
-      to: user.email,
-      subject: "Vitae OTP",
-      text: otp,
-      html: undefined,
+    sendMail("otp/index.html", {
+      email: user.email,
+      subject: "Email Withdrawal",
+      data: {
+        username,
+        code: otp,
+        expire: OTP_TIMEOUT
+      }
     });
+    console.log("Email Withdrawal => 6 Digit Code Generated");
     ctx.body = {
       success: true,
       message: "6 digit code sent to your email.",
