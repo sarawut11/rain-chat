@@ -226,34 +226,6 @@ class FinanceReport extends Component {
     const { userInfo } = this.props.userInfo;
     const { loading } = this.state;
 
-    const dataSource = [
-      {
-        key: '1',
-        date: '2020/6/30',
-        payment: '$2013',
-      },
-      {
-        key: '2',
-        date: '2020/6/29',
-        payment: '$2013',
-      },
-      {
-        key: '3',
-        date: '2020/6/28',
-        payment: '$2013',
-      },
-      {
-        key: '4',
-        date: '2020/6/27',
-        payment: '$2013',
-      },
-      {
-        key: '5',
-        date: '2020/6/26',
-        payment: '$2013',
-      },
-    ];
-
     const columns = [
       {
         title: 'Date',
