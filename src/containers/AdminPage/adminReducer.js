@@ -34,13 +34,11 @@ const initialState = {
   stockpileBalance: 0,
 
   // financial tab
-  adRevenue: 0,
-  upgradedRevenue: 0,
-  ownerPayment: 0,
-  totalModeratorsPayment: 0,
-  totalExpenses: 0,
-  paidExpenses: 0,
-  unpaidExpenses: 0,
+  totalAdsRevenue: 0, // Total Ads Revenue
+  totalMemRevenue: 0, // Total Membership Revenue
+  ownerPayments: [],
+  moderatorPayments: [],
+  maintenanceAmount: 0, // Company Maintenance Revenue
 };
 
 const setAdminReducer = (previousState = initialState, action) => {
