@@ -27,6 +27,7 @@ export const sendMail = async (mailPath: string, { email, subject, data }: {
     mailPath = path.join(EMAIL_PATH, mailPath);
     let html = (await fs.readFileSync("." + mailPath)).toString();
     html = html.replace(/{{HOST}}/g, HOST);
+    html = html.replace(/{{EMAIL_PATH}}/g, `https://${path.join(HOST, EMAIL_PATH)}`);
     html = html.replace(/{{COPYRIGHT_YEAR}}/g, moment().utc().year().toString());
 
     if (data.username !== undefined) html = html.replace(/{{USERNAME}}/g, data.username);
