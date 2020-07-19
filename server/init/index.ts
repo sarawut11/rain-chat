@@ -2,6 +2,9 @@
 import * as md5 from "md5";
 import * as uniqid from "uniqid";
 import * as moment from "moment";
+import * as dotenv from "dotenv";
+dotenv.config();
+
 import { getSqlContentMap } from "./util/getSQLConentMap";
 import { User } from "../src/app/models";
 import { query } from "../src/app/utils/db";
