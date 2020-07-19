@@ -36,6 +36,7 @@
     - [/membership/role/users?role=x&page=y&count=z (GET)](#membershiproleusersrolexpageycountz-get)
     - [/membership/role/update/moderator (POST)](#membershiproleupdatemoderator-post)
     - [/membership/role/upgrade/request (POST)](#membershiproleupgraderequest-post)
+    - [/membership/role/upgrade/balance (POST)](#membershiproleupgradebalance-post)
   - [1.7 Admin Dashboard API](#17-admin-dashboard-api)
     - [/admin/home (GET)](#adminhome-get)
     - [/admin/ads (GET)](#adminads-get)
@@ -711,7 +712,7 @@
   ```
 
 ### /membership/role/upgrade/request (POST)
-  Upgrade Membership
+  Upgrade Membership by purchasing token
 
   ***Request Body***
   | Fields       | Description                |
@@ -723,6 +724,20 @@
     success: true/false,
     message,
     expireTime,   // expiration time in seconds
+  }
+  ```
+### /membership/role/upgrade/balance (POST)
+  Upgrade Membership from balance
+
+  ***Request Body***
+  | Fields       | Description                |
+  | ------------ | -------------------------- |
+  | expectAmount | Expected amount to be paid |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message,
   }
   ```
 

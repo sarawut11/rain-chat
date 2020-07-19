@@ -156,10 +156,10 @@ export const walletWithdraw = async (ctx, next) => {
 };
 
 
-const confirmMembership = async (userInfo: User, amount: number) => {
+export const confirmMembership = async (userInfo: User, amount: number) => {
   const { userService } = ServicesContext.getInstance();
 
-  // Update UserInfo & Transaction Info
+  // Update UserInfo
   await userService.updateMembership(userInfo.id, User.ROLE.UPGRADED_USER);
 
   // Revenue Share Model

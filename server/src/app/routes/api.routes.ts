@@ -43,7 +43,8 @@ const api = new Router()
   .get("/membership/price", APIController.getMembershipPrice)
   .get("/membership/role/users", APIController.getAllUsers)
   .post("/membership/role/update/moderator", APIController.setModerator)
-  .post("/membership/role/upgrade/request", APIController.upgradeMembership)
+  .post("/membership/role/upgrade/request", APIController.upgradeMembershipPurchase)
+  .post("/membership/role/upgrade/balance", APIController.upgradeMembershipBalance)
 
   // Expense
   .get("/expense/get-all", APIController.getAllExpenses)
