@@ -3,8 +3,8 @@ import * as md5 from "md5";
 import * as uniqid from "uniqid";
 import * as moment from "moment";
 import { getSqlContentMap } from "./util/getSQLConentMap";
-import { query } from "./db";
 import { User } from "../src/app/models";
+import { query } from "../src/app/utils/db";
 
 const COMPANY_USERID = Number(process.env.COMPANY_USERID);
 const COMPANY_RAIN_ADDRESS = process.env.COMPANY_RAIN_ADDRESS;

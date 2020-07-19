@@ -2,6 +2,7 @@
 
 const nodeExternals = require('webpack-node-externals');
 const webpack = require('webpack');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const path = require('path');
 
 // function srcPath(subdir) {
@@ -38,6 +39,7 @@ const config = {
         },
       },
     }),
+    new CopyWebpackPlugin({ patterns: [{ from: 'public', to: 'public' }] }),
   ],
   module: {
     rules: [

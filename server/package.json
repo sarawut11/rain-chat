@@ -27,6 +27,7 @@
     "async": "0.2.9",
     "aws-sdk": "^2.686.0",
     "axios": "^0.19.2",
+    "copy-webpack-plugin": "^6.0.3",
     "cron": "^1.8.2",
     "crypto-js": "^4.0.0",
     "http": "0.0.1-security",

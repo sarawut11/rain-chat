@@ -51,7 +51,7 @@ export class CMCManager {
       }
       this.timeoutObj = setTimeout((): void => {
         this.onTimeout();
-      }, 1000 * this.pollingIntervalSeconds);
+      }, this.pollingIntervalSeconds);
     }
   }
 }
