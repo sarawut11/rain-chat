@@ -56,5 +56,12 @@ module.exports = (env, argv) => {
   if (!argv.prod) {
     config.devtool = 'source-map';
   }
+  config.resolve.alias = {
+    '@utils': path.join(__dirname, 'src/app/utils/index.ts'),
+    '@models': path.join(__dirname, 'src/app/models/index.ts'),
+    '@context': path.join(__dirname, 'src/app/context/index.ts'),
+    '@services': path.join(__dirname, 'src/app/services/index.ts'),
+    '@controllers': path.join(__dirname, 'src/app/controllers/index.ts'),
+  };
   return config;
 };
