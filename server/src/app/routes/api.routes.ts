@@ -13,6 +13,7 @@ const api = new Router()
   // Profile
   .get("/user/:username", APIController.getProfileInfo)
   .put("/user/:username", APIController.updateProfileInfo)
+  .put("/user/password/update", APIController.updatePassword)
   .post("/user/withdraw-address/add", APIController.addWithdrawAddress)
   .get("/user/withdraw-address", APIController.getWithdrawAddresses)
   .get("/user/otp/request", APIController.generateOTP)

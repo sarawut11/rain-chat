@@ -1,7 +1,8 @@
+import * as md5 from "md5";
 import * as aws from "@utils";
 import { ServicesContext } from "@context";
 import { User } from "@models";
-import { socketServer, socketEventNames, updateProfileInfoSocket } from "@sockets";
+import { updateProfileInfoSocket } from "@sockets";
 
 export const getProfileInfo = async (ctx, next) => {
   const { username } = ctx.params;
@@ -108,6 +109,47 @@ export const getWithdrawAddresses = async (ctx, next) => {
     };
   } catch (error) {
     console.log(`Withdraw Address => Get Failed | Error:${error.message}`);
+    ctx.body = {
+      success: false,
+      message: error.message
+    };
+  }
+};
+
+export const updatePassword = async (ctx, next) => {
+  try {
+    const { username } = ctx.state.user;
+    const { oldPassword, newPassword } = ctx.request.body;
+    const { userService } = ServicesContext.getInstance();
+
+    const userInfo: User = await userService.findUserByUsername(username);
+    if (userInfo === undefined) {
+      console.log("Update Password => Failed | Unknown user");
+      ctx.body = {
+        success: false,
+        message: "Unknown user.",
+      };
+      return;
+    }
+
+    if (md5(oldPassword) !== userInfo.password) {
+      console.log("Update Password => Failed | Wrong password");
+      ctx.body = {
+        success: false,
+        message: "Wrong password.",
+      };
+      return;
+    }
+
+    await userService.updatePassword(userInfo.id, md5(newPassword));
+    console.log("Update Password => Success | username:", username);
+
+    ctx.body = {
+      success: true,
+      message: "Password updated."
+    };
+  } catch (error) {
+    console.log(`Update password => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: error.message

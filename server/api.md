@@ -9,6 +9,7 @@
   - [1.3 Profile](#13-profile)
     - [/user/:username (GET)](#userusername-get)
     - [/user/:username (PUT)](#userusername-put)
+    - [/user/password/update (PUT)](#userpasswordupdate-put)
     - [/user/withdraw-address/add (POST)](#userwithdraw-addressadd-post)
     - [/user/withdraw-address (GET)](#userwithdraw-address-get)
     - [/user/otp/request (GET)](#userotprequest-get)
@@ -221,6 +222,21 @@
       name,
       intro,
     }
+  }
+  ```
+### /user/password/update (PUT)
+  Update password
+
+  ***Request Body (Form-Data)***
+  | Fields      | Description  |
+  | ----------- | ------------ |
+  | oldPassword | Old password |
+  | newPassword | New password |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
   }
   ```
 ### /user/withdraw-address/add (POST)
