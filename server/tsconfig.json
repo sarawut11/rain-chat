@@ -12,9 +12,10 @@
     "baseUrl": "./",
     "paths": {
       "@utils": ["src/app/utils/index"],
-      "@services": ["src/app/services/index"],
       "@models": ["src/app/models/index"],
+      "@sockets": ["src/app/socket/index"],
       "@context": ["src/app/context/index"],
+      "@services": ["src/app/services/index"],
       "@controllers": ["src/app/controllers/index"]
     },
     "lib": ["es2015", "es6", "esnext.asynciterable", "dom"]

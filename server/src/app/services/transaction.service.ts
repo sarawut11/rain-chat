@@ -1,6 +1,6 @@
-import { query, now } from "../utils";
-import { Transaction, DefaultModel, TransactionDetail } from "../models";
-import { TransactionContext } from "../context";
+import { query, now } from "@utils";
+import { TransactionContext } from "@context";
+import { Transaction, DefaultModel, TransactionDetail } from "@models";
 
 const COMPANY_USERID = Number(process.env.COMPANY_USERID);
 const TRANSACTION_REQUEST_TIMEOUT = Number(process.env.TRANSACTION_REQUEST_TIMEOUT);

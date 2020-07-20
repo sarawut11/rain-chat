@@ -2,7 +2,7 @@ import * as md5 from "md5";
 import * as uniqid from "uniqid";
 import * as moment from "moment";
 import { generateToken, authVerify } from "../middlewares/verify";
-import { socketServer } from "../socket/app.socket";
+import { socketServer } from "@sockets";
 import { ServicesContext } from "@context";
 import { User, Ban, Otp } from "@models";
 import { isVitaePostEnabled, generateOtp, verifyOtp, sendMail, rpcInterface } from "@utils";

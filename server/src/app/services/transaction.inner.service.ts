@@ -1,6 +1,6 @@
-import { query, getInArraySQL, now } from "../utils";
 import * as moment from "moment";
-import { InnerTransaction } from "../models";
+import { query, getInArraySQL, now } from "@utils";
+import { InnerTransaction } from "@models";
 
 export class InnerTransactionService {
 

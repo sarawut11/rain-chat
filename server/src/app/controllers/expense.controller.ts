@@ -2,8 +2,7 @@ import * as moment from "moment";
 import { ServicesContext } from "@context";
 import { User, Expense, ExpenseConfirm } from "@models";
 import { isOwner, uploadFile } from "@utils";
-import { socketServer } from "../socket/app.socket";
-import { socketEventNames } from "../socket/resource.socket";
+import { socketServer, socketEventNames } from "@sockets";
 
 export const createExpenseRequest = async (ctx, next) => {
   try {

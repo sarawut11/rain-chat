@@ -1,7 +1,7 @@
 import { ServicesContext, RainContext } from "@context";
 import { User, Transaction, InnerTransaction, Ads, TransactionDetail, WalletNotify, WalletNotifyDetail } from "@models";
 import { now, rpcInterface, shareRevenue } from "@utils";
-import { socketServer } from "../socket/app.socket";
+import { socketServer } from "@sockets";
 
 const COMPANY_USERID: number = Number(process.env.COMPANY_USERID);
 const COMPANY_RAIN_ADDRESS = process.env.COMPANY_RAIN_ADDRESS;

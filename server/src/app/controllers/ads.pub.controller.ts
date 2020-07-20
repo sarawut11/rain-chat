@@ -2,7 +2,7 @@ import { ParameterizedContext } from "koa";
 import { ServicesContext, CMCContext, TransactionContext } from "@context";
 import { Ads, User, Transaction, TransactionDetail } from "@models";
 import { uploadFile, deleteFile, now } from "@utils";
-import { socketServer } from "../socket/app.socket";
+import { socketServer } from "@sockets";
 
 const TRANSACTION_REQUEST_TIMEOUT = Number(process.env.TRANSACTION_REQUEST_TIMEOUT);
 const COST_PER_IMPRESSION_RAIN_ADS = Number(process.env.COST_PER_IMPRESSION_RAIN_ADS);

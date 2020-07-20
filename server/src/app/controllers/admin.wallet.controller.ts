@@ -1,6 +1,6 @@
-import { ServicesContext } from "../context";
-import { isOwner, rpcInterface } from "../utils";
-import { Transaction } from "../models";
+import { ServicesContext } from "@context";
+import { isOwner, rpcInterface } from "@utils";
+import { Transaction } from "@models";
 
 const COMPANY_STOCKPILE_USERID = Number(process.env.COMPANY_STOCKPILE_USERID);
 

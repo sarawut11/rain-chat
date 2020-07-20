@@ -1,6 +1,6 @@
-import { query, getInArraySQL, now } from "../utils";
 import { isNullOrUndefined } from "util";
-import { User, UserRelation, DefaultModel } from "../models";
+import { query, getInArraySQL, now } from "@utils";
+import { User, UserRelation, DefaultModel } from "@models";
 
 const RAIN_GROUP_ID = process.env.RAIN_GROUP_ID;
 const POP_RAIN_BALANCE_LIMIT = Number(process.env.POP_RAIN_BALANCE_LIMIT);

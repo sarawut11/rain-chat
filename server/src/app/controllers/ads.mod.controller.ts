@@ -1,6 +1,6 @@
 import { ServicesContext } from "@context";
 import { Ads, User } from "@models";
-import { socketServer } from "../socket/app.socket";
+import { socketServer } from "@sockets";
 
 export const getAllAds = async (ctx, next) => {
   try {

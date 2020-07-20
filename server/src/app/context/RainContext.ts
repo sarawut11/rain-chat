@@ -1,7 +1,6 @@
-import { ServicesContext } from "./ServicesContext";
-import { socketServer } from "../socket/app.socket";
-import { socketEventNames } from "../socket/resource.socket";
-import { Ads, User, InnerTransaction } from "../models";
+import { ServicesContext } from "@context";
+import { socketServer, socketEventNames } from "@sockets";
+import { Ads, User, InnerTransaction } from "@models";
 
 export class RainContext {
   static instance: RainContext;
