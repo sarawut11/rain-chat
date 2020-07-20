@@ -5,7 +5,7 @@ import * as moment from "moment";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import { getSqlContentMap } from "./util/getSQLConentMap";
+import { getSqlShellList, runSqlShellList } from "./utils";
 import { User } from "../src/app/models";
 import { query } from "../src/app/utils/db";
 
@@ -20,37 +20,12 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const ADMIN_NAME = process.env.ADMIN_NAME;
 const MAIL_USER = process.env.MAIL_USER;
 
-// Print script execution log
-const eventLog = (err, sqlFile, index) => {
-  if (err) {
-    console.log(`[ERROR] sql script file: ${sqlFile} ${index + 1}th command execution failed o(╯□╰)o ！`);
-  } else {
-    console.log(`[SUCCESS] sql script file: ${sqlFile} ${index + 1}th command executed successfully O(∩_∩)O !`);
-  }
-};
-
-// Get all sql script content
-const sqlContentMap = getSqlContentMap();
-
 // Execute the table creation sql script
 const initDB = async () => {
   // Initialize DB Tables
   console.log("Initializing DB Tables");
-  for (const key of Object.keys(sqlContentMap)) {
-    const sqlShell = sqlContentMap[key];
-    const sqlShellList = sqlShell.split(";");
-
-    for (const [i, shell] of sqlShellList.entries()) {
-      if (shell.trim()) {
-        const result = await query(shell);
-        if (result.serverStatus * 1 === 2) {
-          eventLog(undefined, key, i);
-        } else {
-          eventLog(true, key, i);
-        }
-      }
-    }
-  }
+  const sqlShellList = getSqlShellList("create-table.sql");
+  await runSqlShellList(sqlShellList);
 
   console.log("Initializing Default Values");
   // Create Company Rain & Stockpile account
