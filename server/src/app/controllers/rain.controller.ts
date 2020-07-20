@@ -1,5 +1,5 @@
-import { ServicesContext, RainContext } from "../context";
-import { User } from "../models";
+import { ServicesContext, RainContext } from "@context";
+import { User } from "@models";
 
 const COMPANY_RAIN_ADDRESS = process.env.COMPANY_RAIN_ADDRESS;
 
@@ -10,6 +10,7 @@ export const getCompanyRainAddress = async (ctx, next) => {
 
     const userInfo: User = await userService.findUserByUsername(username);
     if (userInfo === undefined) {
+      console.log(`Company Rain Address => Failed | Invalid username:${username}`);
       ctx.body = {
         success: false,
         message: "Invalid username"
@@ -22,7 +23,7 @@ export const getCompanyRainAddress = async (ctx, next) => {
       rainAddress: COMPANY_RAIN_ADDRESS
     };
   } catch (error) {
-    console.error(error.message);
+    console.log(`Company Rain Address => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: "Failed"
@@ -37,6 +38,7 @@ export const rainFromBalance = async (ctx, next) => {
     const { userService } = ServicesContext.getInstance();
     const userInfo: User = await userService.findUserByUsername(username);
     if (userInfo === undefined) {
+      console.log(`Rain From Balance => Failed | Invalid username:${username}`);
       ctx.body = {
         success: false,
         message: "Invalid username"
@@ -46,6 +48,7 @@ export const rainFromBalance = async (ctx, next) => {
 
     const balance = userInfo.balance;
     if (amount > balance || amount < 0) {
+      console.log(`Rain From Balance => Failed | Insufficient balance:${balance}, amount:${amount}, username:${username}`);
       ctx.body = {
         success: false,
         message: "Invalid amount"
@@ -56,6 +59,7 @@ export const rainFromBalance = async (ctx, next) => {
     await userService.addBalance(userInfo.id, -amount);
     await RainContext.getInstance().rainUsersByLastActivity(amount);
     const updatedUser: User = await userService.findUserById(userInfo.id);
+    console.log(`Rain From Balance => Success | Rained:${amount}, Username:${username}`);
 
     ctx.body = {
       success: true,
@@ -63,7 +67,7 @@ export const rainFromBalance = async (ctx, next) => {
       userInfo: updatedUser
     };
   } catch (error) {
-    console.log(error.message);
+    console.log(`Rain From Balance => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: error.message

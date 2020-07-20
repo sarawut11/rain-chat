@@ -1,6 +1,6 @@
-import { ServicesContext, RainContext } from "../context";
-import { User, Transaction, InnerTransaction, Ads, TransactionDetail, WalletNotify, WalletNotifyDetail } from "../models";
-import { now, rpcInterface, shareRevenue } from "../utils";
+import { ServicesContext, RainContext } from "@context";
+import { User, Transaction, InnerTransaction, Ads, TransactionDetail, WalletNotify, WalletNotifyDetail } from "@models";
+import { now, rpcInterface, shareRevenue } from "@utils";
 import { socketServer } from "../socket/app.socket";
 
 const COMPANY_USERID: number = Number(process.env.COMPANY_USERID);
@@ -30,10 +30,11 @@ export const walletNotify = async (ctx, next) => {
     const txInfo: WalletNotify = await rpcInterface.getTransaction(txid);
     console.log("Transaction Notify => ", txInfo);
 
-    if (txInfo.confirmations > 0) {
+    if (txInfo.confirmations > 0) { // Confirmed
       if (txInfo.details[0].category === WalletNotifyDetail.CATEGORY.receive) {
         const receiveAddress = txInfo.details[0].address;
         if (receiveAddress === COMPANY_RAIN_ADDRESS) {
+          console.log("Transaction Notify => Send Vitae To Rain | Amount:", txInfo.amount);
           await confirmSendVitaePurchase(txInfo.amount, txid, txInfo.timereceived);
           ctx.body = {
             success: true,
@@ -42,6 +43,7 @@ export const walletNotify = async (ctx, next) => {
           return;
         }
         if (receiveAddress === COMPANY_STOCKPILE_ADDRESS) {
+          console.log("Transaction Notify => Stockpile Rain | Deposit Amount:", txInfo.amount);
           await confirmStockpileCharge(txInfo.amount, txid, txInfo.timereceived);
           ctx.body = {
             success: true,
@@ -52,7 +54,7 @@ export const walletNotify = async (ctx, next) => {
 
         const userInfo: User = await userService.findUserByWalletAddress(receiveAddress);
         if (userInfo === undefined) {
-          console.log("Transasction Notify => Deposit from unknown user");
+          console.log("Transaction Notify => Failed | Deposit from unknown user. | txId:", txid);
           ctx.body = {
             success: false,
             message: "Failed"
@@ -62,7 +64,7 @@ export const walletNotify = async (ctx, next) => {
 
         const tranInfo: Transaction = await transactionService.getLastRequestedTransaction(userInfo.id);
         if (tranInfo === undefined) {
-          console.log(`Transaction Notify => Unknown deposit from user:${userInfo.id}`);
+          console.log(`Transaction Notify => Failed | Unknown deposit from user:${userInfo.id}, txId:${txid}`);
           ctx.body = {
             success: false,
             message: "Failed"
@@ -71,13 +73,16 @@ export const walletNotify = async (ctx, next) => {
         }
 
         if (txInfo.amount < tranInfo.expectAmount) {
+          console.log(`Transaction Notify => Insufficient Amount | expectAmount:${tranInfo.expectAmount}, paidAmount:${txInfo.amount}, txId:${txid}`);
           await transactionService.setInsufficientTransaction(txid, txInfo.amount, txInfo.timereceived, tranInfo);
         } else {
           await transactionService.confirmTransaction(tranInfo.id, txid, txInfo.amount, txInfo.timereceived);
           if (tranInfo.type === Transaction.TYPE.MEMBERSHIP) {
+            console.log(`Transaction Notify => Membership Upgraded | username:${userInfo.username}, txId:${txid}`);
             await confirmMembership(userInfo, txInfo.amount);
           } else if (tranInfo.type === Transaction.TYPE.ADS) {
             const details: TransactionDetail = JSON.parse(tranInfo.details);
+            console.log(`Transaction Notify => Ads Purchased | username:${userInfo.username}, adsId:${details.adsId} txId:${txid}`);
             await confirmAds(details.adsId, txInfo.amount, details.adsType, details.impressions, details.costPerImp);
           }
         }
@@ -93,7 +98,7 @@ export const walletNotify = async (ctx, next) => {
       message: "Success",
     };
   } catch (error) {
-    console.error(error.message);
+    console.log(`Transaction Notify => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: "Failed"
@@ -109,6 +114,7 @@ export const walletWithdraw = async (ctx, next) => {
 
     const userInfo: User = await userService.findUserByUsername(username);
     if (userInfo === undefined) {
+      console.log(`Wallet Withdraw => Failed | Invalid username: ${username}`);
       ctx.body = {
         success: false,
         message: "Invalid username"
@@ -118,6 +124,7 @@ export const walletWithdraw = async (ctx, next) => {
 
     const isAddressValid = await rpcInterface.validateAddress(walletAddress);
     if (!isAddressValid) {
+      console.log(`Wallet Withdraw => Failed | Invalid wallet address: ${walletAddress}, Username:${username}`);
       ctx.body = {
         success: false,
         message: "Invalid wallet address"
@@ -126,6 +133,7 @@ export const walletWithdraw = async (ctx, next) => {
     }
 
     if (amount > userInfo.balance) {
+      console.log(`Wallet Withdraw => Failed | Insufficient balance:${userInfo.balance}, withdraw:${amount}, username: ${username}`);
       ctx.body = {
         success: false,
         message: "Insufficient balance"
@@ -146,8 +154,9 @@ export const walletWithdraw = async (ctx, next) => {
       message: "Success",
       userInfo: updatedUser
     };
+    console.log(`Wallet Withdraw => Success | Updated balance:${userInfo.balance}, withdraw:${amount}, username: ${username}`);
   } catch (error) {
-    console.error(error.message);
+    console.log(`Wallet Withdraw => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: "Failed"
@@ -200,6 +209,7 @@ export const confirmMembership = async (userInfo: User, amount: number) => {
   // 14.99 -> 5 | Rain Last 200 Users
   const restShare = amount - sponsorRevenue - companyRevenue;
   RainContext.getInstance().rainUsersByLastActivity(restShare);
+  console.log(`Transaction Notify => Membership Upgrade Success | Revenue shared, rain rest:${restShare}`);
 };
 
 
@@ -209,7 +219,7 @@ const confirmAds = async (adsId: number, paidAmount: number, adsType: number, im
   // Update Ads Status
   const existingAds = await adsService.findAdsById(adsId);
   if (existingAds === undefined) {
-    console.log("Transaction Notify => Confirm Ads => Unknown ads");
+    console.log(`Transaction Notify => Confirm Ads Failed | Unknown adsId:${adsId}`);
     return;
   }
 
@@ -242,6 +252,7 @@ const confirmAds = async (adsId: number, paidAmount: number, adsType: number, im
   if (adsType === Ads.TYPE.StaticAds) {
     const restShare = paidAmount - companyRevenue;
     RainContext.getInstance().rainUsersByLastActivity(restShare);
+    console.log(`Transaction Notify => Ads Purchase Success | Revenue shared, rain rest:${restShare}`);
   }
 };
 
@@ -252,7 +263,8 @@ const confirmSendVitaePurchase = async (amount: number, txId: string, confirmTim
   await transactionService.confirmTransaction(requestInfo.insertId, txId, amount, confirmTime);
 
   // Rain purchased amount to last active users
-  await RainContext.getInstance().rainUsersByLastActivity(amount);
+  RainContext.getInstance().rainUsersByLastActivity(amount);
+  console.log(`Transaction Notify => Send Vitae Rain Success | Rain:${amount}`);
 };
 
 const confirmStockpileCharge = async (amount: number, txId: string, confirmTime: number) => {

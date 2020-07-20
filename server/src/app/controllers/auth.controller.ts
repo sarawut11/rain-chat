@@ -2,10 +2,10 @@ import * as md5 from "md5";
 import * as uniqid from "uniqid";
 import * as moment from "moment";
 import { generateToken, authVerify } from "../middlewares/verify";
-import { ServicesContext } from "../context";
 import { socketServer } from "../socket/app.socket";
-import { User, Ban, Otp } from "../models";
-import { isVitaePostEnabled, generateOtp, verifyOtp, sendMail, rpcInterface } from "../utils";
+import { ServicesContext } from "@context";
+import { User, Ban, Otp } from "@models";
+import { isVitaePostEnabled, generateOtp, verifyOtp, sendMail, rpcInterface } from "@utils";
 
 const RAIN_GROUP_ID = process.env.RAIN_GROUP_ID;
 const OTP_TIMEOUT = Number(process.env.OTP_TIMEOUT);
@@ -16,6 +16,7 @@ export const loginUser = async (ctx, next) => {
 
     const { email = "", username = "", password = "" } = ctx.request.body;
     if ((username === "" && email === "") || password === "") {
+      console.log("Login => Failed | Username or password cannot be empty.");
       ctx.body = {
         success: false,
         message: "Username or password cannot be empty",
@@ -24,6 +25,7 @@ export const loginUser = async (ctx, next) => {
     }
     const user: User = await userService.findUserByEmailOrUsername(email, username);
     if (user === undefined) {
+      console.log("Login => Failed | Username does not exist. | Username:", username);
       ctx.body = {
         success: false,
         message: "Invalid username or email",
@@ -32,6 +34,7 @@ export const loginUser = async (ctx, next) => {
     }
     //   After the verification is successful, the server will issue a Token, and then send the Token to the client
     if (md5(password) !== user.password) {
+      console.log("Login => Failed | Wrong password. | Username:", username);
       ctx.body = {
         success: false,
         message: "Wrong Password",
@@ -41,6 +44,7 @@ export const loginUser = async (ctx, next) => {
     const { id, username: userName, email: userEmail, name, balance, intro, avatar, refcode, role, ban } = user;
     const bans: Ban[] = await banService.getBanInfo(id, RAIN_GROUP_ID, Ban.TYPE.GROUP);
     if (bans.length >= 3) {
+      console.log("Login => Failed | Permanently banned. | Username:", username);
       ctx.body = {
         success: false,
         message: "You are permanentaly banned."
@@ -52,6 +56,7 @@ export const loginUser = async (ctx, next) => {
       const paneltyDays = bans.length === 1 ? 1 : 3;
       if (lastBanTime <= moment().utc().subtract(paneltyDays, "day").unix()) {
         await userService.unbanUsersFromRainGroup([id]);
+        console.log("Login => Check banned time. Unbanned. | Username:", username);
       }
     }
     const token = generateToken({ id, username });
@@ -73,8 +78,9 @@ export const loginUser = async (ctx, next) => {
         isVitaePostEnabled: isVitaePostEnabled(user)
       },
     };
+    console.log("Login => Success | Username:", username);
   } catch (error) {
-    console.log(error.message);
+    console.log("Login => Failed | Error:", error.message);
     ctx.body = {
       success: false,
       message: "Login Failed!",
@@ -88,6 +94,7 @@ export const registerUser = async (ctx, next) => {
     const { userService, groupService } = ServicesContext.getInstance();
 
     if (username === "" || password === "" || name === "" || email === "") {
+      console.log("Register => Failed | Username or password cannot be empty.");
       ctx.body = {
         success: false,
         message: "Username or password cannot be empty",
@@ -95,6 +102,7 @@ export const registerUser = async (ctx, next) => {
       return;
     }
     if (sponsor === "" || !sponsor) {
+      console.log("Register => Failed | Sponsor field is empty.");
       ctx.body = {
         success: false,
         message: "Please provide the referral code",
@@ -104,6 +112,7 @@ export const registerUser = async (ctx, next) => {
     // Check Referral Username
     const sponsorUser: User = await userService.findUserByRefcode(sponsor);
     if (sponsorUser === undefined) {
+      console.log("Register => Failed | Sponsor user is invalid. | Sponsor:", sponsor);
       ctx.body = {
         success: false,
         message: "Referral username is invalid",
@@ -112,6 +121,7 @@ export const registerUser = async (ctx, next) => {
     }
     const existingUser: User = await userService.findUserByEmailOrUsername(email, username);
     if (existingUser !== undefined) {
+      console.log("Register => Failed | Same username or email already exists. | Username:", username);
       ctx.body = {
         success: false,
         message: "Username or email already exists",
@@ -141,9 +151,9 @@ export const registerUser = async (ctx, next) => {
       success: true,
       message: "Registration success!",
     };
-    console.log("Registration success");
+    console.log("Register => Success | Username:", username);
   } catch (error) {
-    console.log(error.message);
+    console.log("Register => Failed | Error:", error.message);
     ctx.body = {
       success: false,
       message: "Registration failed!",
@@ -157,6 +167,7 @@ export const validateToken = async (ctx, next) => {
 
     const checkResult = authVerify(token);
     if (checkResult === false) {
+      console.log("Token Validation => Failed | Invalid Token");
       ctx.body = {
         success: false,
         message: "Invalid Token"
@@ -166,8 +177,9 @@ export const validateToken = async (ctx, next) => {
 
     const { username } = checkResult;
     const { userService } = ServicesContext.getInstance();
-    const userInfo = await userService.getUserInfoByUsername(username);
+    const userInfo = await userService.findUserByUsername(username);
     if (userInfo === undefined) {
+      console.log("Token Validation => Failed | Username does not exist. | Username:", username);
       ctx.body = {
         success: false,
         message: "Invalid Username."
@@ -179,8 +191,9 @@ export const validateToken = async (ctx, next) => {
       message: "Valid",
       userInfo,
     };
+    console.log("Token Validation => Success | Username:", username);
   } catch (error) {
-    console.log(error.message);
+    console.log("Token Validation => Failed | Error:", error.message);
     ctx.body = {
       success: false,
       message: "Invalid Username.",
@@ -195,6 +208,7 @@ export const generateOTP = async (ctx, next) => {
 
     const user: User = await userService.findUserByUsername(username);
     if (user === undefined) {
+      console.log("OTP | Withdraw => Failed | Invalid Username:", username);
       ctx.body = {
         success: false,
         message: "Invalid Username."
@@ -211,14 +225,14 @@ export const generateOTP = async (ctx, next) => {
         expire: OTP_TIMEOUT
       }
     });
-    console.log("Email Withdrawal => 6 Digit Code Generated");
+    console.log("OTP | Withdraw => Success | 6 Digit Code Generated, Sending Email...");
     ctx.body = {
       success: true,
       message: "6 digit code sent to your email.",
       expireIn: OTP_TIMEOUT
     };
   } catch (error) {
-    console.log(error.message);
+    console.log("OTP | Withdraw => Failed | Error:", error.message);
     ctx.body = {
       success: false,
       message: "Invalid Username.",
@@ -234,6 +248,7 @@ export const verifyOTP = async (ctx, next) => {
 
     const user: User = await userService.findUserByUsername(username);
     if (user === undefined) {
+      console.log("OTP | Verify => Failed | Invalid Username:", username);
       ctx.body = {
         success: false,
         message: "Invalid Username."
@@ -247,8 +262,9 @@ export const verifyOTP = async (ctx, next) => {
       message: isValid ? "Verified" : "Token invalid or expired",
       isValid,
     };
+    console.log("OTP | Verify => Success | Username:", username);
   } catch (error) {
-    console.log(error.message);
+    console.log("OTP | Verify => Failed | Error:", error.message);
     ctx.body = {
       success: false,
       message: "Invalid Username.",

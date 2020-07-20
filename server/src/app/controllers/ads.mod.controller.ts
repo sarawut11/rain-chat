@@ -1,5 +1,5 @@
-import { ServicesContext } from "../context";
-import { Ads, User } from "../models";
+import { ServicesContext } from "@context";
+import { Ads, User } from "@models";
 import { socketServer } from "../socket/app.socket";
 
 export const getAllAds = async (ctx, next) => {
@@ -36,11 +36,13 @@ export const rejectAds = async (ctx, next) => {
 
     const checkRole = await isModerator(username);
     if (checkRole.success === false) {
+      console.log(`Reject Ads => Failed | ${checkRole.message} | username:${username}`);
       ctx.body = checkRole;
       return;
     }
     const checkAds = await checkAdsStatus(adsId);
     if (checkAds.success === false) {
+      console.log(`Reject Ads => Failed | ${checkAds.message} | adsId:${adsId}`);
       ctx.body = checkAds;
       return;
     }
@@ -48,13 +50,15 @@ export const rejectAds = async (ctx, next) => {
     await adsService.updateStatus(adsId, Ads.STATUS.Rejected);
     await socketServer.updateAdsStatus(adsId);
     const ads = await adsService.findAdsById(adsId);
+    console.log(`Reject Ads => Success | adsId:${adsId}, moderator:${username}`);
+
     ctx.body = {
       success: true,
       message: "Successfully Rejected",
       ads,
     };
   } catch (error) {
-    console.error(error.message);
+    console.log(`Reject Ads => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: "Failed"
@@ -70,11 +74,13 @@ export const approveAds = async (ctx, next) => {
 
     const checkRole = await isModerator(username);
     if (checkRole.success === false) {
+      console.log(`Approve Ads => Failed | ${checkRole.message} | username:${username}`);
       ctx.body = checkRole;
       return;
     }
     const checkAds = await checkAdsStatus(adsId);
     if (checkAds.success === false) {
+      console.log(`Approve Ads => Failed | ${checkAds.message} | adsId:${adsId}`);
       ctx.body = checkAds;
       return;
     }
@@ -82,6 +88,7 @@ export const approveAds = async (ctx, next) => {
     await adsService.approveAds(adsId, id);
     await socketServer.updateAdsStatus(adsId);
     const ads = await adsService.findAdsById(adsId);
+    console.log(`Approve Ads => Success | adsId:${adsId}, username:${username}`);
 
     ctx.body = {
       success: true,
@@ -89,7 +96,7 @@ export const approveAds = async (ctx, next) => {
       ads,
     };
   } catch (error) {
-    console.error(error.message);
+    console.log(`Approve Ads => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: "Failed"
@@ -97,7 +104,11 @@ export const approveAds = async (ctx, next) => {
   }
 };
 
-const isModerator = (username): Promise<any> => new Promise(async (resolve, reject) => {
+const isModerator = (username): Promise<{
+  success: boolean,
+  message: string,
+  userInfo?: User
+}> => new Promise(async (resolve, reject) => {
   const { userService } = ServicesContext.getInstance();
   const userInfo: User = await userService.getUserInfoByUsername(username);
   if (userInfo === undefined) {
@@ -116,6 +127,7 @@ const isModerator = (username): Promise<any> => new Promise(async (resolve, reje
   }
   resolve({
     success: true,
+    message: "Success",
     userInfo,
   });
 });

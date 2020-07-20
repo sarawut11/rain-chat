@@ -5,3 +5,4 @@ export * from "./otp";
 export * from "./utils";
 
 export * from "./wallet/RpcInterface";
+export * from "./wallet/CMC";

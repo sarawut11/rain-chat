@@ -1,7 +1,7 @@
-import * as aws from "../utils/aws";
-import { ServicesContext } from "../context";
+import * as aws from "@utils";
+import { ServicesContext } from "@context";
+import { User } from "@models";
 import { socketServer } from "../socket/app.socket";
-import { User } from "../models";
 
 export const getProfileInfo = async (ctx, next) => {
   const { username } = ctx.params;
@@ -9,6 +9,7 @@ export const getProfileInfo = async (ctx, next) => {
 
   const userInfo: User = await userService.findUserByUsername(username);
   if (userInfo === undefined) {
+    console.log(`Profile Info => Failed | Invalid username:${username}`);
     ctx.body = {
       success: false,
       message: "Username does not exist."
@@ -52,20 +53,21 @@ export const updateProfileInfo = async (ctx, next) => {
     }
 
     await userService.setUserInfo(username, { name, intro, avatar: avatarUrl });
-    const userInfo = {
+    const updatedUser = await userService.findUserByUsername(username);
+    socketServer.broadcast("updateProfileInfo", {
       username,
-      avatar: avatarUrl,
-      name,
-      intro,
-    };
-    socketServer.broadcast("updateProfileInfo", { userInfo }, error => console.log(error.message));
+      avatarUrl: updatedUser.avatar,
+      name: updatedUser.name,
+      intro: updatedUser.intro
+    }, error => console.log(error.message));
+    console.log(`Profile Update => Success | Username:${username}`);
     ctx.body = {
       success: true,
       message: "Profile updated successfully.",
-      userInfo,
+      userInfo: updatedUser,
     };
   } catch (error) {
-    console.log(error.message);
+    console.log(`Profile Update => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: error.message
@@ -75,20 +77,21 @@ export const updateProfileInfo = async (ctx, next) => {
 
 export const addWithdrawAddress = async (ctx, next) => {
   try {
-    const { id: userId } = ctx.state.user;
+    const { username, id: userId } = ctx.state.user;
     const { walletAddress, label } = ctx.request.body;
     const { withdrawAddressService } = ServicesContext.getInstance();
 
     // Save withdrawal addresses
     await withdrawAddressService.addWithdrawAddress(userId, walletAddress, label);
     const addresses = await withdrawAddressService.getAddressByUserid(userId);
+    console.log(`Withdraw Address => Add Success | Username:${username}, Address:${walletAddress}`);
     ctx.body = {
       success: true,
       message: "Success",
       addresses
     };
   } catch (error) {
-    console.log(error.message);
+    console.log(`Withdraw Address => Add Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: error.message
@@ -108,7 +111,7 @@ export const getWithdrawAddresses = async (ctx, next) => {
       addresses
     };
   } catch (error) {
-    console.log(error.message);
+    console.log(`Withdraw Address => Get Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: error.message

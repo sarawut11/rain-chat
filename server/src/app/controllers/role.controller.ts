@@ -61,11 +61,13 @@ export const upgradeMembershipPurchase = async (ctx, next) => {
 
     const checkUser = await checkUserInfo(username);
     if (checkUser.success === false) {
+      console.log(`Membership Purchase => Failed | ${checkUser.message} | username:${username}`);
       ctx.body = checkUser;
       return;
     }
     const { userInfo } = checkUser;
     if (userInfo.role === User.ROLE.OWNER || userInfo.role === User.ROLE.MODERATOR) {
+      console.log(`Membership Purchase => Failed | Invalid Role | username:${username}`);
       ctx.body = {
         success: false,
         message: "You can't upgrade your membership."
@@ -75,12 +77,14 @@ export const upgradeMembershipPurchase = async (ctx, next) => {
 
     const transInfo = await transactionService.createTransactionRequest(userId, Transaction.TYPE.MEMBERSHIP, expectAmount);
     if (transInfo === undefined) {
+      console.log(`Membership Purchase => Failed | Still have incompleted transaction | username:${username}`);
       ctx.body = {
         success: false,
         message: "You still have incompleted transaction requests."
       };
       return;
     }
+    console.log(`Membership Purchase => Success | In pending | username:${username}`);
 
     ctx.body = {
       success: true,
@@ -88,7 +92,7 @@ export const upgradeMembershipPurchase = async (ctx, next) => {
       expireTime: TRANSACTION_REQUEST_TIMEOUT
     };
   } catch (error) {
-    console.log(error.message);
+    console.log(`Membership Purchase => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: error.message
@@ -107,7 +111,7 @@ export const upgradeMembershipBalance = async (ctx, next) => {
     }
     const { userInfo } = checkUser;
     if (userInfo.role === User.ROLE.OWNER || userInfo.role === User.ROLE.MODERATOR) {
-      console.log("Membership Upgrade => Failed | You are not a free user.");
+      console.log(`Membership Upgrade Balance => Failed | Not free user:${username}`);
       ctx.body = {
         success: false,
         message: "You can't upgrade your membership."
@@ -116,7 +120,7 @@ export const upgradeMembershipBalance = async (ctx, next) => {
     }
 
     if (userInfo.balance < Number(expectAmount)) {
-      console.log("Membership Upgrade => Failed | Insufficient balance.");
+      console.log(`Membership Upgrade Balance => Failed | Insufficient balance | balance:${userInfo.balance}, username:${username}`);
       ctx.body = {
         success: false,
         message: "Insufficient balance."
@@ -127,13 +131,14 @@ export const upgradeMembershipBalance = async (ctx, next) => {
     const { userService } = ServicesContext.getInstance();
     await userService.addBalance(userInfo.id, -expectAmount);
     await confirmMembership(userInfo, expectAmount);
+    console.log(`Membership Upgrade Balance => Success | username:${username}`);
 
     ctx.body = {
       success: true,
       message: "Membership Upgraded."
     };
   } catch (error) {
-    console.log(error.message);
+    console.log(`Membership Upgrade Balance => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: error.message
