@@ -4,7 +4,7 @@ import { ServicesContext } from "@context";
 import { socketServer, socketEventNames } from "@sockets";
 import { now, nowDate } from "@utils";
 
-export const sendPrivateMsg = async (io, socket: socketIo.Socket, data, cbFn) => {
+export const sendPrivateMsg = async (io, socket, data, cbFn) => {
   try {
     const { chatService, userService } = ServicesContext.getInstance();
 
@@ -16,8 +16,7 @@ export const sendPrivateMsg = async (io, socket: socketIo.Socket, data, cbFn) =>
     });
 
     const user: User = await userService.findUserById(data.toUser);
-    const existSocketIdStr = socketServer.getSocketIdHandle(user.socketid);
-    socketServer.emitTo(existSocketIdStr, socketEventNames.GetPrivateMsg, data);
+    socketServer.emitTo(user.socketid, socketEventNames.GetPrivateMsg, data);
     console.log("Socket => SendPrivateMsg | data:", data, "time:", nowDate());
     cbFn(data);
   } catch (error) {
