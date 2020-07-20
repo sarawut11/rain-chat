@@ -2,7 +2,7 @@ import { ParameterizedContext } from "koa";
 import { ServicesContext, CMCContext, TransactionContext } from "@context";
 import { Ads, User, Transaction, TransactionDetail } from "@models";
 import { uploadFile, deleteFile, now } from "@utils";
-import { socketServer } from "@sockets";
+import { updateAdsStatus } from "@sockets";
 
 const TRANSACTION_REQUEST_TIMEOUT = Number(process.env.TRANSACTION_REQUEST_TIMEOUT);
 const COST_PER_IMPRESSION_RAIN_ADS = Number(process.env.COST_PER_IMPRESSION_RAIN_ADS);
@@ -347,7 +347,7 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
       const ads: Ads = await adsService.findAdsById(adsId);
       if (ads.status === Ads.STATUS.PendingPurchase) {
         await adsService.updateStatus(adsId, Ads.STATUS.Approved);
-        await socketServer.updateAdsStatus(adsId);
+        await updateAdsStatus(adsId);
         console.log(`Purchase Ads => Expired | Restore status to approved | adsId:${adsId}`);
       }
       TransactionContext.getInstance().expireTransactionRequest(transInfo.insertId);

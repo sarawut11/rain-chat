@@ -18,9 +18,11 @@ export const socketEventNames = {
   GetUserInfo: "getUserInfo",
   DeleteContact: "deleteContact",
   BeDeleted: "beDeleted",
+  KickedFromGroup: "kickedFromGroup",
 
   // Private Message
   SendGroupMsg: "sendGroupMsg",
+  GetGroupMsg: "getGroupMsg",
   GetOneGroupMessages: "getOneGroupMessages",
   GetOneGroupItem: "getOneGroupItem",
   CreateGroup: "createGroup",
@@ -44,4 +46,9 @@ export const socketEventNames = {
   ExpenseCreated: "expenseCreated",
   ExpenseConfirmed: "expenseConfirmed",
   ExpenseRejected: "expenseRejected",
+};
+
+export const Channels = {
+  OwnerChannel: "ownerChannel",
+  ModerChannel: "moderChannel",
 };
