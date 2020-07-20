@@ -1,8 +1,7 @@
-import { ServicesContext, RainContext } from "../context";
 import { authVerify } from "../middlewares/verify";
-import { Ads, User } from "../models";
-import { socketServer } from "./app.socket";
-import { socketEventNames } from "./resource.socket";
+import { Ads, User } from "@models";
+import { ServicesContext, RainContext } from "@context";
+import { socketServer, socketEventNames } from "@sockets";
 
 export const subscribeAdsReward = (token) => {
   const userInfo = authVerify(token);
@@ -23,4 +22,11 @@ export const updateAdsStatus = async (adsId: number) => {
     username: user.username,
     status: ads.status
   }, (error) => console.error(error.message));
+};
+
+export const getRain = async (rainedUser: User, reward: number) => {
+  socketServer.emitTo(rainedUser.socketid, socketEventNames.GetRain, {
+    reward,
+    balance: rainedUser.balance
+  }, error => console.log("Socket => GetRain | Error:", error.message));
 };

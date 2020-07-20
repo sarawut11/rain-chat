@@ -1,5 +1,5 @@
 import { ServicesContext } from "@context";
-import { socketServer, socketEventNames } from "@sockets";
+import { socketServer, socketEventNames, getRain } from "@sockets";
 import { Ads, User, InnerTransaction } from "@models";
 
 export class RainContext {
@@ -158,18 +158,19 @@ export class RainContext {
       console.log("Rain Users => Failed | No users to rain");
       return;
     }
+
+    // Update DB
     const { userService, innerTranService } = ServicesContext.getInstance();
     const normalReward = rainReward / 2;
     const popReward = rainReward / 2;
     await userService.rainUsers(userIds, normalReward, popReward);
     await innerTranService.addTrans(userIds, normalReward, InnerTransaction.TYPE.RAIN);
+
+    // Notify rained users
     const users: User[] = await userService.getUsersByUserIds(userIds);
-    users.forEach(user => {
-      socketServer.emitTo(user.socketid, "getRain", {
-        reward: normalReward
-      }, error => console.log("getRain Error:", error.message));
-    });
+    users.forEach(user => getRain(user, normalReward));
     console.log(`Rain Users => Rained | ${userIds.length} users, reward:${rainReward}`);
+
     await this.popRain();
   }
 

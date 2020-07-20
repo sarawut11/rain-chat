@@ -1,9 +1,16 @@
 export const socketEventNames = {
+
+  // Init
   Connect: "connect",
   Disconnect: "disconnect",
   InitSocket: "initSocket",
   InitSocketSuccess: "initSocketSuccess",
 
+  // User
+  UpdateBalance: "updateBalance",
+  UpdateProfileInfo: "updateProfileInfo",
+
+  // Group Chat
   SendPrivateMsg: "sendPrivateMsg",
   GetPrivateMsg: "getPrivateMsg",
   GetOnePrivateChatMessages: "getOnePrivateChatMessages",
@@ -12,6 +19,7 @@ export const socketEventNames = {
   DeleteContact: "deleteContact",
   BeDeleted: "beDeleted",
 
+  // Private Message
   SendGroupMsg: "sendGroupMsg",
   GetOneGroupMessages: "getOneGroupMessages",
   GetOneGroupItem: "getOneGroupItem",
@@ -21,14 +29,18 @@ export const socketEventNames = {
   LeaveGroup: "leaveGroup",
   GetGroupMember: "getGroupMember",
 
+  // Ads & Rain
+  GetRain: "getRain",
   ShowStaticAds: "showStaticAds",
   SubscribeAdsReward: "subscribeAdsReward",
   UpdateAdsStatus: "updateAdsStatus",
   UpdateAdsImpressions: "updateAdsImpressions",
   EnableVitaePost: "enableVitaePost",
 
+  // Transaction
   TransactionExpired: "transactionExpired",
 
+  // Expense
   ExpenseCreated: "expenseCreated",
   ExpenseConfirmed: "expenseConfirmed",
   ExpenseRejected: "expenseRejected",

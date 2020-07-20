@@ -212,8 +212,9 @@ class InitApp {
       // console.log('Show Ads', ads, '| Duration -', duration);
       showAds(ads, duration);
     });
-    window.socket.on('getRain', ({ reward }) => {
+    window.socket.on('getRain', ({ reward, balance }) => {
       // console.log('Getting Reward:', reward);
+      console.log('Balance Updated :', balance);
       notifyRainReward(reward);
     });
     window.socket.on('updateAdsStatus', ({ adsId, username, status }) => {
@@ -236,6 +237,15 @@ class InitApp {
   _listeningTransaction() {
     window.socket.on('transactionExpired', ({ type, expectAmount, time }) => {
       console.log('Transaction Request Expired', type, expectAmount, time);
+    });
+  }
+
+  _listenUserInfo() {
+    window.socket.on('updateBalance', ({ balance }) => {
+      console.log('Balance Updated:', balance);
+    });
+    window.socket.on('updateProfileInfo', ({ username, avatarUrl, name, intro }) => {
+      console.log(`${username}'s profile updated:`, avatarUrl, name, intro);
     });
   }
 

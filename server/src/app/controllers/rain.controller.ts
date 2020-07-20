@@ -1,5 +1,6 @@
 import { ServicesContext, RainContext } from "@context";
 import { User } from "@models";
+import { updateBalanceSocket } from "@sockets";
 
 const COMPANY_RAIN_ADDRESS = process.env.COMPANY_RAIN_ADDRESS;
 
@@ -56,9 +57,13 @@ export const rainFromBalance = async (ctx, next) => {
       return;
     }
 
+    // Update Balance
     await userService.addBalance(userInfo.id, -amount);
-    await RainContext.getInstance().rainUsersByLastActivity(amount);
     const updatedUser: User = await userService.findUserById(userInfo.id);
+    updateBalanceSocket(updatedUser);
+
+    // Rain last users
+    RainContext.getInstance().rainUsersByLastActivity(amount);
     console.log(`Rain From Balance => Success | Rained:${amount}, Username:${username}`);
 
     ctx.body = {

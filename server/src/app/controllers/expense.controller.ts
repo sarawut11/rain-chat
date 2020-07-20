@@ -1,8 +1,8 @@
 import * as moment from "moment";
 import { ServicesContext } from "@context";
-import { User, Expense, ExpenseConfirm } from "@models";
 import { isOwner, uploadFile } from "@utils";
-import { socketServer, socketEventNames } from "@sockets";
+import { User, Expense, ExpenseConfirm } from "@models";
+import { socketServer, socketEventNames, updateBalanceSocket } from "@sockets";
 
 export const createExpenseRequest = async (ctx, next) => {
   try {
@@ -242,6 +242,10 @@ export const withdrawExpense = async (ctx, next) => {
     await expenseService.updateExpenseStatus(expenseId, Expense.STATUS.WITHDRAWN);
     const updatedExpense = await getFullExpenseInfo(expenseId);
     console.log(`Withdraw Expense => Success | Balance Updated | username:${username}`);
+
+    // Notify balance update socket
+    const updatedUser = await userService.findUserById(userId);
+    updateBalanceSocket(updatedUser);
 
     ctx.body = {
       success: true,
