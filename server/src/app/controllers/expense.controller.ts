@@ -1,7 +1,7 @@
 import * as moment from "moment";
-import { ServicesContext } from "../context";
-import { User, Expense, ExpenseConfirm } from "../models";
-import { isOwner, uploadFile } from "../utils";
+import { ServicesContext } from "@context";
+import { User, Expense, ExpenseConfirm } from "@models";
+import { isOwner, uploadFile } from "@utils";
 import { socketServer } from "../socket/app.socket";
 import { socketEventNames } from "../socket/resource.socket";
 
@@ -20,6 +20,7 @@ export const createExpenseRequest = async (ctx, next) => {
     }
 
     if (doc === undefined) {
+      console.log(`Create Expense => Failed | Empty document | username:${username}`);
       ctx.body = {
         success: false,
         message: "Attach a document for approval and try again."
@@ -50,6 +51,7 @@ export const createExpenseRequest = async (ctx, next) => {
       creatorUsername: username,
       amount,
     });
+    console.log(`Create Expense => Success | username:${username}, expenseId:${result.insertId}`);
 
     ctx.body = {
       success: true,
@@ -57,7 +59,7 @@ export const createExpenseRequest = async (ctx, next) => {
       expenseInfo: insertedExpense
     };
   } catch (error) {
-    console.log(error.message);
+    console.log(`Create Expense => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: "Failed!",
@@ -97,7 +99,7 @@ export const getAllExpenses = async (ctx, next) => {
       expenses: fullExpenses,
     };
   } catch (error) {
-    console.log(error.message);
+    console.log(`Get All Expense => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: "Failed!",
@@ -119,9 +121,10 @@ export const approveExpense = async (ctx, next) => {
     const { userService, expenseConfirmService } = ServicesContext.getInstance();
     const confirmResult = expenseConfirmService.approveExpense(userId, username, expenseId);
     if (confirmResult === undefined) {
+      console.log(`Approve Expense => Failed | Already approved | username:${username}, expenseId:${expenseId}`);
       ctx.body = {
         success: false,
-        message: "You already confirmed this expense."
+        message: "You already approved this expense."
       };
       return;
     }
@@ -136,6 +139,7 @@ export const approveExpense = async (ctx, next) => {
       creatorUsername: updatedExpense.userId,
       confirmerUsername: username
     });
+    console.log(`Approve Expense => Success | username:${username}, expenseId:${expenseId}`);
 
     ctx.body = {
       success: true,
@@ -143,7 +147,7 @@ export const approveExpense = async (ctx, next) => {
       expenseInfo: updatedExpense
     };
   } catch (error) {
-    console.log(error.message);
+    console.log(`Approve Expense => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: "Failed!",
@@ -165,6 +169,7 @@ export const rejectExpense = async (ctx, next) => {
     const { userService, expenseService, expenseConfirmService } = ServicesContext.getInstance();
     const rejectResult = await expenseConfirmService.rejectExpense(userId, username, expenseId);
     if (rejectResult === undefined) {
+      console.log(`Reject Expense => Failed | Already reject | username:${username}, expenseId:${expenseId}`);
       ctx.body = {
         success: false,
         message: "You already rejected this expense."
@@ -182,6 +187,7 @@ export const rejectExpense = async (ctx, next) => {
       creatorUsername: updatedExpense.userId,
       rejectorUsername: username
     });
+    console.log(`Reject Expense => Success | username:${username}, expenseId:${expenseId}`);
 
     ctx.body = {
       success: true,
@@ -189,7 +195,7 @@ export const rejectExpense = async (ctx, next) => {
       expenseInfo: updatedExpense
     };
   } catch (error) {
-    console.log(error.message);
+    console.log(`Reject Expense => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: "Failed!",
@@ -211,6 +217,7 @@ export const withdrawExpense = async (ctx, next) => {
     const { userService, expenseService } = ServicesContext.getInstance();
     const expenseInfo = await expenseService.getExpenseById(expenseId);
     if (expenseInfo.status !== Expense.STATUS.APPROVED) {
+      console.log(`Withdraw Expense => Failed | Not approved | username:${username}, expenseId:${expenseId}`);
       ctx.body = {
         success: false,
         message: "This expense is not approved yet."
@@ -222,6 +229,7 @@ export const withdrawExpense = async (ctx, next) => {
     const companyId = Number(process.env.COMPANY_USERID);
     const companyBalance = await userService.getBalance(companyId);
     if (expenseInfo.amount > companyBalance) {
+      console.log(`Withdraw Expense => Failed | Insufficient balance | companyBalance:${companyBalance}, amount:${expenseInfo.amount}`);
       ctx.body = {
         success: false,
         message: "Insufficient balance"
@@ -234,6 +242,7 @@ export const withdrawExpense = async (ctx, next) => {
     await userService.addBalance(userId, expenseInfo.amount);
     await expenseService.updateExpenseStatus(expenseId, Expense.STATUS.WITHDRAWN);
     const updatedExpense = await getFullExpenseInfo(expenseId);
+    console.log(`Withdraw Expense => Success | Balance Updated | username:${username}`);
 
     ctx.body = {
       success: true,
@@ -241,7 +250,7 @@ export const withdrawExpense = async (ctx, next) => {
       expenseInfo: updatedExpense
     };
   } catch (error) {
-    console.log(error.message);
+    console.log(`Withdraw Expense => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: "Failed!",

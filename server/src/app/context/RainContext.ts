@@ -64,23 +64,22 @@ export class RainContext {
       const { userService, adsService } = ServicesContext.getInstance();
       const ads: Ads = await adsService.findAdsToCampaign(Ads.TYPE.RainRoomAds);
       if (ads === undefined) {
-        console.log("No Ads to rain");
+        console.log("Rain Room Ads => No Ads to rain");
         return;
       }
       if (Number(ads.impressions) <= 0) {
-        console.log("Insufficient impressions");
+        console.log("Rain Room Ads => Insufficient impressions");
         return;
       }
 
       // Broadcast RainComing event
-      console.log("Rain is coming");
       socketServer.broadcast("rainComing", {
         after: this.RAIN_ADS_COMING_AFTER
       });
       await delay(this.RAIN_ADS_COMING_AFTER);
 
       // Show Ads First
-      console.log("Raining - id:", ads.id);
+      console.log("Rain Room Ads => Show Ads | adsId:", ads.id);
       RainContext.usersToRainAds = [];
       socketServer.broadcast("showAds", {
         ads: {
@@ -104,7 +103,7 @@ export class RainContext {
       } else { // Insufficient impressions
         rainReward = ads.costPerImp * impressions / RainContext.usersToRainAds.length;
       }
-      console.log("Ads Rain Reward:", rainReward);
+      console.log(`Rain Room Ads => Rain Rewards | adsId:${ads.id}, reward:${rainReward}`);
 
       await RainContext.instance.rainUsers(RainContext.usersToRainAds, rainReward);
       await adsService.campaignAds(ads.id, RainContext.usersToRainAds.length);
@@ -116,7 +115,7 @@ export class RainContext {
         adsInfo: updatedAd
       });
     } catch (error) {
-      console.log("Rain Failed, ", error.message);
+      console.log("Rain Room Ads => Failed | Error:", error.message);
     }
   }
 
@@ -129,10 +128,10 @@ export class RainContext {
     const { adsService, userService } = ServicesContext.getInstance();
     const ads: Ads = await adsService.findAdsToCampaign(Ads.TYPE.StaticAds);
     if (ads === undefined) {
-      console.log("No Static Ads to campaign");
+      console.log("Static Ads => Failed | No static ads to show");
       return;
     }
-    console.log("Campaign Static Ads:", ads.id);
+    console.log("Static Ads => Campaign Ads | adsId:", ads.id);
     socketServer.broadcast(socketEventNames.ShowStaticAds, {
       ads: {
         id: ads.id,
@@ -157,7 +156,7 @@ export class RainContext {
   // ========== Common Rain Section ========== //
   async rainUsers(userIds: number[], rainReward: number) {
     if (userIds.length === 0) {
-      console.log("No clients to rain");
+      console.log("Rain Users => Failed | No users to rain");
       return;
     }
     const { userService, innerTranService } = ServicesContext.getInstance();
@@ -171,6 +170,7 @@ export class RainContext {
         reward: normalReward
       }, error => console.log("getRain Error:", error.message));
     });
+    console.log(`Rain Users => Rained | ${userIds.length} users, reward:${rainReward}`);
     await this.popRain();
   }
 
@@ -178,7 +178,7 @@ export class RainContext {
     const { userService } = ServicesContext.getInstance();
     const users: User[] = await userService.getUsersByPopLimited();
     if (users.length === 0) {
-      console.log("No users with limited pop balance");
+      console.log("Pop Rain => Failed | No pop-limited users");
       return;
     }
 
@@ -190,6 +190,7 @@ export class RainContext {
       popReward += Number(user.popBalance);
     });
     await userService.resetPopbalance(userIds);
+    console.log(`Pop Rain => Raining | ${userIds.length} users limited, popReward:${popReward}`);
 
     // Get Last Active Users
     this.rainUsersByLastActivity(popReward);
@@ -201,7 +202,7 @@ export class RainContext {
     amount /= lastActiveUsers.length;
     const userIds: number[] = [];
     lastActiveUsers.forEach(user => userIds.push(user.id));
-    console.log(`Rain ${lastActiveUsers.length} users with ${amount} rewards for each`);
+    console.log(`Rain Users => Raining ${lastActiveUsers.length} users with ${amount} rewards for each`);
     this.rainUsers(userIds, amount);
   }
 

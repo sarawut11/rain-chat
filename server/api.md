@@ -5,8 +5,6 @@
     - [/login (POST)](#login-post)
     - [/register (POST)](#register-post)
     - [/token/validate (POST)](#tokenvalidate-post)
-  - [1.2 Referral / Sponsor](#12-referral--sponsor)
-    - [/ref/generate (POST)](#refgenerate-post)
     - [/ref/validate (POST)](#refvalidate-post)
   - [1.3 Profile](#13-profile)
     - [/user/:username (GET)](#userusername-get)
@@ -165,22 +163,6 @@
   }
   ```
 
-## 1.2 Referral / Sponsor
-### /ref/generate (POST)
-  Generate referral code
-
-  ***Request Body***
-  | Fields  | Description        |
-  | ------- | ------------------ |
-  | sponsor | Sponsor's username |
-  ***Response***
-  ```
-  {
-    success: true/false,
-    message: "Success or Failed Message",
-    refcode: // sponsor's referral code
-  }
-  ```
 ### /ref/validate (POST)
   Validate sponsor's referral code.
 
@@ -1172,6 +1154,17 @@
 ### deleteContact (Client)
 ### beDeleted (Server)
 ### updateProfileInfo (Server)
+  Broadcast updated profile info
+
+  ***Data***
+  ```
+  {
+    username,
+    avatarUrl,
+    name,
+    intro,
+  }
+  ```
 
 ## 2.3 Group Chat
 ### sendGroupMsg (Client)

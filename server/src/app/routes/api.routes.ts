@@ -1,5 +1,5 @@
 import * as Router from "koa-router";
-import * as APIController from "../controllers";
+import * as APIController from "@controllers";
 
 const auth = new Router()
   // Authentication

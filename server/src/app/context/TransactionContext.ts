@@ -31,5 +31,7 @@ export class TransactionContext {
       expectAmount: tranInfo.expectAmount,
       time: tranInfo.time,
     });
+
+    console.log(`Expire Transaction => Success | transactionRequestId:${tranId}, username:${userInfo.username}`);
   }
 }

@@ -1,7 +1,7 @@
 import * as moment from "moment";
 import { CronJob } from "cron";
-import { ServicesContext } from "./ServicesContext";
-import { User, Ban } from "../models";
+import { ServicesContext } from "@context";
+import { User, Ban } from "@models";
 
 const RAIN_GROUP_ID = process.env.RAIN_GROUP_ID;
 
@@ -26,6 +26,7 @@ export class DailyContext {
     // | minute
     // second ( optional )
     DailyContext.membershipJob = new CronJob("0 0 * * *", async () => {
+      console.log("Daily Check => Checking Membership Expire, Rain Group Ban");
       await this.checkMembership();
       await this.checkRainGroupBan();
     }, undefined, true, "UTC");
@@ -33,20 +34,18 @@ export class DailyContext {
 
   async checkMembership() {
     try {
-      console.log("Checking Membership Expiration");
       const { userService } = ServicesContext.getInstance();
       const expireTime = moment().utc().subtract(1, "months").unix();
       const expiredUsers: User[] = await userService.getUsersByExpired(User.ROLE.UPGRADED_USER, expireTime);
       await userService.resetExpiredRole(User.ROLE.UPGRADED_USER, expireTime);
-      console.log(`${expiredUsers.length} users' membership have been expired`);
+      console.log(`Membership Expiration => ${expiredUsers.length} users' membership have been expired`);
     } catch (error) {
-      console.log("Checking Membership Expiration => Error-", error.message);
+      console.log("Membership Expiration => Error:", error.message);
     }
   }
 
   async checkRainGroupBan() {
     try {
-      console.log("Checking Banned Users");
       const { userService, banService } = ServicesContext.getInstance();
       const bannedUsers = await userService.getUsersByRainBanned();
       if (bannedUsers.length === 0) return;
@@ -64,9 +63,10 @@ export class DailyContext {
       });
 
       // Restore banned users
+      console.log(`Unban Users => Unban ${userIdsToRestore.length} users from Rain Room`);
       await userService.unbanUsersFromRainGroup(userIdsToRestore);
     } catch (error) {
-      console.log("Checking Banned Users => Error-", error.message);
+      console.log("Unban Users => Error:", error.message);
     }
   }
 }

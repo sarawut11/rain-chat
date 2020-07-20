@@ -1,4 +1,4 @@
-import { CMCManager } from "../utils/wallet/CMC";
+import { CMCManager } from "@utils";
 
 const CMC_API_KEY = process.env.CMC_API_KEY;
 const CMC_POLLING_INTERVAL = Number(process.env.CMC_POLLING_INTERVAL);

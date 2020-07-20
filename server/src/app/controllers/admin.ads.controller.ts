@@ -1,7 +1,6 @@
-import { ServicesContext } from "../context";
-import { User, Ads } from "../models";
-import { Transaction } from "../models/transaction.model";
-import { isOwner } from "../utils/utils";
+import { ServicesContext } from "@context";
+import { User, Ads, Transaction } from "@models";
+import { isOwner } from "@utils";
 
 export const getHomeAnalytics = async (ctx, next) => {
   try {
