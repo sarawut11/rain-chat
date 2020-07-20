@@ -2,6 +2,7 @@ import { ServicesContext, CMCContext } from "@context";
 import { User, Transaction } from "@models";
 import { checkUserInfo, isOwner } from "@utils";
 import { confirmMembership } from "@controllers";
+import { updateBalanceSocket } from "@sockets";
 
 const MEMBERSHIP_PRICE_USD: number = Number(process.env.MEMBERSHIP_PRICE_USD);
 const TRANSACTION_REQUEST_TIMEOUT: number = Number(process.env.TRANSACTION_REQUEST_TIMEOUT);
@@ -131,11 +132,14 @@ export const upgradeMembershipBalance = async (ctx, next) => {
     const { userService } = ServicesContext.getInstance();
     await userService.addBalance(userInfo.id, -expectAmount);
     await confirmMembership(userInfo, expectAmount);
+    const updatedUser = await userService.findUserByUsername(username);
+    updateBalanceSocket(updatedUser);
     console.log(`Membership Upgrade Balance => Success | username:${username}`);
 
     ctx.body = {
       success: true,
-      message: "Membership Upgraded."
+      message: "Membership Upgraded.",
+      userInfo: updatedUser
     };
   } catch (error) {
     console.log(`Membership Upgrade Balance => Failed | Error:${error.message}`);

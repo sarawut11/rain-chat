@@ -1,7 +1,7 @@
 import * as aws from "@utils";
 import { ServicesContext } from "@context";
 import { User } from "@models";
-import { socketServer } from "@sockets";
+import { socketServer, socketEventNames, updateProfileInfoSocket } from "@sockets";
 
 export const getProfileInfo = async (ctx, next) => {
   const { username } = ctx.params;
@@ -54,13 +54,9 @@ export const updateProfileInfo = async (ctx, next) => {
 
     await userService.setUserInfo(username, { name, intro, avatar: avatarUrl });
     const updatedUser = await userService.findUserByUsername(username);
-    socketServer.broadcast("updateProfileInfo", {
-      username,
-      avatarUrl: updatedUser.avatar,
-      name: updatedUser.name,
-      intro: updatedUser.intro
-    }, error => console.log(error.message));
+    updateProfileInfoSocket(updatedUser);
     console.log(`Profile Update => Success | Username:${username}`);
+
     ctx.body = {
       success: true,
       message: "Profile updated successfully.",

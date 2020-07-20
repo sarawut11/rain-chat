@@ -1,7 +1,7 @@
 import { ServicesContext, RainContext } from "@context";
 import { User, Transaction, InnerTransaction, Ads, TransactionDetail, WalletNotify, WalletNotifyDetail } from "@models";
 import { now, rpcInterface, shareRevenue } from "@utils";
-import { socketServer } from "@sockets";
+import { socketServer, updateBalanceSocket } from "@sockets";
 
 const COMPANY_USERID: number = Number(process.env.COMPANY_USERID);
 const COMPANY_RAIN_ADDRESS = process.env.COMPANY_RAIN_ADDRESS;
@@ -148,6 +148,7 @@ export const walletWithdraw = async (ctx, next) => {
     await userService.addBalance(userInfo.id, -amount);
     const updatedUser: User = await userService.findUserByUsername(username);
     await transactionService.confirmTransaction(requestInfo.insertId, "", amount, now());
+    updateBalanceSocket(updatedUser);
 
     ctx.body = {
       success: true,
@@ -198,12 +199,12 @@ export const confirmMembership = async (userInfo: User, amount: number) => {
   const secondSponsorShare = sponsorRevenue * SPONSOR_SHARE_SECOND;
   const thirdSponsorShare = sponsorRevenue * SPONSOR_SHARE_THIRD;
 
-  const firstSponsorId = userInfo.sponsor;
-  const secondSponsorId = (await userService.findUserById(firstSponsorId)).sponsor;
-  const thirdSponsorId = (await userService.findUserById(secondSponsorId)).sponsor;
-  await userService.addBalance(firstSponsorId, firstSponsorShare);
-  await userService.addBalance(secondSponsorId, secondSponsorShare);
-  await userService.addBalance(thirdSponsorId, thirdSponsorShare);
+  const firstSponsor = await userService.findUserById(userInfo.sponsor);
+  const secondSponsor = await userService.findUserById(firstSponsor.sponsor);
+  const thirdSponsor = await userService.findUserById(secondSponsor.sponsor);
+  await addSponsorBalance(firstSponsor, firstSponsorShare);
+  await addSponsorBalance(secondSponsor, secondSponsorShare);
+  await addSponsorBalance(thirdSponsor, thirdSponsorShare);
 
   // ===== Rain Rest ===== //
   // 14.99 -> 5 | Rain Last 200 Users
@@ -212,6 +213,12 @@ export const confirmMembership = async (userInfo: User, amount: number) => {
   console.log(`Transaction Notify => Membership Upgrade Success | Revenue shared, rain rest:${restShare}`);
 };
 
+const addSponsorBalance = async (sponsor: User, amount: number) => {
+  const { userService } = ServicesContext.getInstance();
+  await userService.addBalance(sponsor.id, amount);
+  const updatedSponsor = await userService.findUserById(sponsor.id);
+  updateBalanceSocket(updatedSponsor);
+};
 
 const confirmAds = async (adsId: number, paidAmount: number, adsType: number, impressions: number, costPerImp: number) => {
   const { adsService } = ServicesContext.getInstance();

@@ -72,7 +72,6 @@
     - [getUserInfo (Client)](#getuserinfo-client)
     - [deleteContact (Client)](#deletecontact-client)
     - [beDeleted (Server)](#bedeleted-server)
-    - [updateProfileInfo (Server)](#updateprofileinfo-server)
   - [2.3 Group Chat](#23-group-chat)
     - [sendGroupMsg (Client)](#sendgroupmsg-client)
     - [getGroupMsg (Server)](#getgroupmsg-server)
@@ -86,7 +85,10 @@
     - [enableVitaePost (Server)](#enablevitaepost-server)
   - [2.4 Search / Contact](#24-search--contact)
     - [fuzzyMatch (Client)](#fuzzymatch-client)
-  - [2.5 Rain](#25-rain)
+  - [2.5 User Profile](#25-user-profile)
+    - [updateBalance(Server)](#updatebalanceserver)
+    - [updateProfileInfo (Server)](#updateprofileinfo-server)
+  - [2.6 Rain](#26-rain)
     - [rainComing (Server)](#raincoming-server)
     - [showAds (Server)](#showads-server)
     - [showStaticAds (Server)](#showstaticads-server)
@@ -94,7 +96,7 @@
     - [getRain (Server)](#getrain-server)
     - [updateAdsStatus (Server)](#updateadsstatus-server)
     - [updateAdsImpressions (Server)](#updateadsimpressions-server)
-  - [2.6 Transaction](#26-transaction)
+  - [2.7 Transaction](#27-transaction)
     - [transactionExpired (Server)](#transactionexpired-server)
 
 > **Note**
@@ -720,6 +722,7 @@
   {
     success: true/false,
     message,
+    userInfo,   // Updated userInfo
   }
   ```
 
@@ -1153,18 +1156,6 @@
 ### getUserInfo (Client)
 ### deleteContact (Client)
 ### beDeleted (Server)
-### updateProfileInfo (Server)
-  Broadcast updated profile info
-
-  ***Data***
-  ```
-  {
-    username,
-    avatarUrl,
-    name,
-    intro,
-  }
-  ```
 
 ## 2.3 Group Chat
 ### sendGroupMsg (Client)
@@ -1182,7 +1173,30 @@
 ## 2.4 Search / Contact
 ### fuzzyMatch (Client)
 
-## 2.5 Rain
+## 2.5 User Profile
+### updateBalance(Server)
+  Notify user to update balance
+
+  ***Data***
+  ```
+  {
+    balance,    // Updated balance
+  }
+  ```
+### updateProfileInfo (Server)
+  Broadcast updated profile info to all clients includes updated user.
+
+  ***Data***
+  ```
+  {
+    username,
+    avatarUrl,
+    name,
+    intro,
+  }
+  ```
+
+## 2.6 Rain
 ### rainComing (Server)
   Notify users to be online to Vitae Rain Room - Rain is coming soon.
 
@@ -1240,7 +1254,8 @@
   ***Data***
   ```
   {
-    reward: // Normal Rain Reward (e.g 0.00025)
+    reward,     // Normal Rain Reward (e.g 0.00025)
+    balance,    // Updated balance
   }
   ```
 ### updateAdsStatus (Server)
@@ -1266,7 +1281,7 @@
   }
   ```
 
-## 2.6 Transaction
+## 2.7 Transaction
 ### transactionExpired (Server)
   Notify user about the expired transaction
 

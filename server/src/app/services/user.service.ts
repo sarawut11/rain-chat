@@ -388,8 +388,8 @@ export class UserService {
     const sql = `
       UPDATE ${this.USER_TABLE}
       SET
-        balance = balance + ?,
-        popBalance = popBalance + ?
+        ${this.USER_COL.balance} = ${this.USER_COL.balance} + ?,
+        ${this.USER_COL.popBalance} = ${this.USER_COL.popBalance} + ?
       WHERE username = ?;`;
     return query(sql, [reward / 2, reward / 2, username]);
   }
@@ -399,8 +399,8 @@ export class UserService {
     const sql = `
       UPDATE ${this.USER_TABLE}
       SET
-        balance = balance + ?,
-        popBalance = popBalance + ?
+        ${this.USER_COL.balance} = ${this.USER_COL.balance} + ?,
+        ${this.USER_COL.popBalance} = ${this.USER_COL.popBalance} + ?
       WHERE id IN (${array});`;
     return query(sql, [reward, popReward]);
   }
@@ -464,12 +464,13 @@ export class UserService {
     return query(sql, [role, now(), userId]);
   }
 
-  getUsersByExpired(role, expireTime) {
+  async getUsersByExpired(role, expireTime): Promise<User[]> {
     const sql = `
       SELECT * FROM ${this.USER_TABLE}
       WHERE ${this.USER_COL.role} = ? AND ${this.USER_COL.lastUpgradeTime} < ?;
     `;
-    return query(sql, [role, expireTime]);
+    const users: User[] = await query(sql, [role, expireTime]);
+    return users;
   }
 
   resetExpiredRole(role, expireTime) {
