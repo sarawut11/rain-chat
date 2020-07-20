@@ -179,7 +179,10 @@ const broadcastChannel = (channelName: string, emitName: string, data: any, onEr
 const emitTo = (toSocketIds: string, emitName, data, onError?) => {
   try {
     const socketids = toSocketIds.split(",");
-    socketids.forEach(socketid => io.to(socketid).emit(emitName, data));
+    socketids.forEach(socketid => {
+      if (socketid !== "" && socketid !== undefined)
+        io.to(socketid).emit(emitName, data);
+    });
   } catch (error) {
     if (onError)
       onError(error);
@@ -189,10 +192,6 @@ const emitTo = (toSocketIds: string, emitName, data, onError?) => {
 const allSocketCount = (): number => {
   return Object.keys(io.sockets.sockets).length;
 };
-
-function getSocketIdHandle(arr) {
-  return arr[0] ? JSON.parse(JSON.stringify(arr[0])).socketid : "";
-}
 
 const getRoomClients = (room): Promise<any> => {
   return new Promise((resolve, reject) => {
@@ -223,7 +222,6 @@ export const socketServer = {
   broadcast,
   broadcastChannel,
   emitTo,
-  getSocketIdHandle,
   getRoomClients,
   allSocketCount,
 };
