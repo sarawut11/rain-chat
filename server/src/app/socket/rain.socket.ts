@@ -1,7 +1,7 @@
 import { authVerify } from "../middlewares/verify";
 import { Ads, User } from "@models";
 import { ServicesContext, RainContext } from "@context";
-import { socketServer, socketEventNames } from "@sockets";
+import { socketServer, socketEventNames, Channels } from "@sockets";
 
 export const subscribeAdsReward = (token) => {
   const userInfo = authVerify(token);
@@ -17,11 +17,22 @@ export const updateAdsStatus = async (adsId: number) => {
   const { userService, adsService } = ServicesContext.getInstance();
   const ads: Ads = await adsService.findAdsById(adsId);
   const user: User = await userService.findUserById(ads.userId);
-  socketServer.emitTo(user.socketid, socketEventNames.UpdateAdsStatus, {
+  const reviewer = await userService.findUserById(ads.reviewer);
+
+  // Notify Creator
+  const data = {
     adsId,
     username: user.username,
-    status: ads.status
-  }, (error) => console.error(error.message));
+    status: ads.status,
+    reviewer
+  };
+  socketServer.emitTo(user.socketid, socketEventNames.UpdateAdsStatus, data,
+    (error) => console.error(error.message));
+  // Notify Moderators & Owners
+  socketServer.broadcastChannel(Channels.OwnerChannel, socketEventNames.UpdateAdsStatus,
+    data, (error) => console.error(error.message));
+  socketServer.broadcastChannel(Channels.ModerChannel, socketEventNames.UpdateAdsStatus,
+    data, (error) => console.error(error.message));
 };
 
 export const getRain = async (rainedUser: User, reward: number) => {

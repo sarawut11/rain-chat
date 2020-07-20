@@ -1,6 +1,6 @@
 import { ServicesContext } from "@context";
 import { Ads, User } from "@models";
-import { socketServer } from "@sockets";
+import { updateAdsStatus } from "@sockets";
 
 export const getAllAds = async (ctx, next) => {
   try {
@@ -48,7 +48,7 @@ export const rejectAds = async (ctx, next) => {
     }
 
     await adsService.updateStatus(adsId, Ads.STATUS.Rejected);
-    await socketServer.updateAdsStatus(adsId);
+    await updateAdsStatus(adsId);
     const ads = await adsService.findAdsById(adsId);
     console.log(`Reject Ads => Success | adsId:${adsId}, moderator:${username}`);
 
@@ -86,7 +86,7 @@ export const approveAds = async (ctx, next) => {
     }
 
     await adsService.approveAds(adsId, id);
-    await socketServer.updateAdsStatus(adsId);
+    await updateAdsStatus(adsId);
     const ads = await adsService.findAdsById(adsId);
     console.log(`Approve Ads => Success | adsId:${adsId}, username:${username}`);
 

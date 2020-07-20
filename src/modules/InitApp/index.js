@@ -217,8 +217,8 @@ class InitApp {
       console.log('Balance Updated :', balance);
       notifyRainReward(reward);
     });
-    window.socket.on('updateAdsStatus', ({ adsId, username, status }) => {
-      console.log('Ads Status Updated:', username, adsId, status);
+    window.socket.on('updateAdsStatus', ({ adsId, username, status, reviewer }) => {
+      console.log('Ads Status Updated:', username, adsId, status, reviewer);
       store.dispatch(updateAdsStatus(adsId, status));
     });
     window.socket.on('updateAdsImpressions', ({ adsInfo }) => {
@@ -270,6 +270,7 @@ class InitApp {
     this._listeningRain();
     this._listeningTransaction();
     this._listenExpense();
+    this._listenUserInfo();
     console.log('subscribeSocket success. ', 'time=>', new Date().toLocaleString());
   }
 

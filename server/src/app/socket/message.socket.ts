@@ -1,6 +1,6 @@
-import { ServicesContext } from "../context";
-import { User } from "../models";
-import { isVitaePostEnabled } from "../utils/utils";
+import { ServicesContext } from "@context";
+import { User } from "@models";
+import { isVitaePostEnabled } from "@utils";
 
 export const getPrivateMsg = async ({ toUser, userId, start = 1, count = 20 }) => {
   const { userService, chatService } = ServicesContext.getInstance();

@@ -1265,8 +1265,10 @@
   ```
   {
     adsId,
-    username,
-    status
+    username,     // Creator username
+    status,
+    reviewer: {   // Reviewer userInfo (Optional when the ads is not approved yet)
+    }
   }
   ```
 ### updateAdsImpressions (Server)

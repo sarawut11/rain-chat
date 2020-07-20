@@ -10,6 +10,10 @@ export const now = (): number => {
   return moment().utc().unix();
 };
 
+export const nowDate = (): moment.Moment => {
+  return moment().utc();
+};
+
 export const isVitaePostEnabled = (user: User): boolean => {
   const enabled: boolean = (now() - VITAE_POST_TIME / 1000) >= user.lastVitaePostTime;
   return enabled;
