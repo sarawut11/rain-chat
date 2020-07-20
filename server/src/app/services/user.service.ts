@@ -147,6 +147,14 @@ export class UserService {
     return user[0];
   }
 
+  async updatePassword(userId: number, newPass: string): Promise<DefaultModel> {
+    const sql = `
+      UPDATE ${this.USER_TABLE}
+      SET ${this.USER_COL.password} = ?
+      WHERE ${this.USER_COL.id} = ?;`;
+    return query(sql, [newPass, userId]);
+  }
+
   setUserInfo(username, { name, intro, avatar }) {
     if (isNullOrUndefined(avatar)) {
       const sql = "UPDATE user_info SET name = ?, intro = ? WHERE username = ? limit 1 ; ";
