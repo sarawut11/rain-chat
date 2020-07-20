@@ -11,7 +11,7 @@ import {
   ExpenseService,
   ExpenseConfirmService,
   WithdrawAddressService,
-} from "./../services";
+} from "@services";
 
 export class ServicesContext {
   static instance: ServicesContext;

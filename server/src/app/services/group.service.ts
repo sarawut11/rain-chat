@@ -1,5 +1,5 @@
-import { query } from "../utils/db";
-import { Group } from "../models";
+import { query } from "@utils";
+import { Group } from "@models";
 
 export class GroupService {
   readonly GROUP_TABLE = "group_info";

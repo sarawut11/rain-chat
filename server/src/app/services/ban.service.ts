@@ -1,5 +1,5 @@
-import { query, now } from "../utils";
-import { Ban } from "../models";
+import { query, now } from "@utils";
+import { Ban } from "@models";
 
 const RAIN_GROUP_ID = process.env.RAIN_GROUP_ID;
 

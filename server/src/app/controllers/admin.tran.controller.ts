@@ -1,6 +1,6 @@
-import { ServicesContext } from "../context";
-import { User, InnerTransaction } from "../models";
-import { isOwner } from "../utils";
+import { ServicesContext } from "@context";
+import { User, InnerTransaction } from "@models";
+import { isOwner } from "@utils";
 
 const COMPANY_USERID = Number(process.env.COMPANY_USERID);
 

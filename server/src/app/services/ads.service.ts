@@ -1,6 +1,6 @@
-import { query, now } from "../utils";
+import { query, now } from "@utils";
 import { isNullOrUndefined } from "util";
-import { Ads } from "../models";
+import { Ads } from "@models";
 
 export class AdsService {
 

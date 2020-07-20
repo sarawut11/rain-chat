@@ -1,7 +1,7 @@
 import * as aws from "@utils";
 import { ServicesContext } from "@context";
 import { User } from "@models";
-import { socketServer } from "../socket/app.socket";
+import { socketServer } from "@sockets";
 
 export const getProfileInfo = async (ctx, next) => {
   const { username } = ctx.params;

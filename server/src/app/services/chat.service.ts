@@ -1,4 +1,4 @@
-import { query } from "../utils/db";
+import { query } from "@utils";
 
 export class ChatService {
 

@@ -1,7 +1,6 @@
-import { socketServer } from "../socket/app.socket";
-import { ServicesContext } from "./ServicesContext";
-import { socketEventNames } from "../socket/resource.socket";
-import { Transaction, User } from "../models";
+import { socketServer, socketEventNames } from "@sockets";
+import { ServicesContext } from "@context";
+import { Transaction, User } from "@models";
 
 export class TransactionContext {
   static instance: TransactionContext;

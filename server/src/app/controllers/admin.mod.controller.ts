@@ -1,6 +1,6 @@
-import { ServicesContext } from "../context";
-import { User } from "../models";
-import { isOwner, checkUserInfo } from "../utils/utils";
+import { ServicesContext } from "@context";
+import { User } from "@models";
+import { isOwner, checkUserInfo } from "@utils";
 
 export const getModsAnalytics = async (ctx, next) => {
   try {

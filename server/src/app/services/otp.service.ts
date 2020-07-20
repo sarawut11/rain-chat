@@ -1,6 +1,5 @@
-import { query } from "../utils/db";
-import * as moment from "moment";
-import { Otp } from "../models";
+import { query, now } from "@utils";
+import { Otp } from "@models";
 
 export class OtpService {
   readonly OTP_TABLE = "otp_info";
@@ -22,7 +21,7 @@ export class OtpService {
           ${this.COL.code} = ?,
           ${this.COL.type} = ?,
           ${this.COL.time} = ?;`;
-      return query(sql, [userId, code, type, moment().utc().unix()]);
+      return query(sql, [userId, code, type, now()]);
     } else {
       const sql = `
         UPDATE ${this.OTP_TABLE}
@@ -30,7 +29,7 @@ export class OtpService {
           ${this.COL.code} = ?,
           ${this.COL.time} = ?
         WHERE ${this.COL.id} = ?;`;
-      return query(sql, [code, moment().utc().unix(), existingOtp.id]);
+      return query(sql, [code, now(), existingOtp.id]);
     }
   }
 

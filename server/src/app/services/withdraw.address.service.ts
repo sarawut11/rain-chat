@@ -1,6 +1,5 @@
-import * as moment from "moment";
-import { query } from "../utils/db";
-import { DefaultModel, WithdrawAddress } from "../models";
+import { query, now } from "@utils";
+import { DefaultModel, WithdrawAddress } from "@models";
 
 export class WithdrawAddressService {
   readonly TABLE_NAME = "withdraw_address_info";
@@ -20,7 +19,7 @@ export class WithdrawAddressService {
         ${this.COL.label},
         ${this.COL.time}
       ) VALUES(?,?,?,?);`;
-    return query(sql, [userId, withdrawAddress, label, moment().utc().unix()]);
+    return query(sql, [userId, withdrawAddress, label, now()]);
   }
 
   async getAddressByUserid(userId: number): Promise<WithdrawAddress[]> {
