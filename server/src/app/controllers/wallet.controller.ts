@@ -233,7 +233,8 @@ const confirmAds = async (adsId: number, paidAmount: number, adsType: number, im
   // Set Ads Impressions
   const realCostPerImp = ADS_REV_IMP_REVENUE * costPerImp;
   await adsService.setImpressions(adsId, existingAds.userId, impressions, realCostPerImp, paidAmount);
-  await updateAdsStatus(adsId);
+  const updatedAds = await adsService.findAdsById(adsId);
+  await updateAdsStatus(updatedAds);
 
   // Revenue Share Model
   // ===== Company Share ===== //

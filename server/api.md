@@ -1267,6 +1267,7 @@
     adsId,
     username,     // Creator username
     status,
+    impressions,
     reviewer: {   // Reviewer userInfo (Optional when the ads is not approved yet)
     }
   }

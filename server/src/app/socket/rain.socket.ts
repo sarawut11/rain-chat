@@ -13,17 +13,17 @@ export const subscribeAdsReward = (token) => {
   rainContext.addUserToRainAds(id);
 };
 
-export const updateAdsStatus = async (adsId: number) => {
-  const { userService, adsService } = ServicesContext.getInstance();
-  const ads: Ads = await adsService.findAdsById(adsId);
+export const updateAdsStatus = async (ads: Ads) => {
+  const { userService } = ServicesContext.getInstance();
   const user: User = await userService.findUserById(ads.userId);
   const reviewer = await userService.findUserById(ads.reviewer);
 
   // Notify Creator
   const data = {
-    adsId,
+    adsId: ads.id,
     username: user.username,
     status: ads.status,
+    impressions: ads.impressions,
     reviewer
   };
   socketServer.emitTo(user.socketid, socketEventNames.UpdateAdsStatus, data,

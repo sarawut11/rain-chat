@@ -7,7 +7,7 @@ export const getAllAds = async (ctx, next) => {
     const { username } = ctx.state.user;
     const { adsService } = ServicesContext.getInstance();
 
-    const checkRole = await isModerator(username);
+    const checkRole = await isModeratorOrOwner(username);
     if (checkRole.success === false) {
       ctx.body = checkRole;
       return;
@@ -34,7 +34,7 @@ export const rejectAds = async (ctx, next) => {
     const { adsId } = ctx.params;
     const { adsService } = ServicesContext.getInstance();
 
-    const checkRole = await isModerator(username);
+    const checkRole = await isModeratorOrOwner(username);
     if (checkRole.success === false) {
       console.log(`Reject Ads => Failed | ${checkRole.message} | username:${username}`);
       ctx.body = checkRole;
@@ -48,8 +48,8 @@ export const rejectAds = async (ctx, next) => {
     }
 
     await adsService.updateStatus(adsId, Ads.STATUS.Rejected);
-    await updateAdsStatus(adsId);
     const ads = await adsService.findAdsById(adsId);
+    await updateAdsStatus(ads);
     console.log(`Reject Ads => Success | adsId:${adsId}, moderator:${username}`);
 
     ctx.body = {
@@ -72,7 +72,7 @@ export const approveAds = async (ctx, next) => {
     const { adsId } = ctx.params;
     const { adsService } = ServicesContext.getInstance();
 
-    const checkRole = await isModerator(username);
+    const checkRole = await isModeratorOrOwner(username);
     if (checkRole.success === false) {
       console.log(`Approve Ads => Failed | ${checkRole.message} | username:${username}`);
       ctx.body = checkRole;
@@ -86,8 +86,8 @@ export const approveAds = async (ctx, next) => {
     }
 
     await adsService.approveAds(adsId, id);
-    await updateAdsStatus(adsId);
     const ads = await adsService.findAdsById(adsId);
+    await updateAdsStatus(ads);
     console.log(`Approve Ads => Success | adsId:${adsId}, username:${username}`);
 
     ctx.body = {
@@ -104,7 +104,7 @@ export const approveAds = async (ctx, next) => {
   }
 };
 
-const isModerator = (username): Promise<{
+const isModeratorOrOwner = (username): Promise<{
   success: boolean,
   message: string,
   userInfo?: User
@@ -118,10 +118,10 @@ const isModerator = (username): Promise<{
     });
     return;
   }
-  if (userInfo.role !== User.ROLE.MODERATOR) {
+  if (userInfo.role !== User.ROLE.MODERATOR && userInfo.role !== User.ROLE.OWNER) {
     resolve({
       success: false,
-      message: "You are not a Moderator."
+      message: "You are not a Moderator or Owner."
     });
     return;
   }
