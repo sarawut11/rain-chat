@@ -146,6 +146,14 @@ export const updateAds = async (ctx, next) => {
     }
 
     const { userInfo, existingAds } = checkResult;
+    if (existingAds.status !== Ads.STATUS.Created && existingAds.status !== Ads.STATUS.Rejected) {
+      console.log(`Update Ads => Failed | Invalid status | username:${username}, adsId:${adsId}`);
+      ctx.body = {
+        success: false,
+        message: "You can't modify ads for now."
+      };
+      return;
+    }
 
     // Delete existing asset and upload new asset
     let assetLink: string;
@@ -247,6 +255,7 @@ export const requestAds = async (ctx, next) => {
 
     await adsService.updateStatus(adsId, Ads.STATUS.Pending);
     const updatedAds: Ads = await adsService.findAdsById(adsId);
+    await updateAdsStatus(updatedAds);
     console.log(`Request Ads => Success | In pending for review | adsId:${adsId}`);
 
     ctx.body = {
@@ -287,6 +296,7 @@ export const cancelAds = async (ctx, next) => {
 
     await adsService.cancelAds(adsId, userInfo.id);
     const updatedAds: Ads = await adsService.findAdsById(adsId);
+    await updateAdsStatus(updatedAds);
     console.log(`Cancel Ads => Success | adsId:${adsId}`);
 
     ctx.body = {
@@ -354,6 +364,7 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
     }, TRANSACTION_REQUEST_TIMEOUT);
 
     const updatedAds: Ads = await adsService.findAdsById(adsId);
+    await updateAdsStatus(adsId);
     console.log(`Purchase Ads => Success | In pending | adsId:${adsId}, username:${username}`);
     ctx.body = {
       success: true,
