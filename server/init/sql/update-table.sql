@@ -18,4 +18,7 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 ALTER TABLE `user_info` 
-CHANGE COLUMN `socketid` `socketid` CHAR(255) NULL DEFAULT '' ;
+CHANGE COLUMN `password` `password` VARCHAR(40) NULL DEFAULT '' ,
+CHANGE COLUMN `name` `name` VARCHAR(20) NULL DEFAULT '' ,
+CHANGE COLUMN `intro` `intro` VARCHAR(100) NULL DEFAULT '' ,
+CHANGE COLUMN `walletAddress` `walletAddress` CHAR(255) NULL DEFAULT '' ;

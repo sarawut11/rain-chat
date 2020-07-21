@@ -75,7 +75,7 @@ export const createGroup = async (io, socket, data, cbfn) => {
     data.createTime = now();
     const { name, description, creatorId, createTime } = data;
     const userInfo: User = await userService.findUserById(creatorId);
-    if (userInfo.role !== User.ROLE.OWNER && userInfo.role !== User.ROLE.UPGRADED_USER) {
+    if (userInfo.role !== User.ROLE.OWNER && userInfo.role !== User.ROLE.UPGRADED_USER && userInfo.role !== User.ROLE.MODERATOR) {
       console.log("Socket => Create Group | Failed | Free members can't create a group");
       io.to(socket.id).emit("error", { code: 500, message: "Free Members can't create a group" });
     } else {

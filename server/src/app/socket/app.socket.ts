@@ -2,8 +2,7 @@
 import * as socketIo from "socket.io";
 
 import { ServicesContext } from "@context";
-import { authVerify } from "../middlewares/verify";
-import { requestFrequency } from "../middlewares/requestFrequency";
+import { requestFrequency, authVerify } from "@middlewares";
 import { getAllMessage, subscribeAdsReward, socketEventNames, Channels } from "@sockets";
 import * as privateSockets from "./private.socket";
 import * as groupSockets from "./group.socket";
