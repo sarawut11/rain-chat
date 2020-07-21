@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import './index.scss';
 import { Row, Spin, Modal } from 'antd';
 import Request from '../../utils/request';
-// import Modal from '../../components/Modal';
 import notification from '../../components/Notification';
-import SignInSignUp from '../../components/SignInSignUp';
+import SignUp from '../../components/SignUp';
 
 export default class Register extends Component {
   constructor(props) {
@@ -51,7 +50,7 @@ export default class Register extends Component {
   }
 
   register = async () => {
-    const { name, email, username, password, sponsor } = this.state;
+    const { name, email, username, password, sponsor, otp } = this.state;
     if (!/^\S+@\S+\.\S+$/.test(email)) {
       notification('Invalid Email Format', 'warn');
       return;
@@ -71,6 +70,7 @@ export default class Register extends Component {
         username,
         password,
         sponsor,
+        otp,
       });
       if (res && res.success) {
         // Popup
@@ -87,13 +87,14 @@ export default class Register extends Component {
   };
 
   setValue = value => {
-    const { name, email, username, password } = value;
+    const { name, email, username, password, otp } = value;
     this.setState(
       {
         name,
         email,
         username,
         password,
+        otp,
       },
       async () => {
         await this.register();
@@ -113,10 +114,12 @@ export default class Register extends Component {
 
   render() {
     const { show } = this.state;
+
+    console.log('\n\n ------   Register Page Render   -------- \n\n', this);
     return (
       <div className="register">
         {show ? (
-          <SignInSignUp setValue={this.setValue} isLogin={false} />
+          <SignUp setValue={this.setValue} />
         ) : (
           <Row justify="center" align="middle">
             <Spin />

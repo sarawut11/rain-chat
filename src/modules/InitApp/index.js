@@ -65,6 +65,7 @@ class InitApp {
 
   _listeningPrivateChatMsg() {
     window.socket.on('getPrivateMsg', data => {
+      console.log('\ngetPrivateMsg:\n', data);
       const { homePageListState, allPrivateChatsState } = store.getState();
       // eslint-disable-next-line radix
       const chatId = parseInt(window.location.pathname.split('/').slice(-1)[0]);

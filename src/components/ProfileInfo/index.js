@@ -86,7 +86,7 @@ class userInfoRender extends Component {
       updating,
     } = this.state;
     const reflink = `${window.location.origin}/register?ref=${referral}`;
-    const reftext = reflink.substring(0, 34).concat('...');
+    const reftext = reflink;
 
     return (
       <div className="userInfo">
@@ -109,12 +109,7 @@ class userInfoRender extends Component {
             />
           </Form.Item>
           <Form.Item label="Email">{email}</Form.Item>
-          <Form.Item label="Referral link">
-            {reftext}
-            <Button type="link" icon={<CopyOutlined />} onClick={this.onCopyReferral}>
-              Copy
-            </Button>
-          </Form.Item>
+          <Form.Item label="Referral link">{reftext}</Form.Item>
           <Form.Item label="Role">{role}</Form.Item>
           <Row justify="center" align="middle">
             <Button
