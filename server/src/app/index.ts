@@ -1,4 +1,5 @@
 import * as compress from "koa-compress";
+import * as koaStatic from "koa-static";
 import * as koaBody from "koa-body";
 import * as cors from "@koa/cors";
 import * as jwt from "koa-jwt";
@@ -23,6 +24,7 @@ import {
 
 export const App = Server.init(app => {
   app
+    .use(koaStatic("./public"))
     .use(compress())
     .use(cors({}))
     .use(koaBody({ multipart: true }))

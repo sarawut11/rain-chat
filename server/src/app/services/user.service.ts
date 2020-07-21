@@ -99,6 +99,13 @@ export class UserService {
     return users[0];
   }
 
+  async findUserByEmail(email: string): Promise<User> {
+    const sql = `SELECT * FROM ${this.USER_TABLE} WHERE ${this.USER_COL.email} = ?;`;
+    const users: User[] = await query(sql, email);
+    if (users.length === 0) return undefined;
+    return users[0];
+  }
+
   async getRefcode(username: string): Promise<string> {
     const sql = `SELECT ${this.USER_COL.refcode} FROM ${this.USER_TABLE} WHERE ${this.USER_COL.username} = ?;`;
     const user: User[] = await query(sql, username);

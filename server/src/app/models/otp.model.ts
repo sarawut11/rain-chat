@@ -7,5 +7,6 @@ export class Otp {
 
   public static readonly TYPE = {
     WITHDRAW: 0,
+    SIGNUP: 1,
   };
 }

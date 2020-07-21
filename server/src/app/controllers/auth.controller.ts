@@ -5,7 +5,7 @@ import { generateToken, authVerify } from "../middlewares/verify";
 import { socketServer } from "@sockets";
 import { ServicesContext } from "@context";
 import { User, Ban, Otp } from "@models";
-import { isVitaePostEnabled, generateOtp, verifyOtp, sendMail, rpcInterface } from "@utils";
+import { isVitaePostEnabled, generateOtp, verifyOtp, sendMail, rpcInterface, hashCode } from "@utils";
 
 const RAIN_GROUP_ID = process.env.RAIN_GROUP_ID;
 const OTP_TIMEOUT = Number(process.env.OTP_TIMEOUT);
@@ -90,7 +90,7 @@ export const loginUser = async (ctx, next) => {
 
 export const registerUser = async (ctx, next) => {
   try {
-    const { name, email, username, password, sponsor } = ctx.request.body;
+    const { name, email, username, password, sponsor, otp } = ctx.request.body;
     const { userService, groupService } = ServicesContext.getInstance();
 
     if (username === "" || password === "" || name === "" || email === "") {
@@ -119,6 +119,17 @@ export const registerUser = async (ctx, next) => {
       };
       return;
     }
+    // Verify OTP
+    const isValid: boolean = await verifyOtp(hashCode(email), Otp.TYPE.SIGNUP, otp);
+    if (!isValid) {
+      console.log("Register => Failed | Invalid Code. | code:", otp);
+      ctx.body = {
+        success: false,
+        message: "Invalid OTP Code",
+      };
+      return;
+    }
+    // Check existing user
     const existingUser: User = await userService.findUserByEmailOrUsername(email, username);
     if (existingUser !== undefined) {
       console.log("Register => Failed | Same username or email already exists. | Username:", username);
@@ -128,6 +139,7 @@ export const registerUser = async (ctx, next) => {
       };
       return;
     }
+
     // Register DB
     const walletAddress = await rpcInterface.getNewAddress();
     await userService.insertUser({
@@ -216,7 +228,7 @@ export const generateOTP = async (ctx, next) => {
       return;
     }
     const otp: string = await generateOtp(user.id, Otp.TYPE.WITHDRAW);
-    sendMail("otp/index.html", {
+    sendMail("otp/withdraw.html", {
       email: user.email,
       subject: "Email Withdrawal",
       data: {
@@ -265,6 +277,46 @@ export const verifyOTP = async (ctx, next) => {
     console.log("OTP | Verify => Success | Username:", username);
   } catch (error) {
     console.log("OTP | Verify => Failed | Error:", error.message);
+    ctx.body = {
+      success: false,
+      message: "Invalid Username.",
+    };
+  }
+};
+
+export const generateEmailOtp = async (ctx, next) => {
+  try {
+    const { email } = ctx.request.body;
+    const { userService } = ServicesContext.getInstance();
+
+    const user: User = await userService.findUserByEmail(email);
+    if (user !== undefined) {
+      console.log("OTP | Signup => Failed | Same email exist | email:", email);
+      ctx.body = {
+        success: false,
+        message: "Email already exists."
+      };
+      return;
+    }
+
+    const userId = hashCode(email);
+    const otp: string = await generateOtp(userId, Otp.TYPE.SIGNUP);
+    sendMail("otp/signup.html", {
+      email,
+      subject: "Email Confirmation",
+      data: {
+        code: otp,
+        expire: OTP_TIMEOUT
+      }
+    });
+    console.log("OTP | Signup => Success | 6 Digit Code Generated, Sending Email...");
+    ctx.body = {
+      success: true,
+      message: "6 digit code sent to your email.",
+      expireIn: OTP_TIMEOUT
+    };
+  } catch (error) {
+    console.log("OTP | Signup => Failed | Error:", error.message);
     ctx.body = {
       success: false,
       message: "Invalid Username.",

@@ -4,6 +4,7 @@
   - [1.1 Authentication](#11-authentication)
     - [/login (POST)](#login-post)
     - [/register (POST)](#register-post)
+    - [/email/confirm (POST)](#emailconfirm-post)
     - [/token/validate (POST)](#tokenvalidate-post)
     - [/ref/validate (POST)](#refvalidate-post)
   - [1.3 Profile](#13-profile)
@@ -144,11 +145,25 @@
   | username | Username                |
   | password | Password                |
   | sponsor  | Sponsor's referral code |
+  | otp      | Email verification code |
   ***Response***
   ```
   {
     success: true/false,
     message: "Success or Failed Message"
+  }
+  ```
+### /email/confirm (POST)
+  ***Request Body***
+  | Fields | Description      |
+  | ------ | ---------------- |
+  | email  | Email to confirm |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Valid or Invalid Message",
+    expireIn: expireTime in miliseconds
   }
   ```
 ### /token/validate (POST)
