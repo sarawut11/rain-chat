@@ -1,8 +1,8 @@
 import * as md5 from "md5";
-import * as aws from "@utils";
-import { ServicesContext } from "@context";
 import { User } from "@models";
+import { ServicesContext } from "@context";
 import { updateProfileInfoSocket } from "@sockets";
+import { now, uploadFile, deleteFile } from "@utils";
 
 export const getProfileInfo = async (ctx, next) => {
   const { username } = ctx.params;
@@ -40,17 +40,27 @@ export const updateProfileInfo = async (ctx, next) => {
     const { name, intro } = ctx.request.body;
     const { userService } = ServicesContext.getInstance();
 
-    const fileName = `avatar/avatar-${username}.png`;
-    let avatarUrl: string;
+    const userInfo: User = await userService.findUserByUsername(username);
+    if (userInfo === undefined) {
+      console.log("Profile Update => Failed | Unknown user");
+      ctx.body = {
+        success: false,
+        message: "Unknown user.",
+      };
+      return;
+    }
+
+    let avatarUrl: string = avatar;
     if (avatar !== undefined) {
-      const { url } = await aws.uploadFile({
-        fileName,
+      if (userInfo.avatar !== "" || userInfo.avatar !== undefined) {
+        await deleteFile(userInfo.avatar);
+      }
+      const { url } = await uploadFile({
+        fileName: `avatar/avatar-${username}-${now()}.png`,
         filePath: avatar.path,
         fileType: avatar.type,
       });
       avatarUrl = url;
-    } else {
-      avatarUrl = undefined;
     }
 
     await userService.setUserInfo(username, { name, intro, avatar: avatarUrl });

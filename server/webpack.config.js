@@ -63,6 +63,7 @@ module.exports = (env, argv) => {
     '@context': path.join(__dirname, 'src/app/context/index.ts'),
     '@services': path.join(__dirname, 'src/app/services/index.ts'),
     '@controllers': path.join(__dirname, 'src/app/controllers/index.ts'),
+    '@middlewares': path.join(__dirname, 'src/app/middlewares/index.ts'),
   };
   return config;
 };
