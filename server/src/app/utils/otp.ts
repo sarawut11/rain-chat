@@ -1,7 +1,7 @@
 import { authenticator } from "otplib";
-import { ServicesContext } from "../context";
-import { Otp } from "../models";
-import { now } from "./utils";
+import { ServicesContext } from "@context";
+import { Otp } from "@models";
+import { now } from "@utils";
 
 const OTP_TIMEOUT = Number(process.env.OTP_TIMEOUT);
 
@@ -24,4 +24,18 @@ export const verifyOtp = async (userId: number, type: number, token: string): Pr
     return false;
 
   return token === otp.code;
+};
+
+export const hashCode = (str: string) => {
+  // tslint:disable-next-line: one-variable-per-declaration
+  let hash = 0, i, chr, len;
+  if (str.length === 0) return hash;
+  for (i = 0, len = str.length; i < len; i++) {
+    chr = str.charCodeAt(i);
+    // tslint:disable-next-line: no-bitwise
+    hash = ((hash << 5) - hash) + chr;
+    // tslint:disable-next-line: no-bitwise
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash;
 };
