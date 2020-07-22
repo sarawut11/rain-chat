@@ -77,7 +77,7 @@ export default class Header extends Component {
       <div className="header-wrapper">
         <MyInfo />
         <SearchBox searchFieldChange={searchFieldChange} isSearching={isSearching} />
-        {(role === 'UPGRADED' || role === 'OWNER') && (
+        {role !== 'FREE' && (
           <span className="add" onClick={this.openModal}>
             <svg className="icon" aria-hidden="true">
               <use xlinkHref="#icon-add" />

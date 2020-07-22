@@ -1,6 +1,6 @@
 /* eslint-disable no-template-curly-in-string */
 import React, { Component } from 'react';
-import { Form, Input, InputNumber, Button, Card, message, Row, Col } from 'antd';
+import { Form, Input, Button, Card, message, Row, Col } from 'antd';
 import Request from '../../utils/request';
 import './style.scss';
 
