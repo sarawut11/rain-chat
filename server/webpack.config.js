@@ -2,6 +2,7 @@
 
 const nodeExternals = require('webpack-node-externals');
 const webpack = require('webpack');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const path = require('path');
 
 // function srcPath(subdir) {
@@ -38,6 +39,7 @@ const config = {
         },
       },
     }),
+    new CopyWebpackPlugin({ patterns: [{ from: 'public', to: 'public' }] }),
   ],
   module: {
     rules: [
@@ -54,5 +56,14 @@ module.exports = (env, argv) => {
   if (!argv.prod) {
     config.devtool = 'source-map';
   }
+  config.resolve.alias = {
+    '@utils': path.join(__dirname, 'src/app/utils/index.ts'),
+    '@models': path.join(__dirname, 'src/app/models/index.ts'),
+    '@sockets': path.join(__dirname, 'src/app/socket/index.ts'),
+    '@context': path.join(__dirname, 'src/app/context/index.ts'),
+    '@services': path.join(__dirname, 'src/app/services/index.ts'),
+    '@controllers': path.join(__dirname, 'src/app/controllers/index.ts'),
+    '@middlewares': path.join(__dirname, 'src/app/middlewares/index.ts'),
+  };
   return config;
 };

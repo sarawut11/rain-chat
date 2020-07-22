@@ -9,7 +9,7 @@ export class CMCManager {
 
   public start(apiKey: string, pollingIntervalSeconds: number): void {
     if (this.started) {
-      console.log("CRASHING ... The CMCManager must only be started 1 time.");
+      console.log("CMC => Crashing... The CMCManager must only be started 1 time.");
       return;
     }
     this.started = true;
@@ -39,6 +39,7 @@ export class CMCManager {
     this.timeoutObj = undefined;
     if (this.started) {
       this.cmcrc.getVitaeInUSD((e: Error | null, price: number): void => {
+        console.log("CMC => Updated vitae price:", price);
         this.incommingPrice(e, price);
       });
     }
@@ -51,7 +52,7 @@ export class CMCManager {
       }
       this.timeoutObj = setTimeout((): void => {
         this.onTimeout();
-      }, 1000 * this.pollingIntervalSeconds);
+      }, this.pollingIntervalSeconds);
     }
   }
 }

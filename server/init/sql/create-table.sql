@@ -22,14 +22,14 @@ DROP TABLE IF EXISTS `user_info`;
 CREATE TABLE `user_info` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(50) NOT NULL DEFAULT 'NOT NULL',
-  `password` varchar(40) DEFAULT NULL,
-  `name` varchar(20) DEFAULT NULL,
+  `password` varchar(40) DEFAULT '',
+  `name` varchar(20) DEFAULT '',
   `email` varchar(40) NOT NULL DEFAULT '',
   `avatar` varchar(250) DEFAULT '',
-  `intro` varchar(100) DEFAULT NULL,
-  `socketid` char(255) DEFAULT NULL,
+  `intro` varchar(100) DEFAULT '',
+  `socketid` char(255) DEFAULT '',
   `sponsor` int(11) DEFAULT 1,
-  `walletAddress` char(255) DEFAULT NULL,
+  `walletAddress` char(255) DEFAULT '',
   `balance` double DEFAULT 0,
   `popBalance` double DEFAULT 0,
   `refcode` varchar(50) NOT NULL DEFAULT '',
@@ -131,7 +131,7 @@ CREATE TABLE `ads_info` (
   `link` varchar(200) DEFAULT '',
   `lastTime` int(11) DEFAULT 0,
   `time` int(11) NOT NULL,
-  `reviewer` int(11) NOT NULL DEFAULT 0,
+  `reviewer` int(11) DEFAULT -1,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 # Dump of table wallet_transaction_info

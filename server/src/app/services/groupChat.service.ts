@@ -1,4 +1,4 @@
-import { query } from "../utils";
+import { query } from "@utils";
 
 export class GroupChatService {
   readonly RAIN_G_TNAME = "rain_group_msg";

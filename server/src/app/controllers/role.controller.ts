@@ -1,7 +1,8 @@
-import { ServicesContext, CMCContext } from "../context";
-import { User } from "../models";
-import { Transaction } from "../models/transaction.model";
-import { checkUserInfo, isOwner } from "../utils";
+import { ServicesContext, CMCContext } from "@context";
+import { User, Transaction } from "@models";
+import { checkUserInfo, isOwner } from "@utils";
+import { confirmMembership } from "@controllers";
+import { updateBalanceSocket } from "@sockets";
 
 const MEMBERSHIP_PRICE_USD: number = Number(process.env.MEMBERSHIP_PRICE_USD);
 const TRANSACTION_REQUEST_TIMEOUT: number = Number(process.env.TRANSACTION_REQUEST_TIMEOUT);
@@ -53,7 +54,7 @@ export const getMembershipPrice = async (ctx, next) => {
   }
 };
 
-export const upgradeMembership = async (ctx, next) => {
+export const upgradeMembershipPurchase = async (ctx, next) => {
   try {
     const { username, id: userId } = ctx.state.user;
     const { expectAmount } = ctx.request.body;
@@ -61,25 +62,30 @@ export const upgradeMembership = async (ctx, next) => {
 
     const checkUser = await checkUserInfo(username);
     if (checkUser.success === false) {
+      console.log(`Membership Purchase => Failed | ${checkUser.message} | username:${username}`);
       ctx.body = checkUser;
       return;
     }
     const { userInfo } = checkUser;
     if (userInfo.role === User.ROLE.OWNER || userInfo.role === User.ROLE.MODERATOR) {
+      console.log(`Membership Purchase => Failed | Invalid Role | username:${username}`);
       ctx.body = {
         success: false,
         message: "You can't upgrade your membership."
       };
+      return;
     }
 
     const transInfo = await transactionService.createTransactionRequest(userId, Transaction.TYPE.MEMBERSHIP, expectAmount);
     if (transInfo === undefined) {
+      console.log(`Membership Purchase => Failed | Still have incompleted transaction | username:${username}`);
       ctx.body = {
         success: false,
         message: "You still have incompleted transaction requests."
       };
       return;
     }
+    console.log(`Membership Purchase => Success | In pending | username:${username}`);
 
     ctx.body = {
       success: true,
@@ -87,7 +93,56 @@ export const upgradeMembership = async (ctx, next) => {
       expireTime: TRANSACTION_REQUEST_TIMEOUT
     };
   } catch (error) {
-    console.log(error.message);
+    console.log(`Membership Purchase => Failed | Error:${error.message}`);
+    ctx.body = {
+      success: false,
+      message: error.message
+    };
+  }
+};
+
+export const upgradeMembershipBalance = async (ctx, next) => {
+  try {
+    const { username } = ctx.state.user;
+    const { expectAmount } = ctx.request.body;
+    const checkUser = await checkUserInfo(username);
+    if (checkUser.success === false) {
+      ctx.body = checkUser;
+      return;
+    }
+    const { userInfo } = checkUser;
+    if (userInfo.role === User.ROLE.OWNER || userInfo.role === User.ROLE.MODERATOR) {
+      console.log(`Membership Upgrade Balance => Failed | Not free user:${username}`);
+      ctx.body = {
+        success: false,
+        message: "You can't upgrade your membership."
+      };
+      return;
+    }
+
+    if (userInfo.balance < Number(expectAmount)) {
+      console.log(`Membership Upgrade Balance => Failed | Insufficient balance | balance:${userInfo.balance}, username:${username}`);
+      ctx.body = {
+        success: false,
+        message: "Insufficient balance."
+      };
+      return;
+    }
+
+    const { userService } = ServicesContext.getInstance();
+    await userService.addBalance(userInfo.id, -expectAmount);
+    await confirmMembership(userInfo, expectAmount);
+    const updatedUser = await userService.findUserByUsername(username);
+    updateBalanceSocket(updatedUser);
+    console.log(`Membership Upgrade Balance => Success | username:${username}`);
+
+    ctx.body = {
+      success: true,
+      message: "Membership Upgraded.",
+      userInfo: updatedUser
+    };
+  } catch (error) {
+    console.log(`Membership Upgrade Balance => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: error.message

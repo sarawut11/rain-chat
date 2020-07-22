@@ -11,7 +11,13 @@
     "outDir": "dist",
     "baseUrl": "./",
     "paths": {
-      "@configs": ["src/configs/configs.dev"]
+      "@utils": ["src/app/utils/index"],
+      "@models": ["src/app/models/index"],
+      "@sockets": ["src/app/socket/index"],
+      "@context": ["src/app/context/index"],
+      "@services": ["src/app/services/index"],
+      "@controllers": ["src/app/controllers/index"],
+      "@middlewares": ["src/app/middlewares/index"]
     },
     "lib": ["es2015", "es6", "esnext.asynciterable", "dom"]
   },

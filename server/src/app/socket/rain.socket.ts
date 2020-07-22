@@ -1,8 +1,7 @@
-import { ServicesContext, RainContext } from "../context";
 import { authVerify } from "../middlewares/verify";
-import { Ads, User } from "../models";
-import { socketServer } from "./app.socket";
-import { socketEventNames } from "./resource.socket";
+import { Ads, User } from "@models";
+import { ServicesContext, RainContext } from "@context";
+import { socketServer, socketEventNames, Channels } from "@sockets";
 
 export const subscribeAdsReward = (token) => {
   const userInfo = authVerify(token);
@@ -14,13 +13,31 @@ export const subscribeAdsReward = (token) => {
   rainContext.addUserToRainAds(id);
 };
 
-export const updateAdsStatus = async (adsId) => {
-  const { userService, adsService } = ServicesContext.getInstance();
-  const ads: Ads = await adsService.findAdsById(adsId);
+export const updateAdsStatus = async (ads: Ads) => {
+  const { userService } = ServicesContext.getInstance();
   const user: User = await userService.findUserById(ads.userId);
-  socketServer.emitTo(user.socketid, socketEventNames.UpdateAdsStatus, {
-    adsId,
+  const reviewer = await userService.findUserById(ads.reviewer);
+
+  // Notify Creator
+  const data = {
+    adsId: ads.id,
     username: user.username,
-    status: ads.status
-  }, (error) => console.error(error.message));
+    status: ads.status,
+    impressions: ads.impressions,
+    reviewer
+  };
+  socketServer.emitTo(user.socketid, socketEventNames.UpdateAdsStatus, data,
+    (error) => console.error(error.message));
+  // Notify Moderators & Owners
+  socketServer.broadcastChannel(Channels.OwnerChannel, socketEventNames.UpdateAdsStatus,
+    data, (error) => console.error(error.message));
+  socketServer.broadcastChannel(Channels.ModerChannel, socketEventNames.UpdateAdsStatus,
+    data, (error) => console.error(error.message));
+};
+
+export const getRain = async (rainedUser: User, reward: number) => {
+  socketServer.emitTo(rainedUser.socketid, socketEventNames.GetRain, {
+    reward,
+    balance: rainedUser.balance
+  }, error => console.log("Socket => GetRain | Error:", error.message));
 };

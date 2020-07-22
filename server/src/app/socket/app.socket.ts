@@ -1,13 +1,12 @@
 /* eslint-disable consistent-return */
 import * as socketIo from "socket.io";
 
-import { ServicesContext } from "../context";
-import { authVerify } from "../middlewares/verify";
-import { getAllMessage } from "./message.socket";
-import { requestFrequency } from "../middlewares/requestFrequency";
+import { ServicesContext } from "@context";
+import { requestFrequency, authVerify } from "@middlewares";
+import { getAllMessage, subscribeAdsReward, socketEventNames, Channels } from "@sockets";
 import * as privateSockets from "./private.socket";
 import * as groupSockets from "./group.socket";
-import * as rainSockets from "./rain.socket";
+import { User } from "@models";
 
 let io: socketIo.Server;
 
@@ -18,27 +17,26 @@ const initServer = server => {
   io.use((socket, next) => {
     const token = socket.handshake.query.token;
     if (authVerify(token)) {
-      console.log("verify socket token success", token);
+      console.log("Socket => Verify socket token | success");
       return next();
     }
-    return next(new Error(`Authentication error! time =>${new Date().toLocaleString()}`));
+    return next(new Error(`Socket => Authentication error`));
   });
 
   io.on("connection", async socket => {
     const socketId = socket.id;
     let userId;
     let clientHomePageList;
-    console.log("connection socketId=>", socketId, "time=>", new Date().toLocaleString());
+    console.log("Socket => Connection | socketId:", socketId);
 
     // Get data for group chats and private chats
-    await emitAsync(socket, "initSocket", socketId, (userID, homePageList) => {
-      console.log("userId", userID);
+    await emitAsync(socket, socketEventNames.InitSocket, socketId, (userID, homePageList) => {
       userId = userID;
       clientHomePageList = homePageList;
     });
     const allMessage = await getAllMessage({ userId, clientHomePageList });
-    socket.emit("initSocketSuccess", allMessage);
-    console.log("initSocketSuccess userId=>", userId, "time=>", new Date().toLocaleString());
+    socket.emit(socketEventNames.InitSocketSuccess, allMessage);
+    console.log(`Socket => InitSocketSuccess | userId:${userId}`);
 
     socket.use((packet, next) => {
       if (!requestFrequency(socketId)) return next();
@@ -50,7 +48,7 @@ const initServer = server => {
     socketIds.push(socketId);
     const newSocketIdStr = socketIds.join(",");
     await userService.saveUserSocketId(userId, newSocketIdStr);
-    console.log("initSocket userId=>", userId, "time=>", new Date().toLocaleString());
+    console.log(`Socket => InitSocket | userId:${userId}`);
 
     // init GroupChat
     const result = await userService.getGroupList(userId);
@@ -58,7 +56,14 @@ const initServer = server => {
     for (const item of groupList) {
       socket.join(item.groupId);
     }
-    console.log("initGroupChat userId=>", userId, "time=>", new Date().toLocaleString());
+
+    // Join Role Channels
+    const user = await userService.findUserById(userId);
+    if (user.role === User.ROLE.OWNER)
+      socket.join(Channels.OwnerChannel);
+    if (user.role === User.ROLE.MODERATOR)
+      socket.join(Channels.ModerChannel);
+    console.log(`Socket => InitGroupChat | userId:${userId}`);
 
     socket
       // Private message
@@ -115,7 +120,7 @@ const initServer = server => {
 
       // Rain Sockets
       .on("subscribeAdsReward", async ({ token }) => {
-        rainSockets.subscribeAdsReward(token);
+        subscribeAdsReward(token);
       })
 
       // Disconnect
@@ -139,11 +144,9 @@ const initServer = server => {
           //   ]);
           // }
 
-          console.log("disconnect.=>reason", reason, "userId=>", userId, "socket.id=>", socket.id, "time=>",
-            new Date().toLocaleString(),
-          );
+          console.log(`Socket => Disconnect | reason:${reason} userId:${userId}, socketId:${socket.id}`);
         } catch (error) {
-          console.log("error", error.message);
+          console.log("Socket => Disconnect | Error:", error.message);
           io.to(socketId).emit("error", { code: 500, message: error.message });
         }
       });
@@ -161,10 +164,24 @@ const broadcast = (emitName, data, onError?) => {
   }
 };
 
+const broadcastChannel = (channelName: string, emitName: string, data: any, onError?) => {
+  try {
+    io.to(channelName).emit(emitName, data);
+  } catch (error) {
+    console.log(error);
+    if (onError) {
+      onError(error);
+    }
+  }
+};
+
 const emitTo = (toSocketIds: string, emitName, data, onError?) => {
   try {
     const socketids = toSocketIds.split(",");
-    socketids.forEach(socketid => io.to(socketid).emit(emitName, data));
+    socketids.forEach(socketid => {
+      if (socketid !== "" && socketid !== undefined)
+        io.to(socketid).emit(emitName, data);
+    });
   } catch (error) {
     if (onError)
       onError(error);
@@ -174,10 +191,6 @@ const emitTo = (toSocketIds: string, emitName, data, onError?) => {
 const allSocketCount = (): number => {
   return Object.keys(io.sockets.sockets).length;
 };
-
-function getSocketIdHandle(arr) {
-  return arr[0] ? JSON.parse(JSON.stringify(arr[0])).socketid : "";
-}
 
 const getRoomClients = (room): Promise<any> => {
   return new Promise((resolve, reject) => {
@@ -206,9 +219,8 @@ function emitAsync(socket: socketIo.Socket, emitName, data, callback) {
 export const socketServer = {
   initServer,
   broadcast,
+  broadcastChannel,
   emitTo,
-  getSocketIdHandle,
   getRoomClients,
   allSocketCount,
-  updateAdsStatus: rainSockets.updateAdsStatus
 };

@@ -1,8 +1,8 @@
 import { ParameterizedContext } from "koa";
-import { ServicesContext, CMCContext, TransactionContext } from "../context";
-import { Ads, User, Transaction, TransactionDetail } from "../models";
-import { socketServer } from "../socket/app.socket";
-import { uploadFile, deleteFile, now } from "../utils";
+import { ServicesContext, CMCContext, TransactionContext } from "@context";
+import { Ads, User, Transaction, TransactionDetail } from "@models";
+import { uploadFile, deleteFile, now } from "@utils";
+import { updateAdsStatus } from "@sockets";
 
 const TRANSACTION_REQUEST_TIMEOUT = Number(process.env.TRANSACTION_REQUEST_TIMEOUT);
 const COST_PER_IMPRESSION_RAIN_ADS = Number(process.env.COST_PER_IMPRESSION_RAIN_ADS);
@@ -18,6 +18,7 @@ export const registerAds = async (ctx, next) => {
     const { userService, adsService } = ServicesContext.getInstance();
 
     if (asset === undefined) {
+      console.log(`Register Ads => Failed | Empty Asset | Creator:${username}`);
       ctx.body = {
         success: false,
         message: "Attach a video or an image and try again."
@@ -28,6 +29,7 @@ export const registerAds = async (ctx, next) => {
     // Check Username
     const userInfo: User = await userService.findUserByUsername(username);
     if (userInfo === undefined) {
+      console.log(`Register Ads => Failed | Invalid username:${username}`);
       ctx.body = {
         success: false,
         message: "Invalid Username."
@@ -55,13 +57,15 @@ export const registerAds = async (ctx, next) => {
       type
     });
     const insertAds: Ads = await adsService.findAdsById(res.insertId);
+    console.log(`Register Ads => Success | Creator:${username}`);
+
     ctx.body = {
       success: true,
       message: "Successfully Created.",
       ads: insertAds
     };
   } catch (error) {
-    console.error(error.message);
+    console.log(`Register Ads => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: "Failed"
@@ -136,11 +140,20 @@ export const updateAds = async (ctx, next) => {
 
     const checkResult = await checkAdsId(username, adsId);
     if (checkResult.success === false) {
+      console.log(`Update Ads => Failed | ${checkResult.message} | username:${username}, adsId:${adsId}`);
       ctx.body = checkResult;
       return;
     }
 
     const { userInfo, existingAds } = checkResult;
+    if (existingAds.status !== Ads.STATUS.Created && existingAds.status !== Ads.STATUS.Rejected) {
+      console.log(`Update Ads => Failed | Invalid status | username:${username}, adsId:${adsId}`);
+      ctx.body = {
+        success: false,
+        message: "You can't modify ads for now."
+      };
+      return;
+    }
 
     // Delete existing asset and upload new asset
     let assetLink: string;
@@ -165,13 +178,15 @@ export const updateAds = async (ctx, next) => {
       description
     });
     const updatedAds: Ads = await adsService.findAdsById(adsId);
+    console.log(`Update Ads => Success | adsId:${adsId}, creator:${username}`);
+
     ctx.body = {
       success: true,
       message: "Successfully Updated.",
       ads: updatedAds,
     };
   } catch (error) {
-    console.error(error.message);
+    console.log(`Update Ads => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: "Failed"
@@ -194,12 +209,13 @@ export const deleteAds = async (ctx, next) => {
     const { existingAds } = checkResult;
     await deleteFile(existingAds.assetLink);
     await adsService.deleteAds(adsId);
+    console.log(`Delete Ads => Success | adsId:${adsId}, creator:${username}`);
     ctx.body = {
       success: true,
       message: "Successfully Deleted."
     };
   } catch (error) {
-    console.error(error.message);
+    console.log(`Delete Ads => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: "Failed"
@@ -221,6 +237,7 @@ export const requestAds = async (ctx, next) => {
 
     const { existingAds } = checkResult;
     if (existingAds.status === Ads.STATUS.Pending) {
+      console.log(`Request Ads => Failed | Already in pending | adsId:${adsId}`);
       ctx.body = {
         success: false,
         message: "This ads is already in pending."
@@ -228,6 +245,7 @@ export const requestAds = async (ctx, next) => {
       return;
     }
     if (existingAds.status === Ads.STATUS.Approved) {
+      console.log(`Request Ads => Failed | Already approved | adsId:${adsId}`);
       ctx.body = {
         success: false,
         message: "This ads is already approved."
@@ -237,13 +255,16 @@ export const requestAds = async (ctx, next) => {
 
     await adsService.updateStatus(adsId, Ads.STATUS.Pending);
     const updatedAds: Ads = await adsService.findAdsById(adsId);
+    await updateAdsStatus(updatedAds);
+    console.log(`Request Ads => Success | In pending for review | adsId:${adsId}`);
+
     ctx.body = {
       success: true,
       message: "Successfully requested",
       ads: updatedAds,
     };
   } catch (error) {
-    console.error(error.message);
+    console.log(`Request Ads => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: "Failed"
@@ -265,21 +286,26 @@ export const cancelAds = async (ctx, next) => {
 
     const { userInfo, existingAds } = checkResult;
     if (existingAds.status !== Ads.STATUS.Pending) {
+      console.log(`Cancel Ads => Failed | Not in pending | adsId:${adsId}`);
       ctx.body = {
         success: false,
         message: "This ads is not in pending."
       };
+      return;
     }
 
     await adsService.cancelAds(adsId, userInfo.id);
     const updatedAds: Ads = await adsService.findAdsById(adsId);
+    await updateAdsStatus(updatedAds);
+    console.log(`Cancel Ads => Success | adsId:${adsId}`);
+
     ctx.body = {
       success: true,
       message: "Successfully canceled.",
       ads: updatedAds
     };
   } catch (error) {
-    console.error(error.message);
+    console.log(`Cancel Ads => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: "Failed"
@@ -302,6 +328,7 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
 
     const { existingAds } = checkResult;
     if (existingAds.status !== Ads.STATUS.Approved) {
+      console.log(`Purchase Ads => Failed | Not approved | adsId:${adsId}`);
       ctx.body = {
         success: false,
         message: "This ads is not approved."
@@ -317,6 +344,7 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
     });
     const transInfo = await transactionService.createTransactionRequest(existingAds.userId, Transaction.TYPE.ADS, expectAmount, adsTransactionDetails);
     if (transInfo === undefined) {
+      console.log(`Purchase Ads => Failed | Still have incompleted transaction | adsId:${adsId}, username:${username}`);
       ctx.body = {
         success: false,
         message: "You still have incompleted transaction requests."
@@ -329,12 +357,15 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
       const ads: Ads = await adsService.findAdsById(adsId);
       if (ads.status === Ads.STATUS.PendingPurchase) {
         await adsService.updateStatus(adsId, Ads.STATUS.Approved);
-        await socketServer.updateAdsStatus(adsId);
+        await updateAdsStatus(adsId);
+        console.log(`Purchase Ads => Expired | Restore status to approved | adsId:${adsId}`);
       }
       TransactionContext.getInstance().expireTransactionRequest(transInfo.insertId);
     }, TRANSACTION_REQUEST_TIMEOUT);
 
     const updatedAds: Ads = await adsService.findAdsById(adsId);
+    await updateAdsStatus(adsId);
+    console.log(`Purchase Ads => Success | In pending | adsId:${adsId}, username:${username}`);
     ctx.body = {
       success: true,
       message: "Successfully requested.",
@@ -342,7 +373,7 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
       expireTime: TRANSACTION_REQUEST_TIMEOUT,
     };
   } catch (error) {
-    console.error(error.message);
+    console.log(`Purchase Ads => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: "Failed"
@@ -366,7 +397,7 @@ export const getCostPerImpression = async (ctx: ParameterizedContext, next) => {
       price: vitaePerImp
     };
   } catch (error) {
-    console.error(error.message);
+    console.log(`Get ImpCost => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: "Failed"
@@ -380,6 +411,7 @@ export const getStaticAds = async (ctx: ParameterizedContext, next) => {
 
     const ads: Ads = await adsService.findAdsToCampaign(Ads.TYPE.StaticAds);
     if (ads === undefined) {
+      console.log(`Get Static Ads => Failed | No static ads`);
       ctx.body = {
         success: false,
         message: "No static ads."
@@ -393,7 +425,7 @@ export const getStaticAds = async (ctx: ParameterizedContext, next) => {
       duration: STATIC_ADS_INTERVAL
     };
   } catch (error) {
-    console.error(error.message);
+    console.log(`Get Static Ads => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: "Failed"

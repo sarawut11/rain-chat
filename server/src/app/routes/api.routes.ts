@@ -1,5 +1,5 @@
 import * as Router from "koa-router";
-import * as APIController from "../controllers";
+import * as APIController from "@controllers";
 
 const auth = new Router()
   // Authentication
@@ -7,12 +7,14 @@ const auth = new Router()
   .post("/login", APIController.loginUser)
   .post("/token/validate", APIController.validateToken)
   .post("/ref/validate", APIController.validateReferral)
+  .post("/email/confirm", APIController.generateEmailOtp)
   .post("/walletnotify", APIController.walletNotify);
 
 const api = new Router()
   // Profile
   .get("/user/:username", APIController.getProfileInfo)
   .put("/user/:username", APIController.updateProfileInfo)
+  .put("/user/password/update", APIController.updatePassword)
   .post("/user/withdraw-address/add", APIController.addWithdrawAddress)
   .get("/user/withdraw-address", APIController.getWithdrawAddresses)
   .get("/user/otp/request", APIController.generateOTP)
@@ -43,7 +45,8 @@ const api = new Router()
   .get("/membership/price", APIController.getMembershipPrice)
   .get("/membership/role/users", APIController.getAllUsers)
   .post("/membership/role/update/moderator", APIController.setModerator)
-  .post("/membership/role/upgrade/request", APIController.upgradeMembership)
+  .post("/membership/role/upgrade/request", APIController.upgradeMembershipPurchase)
+  .post("/membership/role/upgrade/balance", APIController.upgradeMembershipBalance)
 
   // Expense
   .get("/expense/get-all", APIController.getAllExpenses)

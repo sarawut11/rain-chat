@@ -1,6 +1,6 @@
-import { query, now } from "../utils";
-import { Transaction, DefaultModel, TransactionDetail } from "../models";
-import { TransactionContext } from "../context";
+import { query, now } from "@utils";
+import { TransactionContext } from "@context";
+import { Transaction, DefaultModel, TransactionDetail } from "@models";
 
 const COMPANY_USERID = Number(process.env.COMPANY_USERID);
 const TRANSACTION_REQUEST_TIMEOUT = Number(process.env.TRANSACTION_REQUEST_TIMEOUT);
@@ -145,25 +145,13 @@ export class TransactionService {
     return query(sql, [Transaction.STATUS.CONFIRMED, amount, confirmTime, userId, type]);
   }
 
-  async getTotalRainDonation(): Promise<number> {
+  async getTotalAmountByType(type: number): Promise<number> {
     const sql = `
       SELECT * FROM ${this.TABLE_NAME}
       WHERE
         ${this.columns.type} = ? AND
         ${this.columns.status} = ?;`;
-    const trans: Transaction[] = await query(sql, [Transaction.TYPE.VITAE_RAIN, Transaction.STATUS.CONFIRMED]);
-    let totalDonation = 0;
-    trans.forEach(tran => totalDonation += tran.paidAmount);
-    return totalDonation;
-  }
-
-  async getTotalWithdrawn(): Promise<number> {
-    const sql = `
-      SELECT * FROM ${this.TABLE_NAME}
-      WHERE
-        ${this.columns.type} = ? AND
-        ${this.columns.status} = ?;`;
-    const trans: Transaction[] = await query(sql, [Transaction.TYPE.WITHDRAW, Transaction.STATUS.CONFIRMED]);
+    const trans: Transaction[] = await query(sql, [type, Transaction.STATUS.CONFIRMED]);
     let amount = 0;
     trans.forEach(tran => amount += tran.paidAmount);
     return amount;

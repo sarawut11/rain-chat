@@ -3,7 +3,7 @@ import axios from 'axios';
 import { notification } from 'antd';
 
 export default class Request {
-  static apiUrl = 'http://localhost:3000';
+  static apiUrl = process.env.API_URL;
 
   static axiosConfigInit() {
     if (process.env.NODE_ENV !== 'production') {

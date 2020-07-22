@@ -4,13 +4,13 @@
   - [1.1 Authentication](#11-authentication)
     - [/login (POST)](#login-post)
     - [/register (POST)](#register-post)
+    - [/email/confirm (POST)](#emailconfirm-post)
     - [/token/validate (POST)](#tokenvalidate-post)
-  - [1.2 Referral / Sponsor](#12-referral--sponsor)
-    - [/ref/generate (POST)](#refgenerate-post)
     - [/ref/validate (POST)](#refvalidate-post)
   - [1.3 Profile](#13-profile)
     - [/user/:username (GET)](#userusername-get)
     - [/user/:username (PUT)](#userusername-put)
+    - [/user/password/update (PUT)](#userpasswordupdate-put)
     - [/user/withdraw-address/add (POST)](#userwithdraw-addressadd-post)
     - [/user/withdraw-address (GET)](#userwithdraw-address-get)
     - [/user/otp/request (GET)](#userotprequest-get)
@@ -36,6 +36,7 @@
     - [/membership/role/users?role=x&page=y&count=z (GET)](#membershiproleusersrolexpageycountz-get)
     - [/membership/role/update/moderator (POST)](#membershiproleupdatemoderator-post)
     - [/membership/role/upgrade/request (POST)](#membershiproleupgraderequest-post)
+    - [/membership/role/upgrade/balance (POST)](#membershiproleupgradebalance-post)
   - [1.7 Admin Dashboard API](#17-admin-dashboard-api)
     - [/admin/home (GET)](#adminhome-get)
     - [/admin/ads (GET)](#adminads-get)
@@ -73,7 +74,6 @@
     - [getUserInfo (Client)](#getuserinfo-client)
     - [deleteContact (Client)](#deletecontact-client)
     - [beDeleted (Server)](#bedeleted-server)
-    - [updateProfileInfo (Server)](#updateprofileinfo-server)
   - [2.3 Group Chat](#23-group-chat)
     - [sendGroupMsg (Client)](#sendgroupmsg-client)
     - [getGroupMsg (Server)](#getgroupmsg-server)
@@ -87,7 +87,10 @@
     - [enableVitaePost (Server)](#enablevitaepost-server)
   - [2.4 Search / Contact](#24-search--contact)
     - [fuzzyMatch (Client)](#fuzzymatch-client)
-  - [2.5 Rain](#25-rain)
+  - [2.5 User Profile](#25-user-profile)
+    - [updateBalance(Server)](#updatebalanceserver)
+    - [updateProfileInfo (Server)](#updateprofileinfo-server)
+  - [2.6 Rain](#26-rain)
     - [rainComing (Server)](#raincoming-server)
     - [showAds (Server)](#showads-server)
     - [showStaticAds (Server)](#showstaticads-server)
@@ -95,7 +98,7 @@
     - [getRain (Server)](#getrain-server)
     - [updateAdsStatus (Server)](#updateadsstatus-server)
     - [updateAdsImpressions (Server)](#updateadsimpressions-server)
-  - [2.6 Transaction](#26-transaction)
+  - [2.7 Transaction](#27-transaction)
     - [transactionExpired (Server)](#transactionexpired-server)
 
 > **Note**
@@ -142,11 +145,25 @@
   | username | Username                |
   | password | Password                |
   | sponsor  | Sponsor's referral code |
+  | otp      | Email verification code |
   ***Response***
   ```
   {
     success: true/false,
     message: "Success or Failed Message"
+  }
+  ```
+### /email/confirm (POST)
+  ***Request Body***
+  | Fields | Description      |
+  | ------ | ---------------- |
+  | email  | Email to confirm |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Valid or Invalid Message",
+    expireIn: expireTime in miliseconds
   }
   ```
 ### /token/validate (POST)
@@ -164,22 +181,6 @@
   }
   ```
 
-## 1.2 Referral / Sponsor
-### /ref/generate (POST)
-  Generate referral code
-
-  ***Request Body***
-  | Fields  | Description        |
-  | ------- | ------------------ |
-  | sponsor | Sponsor's username |
-  ***Response***
-  ```
-  {
-    success: true/false,
-    message: "Success or Failed Message",
-    refcode: // sponsor's referral code
-  }
-  ```
 ### /ref/validate (POST)
   Validate sponsor's referral code.
 
@@ -236,6 +237,21 @@
       name,
       intro,
     }
+  }
+  ```
+### /user/password/update (PUT)
+  Update password
+
+  ***Request Body (Form-Data)***
+  | Fields      | Description  |
+  | ----------- | ------------ |
+  | oldPassword | Old password |
+  | newPassword | New password |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
   }
   ```
 ### /user/withdraw-address/add (POST)
@@ -711,7 +727,7 @@
   ```
 
 ### /membership/role/upgrade/request (POST)
-  Upgrade Membership
+  Upgrade Membership by purchasing token
 
   ***Request Body***
   | Fields       | Description                |
@@ -723,6 +739,21 @@
     success: true/false,
     message,
     expireTime,   // expiration time in seconds
+  }
+  ```
+### /membership/role/upgrade/balance (POST)
+  Upgrade Membership from balance
+
+  ***Request Body***
+  | Fields       | Description                |
+  | ------------ | -------------------------- |
+  | expectAmount | Expected amount to be paid |
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message,
+    userInfo,   // Updated userInfo
   }
   ```
 
@@ -869,6 +900,8 @@
     totalRainDonation,
     totalRained,
     totalWithdrawn,
+    stockpileAddress,
+    stockpileBalance
   }
   ```
 
@@ -1154,7 +1187,6 @@
 ### getUserInfo (Client)
 ### deleteContact (Client)
 ### beDeleted (Server)
-### updateProfileInfo (Server)
 
 ## 2.3 Group Chat
 ### sendGroupMsg (Client)
@@ -1172,7 +1204,30 @@
 ## 2.4 Search / Contact
 ### fuzzyMatch (Client)
 
-## 2.5 Rain
+## 2.5 User Profile
+### updateBalance(Server)
+  Notify user to update balance
+
+  ***Data***
+  ```
+  {
+    balance,    // Updated balance
+  }
+  ```
+### updateProfileInfo (Server)
+  Broadcast updated profile info to all clients includes updated user.
+
+  ***Data***
+  ```
+  {
+    username,
+    avatarUrl,
+    name,
+    intro,
+  }
+  ```
+
+## 2.6 Rain
 ### rainComing (Server)
   Notify users to be online to Vitae Rain Room - Rain is coming soon.
 
@@ -1230,7 +1285,8 @@
   ***Data***
   ```
   {
-    reward: // Normal Rain Reward (e.g 0.00025)
+    reward,     // Normal Rain Reward (e.g 0.00025)
+    balance,    // Updated balance
   }
   ```
 ### updateAdsStatus (Server)
@@ -1240,8 +1296,11 @@
   ```
   {
     adsId,
-    username,
-    status
+    username,     // Creator username
+    status,
+    impressions,
+    reviewer: {   // Reviewer userInfo (Optional when the ads is not approved yet)
+    }
   }
   ```
 ### updateAdsImpressions (Server)
@@ -1256,7 +1315,7 @@
   }
   ```
 
-## 2.6 Transaction
+## 2.7 Transaction
 ### transactionExpired (Server)
   Notify user about the expired transaction
 

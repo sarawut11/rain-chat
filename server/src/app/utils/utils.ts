@@ -1,12 +1,17 @@
-import { ServicesContext } from "../context";
 import * as moment from "moment";
-import { User } from "../models";
+import { User } from "@models";
+import { ServicesContext } from "@context";
+import { updateBalanceSocket } from "@sockets";
 
 const VITAE_POST_TIME = Number(process.env.VITAE_POST_TIME);
 const COMPANY_USERID = Number(process.env.COMPANY_USERID);
 
 export const now = (): number => {
   return moment().utc().unix();
+};
+
+export const nowDate = (): moment.Moment => {
+  return moment().utc();
 };
 
 export const isVitaePostEnabled = (user: User): boolean => {
@@ -94,11 +99,13 @@ export const shareRevenue = async (amount: number, role: string, type: number) =
   else {
     // Add Inner Transactions
     const users: User[] = await userService.findUsersByRole(role);
-    const userIds = [];
+    const userIds: number[] = [];
     users.forEach(user => userIds.push(user.id));
     await innerTranService.addTrans(userIds, amount, type);
     // Update User Balance
     await userService.shareRevenue(amount, User.ROLE.OWNER);
+    const updatedUsers = await userService.findUsersByRole(role);
+    updatedUsers.forEach(user => updateBalanceSocket(user));
   }
 };
 

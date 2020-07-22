@@ -1,6 +1,6 @@
-import { ServicesContext } from "../context";
-import { User, Group } from "../models";
-import { isOwner } from "../utils/utils";
+import { ServicesContext } from "@context";
+import { User, Group } from "@models";
+import { isOwner } from "@utils";
 
 export const getChatAnalytics = async (ctx, next) => {
   try {

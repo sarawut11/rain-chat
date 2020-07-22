@@ -1,5 +1,5 @@
-import { query, now } from "../utils";
-import { DefaultModel, ExpenseConfirm } from "../models";
+import { query, now } from "@utils";
+import { DefaultModel, ExpenseConfirm } from "@models";
 
 export class ExpenseConfirmService {
   public readonly TABLE_NAME = "expense_confirm_info";
