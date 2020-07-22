@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Picker } from 'emoji-mart';
 import { connect } from 'react-redux';
 import Fuse from 'fuse.js';
-import { Button, Row, notification as antNotification } from 'antd';
+import { Button, Row } from 'antd';
 import upload from '../../utils/qiniu';
 import request from '../../utils/request';
 import './style.scss';
@@ -253,9 +253,6 @@ class InputArea extends Component {
 
   render() {
     const { inputMsg, showEmojiPicker, relatedMembers } = this.state;
-    const robotStyle = {
-      visibility: 'hidden',
-    };
     const buttonClass = inputMsg ? 'btn btnActive' : 'btn';
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
     const { role } = userInfo;
@@ -291,16 +288,16 @@ class InputArea extends Component {
             showPreview={false}
           />
         )}
-        <div className="left" style={this.props.isRobotChat ? robotStyle : {}}>
+        <div className="left">
           <svg onClick={this._clickShowEmojiPicker} className="icon emoji" aria-hidden="true">
             <use xlinkHref="#icon-smile" />
           </svg>
-          <label className="file">
+          {/* <label className="file">
             <svg className="icon" aria-hidden="true">
               <use xlinkHref="#icon-file" />
             </svg>
             <input type="file" className="file-input" onChange={this._onSelectFile} />
-          </label>
+          </label> */}
         </div>
         {relatedMembers && relatedMembers.length > 0 && this.filterMembersRender()}
         <textarea
@@ -324,13 +321,11 @@ class InputArea extends Component {
 
 InputArea.propTypes = {
   sendMessage: PropTypes.func,
-  isRobotChat: PropTypes.bool,
   shareData: PropTypes.object,
 };
 
 InputArea.defaultProps = {
   sendMessage: undefined,
-  isRobotChat: false,
   shareData: undefined,
 };
 
