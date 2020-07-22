@@ -1,7 +1,7 @@
 /* eslint-disable react/prefer-stateless-function */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Button, Modal, notification } from 'antd';
+import { Button, Modal, notification, Row, Col, Radio } from 'antd';
 import Request from '../../../utils/request';
 import { setMembershipUpgradeInfo } from '../../../redux/actions/userAction';
 import MembershipCountDown from './MembershipCountDown';
@@ -27,6 +27,7 @@ class UserUpgrader extends Component {
     vitaePrice: 0,
     usdPrice: 0,
     walletAddress: null,
+    upgradeMode: 0,
   };
 
   showModal = async () => {
@@ -64,22 +65,46 @@ class UserUpgrader extends Component {
 
   handleOk = async () => {
     const { userInfo } = this.props;
-    const { vitaePrice, usdPrice, walletAddress } = this.state;
+    const { vitaePrice, usdPrice, walletAddress, upgradeMode } = this.state;
 
     if (userInfo.role === 'FREE') {
       try {
-        const res = await Request.axios('post', `/api/v1/membership/role/upgrade/request`, {
-          expectAmount: vitaePrice,
-        });
+        if (upgradeMode === 0) {
+          const res = await Request.axios('post', `/api/v1/membership/role/upgrade/request`, {
+            expectAmount: vitaePrice,
+          });
 
-        if (res && res.success) {
-          notification.success({
-            message: 'You requested to upgrade membership successfully.',
-          });
+          if (res && res.success) {
+            notification.success({
+              message: 'You requested to upgrade membership successfully.',
+            });
+
+            this.props.setMembershipUpgradeInfo({
+              membershipUpgradePending: true,
+              usdPrice,
+              vitaePrice,
+              walletAddress,
+              deadline: Date.now() + MEMBERSHIP_UPGRADE_DEADLINE_PERIOD,
+            });
+          } else {
+            notification.error({
+              message: res.message,
+            });
+          }
         } else {
-          notification.error({
-            message: res.message,
+          const res = await Request.axios('post', `/api/v1/membership/role/upgrade/balance`, {
+            expectAmount: vitaePrice,
           });
+
+          if (res && res.success) {
+            notification.success({
+              message: 'You upgraded membership successfully.',
+            });
+          } else {
+            notification.error({
+              message: res.message,
+            });
+          }
         }
       } catch (error) {
         console.log(error);
@@ -87,14 +112,6 @@ class UserUpgrader extends Component {
           message: 'Failed to request to upgrade membership.',
         });
       }
-
-      this.props.setMembershipUpgradeInfo({
-        membershipUpgradePending: true,
-        usdPrice,
-        vitaePrice,
-        walletAddress,
-        deadline: Date.now() + MEMBERSHIP_UPGRADE_DEADLINE_PERIOD,
-      });
 
       this.setState({ visible: false });
     }
@@ -107,10 +124,20 @@ class UserUpgrader extends Component {
     });
   };
 
+  handleRadioChange = e => {
+    this.setState({ upgradeMode: e.target.value });
+  };
+
   render() {
-    const { loadingPrice, visible, vitaePrice, usdPrice, walletAddress } = this.state;
+    const { loadingPrice, visible, vitaePrice, usdPrice, walletAddress, upgradeMode } = this.state;
     const { membershipUpgradePending } = this.props.membershipUpgradeInfo;
     const { userInfo } = this.props;
+    const { balance } = this.props.userInfo;
+
+    const radioOptions = [
+      { label: 'Send vitae tokens', value: 0 },
+      { label: 'Use my balance', value: 1 },
+    ];
 
     return (
       <div>
@@ -128,13 +155,55 @@ class UserUpgrader extends Component {
           visible={visible}
           onOk={this.handleOk}
           onCancel={this.handleCancel}
+          className="membership-upgrade-modal"
         >
-          <div>
-            <p>You have to pay ${usdPrice} in Vitae.</p>
+          <Row gutter={[20, 20]}>
+            <Col span={24}>
+              <Radio.Group
+                onChange={this.handleRadioChange}
+                value={upgradeMode}
+                buttonStyle="solid"
+              >
+                {radioOptions.map(option => (
+                  <Radio.Button value={option.value} key={option.value}>
+                    {option.label}
+                  </Radio.Button>
+                ))}
+              </Radio.Group>
+            </Col>
+
+            <Col span={24} className="membership-upgrade-text">
+              {upgradeMode === 0 ? (
+                <div style={{ textAlign: 'center' }}>
+                  <p>
+                    You have to pay <span>${usdPrice}</span> in Vitae.
+                  </p>
+                  <p>
+                    Send <span>{vitaePrice}</span> vitae to the vitae address{' '}
+                    <span>{walletAddress}</span>.
+                  </p>
+                </div>
+              ) : (
+                <div style={{ textAlign: 'center' }}>
+                  <p>
+                    Your balance: <span>{balance}</span> vitae
+                  </p>
+                  <p>
+                    You have to pay <span>${usdPrice}</span> in Vitae.
+                  </p>
+                </div>
+              )}
+            </Col>
+          </Row>
+          {/* <div className="membership-upgrade-text">
             <p>
-              Send {vitaePrice}vitae to the vitae address {walletAddress}.
+              You have to pay <span>${usdPrice}</span> in Vitae.
             </p>
-          </div>
+            <p>
+              Send <span>{vitaePrice}</span> vitae to the vitae address <span>{walletAddress}</span>
+              .
+            </p>
+          </div> */}
         </Modal>
       </div>
     );
