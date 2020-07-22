@@ -4,8 +4,8 @@ import { Ads } from "@models";
 
 export class AdsService {
 
-  readonly TABLE_NAME = "ads_info";
-  readonly COL = {
+  public readonly TABLE_NAME = "ads_info";
+  public readonly COL = {
     id: "id",
     userId: "userId",
     type: "type",
@@ -107,8 +107,8 @@ export class AdsService {
         reviewer.name as reviewerName,
         reviewer.avatar as reviewerAvatar
       FROM ${this.TABLE_NAME} AS ads
-      JOIN user_info as creator ON ads.userId = creator.id
-      JOIN user_info as reviewer ON ads.reviewer = reviewer.id;`;
+      LEFT JOIN user_info as creator ON ads.userId = creator.id
+      LEFT JOIN user_info as reviewer ON ads.reviewer = reviewer.id;`;
     const ads: Ads[] = await query(sql);
     return ads;
   }
