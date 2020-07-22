@@ -7,7 +7,8 @@ const EMAIL_PATH: string = process.env.EMAIL_PATH;
 const HOST: string = process.env.HOST;
 
 const transporter = nodemailer.createTransport({
-  service: process.env.MAIL_SERVICE,
+  host: process.env.MAIL_HOST,
+  port: 587, // port for secure SMTP
   auth: {
     user: process.env.MAIL_USER,
     pass: process.env.MAIL_PASS,
@@ -35,7 +36,7 @@ export const sendMail = async (mailPath: string, { email, subject, data }: {
     if (data.expire !== undefined) html = html.replace(/{{EXPIRE}}/g, (data.expire / 60000).toString());
 
     const info = await transporter.sendMail({
-      from: '"Vitae Support" <no-reply@vitae.com>',
+      from: `"Vitae Support" <${process.env.MAIL_USER}>`,
       to: email,
       subject,
       html
