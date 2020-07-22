@@ -4,7 +4,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { Form, Input, Button, Row, notification as antNotification } from 'antd';
-import { CopyOutlined } from '@ant-design/icons';
 import ModalBase from '../ModalBase';
 import './styles.scss';
 import Request from '../../utils/request';
@@ -88,6 +87,8 @@ class userInfoRender extends Component {
     const reflink = `${window.location.origin}/register?ref=${referral}`;
     const reftext = reflink;
 
+    console.log('\n --- ProfileInfo --- \n', this);
+
     return (
       <div className="userInfo">
         <Row justify="center">
@@ -102,7 +103,7 @@ class userInfoRender extends Component {
           </Form.Item>
           <Form.Item label="Intro">
             <Input.TextArea
-              value={intro}
+              value={intro || ''}
               name="intro"
               onChange={this._onChange}
               placeholder="Introduce yourself."
