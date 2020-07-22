@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import { Divider } from 'antd';
 import Fuse from 'fuse.js';
 import PropTypes from 'prop-types';
 import { List } from 'immutable';
@@ -18,8 +19,8 @@ class HomePageList extends Component {
       showSearchUser: true,
       showSearchGroup: true,
       searchResultTitle: {
-        user: 'Users you have contacted',
-        group: 'Groups you have contacted',
+        user: 'Users in your contact list',
+        group: 'Groups in your contact list',
       },
     };
     this._userInfo = JSON.parse(localStorage.getItem('userInfo'));
@@ -54,8 +55,8 @@ class HomePageList extends Component {
       showSearchUser: true,
       showSearchGroup: true,
       searchResultTitle: {
-        user: 'Users you have contacted',
-        group: 'Groups you have contacted',
+        user: 'Users in your contact list',
+        group: 'Groups in your contact list',
       },
     });
     if (this._filedStr.length > 0) {
@@ -84,22 +85,49 @@ class HomePageList extends Component {
 
   searchInDB({ searchUser }) {
     window.socket.emit('findMatch', { field: this._filedStr, searchUser }, data => {
+      const newMatchResult = [];
+
       if (data.searchUser) {
         this.setState(state => ({
           showSearchUser: false,
           searchResultTitle: { ...state.searchResultTitle, user: 'All users' },
         }));
+
         data.fuzzyMatchResult.forEach(element => {
           element.userId = element.id;
+          const contactedIndex = this.state.contactedItems.findIndex(item => {
+            return item.userId === element.userId;
+          });
+
+          if (contactedIndex === -1) {
+            newMatchResult.push(element);
+          }
         });
       } else {
         this.setState(state => ({
           showSearchGroup: false,
           searchResultTitle: { ...state.searchResultTitle, group: 'All groups' },
         }));
+
+        data.fuzzyMatchResult.forEach(element => {
+          const contactedIndex = this.state.contactedItems.findIndex(item => {
+            return item.id === element.id;
+          });
+
+          if (contactedIndex === -1) {
+            newMatchResult.push(element);
+          }
+        });
       }
+
+      console.log(
+        '\n ---- searchInDB --- \n',
+        this.state.contactedItems,
+        data.fuzzyMatchResult,
+        newMatchResult,
+      );
       this.setState(state => ({
-        contactedItems: [...state.contactedItems, ...data.fuzzyMatchResult],
+        contactedItems: [...state.contactedItems, ...newMatchResult],
       }));
     });
   }
@@ -151,9 +179,12 @@ class HomePageList extends Component {
               )}
               {showSearchUser && (
                 <p className="clickToSearch" onClick={() => this.searchInDB({ searchUser: true })}>
-                  Find related users on the Internet
+                  Search for all users
                 </p>
               )}
+
+              <Divider />
+
               <p className="searchResultTitle">{searchResultTitle.group}</p>
               {contactedGroups.length ? (
                 <ListItems
@@ -167,7 +198,7 @@ class HomePageList extends Component {
               )}
               {showSearchGroup && (
                 <p className="clickToSearch" onClick={() => this.searchInDB({ searchUser: false })}>
-                  Network to find related groups
+                  Search for all groups
                 </p>
               )}
             </div>

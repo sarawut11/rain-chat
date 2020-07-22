@@ -25,7 +25,7 @@ class ChatHeader extends Component {
   render() {
     const { title, chatType, showShareIcon, groupId } = this.props;
     const icon = chatType === 'group' ? '#icon-group' : '#icon-people';
-    const isRobotChat = chatType === 'robot';
+
     return (
       <div className="chat-header-wrapper">
         <svg onClick={this.clickToBack} className="icon back-icon" aria-hidden="true">
@@ -46,11 +46,9 @@ class ChatHeader extends Component {
             </svg>
           )
         )}
-        {!isRobotChat && (
-          <svg onClick={this._clickChatInfo} className="icon information-icon" aria-hidden="true">
-            <use xlinkHref={icon} />
-          </svg>
-        )}
+        <svg onClick={this._clickChatInfo} className="icon information-icon" aria-hidden="true">
+          <use xlinkHref={icon} />
+        </svg>
       </div>
     );
   }
