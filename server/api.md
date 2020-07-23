@@ -1295,12 +1295,15 @@
   ***Data***
   ```
   {
-    adsId,
-    username,     // Creator username
-    status,
-    impressions,
-    reviewer: {   // Reviewer userInfo (Optional when the ads is not approved yet)
-    }
+    ads: {        // Ads Info
+      ...
+      creatorUsername,  // Creator Info
+      creatorName,
+      creatorAvatar,
+      reviewerUsername, // Reviewer Info
+      reviewerName,
+      reviewerAvatar,
+    },
   }
   ```
 ### updateAdsImpressions (Server)

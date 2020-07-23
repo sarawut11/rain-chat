@@ -20,11 +20,15 @@ export const updateAdsStatus = async (ads: Ads) => {
 
   // Notify Creator
   const data = {
-    adsId: ads.id,
-    username: user.username,
-    status: ads.status,
-    impressions: ads.impressions,
-    reviewer
+    ads: {
+      ...ads,
+      creatorUsername: user.username,
+      creatorName: user.name,
+      creatorAvatar: user.avatar,
+      reviewerUsername: reviewer === undefined ? undefined : reviewer.username,
+      reviewerName: reviewer === undefined ? undefined : reviewer.name,
+      reviewerAvatar: reviewer === undefined ? undefined : reviewer.avatar,
+    }
   };
   socketServer.emitTo(user.socketid, socketEventNames.UpdateAdsStatus, data,
     (error) => console.error(error.message));
