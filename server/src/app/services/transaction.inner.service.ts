@@ -48,6 +48,15 @@ export class InnerTransactionService {
     return query(sql, userId);
   }
 
+  getUserPaymentTrans(userId: number) {
+    const sql = `
+      SELECT * FROM ${this.TABLE_NAME}
+      WHERE
+        ${this.COL.userId} = ? AND
+        ${this.COL.type} != ?;`;
+    return query(sql, [userId, InnerTransaction.TYPE.RAIN]);
+  }
+
   getUserTransByType(userId: number, type: number) {
     const sql = `
       SELECT * FROM ${this.TABLE_NAME}
@@ -88,11 +97,18 @@ export class InnerTransactionService {
     return amount;
   }
 
-  async getAmountByLastWeeks(userId: number, weeks: number): Promise<{
+  async getPayment(userId: number): Promise<number> {
+    const trans: InnerTransaction[] = await this.getUserPaymentTrans(userId);
+    let amount = 0;
+    trans.forEach(tran => amount += tran.amount);
+    return amount;
+  }
+
+  async getPaymentByLastWeeks(userId: number, weeks: number): Promise<{
     payment: number,
     weekPayments: number[]
   }> {
-    const trans: InnerTransaction[] = await this.getUserTrans(userId);
+    const trans: InnerTransaction[] = await this.getUserPaymentTrans(userId);
     let payment = 0;
     trans.forEach(tran => payment += tran.amount);
     const weekPayments: number[] = [];

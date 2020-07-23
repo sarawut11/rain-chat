@@ -8,7 +8,7 @@ const HOST: string = process.env.HOST;
 
 const transporter = nodemailer.createTransport({
   host: process.env.MAIL_HOST,
-  port: 587, // port for secure SMTP
+  port: Number(process.env.MAIL_PORT), // port for secure SMTP
   auth: {
     user: process.env.MAIL_USER,
     pass: process.env.MAIL_PASS,

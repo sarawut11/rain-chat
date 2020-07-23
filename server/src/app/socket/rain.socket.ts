@@ -1,4 +1,4 @@
-import { authVerify } from "../middlewares/verify";
+import { authVerify } from "@middlewares";
 import { Ads, User } from "@models";
 import { ServicesContext, RainContext } from "@context";
 import { socketServer, socketEventNames, Channels } from "@sockets";

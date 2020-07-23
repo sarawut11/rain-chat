@@ -27,7 +27,7 @@ export const getProfileInfo = async (ctx, next) => {
         balance,
         intro,
         avatar,
-        referral: refcode
+        refcode
       },
     };
   }
@@ -52,7 +52,7 @@ export const updateProfileInfo = async (ctx, next) => {
 
     let avatarUrl: string = avatar;
     if (avatar !== undefined) {
-      if (userInfo.avatar !== "" || userInfo.avatar !== undefined) {
+      if (userInfo.avatar !== "" && userInfo.avatar !== undefined) {
         await deleteFile(userInfo.avatar);
       }
       const { url } = await uploadFile({
