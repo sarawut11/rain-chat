@@ -99,7 +99,11 @@ class LogIn extends Component {
                 <Row justify="center" align="middle" gutter={[0, 20]}>
                   <Col span={24}>
                     <Row justify="center">
-                      <img src="../../assets/vitae-logo.png" alt="vitae-logo" />
+                      <img
+                        src="../../assets/vitae-logo.png"
+                        alt="vitae-logo"
+                        className="vitae-logo"
+                      />
                     </Row>
                   </Col>
 
