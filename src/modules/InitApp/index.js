@@ -13,7 +13,7 @@ import {
   setAllGroupChatsAction,
   deleteGroupChatAction,
 } from '../../containers/GroupChatPage/groupChatAction';
-import { setAdsAction, updateAdsStatus } from '../../containers/AdsPage/adsAction';
+import { setAdsAction, updateAdsStatus, updateAdsInfo } from '../../containers/AdsPage/adsAction';
 import { setUserInfoAction, setBalanceAction } from '../../redux/actions/userAction';
 import { setStaticAdsAction } from '../../redux/actions/staticAdsAction';
 import { enableVitaePost, disableVitaePost } from '../../redux/actions/enableVitaePost';
@@ -219,9 +219,9 @@ class InitApp {
       notifyRainReward(reward);
       store.dispatch(setBalanceAction(balance));
     });
-    window.socket.on('updateAdsStatus', ({ adsId, username, status, reviewer }) => {
-      console.log('Ads Status Updated:', username, adsId, status, reviewer);
-      store.dispatch(updateAdsStatus(adsId, status));
+    window.socket.on('updateAdsStatus', ({ ads }) => {
+      console.log('Ads Status Updated:', ads);
+      store.dispatch(updateAdsInfo(ads));
     });
     window.socket.on('updateAdsImpressions', ({ adsInfo }) => {
       console.log('Impression Updated:', adsInfo.impressions);

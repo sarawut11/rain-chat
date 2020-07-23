@@ -18,6 +18,7 @@ const UPDATE_ADS = 'UPDATE_ADS';
 const DELETE_ADS = 'DELETE_ADS';
 const REQUEST_ADS = 'REQUEST_ADS';
 const UPDATE_ADS_STATUS = 'UPDATE_ADS_STATUS';
+const UPDATE_ADS_INFO = 'UPDATE_ADS_INFO';
 
 const formatAdsList = adsList => {
   let createdAdsList = [...adsList];
@@ -148,6 +149,10 @@ const updateAdsStatus = (adsId, status) => {
   return { type: UPDATE_ADS_STATUS, data: { adsId: Number(adsId), status } };
 };
 
+const updateAdsInfo = ads => {
+  return { type: UPDATE_ADS_INFO, data: { ...ads } };
+};
+
 export {
   SET_ADS,
   CREATE_ADS,
@@ -155,11 +160,13 @@ export {
   DELETE_ADS,
   REQUEST_ADS,
   UPDATE_ADS_STATUS,
+  UPDATE_ADS_INFO,
   setAdsAction,
   createAdsAction,
   editAdsAction,
   deleteAdsAction,
   requestAdsAction,
   updateAdsStatus,
+  updateAdsInfo,
   formatAdsList,
 };

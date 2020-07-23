@@ -448,7 +448,7 @@ class Ads extends Component {
             avatar={
               <UserAvatar
                 name={item.creatorUsername ? item.creatorUsername : this.props.userInfo.name}
-                src={item.creatorAvatar ? item.creatorAvatar : this.props.userInfo.avatar}
+                src={item.creatorAvatar ? item.creatorAvatar : ''}
                 size="36"
               />
             }

@@ -6,6 +6,7 @@ import {
   REQUEST_ADS,
   UPDATE_ADS_STATUS,
   formatAdsList,
+  UPDATE_ADS_INFO,
 } from './adsAction';
 
 const ADS = {
@@ -44,6 +45,32 @@ const setAdsReducer = (previousState = initialState, action) => {
             adsList[index].status = status;
           }
         });
+
+        return { ...previousState, ...formatAdsList(adsList) };
+      } catch (e) {
+        console.log(e);
+        return previousState;
+      }
+    case UPDATE_ADS_INFO:
+      try {
+        const { adsList } = previousState;
+        const udpatedAds = action.data;
+
+        let exist = false;
+
+        adsList.forEach((ads, index) => {
+          if (ads.id === udpatedAds.id) {
+            // adsList[index].status = status;
+            // adsList[index].username = username;
+            // adsList[index].reviewer = reviewer;
+            adsList[index] = { ...udpatedAds };
+            exist = true;
+          }
+        });
+
+        if (!exist) {
+          adsList.push(udpatedAds);
+        }
 
         return { ...previousState, ...formatAdsList(adsList) };
       } catch (e) {
