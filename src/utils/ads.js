@@ -95,7 +95,7 @@ export function notifyRainReward(reward) {
   const notifyRainRewardContent = (
     <div>
       <Row justify="center">
-        <img src="../../assets/vitae-logo.png" alt="vitae-logo" />
+        <img src="../../assets/vitae-token-green-logo.png" alt="vitae-logo" />
       </Row>
       <Row justify="center">{reward} vitaes.</Row>
     </div>
