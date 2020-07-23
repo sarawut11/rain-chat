@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Modal, Button, Tooltip, notification, Radio, Form, InputNumber, Row, Col } from 'antd';
-import { SendOutlined, LoadingOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import Icon, { SendOutlined, LoadingOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { enableShowAds, disableShowAds } from '../../redux/actions/bShowAdsAction';
 import { setVitaeToRainAction } from '../../redux/actions/sendVitaeToRainAction';
 import { setUserInfoAction } from '../../redux/actions/userAction';
@@ -151,8 +151,16 @@ class VitaeToRain extends Component {
     return (
       <div className="vitae-to-rain-container">
         <Tooltip title="Send Vitae to Rain" color="green" key="send-vitae-btn">
-          <Button type="primary" onClick={this.showModal}>
-            {loadingModal ? <LoadingOutlined /> : <SendOutlined />}
+          <Button type="primary" className="send-vitae-btn" onClick={this.showModal}>
+            {loadingModal ? (
+              <LoadingOutlined />
+            ) : (
+              <img
+                src="../../assets/vitae-token-white-logo.png"
+                alt="send-vitae"
+                className="send-vitae-btn-icon"
+              />
+            )}
           </Button>
         </Tooltip>
 
