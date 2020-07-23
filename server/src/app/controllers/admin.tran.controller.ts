@@ -22,7 +22,7 @@ export const getFinancialAnalytics = async (ctx, next) => {
     // Get Owners Payments
     const owners: User[] = await userService.findUsersByRole(User.ROLE.OWNER);
     const ownerAmounts: number[] = await Promise.all(owners.map(owner => {
-      return innerTranService.getAmount(owner.id);
+      return innerTranService.getPayment(owner.id);
     }));
     const ownerPayments = [];
     owners.forEach((owner, i) => {
@@ -32,7 +32,7 @@ export const getFinancialAnalytics = async (ctx, next) => {
     // Get Moderators Payments
     const moders: User[] = await userService.findUsersByRole(User.ROLE.MODERATOR);
     const moderAmounts = await Promise.all(moders.map(moder => {
-      return innerTranService.getAmountByLastWeeks(moder.id, 5);
+      return innerTranService.getPaymentByLastWeeks(moder.id, 5);
     }));
     const moderatorPayments = [];
     moders.forEach((moder, i) => {
