@@ -12,6 +12,7 @@ import {
 
 const mapStateToProps = state => ({
   ads: state.adsState,
+  userInfo: state.user.userInfo,
 });
 
 const mapDispatchToProps = dispatch => ({

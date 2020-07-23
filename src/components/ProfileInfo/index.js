@@ -1,6 +1,7 @@
 /* eslint-disable react/prefer-stateless-function */
 /* eslint-disable react/no-multi-comp */
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { Form, Input, Button, Row, notification as antNotification } from 'antd';
@@ -8,6 +9,7 @@ import ModalBase from '../ModalBase';
 import './styles.scss';
 import Request from '../../utils/request';
 import AvatarUpload from '../AvatarUpload';
+import { setUserInfoAction } from '../../redux/actions/userAction';
 
 class userInfoRender extends Component {
   state = {
@@ -15,7 +17,7 @@ class userInfoRender extends Component {
     email: '',
     intro: '',
     name: '',
-    referral: '',
+    refcode: '',
     username: '',
     role: '',
     updateAvailable: false,
@@ -41,11 +43,11 @@ class userInfoRender extends Component {
       data.append('intro', intro);
       const res = await Request.axios('put', `/api/v1/user/${username}`, data);
 
+      const _this = this;
+
       if (res && res.success) {
-        localStorage.setItem(
-          'userInfo',
-          JSON.stringify({ ...this.props.userInfo, ...res.userInfo }),
-        );
+        _this.props.setUserInfo({ data: res.userInfo });
+        _this.props.cancel();
         antNotification.success({
           message: res.message,
         });
@@ -55,6 +57,7 @@ class userInfoRender extends Component {
         });
       }
     } catch (error) {
+      console.log(error);
       antNotification.error({
         message: 'Profile update failed.',
       });
@@ -66,9 +69,9 @@ class userInfoRender extends Component {
     this.setState({ avatar: file, updateAvailable: true });
   };
 
-  onCopyReferral = () => {
-    const { referral } = this.state;
-    const refLink = `${window.location.origin}/register?ref=${referral}`;
+  onCopyrefcode = () => {
+    const { refcode } = this.state;
+    const refLink = `${window.location.origin}/register?ref=${refcode}`;
     navigator.clipboard.writeText(refLink);
   };
 
@@ -78,13 +81,13 @@ class userInfoRender extends Component {
       name,
       intro,
       avatar,
-      referral,
+      refcode,
       email,
       role,
       updateAvailable,
       updating,
     } = this.state;
-    const reflink = `${window.location.origin}/register?ref=${referral}`;
+    const reflink = `${window.location.origin}/register?ref=${refcode}`;
     const reftext = reflink;
 
     console.log('\n --- ProfileInfo --- \n', this);
@@ -110,7 +113,7 @@ class userInfoRender extends Component {
             />
           </Form.Item>
           <Form.Item label="Email">{email}</Form.Item>
-          <Form.Item label="Referral link">{reftext}</Form.Item>
+          <Form.Item label="refcode link">{reftext}</Form.Item>
           <Form.Item label="Role">{role}</Form.Item>
           <Row justify="center" align="middle">
             <Button
@@ -132,8 +135,15 @@ const ModalRender = ModalBase(userInfoRender);
 
 class ProfileInfo extends Component {
   render() {
-    const { userInfo, modalVisible, hide } = this.props;
-    return <ModalRender userInfo={userInfo} visible={modalVisible} cancel={hide} />;
+    const { userInfo, modalVisible, hide, setUserInfo } = this.props;
+    return (
+      <ModalRender
+        userInfo={userInfo}
+        visible={modalVisible}
+        cancel={hide}
+        setUserInfo={setUserInfo}
+      />
+    );
   }
 }
 
@@ -149,4 +159,14 @@ ProfileInfo.defaultProps = {
   modalVisible: false,
 };
 
-export default withRouter(ProfileInfo);
+const mapStateToProps = state => ({
+  userInfo: state.user.userInfo,
+});
+
+const mapDispatchToProps = dispatch => ({
+  setUserInfo(arg) {
+    dispatch(setUserInfoAction(arg));
+  },
+});
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ProfileInfo));

@@ -42,6 +42,7 @@ import './styles.scss';
 import UserAvatar from '../UserAvatar';
 import CreateAds from './CreateAds';
 import Request from '../../utils/request';
+import { getUserLS } from '../../utils/user';
 import {
   ADS_APPROVED,
   ADS_PAID,
@@ -100,7 +101,6 @@ class Ads extends Component {
     super(props);
 
     this.state = {
-      user_info: {},
       createAdsVisible: false,
       editingAds: {},
       editAdsVisible: false,
@@ -111,10 +111,12 @@ class Ads extends Component {
   }
 
   async componentDidMount() {
-    const user_info = JSON.parse(localStorage.getItem('userInfo'));
-    this.setState({ user_info });
+    const userInfoLS = getUserLS();
+    const userInfo = this.props.userInfo;
 
-    if (user_info.role === 'MODERATOR') {
+    const role = userInfo.role ? userInfo.role : userInfoLS.role;
+
+    if (role === 'MODERATOR') {
       this.setState({ loading: true });
 
       try {
@@ -377,10 +379,10 @@ class Ads extends Component {
   };
 
   renderItem = item => {
-    const { user_info } = this.state;
+    const { userInfo } = this.props;
     const { status } = item;
     let actions = [];
-    const { role } = user_info;
+    const { role } = userInfo;
 
     if (role === 'MODERATOR' && status === 1) {
       actions = [
@@ -445,8 +447,8 @@ class Ads extends Component {
           <Meta
             avatar={
               <UserAvatar
-                name={item.creatorUsername ? item.creatorUsername : this.state.user_info.name}
-                src={item.creatorAvatar ? item.creatorAvatar : this.state.user_info.avatar}
+                name={item.creatorUsername ? item.creatorUsername : this.props.userInfo.name}
+                src={item.creatorAvatar ? item.creatorAvatar : this.props.userInfo.avatar}
                 size="36"
               />
             }
@@ -562,10 +564,10 @@ class Ads extends Component {
   };
 
   render() {
-    const { createAdsVisible, editAdsVisible, editingAds, loading, user_info } = this.state;
-    const { ads, createAdsAction, editAdsAction } = this.props;
+    const { createAdsVisible, editAdsVisible, editingAds, loading } = this.state;
+    const { ads, createAdsAction, editAdsAction, userInfo } = this.props;
 
-    const isModerator = user_info.role === 'MODERATOR';
+    const isModerator = userInfo.role === 'MODERATOR';
 
     return (
       <div className="campaign-container">

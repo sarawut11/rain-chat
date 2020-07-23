@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Modal } from 'antd';
@@ -15,12 +16,12 @@ import Button from '../Button';
 import request from '../../utils/request';
 import './styles.scss';
 import debounce from '../../utils/debounce';
+import { setUserInfoAction } from '../../redux/actions/userAction';
 
 class GroupChat extends Component {
   constructor(props) {
     super(props);
     this._sendByMe = false;
-    this._userInfo = JSON.parse(localStorage.getItem('userInfo'));
     this.state = {
       groupMsgAndInfo: {},
       showGroupChatInfo: false,
@@ -34,7 +35,8 @@ class GroupChat extends Component {
 
   sendMessage = async (inputMsg = '', attachments = []) => {
     if (inputMsg.trim() === '' && attachments.length === 0) return;
-    const { userId, avatar, name } = this._userInfo;
+    const { id, avatar, name } = this.props.userInfo;
+    const userId = id;
     const { allGroupChats, homePageList, updateHomePageList, addGroupMessages } = this.props;
     const data = {
       fromUser: userId, // Own id
@@ -61,7 +63,7 @@ class GroupChat extends Component {
     const { allGroupChats, homePageList, updateHomePageList, addGroupMessageAndInfo } = this.props;
     const response = await request.socketEmitAndGetResponse(
       'joinGroup',
-      { userInfo: this._userInfo, groupId: this.chatId },
+      { userInfo: this.props.userInfo, groupId: this.chatId },
       () => {
         notification('Add group failed', 'error', 1.5);
         this.setState({ disableJoinButton: false });
@@ -91,7 +93,7 @@ class GroupChat extends Component {
   };
 
   leaveGroup = () => {
-    const { userId } = this._userInfo;
+    const userId = this.props.userInfo.id;
     const { homePageList, deleteHomePageList, allGroupChats, deleteGroupChat } = this.props;
     window.socket.emit('leaveGroup', { userId, groupId: this.chatId });
     deleteHomePageList({ homePageList, chatId: this.chatId });
@@ -262,8 +264,6 @@ class GroupChat extends Component {
   }
 }
 
-export default withRouter(GroupChat);
-
 GroupChat.propTypes = {
   allGroupChats: PropTypes.instanceOf(Map),
   allPrivateChats: PropTypes.instanceOf(Map),
@@ -297,3 +297,15 @@ GroupChat.defaultProps = {
   deletePrivateChat() {},
   initApp: false,
 };
+
+const mapStateToProps = state => ({
+  userInfo: state.user.userInfo,
+});
+
+const mapDispatchToProps = dispatch => ({
+  setUserInfo(arg) {
+    dispatch(setUserInfoAction(arg));
+  },
+});
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(GroupChat));

@@ -6,6 +6,7 @@ import { withRouter } from 'react-router-dom';
 import { Drawer, Row, Col, Button } from 'antd';
 import './styles.scss';
 import notification from '../Notification';
+import { getUserLS } from '../../utils/user';
 
 class PersonalInfo extends Component {
   goToChat = () => {
@@ -14,7 +15,7 @@ class PersonalInfo extends Component {
   };
 
   deleteContact = () => {
-    const myInfo = JSON.parse(localStorage.getItem('userInfo'));
+    const myInfo = getUserLS();
     const {
       userInfo,
       deleteHomePageList,
@@ -82,7 +83,7 @@ class PersonalInfo extends Component {
 
   get isCreator() {
     const { groupInfo } = this.props;
-    const myInfo = JSON.parse(localStorage.getItem('userInfo'));
+    const myInfo = getUserLS();
     if (groupInfo.groupId === 'vitae-rain-group') {
       return myInfo.role === 'OWNER' || myInfo.role === 'MODERATOR';
     }

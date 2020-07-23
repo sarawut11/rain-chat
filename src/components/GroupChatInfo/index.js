@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import UserAdapter from '../UserAvatar';
 import './styles.scss';
 import CreateGroupModal from '../CreateGroupModal';
 import notification from '../Notification';
+import { setUserInfoAction } from '../../redux/actions/userAction';
+import { getUserLS } from '../../utils/user';
 
-export default class GroupChatInfo extends Component {
+class GroupChatInfo extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -14,8 +17,8 @@ export default class GroupChatInfo extends Component {
       modalVisible: false,
       justShowOnlineMember: true,
     };
-    this._userInfo = JSON.parse(localStorage.getItem('userInfo'));
-    this._isCreator = this._userInfo.userId === parseInt(props.groupInfo.creatorId, 10);
+    this._userInfo = getUserLS();
+    this._isCreator = this._userInfo.id === parseInt(props.groupInfo.creatorId, 10);
   }
 
   componentDidMount() {
@@ -109,7 +112,7 @@ export default class GroupChatInfo extends Component {
   render() {
     const { groupMember, onlineNumber, modalVisible, justShowOnlineMember } = this.state;
     const { groupInfo, leaveGroup } = this.props;
-    const { role } = this.userInfo;
+    const { role } = this.props.userInfo;
     console.log('GroupInfo', groupInfo);
     return (
       <div className="chatInformation">
@@ -149,10 +152,6 @@ export default class GroupChatInfo extends Component {
       </div>
     );
   }
-
-  get userInfo() {
-    return JSON.parse(localStorage.getItem('userInfo'));
-  }
 }
 
 GroupChatInfo.propTypes = {
@@ -172,3 +171,15 @@ GroupChatInfo.defaultProps = {
   allGroupChats: new Map(),
   homePageList: [],
 };
+
+const mapStateToProps = state => ({
+  userInfo: state.user.userInfo,
+});
+
+const mapDispatchToProps = dispatch => ({
+  setUserInfo(arg) {
+    dispatch(setUserInfoAction(arg));
+  },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(GroupChatInfo);

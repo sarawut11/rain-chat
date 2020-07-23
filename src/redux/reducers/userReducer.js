@@ -14,7 +14,14 @@ const initialState = {
 const userReducer = (previousState = initialState, action) => {
   switch (action.type) {
     case SET_USER_INFO:
-      return { ...previousState, ...action.data };
+      try {
+        const user_info = JSON.parse(localStorage.getItem('userInfo'));
+        localStorage.setItem('userInfo', JSON.stringify({ ...user_info, ...action.data.userInfo }));
+        return { ...previousState, ...action.data };
+      } catch (e) {
+        console.log(e);
+        return previousState;
+      }
     default:
       return previousState;
   }

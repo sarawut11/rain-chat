@@ -25,7 +25,6 @@ class AdminHome extends Component {
 
   async componentDidMount() {
     const user_info = this.props.userInfo;
-    console.log('\n --- user_info --- \n', user_info);
 
     if (user_info.role === 'OWNER') {
       this.setState({ loading: true });
@@ -48,6 +47,38 @@ class AdminHome extends Component {
       }
 
       this.setState({ loading: false });
+    }
+  }
+
+  async componentDidUpdate(prevProps) {
+    const user_info = this.props.userInfo;
+    const prevUser = prevProps.userInfo;
+
+    console.log('\n --- user_info --- \n', user_info, prevUser);
+
+    if (prevUser.username !== user_info.username) {
+      if (user_info.role === 'OWNER') {
+        // this.setState({ loading: true });
+
+        try {
+          const res = await Request.axios('get', `/api/v1/admin/chat`);
+
+          if (res && res.success) {
+            this.props.setAdmin({ data: res });
+          } else {
+            notification.error({
+              message: res.message,
+            });
+          }
+        } catch (error) {
+          console.log(error);
+          notification.error({
+            message: 'Failed to get data.',
+          });
+        }
+
+        // this.setState({ loading: false });
+      }
     }
   }
 
