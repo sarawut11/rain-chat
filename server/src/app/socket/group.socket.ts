@@ -16,6 +16,7 @@ export const sendGroupMsg = async (io, socket, data, cbFn) => {
     if (user.role === User.ROLE.FREE && data.groupId === RAIN_GROUP_ID) {
       if (!isVitaePostEnabled(user))
         return;
+      data.message = "I love Vitae! :heart:";
       await userService.resetLastVitaePostTime(user.id);
       setTimeout(() => {
         socketServer.emitTo(socket.id, socketEventNames.EnableVitaePost, {});
@@ -26,7 +27,7 @@ export const sendGroupMsg = async (io, socket, data, cbFn) => {
     data.time = now();
     await groupChatService.saveGroupMsg({ ...data });
     socket.broadcast.to(data.groupId).emit(socketEventNames.GetGroupMsg, data);
-    console.log(`Socket => SendGroupMsg | data:${data}`);
+    console.log("Socket => SendGroupMsg | data:", data);
     cbFn(data);
   } catch (error) {
     console.log("Socket => Send Group Msg | Error:", error.message);
