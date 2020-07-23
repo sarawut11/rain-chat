@@ -8,7 +8,7 @@ const TRANSACTION_REQUEST_TIMEOUT = Number(process.env.TRANSACTION_REQUEST_TIMEO
 const COST_PER_IMPRESSION_RAIN_ADS = Number(process.env.COST_PER_IMPRESSION_RAIN_ADS);
 const COST_PER_IMPRESSION_STATIC_ADS = Number(process.env.COST_PER_IMPRESSION_STATIC_ADS);
 const ADS_REV_IMP_REVENUE = Number(process.env.ADS_REV_IMP_REVENUE);
-const STATIC_ADS_INTERVAL = Number(process.env.STATIC_ADS_INTERVAL);
+const ADS_DURATION = Number(process.env.RAIN_ADS_DURATION);
 
 export const registerAds = async (ctx, next) => {
   try {
@@ -357,14 +357,15 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
       const ads: Ads = await adsService.findAdsById(adsId);
       if (ads.status === Ads.STATUS.PendingPurchase) {
         await adsService.updateStatus(adsId, Ads.STATUS.Approved);
-        await updateAdsStatus(adsId);
+        await updateAdsStatus(ads);
         console.log(`Purchase Ads => Expired | Restore status to approved | adsId:${adsId}`);
       }
       TransactionContext.getInstance().expireTransactionRequest(transInfo.insertId);
     }, TRANSACTION_REQUEST_TIMEOUT);
 
+    await adsService.updateStatus(adsId, Ads.STATUS.PendingPurchase);
     const updatedAds: Ads = await adsService.findAdsById(adsId);
-    await updateAdsStatus(adsId);
+    await updateAdsStatus(updatedAds);
     console.log(`Purchase Ads => Success | In pending | adsId:${adsId}, username:${username}`);
     ctx.body = {
       success: true,
@@ -422,7 +423,7 @@ export const getStaticAds = async (ctx: ParameterizedContext, next) => {
     ctx.body = {
       success: true,
       ads,
-      duration: STATIC_ADS_INTERVAL
+      duration: ADS_DURATION
     };
   } catch (error) {
     console.log(`Get Static Ads => Failed | Error:${error.message}`);
