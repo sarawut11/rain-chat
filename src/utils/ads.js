@@ -97,7 +97,7 @@ export function notifyRainReward(reward) {
       <Row justify="center">
         <img src="../../assets/vitae-token-green-logo.png" alt="vitae-logo" />
       </Row>
-      <Row justify="center">{reward} vitaes.</Row>
+      <Row justify="center">{reward} Vitae</Row>
     </div>
   );
   const audio = new Audio('../assets/swiftly.mp3');
