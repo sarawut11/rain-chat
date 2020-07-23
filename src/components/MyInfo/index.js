@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import UserAvatar from '../UserAvatar';
 import ProfileInfo from '../ProfileInfo';
 import ShareModal from '../ShareModal';
 import store from '../../redux/store';
+import { setUserInfoAction } from '../../redux/actions/userAction';
 import './styles.scss';
 
 class MyInfo extends Component {
@@ -12,7 +14,6 @@ class MyInfo extends Component {
       showShareModal: false,
       showPersonalInfo: false,
     };
-    this._userInfo = JSON.parse(localStorage.getItem('userInfo'));
   }
 
   _showPersonalInfo = () => {
@@ -31,11 +32,11 @@ class MyInfo extends Component {
   };
 
   get shareLink() {
-    return `${window.location.origin}/private_chat/${this._userInfo.userId}`;
+    return `${window.location.origin}/private_chat/${this.props.userInfo.userId}`;
   }
 
   render() {
-    const { name, avatar, userId } = this._userInfo;
+    const { name, avatar, userId } = this.props.userInfo;
     const { allGroupChatsState, homePageListState } = store.getState();
     return (
       <div className="myInfo">
@@ -47,7 +48,6 @@ class MyInfo extends Component {
           showLogo={false}
         />
         <ProfileInfo
-          userInfo={this._userInfo}
           hide={this._showPersonalInfo}
           modalVisible={this.state.showPersonalInfo}
           showContactButton={false}
@@ -61,7 +61,7 @@ class MyInfo extends Component {
           cancel={this._closeShareModal}
           allGroupChats={allGroupChatsState}
           homePageList={homePageListState}
-          userInfo={this._userInfo}
+          userInfo={this.props.userInfo}
           shareLink={this.shareLink}
         />
       </div>
@@ -69,4 +69,14 @@ class MyInfo extends Component {
   }
 }
 
-export default MyInfo;
+const mapStateToProps = state => ({
+  userInfo: state.user.userInfo,
+});
+
+const mapDispatchToProps = dispatch => ({
+  setUserInfo(arg) {
+    dispatch(setUserInfoAction(arg));
+  },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(MyInfo);

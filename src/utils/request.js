@@ -63,6 +63,7 @@ export default class Request {
   static socketEmitAndGetResponse(emitName, data, onError) {
     return new Promise((resolve, reject) => {
       try {
+        console.log('socketEmitAndGetResponse:\n', data);
         window.socket.emit(emitName, data, response => {
           resolve(response);
         });

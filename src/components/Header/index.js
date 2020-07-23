@@ -4,6 +4,7 @@ import CreateGroupModal from '../CreateGroupModal';
 import './style.scss';
 import SearchBox from '../SearchBox';
 import MyInfo from '../MyInfo';
+import { getUserLS } from '../../utils/user';
 
 export default class Header extends Component {
   constructor(props) {
@@ -11,7 +12,7 @@ export default class Header extends Component {
     this.state = {
       showGroupModal: false,
     };
-    this._userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    this._userInfo = getUserLS();
   }
 
   confirm = ({ groupName, groupNotice }) => {

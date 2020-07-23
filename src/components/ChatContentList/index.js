@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import Viewer from 'react-viewer';
 import ChatItem from '../ChatItem';
 import { toNormalTime } from '../../utils/transformTime';
@@ -8,12 +9,11 @@ import sleep from '../../utils/sleep';
 import notification from '../Notification';
 import Chat from '../../modules/Chat';
 
-export default class ChatContentList extends Component {
+class ChatContentList extends Component {
   constructor(props) {
     super(props);
     this._chat = new Chat();
     this._scrollHeight = 0;
-    this._userInfo = JSON.parse(localStorage.getItem('userInfo'));
     this._loadingNewMessages = false;
     this._executeNextLoad = true;
     this.state = {
@@ -66,7 +66,7 @@ export default class ChatContentList extends Component {
       this._chat
         .lazyLoadPrivateChatMessages({
           chats,
-          userId: this._userInfo.userId,
+          userId: this.props.userInfo.id,
           chatId,
           start: ChatContent.length + 1,
           count: 20,
@@ -112,10 +112,10 @@ export default class ChatContentList extends Component {
       let isMe;
       if (item.toUser) {
         // is private chat
-        isMe = this._userInfo && this._userInfo.userId === item.fromUser;
+        isMe = this.props.userInfo && this.props.userInfo.id === item.fromUser;
       } else if (item.groupId) {
         // is group chat
-        isMe = this._userInfo && this._userInfo.userId === item.fromUser;
+        isMe = this.props.userInfo && this.props.userInfo.id === item.fromUser;
       }
       const time = toNormalTime(item.time);
       const attachments = item.attachments;
@@ -144,6 +144,8 @@ export default class ChatContentList extends Component {
         </li>
       );
     });
+
+    console.log('\n --- ChatContentList --- \n', this);
     return (
       <ul
         className="chat-content-list"
@@ -186,3 +188,9 @@ ChatContentList.defaultProps = {
   chats: new Map(),
   shouldScrollToFetchData: true,
 };
+
+const mapStateToProps = state => ({
+  userInfo: state.user.userInfo,
+});
+
+export default connect(mapStateToProps)(ChatContentList);

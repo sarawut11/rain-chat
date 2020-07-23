@@ -7,6 +7,7 @@ import Request from '../../../utils/request';
 function mapStateToProps(state) {
   return {
     adminState: state.adminState,
+    userInfo: state.user.userInfo,
   };
 }
 
@@ -22,7 +23,7 @@ class AdReport extends Component {
   };
 
   async componentDidMount() {
-    const user_info = JSON.parse(localStorage.getItem('userInfo'));
+    const user_info = this.props.userInfo;
 
     if (user_info.role === 'OWNER') {
       this.setState({ loading: true });

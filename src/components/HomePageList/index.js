@@ -9,6 +9,7 @@ import './index.scss';
 import ListItems from '../ListItems';
 import Chat from '../../modules/Chat';
 import StaticAdsPanel from '../StaticAdsPanel';
+import { getUserLS } from '../../utils/user';
 
 class HomePageList extends Component {
   constructor(props) {
@@ -23,7 +24,7 @@ class HomePageList extends Component {
         group: 'Groups in your contact list',
       },
     };
-    this._userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    this._userInfo = getUserLS();
     this._filedStr = null;
     this._chat = new Chat();
     this._cleanedUnread = false;

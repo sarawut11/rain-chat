@@ -51,7 +51,7 @@ class InputArea extends Component {
   _sendMessage = ({ attachments = [], message }) => {
     const { sendMessage } = this.props;
     const { inputMsg } = this.state;
-    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    const { userInfo } = this.props;
     const { role } = userInfo;
     const _this = this;
 
@@ -254,7 +254,7 @@ class InputArea extends Component {
   render() {
     const { inputMsg, showEmojiPicker, relatedMembers } = this.state;
     const buttonClass = inputMsg ? 'btn btnActive' : 'btn';
-    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    const { userInfo } = this.props;
     const { role } = userInfo;
     const { vitaePostEnabled } = this.props;
 
@@ -331,6 +331,7 @@ InputArea.defaultProps = {
 
 const mapStateToProps = state => ({
   vitaePostEnabled: state.vitaePostEnabled,
+  userInfo: state.user.userInfo,
 });
 
 const mapDispatchToProps = dispatch => ({

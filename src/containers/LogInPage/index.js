@@ -45,10 +45,12 @@ class LogIn extends Component {
           onOk: this.confirm,
         });
       } else {
-        notification(res.message, 'error');
+        console.log(res.message);
+        // notification(res.message, 'error');
       }
     } catch (error) {
-      notification(error, 'error');
+      console.log(error);
+      // notification(error, 'error');
     }
   }
 

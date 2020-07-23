@@ -12,6 +12,7 @@ import {
 } from '../../../containers/AdminPage/adminAction';
 import UserAvatar from '../../UserAvatar';
 import Request from '../../../utils/request';
+import { getUserLS } from '../../../utils/user';
 
 const { Option } = Select;
 
@@ -23,9 +24,12 @@ class Moderators extends Component {
   };
 
   async componentDidMount() {
-    const user_info = JSON.parse(localStorage.getItem('userInfo'));
+    const user_info = getUserLS();
+    const userInfo = this.props.userInfo;
 
-    if (user_info.role === 'OWNER') {
+    const role = userInfo.role ? userInfo.role : user_info.role;
+
+    if (role === 'OWNER') {
       this.setState({ loading: true });
 
       try {
@@ -287,6 +291,7 @@ class Moderators extends Component {
 
 const mapStateToProps = state => ({
   adminState: state.adminState,
+  userInfo: state.user.userInfo,
 });
 
 const mapDispatchToProps = dispatch => ({
