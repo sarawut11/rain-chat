@@ -127,12 +127,12 @@ class PersonalInfo extends Component {
               <h3>@{username}</h3>
             </Col>
           )}
-          {email && (
+          {/* {email && (
             <Col span={24}>
               <p>Email</p>
               <h3>{email}</h3>
             </Col>
-          )}
+          )} */}
           {role && (
             <Col span={24}>
               <p>Role</p>
