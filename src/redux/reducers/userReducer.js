@@ -1,4 +1,4 @@
-import { SET_USER_INFO } from '../actions/userAction';
+import { SET_USER_INFO, SET_BALANCE } from '../actions/userAction';
 
 const initialState = {
   userInfo: {},
@@ -18,6 +18,16 @@ const userReducer = (previousState = initialState, action) => {
         const user_info = JSON.parse(localStorage.getItem('userInfo'));
         localStorage.setItem('userInfo', JSON.stringify({ ...user_info, ...action.data.userInfo }));
         return { ...previousState, ...action.data };
+      } catch (e) {
+        console.log(e);
+        return previousState;
+      }
+    case SET_BALANCE:
+      try {
+        return {
+          ...previousState,
+          userInfo: { ...previousState.userInfo, balance: action.data.balance },
+        };
       } catch (e) {
         console.log(e);
         return previousState;

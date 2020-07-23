@@ -13,8 +13,8 @@ import {
   setAllGroupChatsAction,
   deleteGroupChatAction,
 } from '../../containers/GroupChatPage/groupChatAction';
-import { setAdsAction, updateAdsStatus } from '../../containers/AdsPage/adsAction';
-import { setUserInfoAction } from '../../redux/actions/userAction';
+import { setAdsAction, updateAdsStatus, updateAdsInfo } from '../../containers/AdsPage/adsAction';
+import { setUserInfoAction, setBalanceAction } from '../../redux/actions/userAction';
 import { setStaticAdsAction } from '../../redux/actions/staticAdsAction';
 import { enableVitaePost, disableVitaePost } from '../../redux/actions/enableVitaePost';
 import {
@@ -217,10 +217,11 @@ class InitApp {
       console.log('Getting Reward:', reward);
       console.log('Balance Updated :', balance);
       notifyRainReward(reward);
+      store.dispatch(setBalanceAction(balance));
     });
-    window.socket.on('updateAdsStatus', ({ adsId, username, status, reviewer }) => {
-      console.log('Ads Status Updated:', username, adsId, status, reviewer);
-      store.dispatch(updateAdsStatus(adsId, status));
+    window.socket.on('updateAdsStatus', ({ ads }) => {
+      console.log('Ads Status Updated:', ads);
+      store.dispatch(updateAdsInfo(ads));
     });
     window.socket.on('updateAdsImpressions', ({ adsInfo }) => {
       console.log('Impression Updated:', adsInfo.impressions);
@@ -244,6 +245,7 @@ class InitApp {
   _listenUserInfo() {
     window.socket.on('updateBalance', ({ balance }) => {
       console.log('Balance Updated:', balance);
+      store.dispatch(setBalanceAction(balance));
     });
     window.socket.on('updateProfileInfo', ({ username, avatarUrl, name, intro }) => {
       console.log(`${username}'s profile updated:`, avatarUrl, name, intro);
