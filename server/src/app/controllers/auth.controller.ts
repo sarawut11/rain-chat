@@ -71,7 +71,7 @@ export const loginUser = async (ctx, next) => {
         balance,
         intro,
         avatar,
-        referral: refcode,
+        refcode,
         role,
         token,
         ban,

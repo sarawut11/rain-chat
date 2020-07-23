@@ -128,7 +128,7 @@
       balance,
       intro,
       avatar,
-      referral,
+      refcode,
       role,
       token,
       ban,
@@ -213,7 +213,7 @@
       intro,
       balance,
       avatar,
-      referral,
+      refcode,
     }
   }
   ```
