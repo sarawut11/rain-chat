@@ -52,7 +52,7 @@ class ListItems extends Component {
             key={index}
             style={
               !showAsContacts && (params.userId || params.groupId) === chatFromId
-                ? { backgroundColor: '#f5f5f5' }
+                ? { backgroundColor: 'rgb(145, 255, 0)' }
                 : {}
             }
             onClick={() => this._clickItem({ chatFromId, isGroupChat })}

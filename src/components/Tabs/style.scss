@@ -1,17 +1,17 @@
-@import "../../assets/base.scss";
-.tabs-wrapper{
-    background-color: $grayTab;
-    align-items: center;
+@import '../../assets/base.scss';
+.tabs-wrapper {
+  background-color: #7b3030;
+  align-items: center;
+  text-align: center;
+  z-index: 99;
+  .tab .icon {
+    font-size: 25px;
+    color: #44c97d;
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+  .userAvatar {
+    font-size: 14px;
     text-align: center;
-    z-index: 99;
-    .tab .icon{
-        font-size: 25px;
-        color: #44C97D;
-        margin-top: 5px;
-        margin-bottom: 5px;
-    }
-    .userAvatar {
-        font-size: 14px;
-        text-align: center;
-    }
+  }
 }
