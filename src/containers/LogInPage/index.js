@@ -46,11 +46,11 @@ class LogIn extends Component {
         });
       } else {
         console.log(res.message);
-        // notification(res.message, 'error');
+        notification(res.message, 'error');
       }
     } catch (error) {
       console.log(error);
-      // notification(error, 'error');
+      notification(error, 'error');
     }
   }
 

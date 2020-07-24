@@ -193,7 +193,8 @@ class InitApp {
         console.log(e);
       }
 
-      if (allMessage.userInfo.role !== 'MODERATOR') store.dispatch(setAdsAction({ data: adsList }));
+      if (allMessage.userInfo.role !== 'MODERATOR' && allMessage.userInfo.role !== 'OWNER')
+        store.dispatch(setAdsAction({ data: adsList }));
       console.log('initMessage success. ', 'time=>', new Date().toLocaleString(), allMessage);
 
       store.dispatch(setUserInfoAction({ data: allMessage.userInfo }));
