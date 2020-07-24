@@ -13,7 +13,7 @@ import {
   setAllGroupChatsAction,
   deleteGroupChatAction,
 } from '../../containers/GroupChatPage/groupChatAction';
-import { setAdsAction, updateAdsStatus, updateAdsInfo } from '../../containers/AdsPage/adsAction';
+import { setAdsAction, updateAdsInfo } from '../../containers/AdsPage/adsAction';
 import { setUserInfoAction, setBalanceAction } from '../../redux/actions/userAction';
 import { setStaticAdsAction } from '../../redux/actions/staticAdsAction';
 import { enableVitaePost, disableVitaePost } from '../../redux/actions/enableVitaePost';

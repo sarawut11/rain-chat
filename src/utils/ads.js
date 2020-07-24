@@ -100,7 +100,7 @@ export function notifyRainReward(reward) {
       <Row justify="center">{reward} Vitae</Row>
     </div>
   );
-  const audio = new Audio('../assets/swiftly.mp3');
+  const audio = new Audio('../assets/Win_Coins_MP3.mp3');
   audio.play();
   notification.info({
     icon: null,

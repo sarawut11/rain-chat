@@ -112,7 +112,7 @@ class PersonalInfo extends Component {
     } = this.props;
     console.log(this.props);
 
-    const { username, name, intro, email, role } = userInfo;
+    const { username, name, intro, role } = userInfo;
     return (
       <Drawer title={name} visible={modalVisible} onClose={hide} className="user-info-drawer">
         <Row gutter={[0, 20]}>
@@ -127,12 +127,6 @@ class PersonalInfo extends Component {
               <h3>@{username}</h3>
             </Col>
           )}
-          {/* {email && (
-            <Col span={24}>
-              <p>Email</p>
-              <h3>{email}</h3>
-            </Col>
-          )} */}
           {role && (
             <Col span={24}>
               <p>Role</p>

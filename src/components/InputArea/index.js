@@ -82,7 +82,7 @@ class InputArea extends Component {
   _postMessage = () => {
     console.log('_postMessage');
     const { sendMessage } = this.props;
-    sendMessage('I love Vitae.', []);
+    sendMessage('I love Vitae. :heart:', []);
     this.props.disableVitaePost();
   };
 
