@@ -244,7 +244,7 @@ export const requestAds = async (ctx, next) => {
       return;
     }
 
-    const { existingAds } = checkResult;
+    const { userInfo, existingAds } = checkResult;
     if (existingAds.status === Ads.STATUS.Pending) {
       console.log(`Request Ads => Failed | Already in pending | adsId:${adsId}`);
       ctx.body = {
@@ -262,7 +262,11 @@ export const requestAds = async (ctx, next) => {
       return;
     }
 
-    await adsService.updateStatus(adsId, Ads.STATUS.Pending);
+    if (userInfo.role === User.ROLE.OWNER) {
+      await adsService.updateStatus(adsId, Ads.STATUS.Approved);
+    } else {
+      await adsService.updateStatus(adsId, Ads.STATUS.Pending);
+    }
     const updatedAds: Ads = await adsService.findAdsById(adsId);
     await updateAdsStatus(updatedAds);
     console.log(`Request Ads => Success | In pending for review | adsId:${adsId}`);
