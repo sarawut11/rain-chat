@@ -1,26 +1,21 @@
 import { ServicesContext, RainContext } from "@context";
-import { User, Transaction, InnerTransaction, Ads, TransactionDetail, WalletNotify, WalletNotifyDetail } from "@models";
 import { now, rpcInterface, shareRevenue } from "@utils";
 import { updateBalanceSocket, updateAdsStatus } from "@sockets";
+import {
+  Ads,
+  User,
+  Transaction,
+  InnerTransaction,
+  TransactionDetail,
+  WalletNotify,
+  WalletNotifyDetail,
+  AllSetting,
+} from "@models";
 
 const COMPANY_USERID: number = Number(process.env.COMPANY_USERID);
 const COMPANY_RAIN_ADDRESS = process.env.COMPANY_RAIN_ADDRESS;
 const COMPANY_STOCKPILE_USERID: number = Number(process.env.COMPANY_STOCKPILE_USERID);
 const COMPANY_STOCKPILE_ADDRESS = process.env.COMPANY_STOCKPILE_ADDRESS;
-
-const COMPANY_REV_COMPANY_EXPENSE = Number(process.env.COMPANY_REV_COMPANY_EXPENSE);
-const COMPANY_REV_OWNER_SHARE = Number(process.env.COMPANY_REV_OWNER_SHARE);
-const COMPANY_REV_MODER_SHARE = Number(process.env.COMPANY_REV_MODER_SHARE);
-const COMPANY_REV_MEMBER_SHARE = Number(process.env.COMPANY_REV_MEMBER_SHARE);
-
-const MEMBERSHIP_REV_COMPANY_SHARE = Number(process.env.MEMBERSHIP_REV_COMPANY_SHARE);
-const MEMBERSHIP_REV_SPONSOR_SHARE = Number(process.env.MEMBERSHIP_REV_SPONSOR_SHARE);
-const SPONSOR_SHARE_FIRST = Number(process.env.SPONSOR_SHARE_FIRST);
-const SPONSOR_SHARE_SECOND = Number(process.env.SPONSOR_SHARE_SECOND);
-const SPONSOR_SHARE_THIRD = Number(process.env.SPONSOR_SHARE_THIRD);
-
-const ADS_REV_COMPANY_SHARE = Number(process.env.ADS_REV_COMPANY_SHARE);
-const ADS_REV_IMP_REVENUE = Number(process.env.ADS_REV_IMP_REVENUE);
 
 export const walletNotify = async (ctx, next) => {
   try {
@@ -167,7 +162,8 @@ export const walletWithdraw = async (ctx, next) => {
 
 
 export const confirmMembership = async (userInfo: User, amount: number) => {
-  const { userService } = ServicesContext.getInstance();
+  const { userService, settingService } = ServicesContext.getInstance();
+  const settings = await settingService.getAllSettings();
 
   // Update UserInfo
   await userService.updateMembership(userInfo.id, User.ROLE.UPGRADED_USER);
@@ -180,8 +176,8 @@ export const confirmMembership = async (userInfo: User, amount: number) => {
   // 30% -----> Owner Share
   // 25% -----> Moderator Share
   // 25% -----> Membership Users Share
-  const companyRevenue = amount * MEMBERSHIP_REV_COMPANY_SHARE;
-  const rev = getCompanyRevenue(companyRevenue);
+  const companyRevenue = amount * settings.MEMBERSHIP_REV_COMPANY_SHARE;
+  const rev = getCompanyRevenue(companyRevenue, settings);
 
   await shareRevenue(rev.companyExpense, User.ROLE.COMPANY, InnerTransaction.TYPE.MEMBERSHIP_PURCHASE_SHARE);
   await shareRevenue(rev.ownerShare, User.ROLE.OWNER, InnerTransaction.TYPE.MEMBERSHIP_PURCHASE_SHARE);
@@ -194,10 +190,10 @@ export const confirmMembership = async (userInfo: User, amount: number) => {
   // 50% -----> First Sponsor
   // 25% -----> Second Sponsor (first sponsor's sponsor)
   // 25% -----> Third Sponsor (second sponsor's sponsor)
-  const sponsorRevenue = amount * MEMBERSHIP_REV_SPONSOR_SHARE;
-  const firstSponsorShare = sponsorRevenue * SPONSOR_SHARE_FIRST;
-  const secondSponsorShare = sponsorRevenue * SPONSOR_SHARE_SECOND;
-  const thirdSponsorShare = sponsorRevenue * SPONSOR_SHARE_THIRD;
+  const sponsorRevenue = amount * settings.MEMBERSHIP_REV_SPONSOR_SHARE;
+  const firstSponsorShare = sponsorRevenue * settings.SPONSOR_SHARE_FIRST;
+  const secondSponsorShare = sponsorRevenue * settings.SPONSOR_SHARE_SECOND;
+  const thirdSponsorShare = sponsorRevenue * settings.SPONSOR_SHARE_THIRD;
 
   const firstSponsor = await userService.findUserById(userInfo.sponsor);
   const secondSponsor = await userService.findUserById(firstSponsor.sponsor);
@@ -221,7 +217,8 @@ const addSponsorBalance = async (sponsor: User, amount: number) => {
 };
 
 const confirmAds = async (adsId: number, paidAmount: number, adsType: number, impressions: number, costPerImp: number) => {
-  const { adsService } = ServicesContext.getInstance();
+  const { adsService, settingService } = ServicesContext.getInstance();
+  const settings = await settingService.getAllSettings();
 
   // Update Ads Status
   const existingAds = await adsService.findAdsById(adsId);
@@ -231,7 +228,7 @@ const confirmAds = async (adsId: number, paidAmount: number, adsType: number, im
   }
 
   // Set Ads Impressions
-  const realCostPerImp = ADS_REV_IMP_REVENUE * costPerImp;
+  const realCostPerImp = settings.ADS_REV_IMP_REVENUE * costPerImp;
   await adsService.setImpressions(adsId, existingAds.userId, impressions, realCostPerImp, paidAmount);
   const updatedAds = await adsService.findAdsById(adsId);
   await updateAdsStatus(updatedAds);
@@ -244,8 +241,8 @@ const confirmAds = async (adsId: number, paidAmount: number, adsType: number, im
   // 30% -----> Owner Share
   // 25% -----> Moderator Share
   // 25% -----> Membership Users Share
-  const companyRevenue = paidAmount * ADS_REV_COMPANY_SHARE;
-  const rev = getCompanyRevenue(companyRevenue);
+  const companyRevenue = paidAmount * settings.ADS_REV_COMPANY_SHARE;
+  const rev = getCompanyRevenue(companyRevenue, settings);
 
   await shareRevenue(rev.companyExpense, User.ROLE.COMPANY, InnerTransaction.TYPE.ADS_PURCHASE_SHARE);
   await shareRevenue(rev.ownerShare, User.ROLE.OWNER, InnerTransaction.TYPE.ADS_PURCHASE_SHARE);
@@ -285,11 +282,11 @@ const confirmStockpileCharge = async (amount: number, txId: string, confirmTime:
   await userService.addBalance(COMPANY_STOCKPILE_USERID, amount);
 };
 
-const getCompanyRevenue = (revenue: number) => {
+const getCompanyRevenue = (revenue: number, settings: AllSetting) => {
   return {
-    companyExpense: revenue * COMPANY_REV_COMPANY_EXPENSE,
-    ownerShare: revenue * COMPANY_REV_OWNER_SHARE,
-    moderatorShare: revenue * COMPANY_REV_MODER_SHARE,
-    memberShare: revenue * COMPANY_REV_MEMBER_SHARE,
+    companyExpense: revenue * settings.COMPANY_REV_COMPANY_EXPENSE,
+    ownerShare: revenue * settings.COMPANY_REV_OWNER_SHARE,
+    moderatorShare: revenue * settings.COMPANY_REV_MODER_SHARE,
+    memberShare: revenue * settings.COMPANY_REV_MEMBER_SHARE,
   };
 };

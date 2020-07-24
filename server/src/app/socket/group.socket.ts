@@ -1,26 +1,28 @@
 import * as uuid from "uuid/v1";
-import { User, Group } from "@models";
+import { User, Group, Setting } from "@models";
 import { ServicesContext } from "@context";
 import { isVitaePostEnabled, now, nowDate } from "@utils";
 import { socketServer, getGroupItem, socketEventNames } from "@sockets";
 
 const RAIN_GROUP_ID = process.env.RAIN_GROUP_ID;
-const VITAE_POST_TIME = Number(process.env.VITAE_POST_TIME);
 
 export const sendGroupMsg = async (io, socket, data, cbFn) => {
   try {
-    const { groupChatService, userService } = ServicesContext.getInstance();
+    const { groupChatService, userService, settingService } = ServicesContext.getInstance();
     const user: User = await userService.getUserBySocketId(socket.id);
     if (user === undefined) return;
     if (user.ban === User.BAN.BANNED) return;
     if (user.role === User.ROLE.FREE && data.groupId === RAIN_GROUP_ID) {
-      if (!isVitaePostEnabled(user))
+      const vitaePostEnabled = await isVitaePostEnabled(user);
+      if (!vitaePostEnabled)
         return;
-      data.message = "I love Vitae! :heart:";
+
+      const vitaePostTime: number = await settingService.getSettingValue(Setting.KEY.VITAE_POST_TIME);
+      data.message = await settingService.getSettingValue(Setting.KEY.VITAE_POST_TEXT);
       await userService.resetLastVitaePostTime(user.id);
       setTimeout(() => {
         socketServer.emitTo(socket.id, socketEventNames.EnableVitaePost, {});
-      }, VITAE_POST_TIME);
+      }, vitaePostTime);
     }
     if (!data) return;
     data.attachments = JSON.stringify(data.attachments);

@@ -223,10 +223,10 @@ CREATE TABLE `withdraw_address_info` (
 # ------------------------------------------------------------
 DROP TABLE IF EXISTS `setting_info`;
 CREATE TABLE `setting_info` (
-  `key` varchar(255) NOT NULL DEFAULT '',
+  `name` varchar(255) NOT NULL DEFAULT '',
   `value` varchar(255) NOT NULL DEFAULT '',
   `type` varchar(10) NOT NULL DEFAULT '',
-  PRIMARY KEY (`key`)
+  PRIMARY KEY (`name`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

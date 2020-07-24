@@ -1,6 +1,5 @@
 export class Setting {
-  public id: number;
-  public key: string;
+  public name: string;
   public value: string;
   public type: string;
 
@@ -26,6 +25,9 @@ export class Setting {
     COST_PER_IMPRESSION_RAIN_ADS: "COST_PER_IMPRESSION_RAIN_ADS",
     COST_PER_IMPRESSION_STATIC_ADS: "COST_PER_IMPRESSION_STATIC_ADS",
 
+    ADS_REV_COMPANY_SHARE: "ADS_REV_COMPANY_SHARE",
+    ADS_REV_IMP_REVENUE: "ADS_REV_IMP_REVENUE",
+
     VITAE_POST_TIME: "VITAE_POST_TIME",
     VITAE_POST_TEXT: "VITAE_POST_TEXT",
 
@@ -37,10 +39,8 @@ export class Setting {
     SPONSOR_SHARE_SECOND: "SPONSOR_SHARE_SECOND",
     SPONSOR_SHARE_THIRD: "SPONSOR_SHARE_THIRD",
 
-    // Misc Config
+    // Expire
     TRANSACTION_REQUEST_EXPIRE: "TRANSACTION_REQUEST_EXPIRE",
-    CMC_POLLING_INTERVAL: "CMC_POLLING_INTERVAL",
-    JWT_EXPIRE: "JWT_EXPIRE",
     OTP_EXPIRE: "OTP_EXPIRE",
   };
 

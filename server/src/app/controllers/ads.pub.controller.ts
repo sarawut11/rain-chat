@@ -1,14 +1,8 @@
 import { ParameterizedContext } from "koa";
 import { ServicesContext, CMCContext, TransactionContext } from "@context";
-import { Ads, User, Transaction, TransactionDetail } from "@models";
+import { Ads, User, Transaction, TransactionDetail, Setting } from "@models";
 import { uploadFile, deleteFile, now } from "@utils";
 import { updateAdsStatus } from "@sockets";
-
-const TRANSACTION_REQUEST_TIMEOUT = Number(process.env.TRANSACTION_REQUEST_TIMEOUT);
-const COST_PER_IMPRESSION_RAIN_ADS = Number(process.env.COST_PER_IMPRESSION_RAIN_ADS);
-const COST_PER_IMPRESSION_STATIC_ADS = Number(process.env.COST_PER_IMPRESSION_STATIC_ADS);
-const ADS_REV_IMP_REVENUE = Number(process.env.ADS_REV_IMP_REVENUE);
-const ADS_DURATION = Number(process.env.RAIN_ADS_DURATION);
 
 export const registerAds = async (ctx, next) => {
   try {
@@ -330,7 +324,7 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
   try {
     const { username } = ctx.state.user;
     const { adsId } = ctx.params;
-    const { adsService, transactionService } = ServicesContext.getInstance();
+    const { adsService, transactionService, settingService } = ServicesContext.getInstance();
     const { impressions, costPerImp, expectAmount } = ctx.request.body;
 
     const checkResult = await checkAdsId(username, adsId);
@@ -366,6 +360,7 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
     }
 
     // Expire ads after 5 mins when it is still in pending purchase
+    const tranExpire: number = await settingService.getSettingValue(Setting.KEY.TRANSACTION_REQUEST_EXPIRE);
     setTimeout(async () => {
       const ads: Ads = await adsService.findAdsById(adsId);
       if (ads.status === Ads.STATUS.PendingPurchase) {
@@ -374,7 +369,7 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
         console.log(`Purchase Ads => Expired | Restore status to approved | adsId:${adsId}`);
       }
       TransactionContext.getInstance().expireTransactionRequest(transInfo.insertId);
-    }, TRANSACTION_REQUEST_TIMEOUT);
+    }, tranExpire);
 
     await adsService.updateStatus(adsId, Ads.STATUS.PendingPurchase);
     const updatedAds: Ads = await adsService.findAdsById(adsId);
@@ -384,7 +379,7 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
       success: true,
       message: "Successfully requested.",
       ads: updatedAds,
-      expireTime: TRANSACTION_REQUEST_TIMEOUT,
+      expireTime: tranExpire,
     };
   } catch (error) {
     console.log(`Purchase Ads => Failed | Error:${error.message}`);
@@ -398,13 +393,18 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
 export const getCostPerImpression = async (ctx: ParameterizedContext, next) => {
   try {
     const { type } = ctx.request.query;
+    const { settingService } = ServicesContext.getInstance();
 
     // $1 === 2000 | 1000 impressions
     // 25% -> Company Revenue
     // 75% -> Buy Impressions
+    const costPerImpRainAds: number = await settingService.getSettingValue(Setting.KEY.COST_PER_IMPRESSION_RAIN_ADS);
+    const costPerImpStaticAds: number = await settingService.getSettingValue(Setting.KEY.COST_PER_IMPRESSION_STATIC_ADS);
+    const adsRevImpRevenue: number = await settingService.getSettingValue(Setting.KEY.ADS_REV_IMP_REVENUE);
+
     const vitaePrice = CMCContext.getInstance().vitaePriceUSD();
-    const usdPerImp = Number(type) === Ads.TYPE.RainRoomAds ? COST_PER_IMPRESSION_RAIN_ADS : COST_PER_IMPRESSION_STATIC_ADS;
-    const vitaePerImp = (usdPerImp / vitaePrice) * (1 / ADS_REV_IMP_REVENUE);
+    const usdPerImp = Number(type) === Ads.TYPE.RainRoomAds ? costPerImpRainAds : costPerImpStaticAds;
+    const vitaePerImp = (usdPerImp / vitaePrice) * (1 / adsRevImpRevenue);
     ctx.body = {
       success: true,
       message: "Success",
@@ -421,7 +421,7 @@ export const getCostPerImpression = async (ctx: ParameterizedContext, next) => {
 
 export const getStaticAds = async (ctx: ParameterizedContext, next) => {
   try {
-    const { adsService } = ServicesContext.getInstance();
+    const { adsService, settingService } = ServicesContext.getInstance();
 
     const ads: Ads = await adsService.findAdsToCampaign(Ads.TYPE.StaticAds);
     if (ads === undefined) {
@@ -433,10 +433,11 @@ export const getStaticAds = async (ctx: ParameterizedContext, next) => {
       return;
     }
     await adsService.consumeImpression(ads.id, 1);
+    const duration: number = await settingService.getSettingValue(Setting.KEY.RAIN_ADS_DURATION);
     ctx.body = {
       success: true,
       ads,
-      duration: ADS_DURATION
+      duration
     };
   } catch (error) {
     console.log(`Get Static Ads => Failed | Error:${error.message}`);

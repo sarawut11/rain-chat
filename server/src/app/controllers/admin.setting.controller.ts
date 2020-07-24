@@ -14,12 +14,9 @@ export const getPlatformSettings = async (ctx, next) => {
     const { settingService } = ServicesContext.getInstance();
     const settings = await settingService.getAllSettings();
 
-    const setting = {};
-    settings.forEach(element => setting[element.key] = element.value);
-
     ctx.body = {
       success: true,
-      settings: setting,
+      settings,
     };
   } catch (error) {
     console.log("Admin Setting => Failed | Error:", error.message);

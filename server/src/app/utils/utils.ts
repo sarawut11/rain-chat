@@ -1,9 +1,8 @@
 import * as moment from "moment";
-import { User } from "@models";
+import { User, Setting } from "@models";
 import { ServicesContext } from "@context";
 import { updateBalanceSocket } from "@sockets";
 
-const VITAE_POST_TIME = Number(process.env.VITAE_POST_TIME);
 const COMPANY_USERID = Number(process.env.COMPANY_USERID);
 
 export const now = (): number => {
@@ -14,8 +13,10 @@ export const nowDate = (): moment.Moment => {
   return moment().utc();
 };
 
-export const isVitaePostEnabled = (user: User): boolean => {
-  const enabled: boolean = (now() - VITAE_POST_TIME / 1000) >= user.lastVitaePostTime;
+export const isVitaePostEnabled = async (user: User): Promise<boolean> => {
+  const { settingService } = ServicesContext.getInstance();
+  const vitaePostTime: number = await settingService.getSettingValue(Setting.KEY.VITAE_POST_TIME);
+  const enabled: boolean = (now() - vitaePostTime / 1000) >= user.lastVitaePostTime;
   return enabled;
 };
 

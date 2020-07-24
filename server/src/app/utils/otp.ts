@@ -1,9 +1,7 @@
 import { authenticator } from "otplib";
 import { ServicesContext } from "@context";
-import { Otp } from "@models";
+import { Otp, Setting } from "@models";
 import { now } from "@utils";
-
-const OTP_TIMEOUT = Number(process.env.OTP_TIMEOUT);
 
 export const generateOtp = async (userId: number, type: number): Promise<string> => {
   const { otpService } = ServicesContext.getInstance();
@@ -14,13 +12,14 @@ export const generateOtp = async (userId: number, type: number): Promise<string>
 };
 
 export const verifyOtp = async (userId: number, type: number, token: string): Promise<boolean> => {
-  const { otpService } = ServicesContext.getInstance();
+  const { otpService, settingService } = ServicesContext.getInstance();
   const otp: Otp = await otpService.getOtp(userId, type);
   if (otp === undefined)
     return false;
 
+  const otpExpire: number = await settingService.getSettingValue(Setting.KEY.OTP_EXPIRE);
   const passedTime = now() - otp.time;
-  if (passedTime > OTP_TIMEOUT / 1000)
+  if (passedTime > otpExpire / 1000)
     return false;
 
   return token === otp.code;

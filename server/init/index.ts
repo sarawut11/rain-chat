@@ -74,6 +74,9 @@ const addSettings = async () => {
   await addSetting("COST_PER_IMPRESSION_RAIN_ADS", "0.0005", "DOUBLE");
   await addSetting("COST_PER_IMPRESSION_STATIC_ADS", "0.001", "DOUBLE");
 
+  await addSetting("ADS_REV_COMPANY_SHARE", "0.25", "DOUBLE");
+  await addSetting("ADS_REV_IMP_REVENUE", "0.75", "DOUBLE");
+
   await addSetting("VITAE_POST_TIME", "10000", "INT");
   await addSetting("VITAE_POST_TEXT", "I love Vitae! :heart:", "STRING");
 
@@ -85,13 +88,11 @@ const addSettings = async () => {
   await addSetting("SPONSOR_SHARE_THIRD", "0.25", "DOUBLE");
 
   await addSetting("TRANSACTION_REQUEST_EXPIRE", "300000", "INT");
-  await addSetting("CMC_POLLING_INTERVAL", "300000", "INT");
-  await addSetting("JWT_EXPIRE", "86400000", "INT");
   await addSetting("OTP_EXPIRE", "60000", "INT");
 };
 
 const addSetting = async (key: string, value: string, type: string) => {
-  const sql = "INSERT INTO setting_info (key, value, type) VALUES(?,?,?);";
+  const sql = "INSERT INTO setting_info (name, value, type) VALUES(?,?,?);";
   await query(sql, [key, value, type]);
 };
 

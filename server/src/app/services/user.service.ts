@@ -1,9 +1,9 @@
 import { isNullOrUndefined } from "util";
+import { ServicesContext } from "@context";
 import { query, getInArraySQL, now } from "@utils";
-import { User, UserRelation, DefaultModel } from "@models";
+import { User, UserRelation, DefaultModel, Setting } from "@models";
 
 const RAIN_GROUP_ID = process.env.RAIN_GROUP_ID;
-const POP_RAIN_BALANCE_LIMIT = Number(process.env.POP_RAIN_BALANCE_LIMIT);
 
 export class UserService {
   readonly USER_TABLE = "user_info";
@@ -366,8 +366,11 @@ export class UserService {
   }
 
   async getUsersByPopLimited(): Promise<User[]> {
+    const { settingService } = ServicesContext.getInstance();
+    const popLimit: number = await settingService.getSettingValue(Setting.KEY.POP_RAIN_BALANCE_LIMIT);
+
     const sql = `SELECT * FROM ${this.USER_TABLE} WHERE ${this.USER_COL.popBalance} >= ?;`;
-    const users: User[] = await query(sql, POP_RAIN_BALANCE_LIMIT);
+    const users: User[] = await query(sql, popLimit);
     return users;
   }
 
