@@ -113,7 +113,8 @@ class ChatItem extends Component {
       <div className="msg-render">
         <Linkify>
           {MultiLineParser(
-            this.updateMentions(msg),
+            // this.updateMentions(msg),
+            msg,
             {
               SplitLinesTag: 'p',
               // eslint-disable-next-line no-useless-escape

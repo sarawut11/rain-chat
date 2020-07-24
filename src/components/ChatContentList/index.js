@@ -23,25 +23,12 @@ class ChatContentList extends Component {
   }
 
   componentDidMount() {
+    // this.updateBoldTags();
     this.scrollBottomRef.scrollIntoView();
   }
 
   componentDidUpdate(nextProps) {
-    try {
-      const ul = document.getElementsByClassName('chat-content-list')[0];
-      const pList = ul.getElementsByTagName('p');
-      for (let i = 0; i < pList.length; i += 1) {
-        console.log(pList[i].innerHTML, pList[i]);
-        let newHtml = pList[i].innerHTML.toString();
-        console.log('newHtml:', newHtml);
-        newHtml = newHtml.replace('&lt;', '<');
-        newHtml = newHtml.replace('&gt;', '>');
-        // newHtml.replace('&gt;', '</span>');
-        pList[i].innerHTML = newHtml;
-      }
-    } catch (e) {
-      console.log(e);
-    }
+    // this.updateBoldTags();
 
     if (nextProps.chatId !== this.props.chatId) {
       // go to another chat
@@ -56,6 +43,26 @@ class ChatContentList extends Component {
       this.scrollBottomRef.scrollIntoView();
     }
   }
+
+  updateBoldTags = () => {
+    try {
+      const ul = document.getElementsByClassName('chat-content-list')[0];
+      const pList = ul.getElementsByTagName('p');
+      for (let i = 0; i < pList.length; i += 1) {
+        console.log(pList[i].innerHTML, pList[i]);
+        let newHtml = pList[i].innerHTML.toString();
+        console.log('newHtml:', newHtml);
+        newHtml = newHtml.split('&lt;').join('<');
+        newHtml = newHtml.split('&gt;').join('>');
+        // newHtml = newHtml.replaceAll('&lt;', '<');
+        // newHtml = newHtml.replaceAll('&gt;', '>');
+        // newHtml.replace('&gt;', '</span>');
+        pList[i].innerHTML = newHtml;
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   _lazyLoadMessage = () => {
     this._executeNextLoad = false;
