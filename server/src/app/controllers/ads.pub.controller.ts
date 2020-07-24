@@ -37,6 +37,15 @@ export const registerAds = async (ctx, next) => {
       return;
     }
 
+    if (userInfo.role === User.ROLE.MODERATOR) {
+      console.log(`Register Ads => Failed | Moderator can't create ads | username:${username}`);
+      ctx.body = {
+        success: false,
+        message: "Invalid Role."
+      };
+      return;
+    }
+
     // Upload Asset
     const fileName = generateFileName(username);
     const { url } = await uploadFile({

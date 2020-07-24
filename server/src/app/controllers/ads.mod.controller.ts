@@ -14,10 +14,13 @@ export const getAllAds = async (ctx, next) => {
     }
 
     const result = await adsService.findAllAds();
+    const ads: Ads[] = result.filter(ads => ads.status !== Ads.STATUS.Created && ads.status !== Ads.STATUS.Rejected);
+    const selfAds: Ads[] = await adsService.findAdsByUserId(checkRole.userInfo.id);
+    ads.push(...selfAds.filter(ads => ads.status === Ads.STATUS.Created || ads.status === Ads.STATUS.Rejected));
     ctx.body = {
       success: true,
       message: "Success",
-      ads: result
+      ads
     };
   } catch (error) {
     console.error(error.message);

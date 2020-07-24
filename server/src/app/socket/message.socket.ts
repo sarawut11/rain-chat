@@ -1,5 +1,5 @@
 import { ServicesContext } from "@context";
-import { User } from "@models";
+import { User, Ads } from "@models";
 import { isVitaePostEnabled } from "@utils";
 
 export const getPrivateMsg = async ({ toUser, userId, start = 1, count = 20 }) => {
@@ -46,7 +46,6 @@ export const getAllMessage = async ({ userId, clientHomePageList }) => {
     const res2 = await userService.getGroupList(userId);
     const groupList = JSON.parse(JSON.stringify(res2));
     const homePageList = groupList.concat(privateList);
-    const adsList = await adsService.findAdsByUserId(userId);
     const privateChat = new Map();
     const groupChat = new Map();
     if (homePageList && homePageList.length) {
@@ -75,6 +74,13 @@ export const getAllMessage = async ({ userId, clientHomePageList }) => {
           groupChat.set(item.groupId, data);
         }
       }
+    }
+
+    let adsList = await adsService.findAdsByUserId(userId);
+    if (user.role === User.ROLE.MODERATOR || user.role === User.ROLE.OWNER) {
+      adsList = adsList.filter(ads => ads.status === Ads.STATUS.Created || ads.status === Ads.STATUS.Rejected);
+      const allAds = await adsService.findAllAds();
+      adsList.push(...allAds);
     }
 
     return {
