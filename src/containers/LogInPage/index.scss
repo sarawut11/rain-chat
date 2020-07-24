@@ -32,10 +32,10 @@
     min-height: 100vh;
 
     .login-form-container {
-      height: 100vh;
       background: url(../../assets/landing-page-background.svg);
       background-repeat: no-repeat;
-      background-size: auto 100%;
+      background-size: cover;
+      background-attachment: fixed;
     }
 
     .login-description-container {
@@ -58,8 +58,9 @@
         font-weight: 300;
         letter-spacing: 1px;
       }
-      img {
+      .vitae-logo {
         width: 200px;
+        height: 100%;
       }
     }
   }
