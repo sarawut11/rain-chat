@@ -109,32 +109,6 @@ class ChatItem extends Component {
       }
     }
 
-    // console.log(
-    //   '---       textRender        ---',
-    //   msg,
-    //   '\n',
-    //   this.updateMentions(msg),
-    //   '\n',
-    //   MultiLineParser(
-    //     msg,
-    //     {
-    //       SplitLinesTag: 'p',
-    //       // eslint-disable-next-line no-useless-escape
-    //       Rule: /(?:\:[^\:]+\:(?:\:skin-tone-(?:\d)\:)?)/gi,
-    //     },
-    //     Rule => (
-    //       <Emoji
-    //         className="msg-render"
-    //         emoji={Rule}
-    //         backgroundImageFn={() => 'https://cdn.aermin.top/emojione.png'}
-    //         size={26}
-    //         fallback={(emoji, props) => (emoji ? `:${emoji.short_names[0]}:` : props.emoji)}
-    //       />
-    //     ),
-    //   ),
-    //   '\n',
-    // );
-
     return (
       <div className="msg-render">
         <Linkify>
