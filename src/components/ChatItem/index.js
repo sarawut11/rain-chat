@@ -72,6 +72,31 @@ class ChatItem extends Component {
     }, 0);
   };
 
+  updateMentions = msg => {
+    const res = msg.split('@');
+
+    let newMsg = res[0];
+
+    for (let i = 1; i < res.length; i += 1) {
+      newMsg = `${newMsg}<b>@`;
+
+      const spaceIndex = res[i].indexOf(' ');
+      let uMsg = '';
+      if (spaceIndex === -1) {
+        uMsg = res[i];
+      } else {
+        uMsg = res[i].substr(0, spaceIndex);
+      }
+      newMsg = `${newMsg}${uMsg}</b>`;
+
+      if (spaceIndex !== -1) {
+        newMsg += res[i].substring(spaceIndex, res[i].length);
+      }
+    }
+
+    return newMsg;
+  };
+
   textRender = msg => {
     const isShareUrl = /^::share::{"/.test(msg);
     if (isShareUrl) {
@@ -84,11 +109,37 @@ class ChatItem extends Component {
       }
     }
 
+    // console.log(
+    //   '---       textRender        ---',
+    //   msg,
+    //   '\n',
+    //   this.updateMentions(msg),
+    //   '\n',
+    //   MultiLineParser(
+    //     msg,
+    //     {
+    //       SplitLinesTag: 'p',
+    //       // eslint-disable-next-line no-useless-escape
+    //       Rule: /(?:\:[^\:]+\:(?:\:skin-tone-(?:\d)\:)?)/gi,
+    //     },
+    //     Rule => (
+    //       <Emoji
+    //         className="msg-render"
+    //         emoji={Rule}
+    //         backgroundImageFn={() => 'https://cdn.aermin.top/emojione.png'}
+    //         size={26}
+    //         fallback={(emoji, props) => (emoji ? `:${emoji.short_names[0]}:` : props.emoji)}
+    //       />
+    //     ),
+    //   ),
+    //   '\n',
+    // );
+
     return (
       <div className="msg-render">
         <Linkify>
           {MultiLineParser(
-            msg,
+            this.updateMentions(msg),
             {
               SplitLinesTag: 'p',
               // eslint-disable-next-line no-useless-escape

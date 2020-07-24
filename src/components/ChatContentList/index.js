@@ -27,6 +27,22 @@ class ChatContentList extends Component {
   }
 
   componentDidUpdate(nextProps) {
+    try {
+      const ul = document.getElementsByClassName('chat-content-list')[0];
+      const pList = ul.getElementsByTagName('p');
+      for (let i = 0; i < pList.length; i += 1) {
+        console.log(pList[i].innerHTML, pList[i]);
+        let newHtml = pList[i].innerHTML.toString();
+        console.log('newHtml:', newHtml);
+        newHtml = newHtml.replace('&lt;', '<');
+        newHtml = newHtml.replace('&gt;', '>');
+        // newHtml.replace('&gt;', '</span>');
+        pList[i].innerHTML = newHtml;
+      }
+    } catch (e) {
+      console.log(e);
+    }
+
     if (nextProps.chatId !== this.props.chatId) {
       // go to another chat
       this._loadingNewMessages = false;

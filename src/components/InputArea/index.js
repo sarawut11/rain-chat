@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Picker } from 'emoji-mart';
 import { connect } from 'react-redux';
 import Fuse from 'fuse.js';
-import { Button, Row } from 'antd';
+import { Button, Row, Mentions } from 'antd';
 import upload from '../../utils/qiniu';
 import request from '../../utils/request';
 import './style.scss';
@@ -14,6 +14,8 @@ import { shareAction } from '../../redux/actions/shareAction';
 import store from '../../redux/store';
 import { showAds } from '../../utils/ads';
 import { enableVitaePost, disableVitaePost } from '../../redux/actions/enableVitaePost';
+
+const { Option } = Mentions;
 
 function getPlaceholder() {
   return 'Write messages...';
@@ -102,14 +104,26 @@ class InputArea extends Component {
     }
   };
 
-  _inputMsgChange = event => {
+  _inputMsgChange = value => {
+    console.log('_inputMsgChange');
     this.setState(
       {
-        inputMsg: event.target.value,
+        inputMsg: value,
       },
-      () => {
-        this._selectSomeOneOrNot();
+      // () => {
+      //   this._selectSomeOneOrNot();
+      // },
+    );
+  };
+
+  _inputMsgChangeForEvent = e => {
+    this.setState(
+      {
+        inputMsg: e.target.value,
       },
+      // () => {
+      //   this._selectSomeOneOrNot();
+      // },
     );
   };
 
@@ -251,12 +265,16 @@ class InputArea extends Component {
     }
   };
 
+  onSelectUsername = () => {};
+
   render() {
     const { inputMsg, showEmojiPicker, relatedMembers } = this.state;
     const buttonClass = inputMsg ? 'btn btnActive' : 'btn';
     const { userInfo } = this.props;
     const { role } = userInfo;
     const { vitaePostEnabled } = this.props;
+
+    console.log('\n\n --- InputArea --- \n\n', this);
 
     return role === 'FREE' && window.location.href.includes('vitae-rain-group') ? (
       <div className="input-msg">
@@ -299,17 +317,33 @@ class InputArea extends Component {
             <input type="file" className="file-input" onChange={this._onSelectFile} />
           </label> */}
         </div>
-        {relatedMembers && relatedMembers.length > 0 && this.filterMembersRender()}
-        <textarea
+        {/* {relatedMembers && relatedMembers.length > 0 && this.filterMembersRender()} */}
+        {/* <textarea
           ref={input => {
             this.nameInput = input;
           }}
           value={inputMsg}
-          onChange={this._inputMsgChange}
+          onChange={this._inputMsgChangeForEvent}
           placeholder={this._placeHolder}
           onPaste={this._onPaste}
           onKeyPressCapture={this._keyPress}
-        />
+        /> */}
+        <Mentions
+          style={{ width: '100%' }}
+          value={inputMsg}
+          onChange={this._inputMsgChange}
+          onSelect={this.onSelectUsername}
+          onKeyPressCapture={this._keyPress}
+          placeholder={this._placeHolder}
+          onPaste={this._onPaste}
+        >
+          {(this.props.groupMembers || []).map(member => (
+            <Option value={member.username}>{member.username}</Option>
+          ))}
+          {/* <Option value="afc163">afc163</Option>
+          <Option value="zombieJ">zombieJ</Option>
+          <Option value="yesmeck">yesmeck</Option> */}
+        </Mentions>
         {/* <pre id="textarea" /> */}
         <p className={buttonClass} onClick={this._sendMessage}>
           Send

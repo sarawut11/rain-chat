@@ -39,6 +39,10 @@
     p {
       display: flex;
       align-items: center;
+      b {
+        margin-left: 4px;
+        margin-right: 4px;
+      }
     }
     .emoji-mart-emoji {
       padding: 0 5px;

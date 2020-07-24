@@ -7,6 +7,11 @@
   width: 100%;
   background-color: $grayTab;
   padding: 8px 10px;
+
+  .ant-mentions {
+    margin-right: 8px;
+  }
+
   .mask {
     position: fixed;
     width: 100%;
@@ -75,7 +80,8 @@
     }
   }
   textarea {
-    width: calc(100% - 108px);
+    // width: calc(100% - 108px);
+    width: 100%;
     margin: 0 10px 0 2px;
     border-radius: 2px;
     padding: 5px;
