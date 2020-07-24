@@ -72,6 +72,31 @@ class ChatItem extends Component {
     }, 0);
   };
 
+  updateMentions = msg => {
+    const res = msg.split('@');
+
+    let newMsg = res[0];
+
+    for (let i = 1; i < res.length; i += 1) {
+      newMsg = `${newMsg}<b>@`;
+
+      const spaceIndex = res[i].indexOf(' ');
+      let uMsg = '';
+      if (spaceIndex === -1) {
+        uMsg = res[i];
+      } else {
+        uMsg = res[i].substr(0, spaceIndex);
+      }
+      newMsg = `${newMsg}${uMsg}</b>`;
+
+      if (spaceIndex !== -1) {
+        newMsg += res[i].substring(spaceIndex, res[i].length);
+      }
+    }
+
+    return newMsg;
+  };
+
   textRender = msg => {
     const isShareUrl = /^::share::{"/.test(msg);
     if (isShareUrl) {
@@ -88,6 +113,7 @@ class ChatItem extends Component {
       <div className="msg-render">
         <Linkify>
           {MultiLineParser(
+            // this.updateMentions(msg),
             msg,
             {
               SplitLinesTag: 'p',
