@@ -1,6 +1,7 @@
 .dashboard-container {
   padding: 40px;
   width: calc(100% - 45px);
+  overflow: auto;
 
   .home-tab-icon {
     font-size: 18px;

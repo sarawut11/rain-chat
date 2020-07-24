@@ -116,7 +116,7 @@ class Ads extends Component {
 
     const role = userInfo.role ? userInfo.role : userInfoLS.role;
 
-    if (role === 'MODERATOR') {
+    if (role === 'MODERATOR' || role === 'OWNER') {
       this.setState({ loading: true });
 
       try {
@@ -144,7 +144,7 @@ class Ads extends Component {
     const pointer = this;
     if (item.status !== ADS_PAID) {
       confirm({
-        title: 'Do you Want to delete this ads?',
+        title: 'Do you want to delete this ads?',
         icon: <ExclamationCircleOutlined />,
         content: `You can not recover this item after remove it.`,
         async onOk() {
@@ -383,35 +383,82 @@ class Ads extends Component {
     const { status } = item;
     let actions = [];
     const { role } = userInfo;
+    const isModeratorOrOwner = role === 'MODERATOR' || role === 'OWNER';
+    const isModerator = role === 'MODERATOR';
+    const isOwner = role === 'OWNER';
 
-    if (role === 'MODERATOR' && status === 1) {
-      actions = [
-        <span key="approve" onClick={this.onApproveAds(item)} style={{ color: 'green' }}>
-          <CheckOutlined /> Approve
-        </span>,
-        <span key="reject" onClick={this.onRejectAds(item)} style={{ color: 'red' }}>
-          <CloseOutlined /> Reject
-        </span>,
-      ];
-    } else if (role === 'MODERATOR') {
-      actions = [<div style={{ height: '24px', width: '100%' }} />];
-    } else if (status === ADS_CREATED || status === ADS_REJECTED) {
-      actions = [
-        <Dropdown overlay={this.renderMenu(item)} placement="bottomCenter">
-          <SettingOutlined key="setting" />
-        </Dropdown>,
-        <EditOutlined key="edit" onClick={this.onEditAds(item)} />,
-        <DeleteOutlined key="delete" onClick={this.showConfirm(item)} />,
-      ];
-    } else if (status >= ADS_PENDING_PURCHASE) {
-      actions = [<DeleteOutlined key="delete" onClick={this.showConfirm(item)} />];
-    } else {
-      actions = [
-        <Dropdown overlay={this.renderMenu(item)} placement="bottomCenter">
-          <SettingOutlined key="setting" />
-        </Dropdown>,
-        <DeleteOutlined key="delete" onClick={this.showConfirm(item)} />,
-      ];
+    if (!isModeratorOrOwner) {
+      // normal user
+      if (status === ADS_CREATED || status === ADS_REJECTED) {
+        actions = [
+          <Dropdown overlay={this.renderMenu(item)} placement="bottomCenter">
+            <SettingOutlined key="setting" />
+          </Dropdown>,
+          <EditOutlined key="edit" onClick={this.onEditAds(item)} />,
+          <DeleteOutlined key="delete" onClick={this.showConfirm(item)} />,
+        ];
+      } /* else if (status >= ADS_PENDING_PURCHASE) {
+        actions = [<DeleteOutlined key="delete" onClick={this.showConfirm(item)} />];
+      } */ else {
+        actions = [
+          <Dropdown overlay={this.renderMenu(item)} placement="bottomCenter">
+            <SettingOutlined key="setting" />
+          </Dropdown>,
+          <DeleteOutlined key="delete" onClick={this.showConfirm(item)} />,
+        ];
+      }
+    }
+
+    if (isModerator) {
+      // moderator
+      if (status === ADS_PENDING) {
+        actions = [
+          <span key="approve" onClick={this.onApproveAds(item)} style={{ color: 'green' }}>
+            <CheckOutlined /> Approve
+          </span>,
+          <span key="reject" onClick={this.onRejectAds(item)} style={{ color: 'red' }}>
+            <CloseOutlined /> Reject
+          </span>,
+        ];
+      } else {
+        actions = [<div style={{ height: '24px', width: '100%' }} />];
+      }
+    }
+
+    if (isOwner) {
+      // owner
+      if (status === ADS_CREATED || status === ADS_REJECTED) {
+        actions = [
+          <Dropdown overlay={this.renderMenu(item)} placement="bottomCenter">
+            <SettingOutlined key="setting" />
+          </Dropdown>,
+          <EditOutlined key="edit" onClick={this.onEditAds(item)} />,
+          <DeleteOutlined key="delete" onClick={this.showConfirm(item)} />,
+        ];
+      } else if (status === ADS_PENDING) {
+        actions = [
+          <span key="approve" onClick={this.onApproveAds(item)} style={{ color: 'green' }}>
+            <CheckOutlined /> Approve
+          </span>,
+          <span key="reject" onClick={this.onRejectAds(item)} style={{ color: 'red' }}>
+            <CloseOutlined /> Reject
+          </span>,
+        ];
+      } /* else if (status >= ADS_PENDING_PURCHASE) {
+        actions = [<DeleteOutlined key="delete" onClick={this.showConfirm(item)} />];
+      } */ else if (
+        status === ADS_APPROVED &&
+        item.creatorUsername === userInfo.username
+      ) {
+        actions = [
+          <Dropdown overlay={this.renderMenu(item)} placement="bottomCenter">
+            <SettingOutlined key="setting" />
+          </Dropdown>,
+          <DeleteOutlined key="delete" onClick={this.showConfirm(item)} />,
+        ];
+      } else {
+        actions = [<div style={{ height: '24px', width: '100%' }} />];
+      }
     }
 
     return (
@@ -509,13 +556,15 @@ class Ads extends Component {
   renderMenu = item => {
     return (
       <Menu>
-        {(item.status === 0 || item.status === 3) && item.role !== 'MODERTOR' && (
-          <Menu.Item onClick={this.onRequest(item)}>Request ads</Menu.Item>
+        {(item.status === 0 || item.status === 3) && item.role !== 'MODERATOR' && (
+          <Menu.Item onClick={this.onRequest(item)}>
+            {item.role === 'OWNER' ? 'Approve ads' : 'Request ads'}
+          </Menu.Item>
         )}
-        {item.status === ADS_PENDING && item.role !== 'MODERTOR' && (
+        {item.status === ADS_PENDING && item.role !== 'MODERATOR' && (
           <Menu.Item onClick={this.onCancelRequest(item)}>Cancel request</Menu.Item>
         )}
-        {item.status === ADS_APPROVED && item.role !== 'MODERTOR' && (
+        {item.status === ADS_APPROVED && item.role !== 'MODERATOR' && (
           <Menu.Item onClick={this.showImpressionsInput(item)}>Purchase</Menu.Item>
         )}
       </Menu>
@@ -568,6 +617,8 @@ class Ads extends Component {
     const { ads, createAdsAction, editAdsAction, userInfo } = this.props;
 
     const isModerator = userInfo.role === 'MODERATOR';
+    const isOwner = userInfo.role === 'OWNER';
+    const isOwnerOrModerator = isModerator || isOwner;
 
     return (
       <div className="campaign-container">
