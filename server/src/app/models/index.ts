@@ -13,3 +13,4 @@ export * from "./expense.confirm.model";
 export * from "./wallet.notify.detail.model";
 export * from "./wallet.notify.model";
 export * from "./withdraw.address.model";
+export * from "./setting.model";

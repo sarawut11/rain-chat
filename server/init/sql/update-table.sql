@@ -17,8 +17,37 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-ALTER TABLE `user_info` 
-CHANGE COLUMN `password` `password` VARCHAR(40) NULL DEFAULT '' ,
-CHANGE COLUMN `name` `name` VARCHAR(20) NULL DEFAULT '' ,
-CHANGE COLUMN `intro` `intro` VARCHAR(100) NULL DEFAULT '' ,
-CHANGE COLUMN `walletAddress` `walletAddress` CHAR(255) NULL DEFAULT '' ;
+DROP TABLE IF EXISTS `setting_info`;
+CREATE TABLE `setting_info` (
+  `key` varchar(255) NOT NULL DEFAULT '',
+  `value` varchar(255) NOT NULL DEFAULT '',
+  `type` varchar(10) NOT NULL DEFAULT '',
+  PRIMARY KEY (`key`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("COMPANY_REV_COMPANY_EXPENSE","0.2","DOUBLE");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("COMPANY_REV_OWNER_SHARE", "0.3", "DOUBLE");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("COMPANY_REV_MODER_SHARE", "0.25", "DOUBLE");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("COMPANY_REV_MEMBER_SHARE", "0.25", "DOUBLE");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("POP_RAIN_BALANCE_LIMIT", "10", "DOUBLE");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("POP_RAIN_LAST_POST_USER", "200", "INT");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("STOCKPILE_RAIN_INTERVAL", "360000", "INT");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("STOCKPILE_RAIN_AMOUNT", "0.1", "DOUBLE");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("RAIN_ADS_COMING_AFTER", "5000", "INT");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("RAIN_ADS_DURATION", "10000", "INT");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("RAIN_ADS_INTERVAL", "300000", "INT");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("STATIC_ADS_INTERVAL", "300000", "INT");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("COST_PER_IMPRESSION_RAIN_ADS", "0.0005", "DOUBLE");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("COST_PER_IMPRESSION_STATIC_ADS", "0.001", "DOUBLE");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("VITAE_POST_TIME", "10000", "INT");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("VITAE_POST_TEXT", "I love Vitae! :heart:", "STRING");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("MEMBERSHIP_PRICE_USD", "14.99", "DOUBLE");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("MEMBERSHIP_REV_COMPANY_SHARE", "0.3328885924", "DOUBLE");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("MEMBERSHIP_REV_SPONSOR_SHARE", "0.3335557038", "DOUBLE");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("SPONSOR_SHARE_FIRST", "0.5", "DOUBLE");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("SPONSOR_SHARE_SECOND", "0.25", "DOUBLE");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("SPONSOR_SHARE_THIRD", "0.25", "DOUBLE");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("TRANSACTION_REQUEST_EXPIRE", "300000", "INT");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("CMC_POLLING_INTERVAL", "300000", "INT");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("JWT_EXPIRE", "86400000", "INT");
+INSERT INTO `setting_info` (`key`, `value`, `type`) VALUES("OTP_EXPIRE", "60000", "INT");
