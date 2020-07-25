@@ -30,19 +30,16 @@ export class RainContext {
   async startRains() {
     await this.updateSettings();
 
-    // Rain Room Ads
-    setInterval(() => this.campaignRainAds(), Number(this.settings.RAIN_ADS_INTERVAL) + Number(this.settings.RAIN_ADS_DURATION));
-
-    // Static Ads
-    setInterval(() => this.campaignStaticAds(), this.settings.STATIC_ADS_INTERVAL);
-
-    // Stockpile Rain
-    setInterval(() => this.stockpileRain(), this.settings.STOCKPILE_RAIN_INTERVAL);
+    this.campaignRainAds();
+    this.campaignStaticAds();
+    this.stockpileRain();
   }
 
   // ========== Stockpile Rain Section ========== //
   async stockpileRain() {
     try {
+      setTimeout(() => this.stockpileRain(), this.settings.STOCKPILE_RAIN_INTERVAL);
+
       const { userService } = ServicesContext.getInstance();
       const stockpile = await userService.findUserById(this.COMPANY_STOCKPILE_USERID);
       if (stockpile === undefined) {
@@ -65,7 +62,9 @@ export class RainContext {
   // ========== Ads Rain Section ========== //
   async campaignRainAds() {
     try {
-      const { userService, adsService, settingService } = ServicesContext.getInstance();
+      setTimeout(() => this.campaignRainAds(), this.settings.RAIN_ADS_INTERVAL + this.settings.RAIN_ADS_DURATION);
+
+      const { userService, adsService } = ServicesContext.getInstance();
       const ads: Ads = await adsService.findAdsToCampaign(Ads.TYPE.RainRoomAds);
       if (ads === undefined) {
         console.log("Rain Room Ads => No Ads to rain");
@@ -129,32 +128,39 @@ export class RainContext {
 
   // ========== Static Ads Section ========== //
   async campaignStaticAds() {
-    const { adsService, userService } = ServicesContext.getInstance();
-    const ads: Ads = await adsService.findAdsToCampaign(Ads.TYPE.StaticAds);
-    if (ads === undefined) {
-      console.log("Static Ads => Failed | No static ads to show");
-      return;
-    }
-    console.log("Static Ads => Campaign Ads | adsId:", ads.id);
-    socketServer.broadcast(socketEventNames.ShowStaticAds, {
-      ads: {
-        id: ads.id,
-        assetLink: ads.assetLink,
-        title: ads.title,
-        description: ads.description,
-        link: ads.link,
-        buttonLabel: ads.buttonLabel,
-        type: ads.type,
-      }
-    });
-    await adsService.campaignAds(ads.id, socketServer.allSocketCount());
+    try {
+      setTimeout(() => this.campaignStaticAds(), this.settings.STATIC_ADS_INTERVAL);
 
-    // Send updated impression info to ads' creator
-    const creator: User = await userService.findUserById(ads.userId);
-    const updatedAd: Ads = await adsService.findAdsById(ads.id);
-    socketServer.emitTo(creator.socketid, socketEventNames.UpdateAdsImpressions, {
-      adsInfo: updatedAd
-    });
+      const { adsService, userService } = ServicesContext.getInstance();
+      const ads: Ads = await adsService.findAdsToCampaign(Ads.TYPE.StaticAds);
+      if (ads === undefined) {
+        console.log("Static Ads => Failed | No static ads to show");
+        return;
+      }
+      console.log("Static Ads => Campaign Ads | adsId:", ads.id);
+      socketServer.broadcast(socketEventNames.ShowStaticAds, {
+        ads: {
+          id: ads.id,
+          assetLink: ads.assetLink,
+          title: ads.title,
+          description: ads.description,
+          link: ads.link,
+          buttonLabel: ads.buttonLabel,
+          type: ads.type,
+        }
+      });
+      await adsService.campaignAds(ads.id, socketServer.allSocketCount());
+
+      // Send updated impression info to ads' creator
+      const creator: User = await userService.findUserById(ads.userId);
+      const updatedAd: Ads = await adsService.findAdsById(ads.id);
+      socketServer.emitTo(creator.socketid, socketEventNames.UpdateAdsImpressions, {
+        adsInfo: updatedAd
+      });
+    }
+    catch (error) {
+      console.log("Static Ads => Failed | Error:", error.message);
+    }
   }
 
   // ========== Common Rain Section ========== //

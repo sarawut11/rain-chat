@@ -65,7 +65,9 @@ const api = new Router()
   .get("/admin/chat", APIController.getChatAnalytics)
   .get("/admin/financial", APIController.getFinancialAnalytics)
   .get("/admin/wallet", APIController.getWalletAnalytics)
+
   .get("/admin/setting", APIController.getPlatformSettings)
+  .put("/admin/setting", APIController.updatePlatformSetting)
 
   // Wallet
   .get("/wallet/company-rain-address", APIController.getCompanyRainAddress)
