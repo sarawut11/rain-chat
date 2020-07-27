@@ -47,6 +47,8 @@
     - [/admin/chat (GET)](#adminchat-get)
     - [/admin/financial (GET)](#adminfinancial-get)
     - [/admin/wallet (GET)](#adminwallet-get)
+    - [/admin/setting (GET)](#adminsetting-get)
+    - [/admin/setting (PUT)](#adminsetting-put)
   - [1.8 Wallet](#18-wallet)
     - [/wallet/company-rain-address (GET)](#walletcompany-rain-address-get)
     - [/wallet/withdraw (POST)](#walletwithdraw-post)
@@ -902,6 +904,58 @@
     totalWithdrawn,
     stockpileAddress,
     stockpileBalance
+  }
+  ```
+### /admin/setting (GET)
+  Get platform settings
+  
+  ***Response***
+  ```
+  {
+    success: true/false,
+    settings: {
+        "COMPANY_REV_COMPANY_EXPENSE": 0.2,
+        "COMPANY_REV_MEMBER_SHARE": 0.25,
+        "COMPANY_REV_MODER_SHARE": 0.25,
+        "COMPANY_REV_OWNER_SHARE": 0.3,
+        "COST_PER_IMPRESSION_RAIN_ADS": 0.0005,
+        "COST_PER_IMPRESSION_STATIC_ADS": 0.001,
+        "MEMBERSHIP_PRICE_USD": 14.99,
+        "MEMBERSHIP_REV_COMPANY_SHARE": 0.3328885924,
+        "MEMBERSHIP_REV_SPONSOR_SHARE": 0.3335557038,
+        "OTP_EXPIRE": 60000,
+        "POP_RAIN_BALANCE_LIMIT": 10,
+        "POP_RAIN_LAST_POST_USER": 200,
+        "RAIN_ADS_COMING_AFTER": 5000,
+        "RAIN_ADS_DURATION": 5000,
+        "RAIN_ADS_INTERVAL": 300000,
+        "SPONSOR_SHARE_FIRST": 0.5,
+        "SPONSOR_SHARE_SECOND": 0.25,
+        "SPONSOR_SHARE_THIRD": 0.25,
+        "STATIC_ADS_INTERVAL": 300000,
+        "STOCKPILE_RAIN_AMOUNT": 0.1,
+        "STOCKPILE_RAIN_INTERVAL": 360000,
+        "TRANSACTION_REQUEST_EXPIRE": 300000,
+        "VITAE_POST_TEXT": "I love Vitae! :heart:",
+        "VITAE_POST_TIME": 10000
+    }
+  }
+  ```
+### /admin/setting (PUT)
+  Update platform settings
+
+  ***Request Body ***
+  | Fields                                 | Description  |
+  | -------------------------------------- | ------------ |
+  | COMPANY_REV_COMPANY_EXPENSE (Optional) | setting name |
+  | ...                                    | ...          |
+  | VITAE_POST_TIME (Optional)             | setting name |
+  
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
   }
   ```
 

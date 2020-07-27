@@ -58,16 +58,16 @@ const api = new Router()
   // Admin Dashboard
   .get("/admin/home", APIController.getHomeAnalytics)
   .get("/admin/ads", APIController.getAdsAnalytics)
-
   .get("/admin/moders", APIController.getModsAnalytics)
   .get("/admin/moders/usernamelist", APIController.getUsernamelist)
   .post("/admin/moders/set", APIController.updateModers)
   .post("/admin/moders/cancel", APIController.cancelModer)
-
   .get("/admin/chat", APIController.getChatAnalytics)
-
   .get("/admin/financial", APIController.getFinancialAnalytics)
   .get("/admin/wallet", APIController.getWalletAnalytics)
+
+  .get("/admin/setting", APIController.getPlatformSettings)
+  .put("/admin/setting", APIController.updatePlatformSetting)
 
   // Wallet
   .get("/wallet/company-rain-address", APIController.getCompanyRainAddress)

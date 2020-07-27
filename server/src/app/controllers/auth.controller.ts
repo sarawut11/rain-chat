@@ -1,14 +1,13 @@
 import * as md5 from "md5";
 import * as uniqid from "uniqid";
 import * as moment from "moment";
-import { generateToken, authVerify } from "../middlewares/verify";
+import { generateToken, authVerify } from "@middlewares";
 import { socketServer } from "@sockets";
 import { ServicesContext } from "@context";
-import { User, Ban, Otp } from "@models";
+import { User, Ban, Otp, Setting } from "@models";
 import { isVitaePostEnabled, generateOtp, verifyOtp, sendMail, rpcInterface, hashCode } from "@utils";
 
 const RAIN_GROUP_ID = process.env.RAIN_GROUP_ID;
-const OTP_TIMEOUT = Number(process.env.OTP_TIMEOUT);
 
 export const loginUser = async (ctx, next) => {
   try {
@@ -60,6 +59,7 @@ export const loginUser = async (ctx, next) => {
       }
     }
     const token = generateToken({ id, username });
+    const vitaePostEnabled = await isVitaePostEnabled(user);
     ctx.body = {
       success: true,
       message: "Login Successful",
@@ -75,7 +75,7 @@ export const loginUser = async (ctx, next) => {
         role,
         token,
         ban,
-        isVitaePostEnabled: isVitaePostEnabled(user)
+        isVitaePostEnabled: vitaePostEnabled
       },
     };
     console.log("Login => Success | Username:", username);
@@ -216,7 +216,7 @@ export const validateToken = async (ctx, next) => {
 export const generateOTP = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
-    const { userService } = ServicesContext.getInstance();
+    const { userService, settingService } = ServicesContext.getInstance();
 
     const user: User = await userService.findUserByUsername(username);
     if (user === undefined) {
@@ -227,21 +227,24 @@ export const generateOTP = async (ctx, next) => {
       };
       return;
     }
+
     const otp: string = await generateOtp(user.id, Otp.TYPE.WITHDRAW);
+    const otpExpire: number = await settingService.getSettingValue(Setting.KEY.OTP_EXPIRE);
+
     sendMail("otp/withdraw.html", {
       email: user.email,
       subject: "Email Withdrawal",
       data: {
         username,
         code: otp,
-        expire: OTP_TIMEOUT
+        expire: otpExpire
       }
     });
     console.log("OTP | Withdraw => Success | 6 Digit Code Generated, Sending Email...");
     ctx.body = {
       success: true,
       message: "6 digit code sent to your email.",
-      expireIn: OTP_TIMEOUT
+      expireIn: otpExpire
     };
   } catch (error) {
     console.log("OTP | Withdraw => Failed | Error:", error.message);
@@ -287,7 +290,7 @@ export const verifyOTP = async (ctx, next) => {
 export const generateEmailOtp = async (ctx, next) => {
   try {
     const { email } = ctx.request.body;
-    const { userService } = ServicesContext.getInstance();
+    const { userService, settingService } = ServicesContext.getInstance();
 
     const user: User = await userService.findUserByEmail(email);
     if (user !== undefined) {
@@ -301,19 +304,20 @@ export const generateEmailOtp = async (ctx, next) => {
 
     const userId = hashCode(email);
     const otp: string = await generateOtp(userId, Otp.TYPE.SIGNUP);
+    const otpExpire: number = await settingService.getSettingValue(Setting.KEY.OTP_EXPIRE);
     sendMail("otp/signup.html", {
       email,
       subject: "Email Confirmation",
       data: {
         code: otp,
-        expire: OTP_TIMEOUT
+        expire: otpExpire
       }
     });
     console.log("OTP | Signup => Success | 6 Digit Code Generated, Sending Email...");
     ctx.body = {
       success: true,
       message: "6 digit code sent to your email.",
-      expireIn: OTP_TIMEOUT
+      expireIn: otpExpire
     };
   } catch (error) {
     console.log("OTP | Signup => Failed | Error:", error.message);

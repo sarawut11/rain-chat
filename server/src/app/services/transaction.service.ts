@@ -1,9 +1,8 @@
 import { query, now } from "@utils";
-import { TransactionContext } from "@context";
-import { Transaction, DefaultModel, TransactionDetail } from "@models";
+import { TransactionContext, ServicesContext } from "@context";
+import { Transaction, DefaultModel, TransactionDetail, Setting } from "@models";
 
 const COMPANY_USERID = Number(process.env.COMPANY_USERID);
-const TRANSACTION_REQUEST_TIMEOUT = Number(process.env.TRANSACTION_REQUEST_TIMEOUT);
 
 export class TransactionService {
 
@@ -39,9 +38,11 @@ export class TransactionService {
     values(?,?,?,?,?,?);`;
     const result: DefaultModel = await query(sql, [userId, type, Transaction.STATUS.REQUESTED, expectAmount, now(), JSON.stringify(details)]);
 
+    const { settingService } = ServicesContext.getInstance();
+    const tranExpire: number = await settingService.getSettingValue(Setting.KEY.TRANSACTION_REQUEST_EXPIRE);
     setTimeout(() => {
       TransactionContext.getInstance().expireTransactionRequest(result.insertId);
-    }, TRANSACTION_REQUEST_TIMEOUT);
+    }, tranExpire);
     return result;
   }
 

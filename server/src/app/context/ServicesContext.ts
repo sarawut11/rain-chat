@@ -11,6 +11,7 @@ import {
   ExpenseService,
   ExpenseConfirmService,
   WithdrawAddressService,
+  SettingService,
 } from "@services";
 
 export class ServicesContext {
@@ -140,6 +141,16 @@ export class ServicesContext {
   }
   public setWithdrawAddressService(service: WithdrawAddressService): ServicesContext {
     this._withdrawAddressService = service;
+    return this;
+  }
+
+  // Setting service
+  private _settingService: SettingService;
+  public get settingService() {
+    return this._settingService;
+  }
+  public setSettingService(service: SettingService): ServicesContext {
+    this._settingService = service;
     return this;
   }
 }

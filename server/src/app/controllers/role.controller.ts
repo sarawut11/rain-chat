@@ -1,11 +1,8 @@
 import { ServicesContext, CMCContext } from "@context";
-import { User, Transaction } from "@models";
+import { User, Transaction, Setting } from "@models";
 import { checkUserInfo, isOwner } from "@utils";
 import { confirmMembership } from "@controllers";
 import { updateBalanceSocket } from "@sockets";
-
-const MEMBERSHIP_PRICE_USD: number = Number(process.env.MEMBERSHIP_PRICE_USD);
-const TRANSACTION_REQUEST_TIMEOUT: number = Number(process.env.TRANSACTION_REQUEST_TIMEOUT);
 
 export const getAllUsers = async (ctx, next) => {
   try {
@@ -36,13 +33,15 @@ export const getAllUsers = async (ctx, next) => {
 export const getMembershipPrice = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
-    const { userService } = ServicesContext.getInstance();
+    const { userService, settingService } = ServicesContext.getInstance();
     const userInfo: User = await userService.findUserByUsername(username);
-    const vitaePrice = _getMembershipPriceInVitae();
+    const membershipPriceUsd: number = await settingService.getSettingValue(Setting.KEY.MEMBERSHIP_PRICE_USD);
+    const vitaePrice = _getMembershipPriceInVitae(membershipPriceUsd);
+
     ctx.body = {
       success: true,
       vitaePrice,
-      usdPrice: MEMBERSHIP_PRICE_USD,
+      usdPrice: membershipPriceUsd,
       walletAddress: userInfo.walletAddress,
     };
   } catch (error) {
@@ -58,7 +57,7 @@ export const upgradeMembershipPurchase = async (ctx, next) => {
   try {
     const { username, id: userId } = ctx.state.user;
     const { expectAmount } = ctx.request.body;
-    const { transactionService } = ServicesContext.getInstance();
+    const { transactionService, settingService } = ServicesContext.getInstance();
 
     const checkUser = await checkUserInfo(username);
     if (checkUser.success === false) {
@@ -76,6 +75,7 @@ export const upgradeMembershipPurchase = async (ctx, next) => {
       return;
     }
 
+    const tranExpire: number = await settingService.getSettingValue(Setting.KEY.TRANSACTION_REQUEST_EXPIRE);
     const transInfo = await transactionService.createTransactionRequest(userId, Transaction.TYPE.MEMBERSHIP, expectAmount);
     if (transInfo === undefined) {
       console.log(`Membership Purchase => Failed | Still have incompleted transaction | username:${username}`);
@@ -90,7 +90,7 @@ export const upgradeMembershipPurchase = async (ctx, next) => {
     ctx.body = {
       success: true,
       message: "Your membership request is in pending.",
-      expireTime: TRANSACTION_REQUEST_TIMEOUT
+      expireTime: tranExpire
     };
   } catch (error) {
     console.log(`Membership Purchase => Failed | Error:${error.message}`);
@@ -160,6 +160,6 @@ const getUsersByRole = (page = 0, count = 10, role?, name?, username?, email?, s
   resolve(users);
 });
 
-const _getMembershipPriceInVitae = () => {
-  return MEMBERSHIP_PRICE_USD / CMCContext.getInstance().vitaePriceUSD();
+const _getMembershipPriceInVitae = (usdPrice: number) => {
+  return usdPrice / CMCContext.getInstance().vitaePriceUSD();
 };

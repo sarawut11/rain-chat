@@ -19,7 +19,8 @@ import {
   OtpService,
   ExpenseService,
   ExpenseConfirmService,
-  WithdrawAddressService
+  WithdrawAddressService,
+  SettingService,
 } from "./services";
 
 export const App = Server.init(app => {
@@ -40,6 +41,7 @@ export const App = Server.init(app => {
   .createConnection()
   .then(() => {
     ServicesContext.getInstance()
+      .setSettingService(new SettingService())
       .setUserService(new UserService())
       .setBanService(new BanService())
       .setGroupService(new GroupService())
