@@ -53,6 +53,7 @@
   - [1.8 Wallet](#18-wallet)
     - [/wallet/company-rain-address (GET)](#walletcompany-rain-address-get)
     - [/wallet/withdraw (POST)](#walletwithdraw-post)
+    - [/wallet/get-pending-tran (GET)](#walletget-pending-tran-get)
   - [1.9 Rain](#19-rain)
     - [/rain/send-vitae/balance (POST)](#rainsend-vitaebalance-post)
   - [1.10 Expense](#110-expense)
@@ -998,6 +999,25 @@
   {
     success: true/false,
     message: "Success or Failed Message",
+  }
+  ```
+### /wallet/get-pending-tran (GET)
+  Get pending transaction
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    pendingTran: {  // Optional
+      id,
+      userId,
+      type,
+      status,
+      paidAmount,
+      expectAmount,
+      time,
+    }
   }
   ```
 

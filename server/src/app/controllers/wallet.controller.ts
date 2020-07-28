@@ -160,6 +160,42 @@ export const walletWithdraw = async (ctx, next) => {
   }
 };
 
+export const getPendingTransaction = async (ctx, next) => {
+  try {
+    const { username } = ctx.state.user;
+    const { userService, transactionService } = ServicesContext.getInstance();
+
+    const userInfo: User = await userService.findUserByUsername(username);
+    if (userInfo === undefined) {
+      console.log(`Get Pending Tran => Failed | Invalid username: ${username}`);
+      ctx.body = {
+        success: false,
+        message: "Invalid username"
+      };
+      return;
+    }
+
+    const pendingTran = await transactionService.getLastRequestedTransaction(userInfo.id);
+    if (pendingTran === undefined) {
+      ctx.body = {
+        success: true,
+        message: "No pending transaction."
+      };
+    } else {
+      ctx.body = {
+        success: true,
+        message: "Pending Transaction",
+        pendingTran
+      };
+    }
+  } catch (error) {
+    console.log("Get Pending Tran => Failed | Error:", error.message);
+    ctx.body = {
+      success: false,
+      message: "Failed"
+    };
+  }
+};
 
 export const confirmMembership = async (userInfo: User, amount: number) => {
   const { userService, settingService } = ServicesContext.getInstance();

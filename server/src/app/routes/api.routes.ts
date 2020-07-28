@@ -72,6 +72,7 @@ const api = new Router()
 
   // Wallet
   .get("/wallet/company-rain-address", APIController.getCompanyRainAddress)
+  .get("/wallet/get-pending-tran", APIController.getPendingTransaction)
   .post("/wallet/withdraw", APIController.walletWithdraw);
 
 export const apiRoutes = new Router()
