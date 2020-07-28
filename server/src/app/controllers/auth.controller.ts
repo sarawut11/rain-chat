@@ -5,7 +5,7 @@ import { generateToken, authVerify } from "@middlewares";
 import { socketServer } from "@sockets";
 import { ServicesContext } from "@context";
 import { User, Ban, Otp, Setting } from "@models";
-import { isVitaePostEnabled, generateOtp, verifyOtp, sendMail, rpcInterface, hashCode } from "@utils";
+import { isVitaePostEnabled, generateOtp, verifyOtp, sendMail, rpcInterface, hashCode, vitaeToUsd } from "@utils";
 
 const RAIN_GROUP_ID = process.env.RAIN_GROUP_ID;
 
@@ -324,6 +324,25 @@ export const generateEmailOtp = async (ctx, next) => {
     ctx.body = {
       success: false,
       message: "Invalid Username.",
+    };
+  }
+};
+
+export const getTotalRained = async (ctx, next) => {
+  try {
+    const { innerTranService } = ServicesContext.getInstance();
+    const totalRainedVitae = await innerTranService.getTotalRainedAmount();
+    const totalRainedUsd = vitaeToUsd(totalRainedVitae);
+    ctx.body = {
+      success: true,
+      totalRainedUsd,
+      totalRainedVitae,
+    };
+  } catch (error) {
+    console.log("Total Rain => Failed | Error:", error.message);
+    ctx.body = {
+      success: false,
+      message: "Failed. Something went wrong.",
     };
   }
 };
