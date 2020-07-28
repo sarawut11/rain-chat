@@ -7,6 +7,7 @@
     - [/email/confirm (POST)](#emailconfirm-post)
     - [/token/validate (POST)](#tokenvalidate-post)
     - [/ref/validate (POST)](#refvalidate-post)
+    - [/total-rained-amount (POST)](#total-rained-amount-post)
   - [1.3 Profile](#13-profile)
     - [/user/:username (GET)](#userusername-get)
     - [/user/:username (PUT)](#userusername-put)
@@ -195,6 +196,18 @@
   {
     success: true/false,
     message: "Valid or Invalid Message"
+  }
+  ```
+### /total-rained-amount (POST)
+  Get total rained amount in vitae and usd.
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Valid or Invalid Message",
+    totalRainedUsd,       // Total Rained USD
+    totalRainedVitae      // Total Rained Vitae
   }
   ```
 

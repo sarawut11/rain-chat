@@ -8,6 +8,7 @@ const auth = new Router()
   .post("/token/validate", APIController.validateToken)
   .post("/ref/validate", APIController.validateReferral)
   .post("/email/confirm", APIController.generateEmailOtp)
+  .get("/total-rained-amount", APIController.getTotalRained)
   .post("/walletnotify", APIController.walletNotify);
 
 const api = new Router()

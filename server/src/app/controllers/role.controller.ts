@@ -1,6 +1,6 @@
-import { ServicesContext, CMCContext } from "@context";
+import { ServicesContext } from "@context";
 import { User, Transaction, Setting } from "@models";
-import { checkUserInfo, isOwner } from "@utils";
+import { checkUserInfo, isOwner, usdToVitae } from "@utils";
 import { confirmMembership } from "@controllers";
 import { updateBalanceSocket } from "@sockets";
 
@@ -36,7 +36,7 @@ export const getMembershipPrice = async (ctx, next) => {
     const { userService, settingService } = ServicesContext.getInstance();
     const userInfo: User = await userService.findUserByUsername(username);
     const membershipPriceUsd: number = await settingService.getSettingValue(Setting.KEY.MEMBERSHIP_PRICE_USD);
-    const vitaePrice = _getMembershipPriceInVitae(membershipPriceUsd);
+    const vitaePrice = usdToVitae(membershipPriceUsd);
 
     ctx.body = {
       success: true,
@@ -159,7 +159,3 @@ const getUsersByRole = (page = 0, count = 10, role?, name?, username?, email?, s
   });
   resolve(users);
 });
-
-const _getMembershipPriceInVitae = (usdPrice: number) => {
-  return usdPrice / CMCContext.getInstance().vitaePriceUSD();
-};
