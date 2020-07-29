@@ -64,8 +64,41 @@
       }
     }
   }
+
+  .login-floating-window {
+    position: fixed;
+    bottom: 0;
+    padding: 5px;
+    width: 100%;
+    text-align: center;
+    background: #44c97d;
+    color: white;
+    // color: #44c97d;
+    b {
+      color: blue;
+    }
+  }
 }
 
 .login-description-box {
   width: 380px;
+}
+
+@media screen and (max-width: 647px) {
+  .login-description-container {
+    margin-bottom: 40px;
+  }
+  .login-floating-window {
+    span {
+      display: block;
+    }
+  }
+}
+
+@media screen and (min-width: 647px) {
+  .login-floating-window {
+    span {
+      margin-right: 5px;
+    }
+  }
 }

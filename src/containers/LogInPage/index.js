@@ -14,7 +14,28 @@ class LogIn extends Component {
       email: '',
       username: '',
       password: '',
+      totalRainedUsd: 0,
+      totalRainedVitae: 0,
     };
+  }
+
+  async componentDidMount() {
+    try {
+      const res = await Request.axios('get', `/api/v1/total-rained-amount`);
+
+      if (res && res.success) {
+        this.setState({
+          totalRainedUsd: res.totalRainedUsd,
+          totalRainedVitae: res.totalRainedVitae,
+        });
+      } else {
+        notification.error({
+          message: res.message,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async login() {
@@ -73,21 +94,13 @@ class LogIn extends Component {
   };
 
   render() {
-    const {
-      welcomeTitle,
-      welcomeText,
-      title1,
-      text1,
-      title2,
-      text2,
-      title3,
-      text3,
-    } = landingDescription;
+    const { welcomeTitle, welcomeText, title1, text1, title2, text2 } = landingDescription;
+    const { totalRainedUsd, totalRainedVitae } = this.state;
     return (
       <div className="login">
         <Row className="login-container">
           <Col xs={24} sm={24} md={24} lg={10} className="login-form-container">
-            <Row justify="center" align="middle" style={{ height: '100%' }}>
+            <Row justify="center" align="middle" style={{ height: '100vh' }}>
               <SignInSignUp setValue={this.setValue} isLogin />
             </Row>
           </Col>
@@ -121,17 +134,23 @@ class LogIn extends Component {
                     <h2>{title2}</h2>
                     <p>{text2}</p>
                   </Col>
-
-                  <Col span={24}>
-                    <h2>{title3}</h2>
-                    <p>{text3}</p>
-                  </Col>
                 </Row>
               </Col>
               <Col span={3} />
             </Row>
           </Col>
         </Row>
+
+        <div className="login-floating-window">
+          <span>
+            Amount of Vitae Rained since opening: <b>{totalRainedVitae.toFixed(8)}</b>
+          </span>
+          {'  '}
+          {/* <br /> */}
+          <span>
+            USD value: <b>$ {totalRainedUsd.toFixed(8)}</b>
+          </span>
+        </div>
 
         <span className="login-logo-text">Vitae Rain Chat</span>
       </div>
