@@ -1,6 +1,6 @@
 import { ServicesContext } from "@context";
 import { User, Transaction, Setting } from "@models";
-import { checkUserInfo, isOwner, usdToVitae } from "@utils";
+import { checkUserInfo, isOwner, usdToVitae, now } from "@utils";
 import { confirmMembership } from "@controllers";
 import { updateBalanceSocket } from "@sockets";
 
@@ -43,6 +43,50 @@ export const getMembershipPrice = async (ctx, next) => {
       vitaePrice,
       usdPrice: membershipPriceUsd,
       walletAddress: userInfo.walletAddress,
+    };
+  } catch (error) {
+    console.log(error.message);
+    ctx.body = {
+      success: false,
+      message: error.message
+    };
+  }
+};
+
+export const getMembershipPendingTran = async (ctx, next) => {
+  try {
+    const { username } = ctx.state.user;
+    const { userService, transactionService, settingService } = ServicesContext.getInstance();
+
+    const userInfo: User = await userService.findUserByUsername(username);
+    if (userInfo === undefined) {
+      console.log(`Get Pending Tran => Failed | Invalid username: ${username}`);
+      ctx.body = {
+        success: false,
+        message: "Invalid username"
+      };
+      return;
+    }
+
+    const pendingTran = await transactionService.getLastRequestedTransaction(userInfo.id);
+    if (pendingTran === undefined || pendingTran.type !== Transaction.TYPE.MEMBERSHIP) {
+      ctx.body = {
+        success: true,
+        message: "No pending transaction."
+      };
+      return;
+    }
+
+    const membershipPriceUsd: number = await settingService.getSettingValue(Setting.KEY.MEMBERSHIP_PRICE_USD);
+    const tranExpire: number = await settingService.getSettingValue(Setting.KEY.TRANSACTION_REQUEST_EXPIRE);
+    const expireIn: number = pendingTran.time * 1000 + tranExpire - now() * 1000;
+    ctx.body = {
+      success: true,
+      message: "Pending Transaction",
+      walletAddress: userInfo.walletAddress,
+      vitaePrice: pendingTran.expectAmount,
+      usdPrice: membershipPriceUsd,
+      expireIn,
     };
   } catch (error) {
     console.log(error.message);

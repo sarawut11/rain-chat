@@ -7,7 +7,7 @@
     - [/email/confirm (POST)](#emailconfirm-post)
     - [/token/validate (POST)](#tokenvalidate-post)
     - [/ref/validate (POST)](#refvalidate-post)
-    - [/total-rained-amount (POST)](#total-rained-amount-post)
+    - [/total-rained-amount (GET)](#total-rained-amount-get)
   - [1.3 Profile](#13-profile)
     - [/user/:username (GET)](#userusername-get)
     - [/user/:username (PUT)](#userusername-put)
@@ -34,6 +34,7 @@
     - [/campaign/mod/:adsId/approve (POST)](#campaignmodadsidapprove-post)
   - [1.6 Role Management API](#16-role-management-api)
     - [/membership/price (GET)](#membershipprice-get)
+    - [/membership/get-pending-request (GET)](#membershipget-pending-request-get)
     - [/membership/role/users (GET)](#membershiproleusers-get)
     - [/membership/role/users?role=x&page=y&count=z (GET)](#membershiproleusersrolexpageycountz-get)
     - [/membership/role/update/moderator (POST)](#membershiproleupdatemoderator-post)
@@ -200,7 +201,7 @@
     message: "Valid or Invalid Message"
   }
   ```
-### /total-rained-amount (POST)
+### /total-rained-amount (GET)
   Get total rained amount in vitae and usd.
 
   ***Response***
@@ -712,6 +713,19 @@
     vitaePrice, // membership price in vitae
     usdPrice,   // membership price in usd
     walletAddress, // Company wallet address
+  }
+  ```
+### /membership/get-pending-request (GET)
+  Get pending membership request
+
+  ***Response***
+  ```
+  {
+    success: ture/false,
+    vitaePrice, // membership price in vitae
+    usdPrice,   // membership price in usd
+    walletAddress, // Company wallet address
+    expireIn,   // expire time in miliseconds
   }
   ```
 ### /membership/role/users (GET)
