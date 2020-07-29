@@ -33,7 +33,7 @@ const formatAdsList = adsList => {
 
   let approvedAdsList = [...adsList];
   approvedAdsList = approvedAdsList.filter(item => {
-    return item.status === ADS_APPROVED;
+    return item.status === ADS_APPROVED || item.status === ADS_PENDING_PURCHASE;
   });
 
   let rejectedAdsList = [...adsList];

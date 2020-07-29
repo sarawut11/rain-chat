@@ -778,7 +778,7 @@ class Ads extends Component {
                   )}
                 </TabPane>
 
-                <TabPane
+                {/* <TabPane
                   tab={this.renderTabPaneBadge(
                     isModerator,
                     'Awaiting Purchase',
@@ -808,7 +808,7 @@ class Ads extends Component {
                   ) : (
                     <Empty description="No Awaiting Purchased Ads" />
                   )}
-                </TabPane>
+                </TabPane> */}
 
                 <TabPane
                   tab={this.renderTabPaneBadge(isModerator, 'Purchased', ads.paidAdsList)}
