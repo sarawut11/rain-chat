@@ -36,7 +36,7 @@ export const sendMail = async (mailPath: string, { email, subject, data }: {
     if (data.expire !== undefined) html = html.replace(/{{EXPIRE}}/g, (data.expire / 60000).toString());
 
     const info = await transporter.sendMail({
-      from: `"Vitae Support" <${process.env.MAIL_USER}>`,
+      from: `"VitaeRain.Chat Support" <${process.env.MAIL_USER}>`,
       to: email,
       subject,
       html
