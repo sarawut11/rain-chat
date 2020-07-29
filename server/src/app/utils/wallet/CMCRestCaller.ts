@@ -29,27 +29,36 @@ export class CMCRestCaller {
         } else {
           let errorCode = Number.MIN_SAFE_INTEGER;
           let errorMessage: string | null;
-          const result = JSON.parse(resultStr);
-          const status = result.status;
-          if (status) {
-            errorCode = status.error_code;
-            errorMessage = status.error_message;
-          }
-          if (errorCode === Number.MIN_SAFE_INTEGER) {
-            callback(new Error("CMC Rest API ERROR : Unknown error."), 0);
-          } else if (errorCode) {
-            callback(
-              new Error(`CMC Rest API ERROR : ${errorCode} : ${errorMessage}`),
-              0
-            );
-          } else if (
-            result.data &&
-            result.data["3063"] &&
-            result.data["3063"].quote &&
-            result.data["3063"].quote.USD
-          ) {
-            callback(undefined, result.data["3063"].quote.USD.price);
-          } else {
+          try {
+            const result = JSON.parse(resultStr);
+            const status = result.status;
+            if (status) {
+              errorCode = status.error_code;
+              errorMessage = status.error_message;
+            }
+            if (errorCode === Number.MIN_SAFE_INTEGER) {
+              callback(new Error("CMC Rest API ERROR : Unknown error."), 0);
+            } else if (errorCode) {
+              callback(
+                new Error(`CMC Rest API ERROR : ${errorCode} : ${errorMessage}`),
+                0
+              );
+            } else if (
+              result.data &&
+              result.data["3063"] &&
+              result.data["3063"].quote &&
+              result.data["3063"].quote.USD
+            ) {
+              callback(undefined, result.data["3063"].quote.USD.price);
+            } else {
+              callback(
+                new Error(
+                  "CMC Rest API ERROR : Failed to find price in JSON returned by CMC."
+                ),
+                0
+              );
+            }
+          } catch (error) {
             callback(
               new Error(
                 "CMC Rest API ERROR : Failed to find price in JSON returned by CMC."
