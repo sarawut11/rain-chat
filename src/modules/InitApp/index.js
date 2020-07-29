@@ -14,7 +14,11 @@ import {
   deleteGroupChatAction,
 } from '../../containers/GroupChatPage/groupChatAction';
 import { setAdsAction, updateAdsInfo } from '../../containers/AdsPage/adsAction';
-import { setUserInfoAction, setBalanceAction } from '../../redux/actions/userAction';
+import {
+  setUserInfoAction,
+  setBalanceAction,
+  setMembershipUpgradeInfo,
+} from '../../redux/actions/userAction';
 import { setStaticAdsAction } from '../../redux/actions/staticAdsAction';
 import { enableVitaePost, disableVitaePost } from '../../redux/actions/enableVitaePost';
 import {
@@ -240,6 +244,20 @@ class InitApp {
   _listeningTransaction() {
     window.socket.on('transactionExpired', ({ type, expectAmount, time }) => {
       console.log('Transaction Request Expired', type, expectAmount, time);
+      const typeString = type === 0 ? 'ads' : 'membership upgrade';
+      antNotification.error({ message: `Transaction request for ${typeString} is expired.` });
+
+      if (type === 1) {
+        store.dispatch(
+          setMembershipUpgradeInfo({
+            membershipUpgradePending: false,
+            usdPrice: null,
+            vitaePrice: null,
+            walletAddress: null,
+            deadline: null,
+          }),
+        );
+      }
     });
   }
 

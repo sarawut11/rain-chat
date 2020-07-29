@@ -308,7 +308,7 @@ class Ads extends Component {
     console.log('onCancelRequest', item);
     const { id } = item;
     try {
-      const res = await Request.axios('post', `/api/v1/campaign/pub/${id}/cancel`);
+      const res = await Request.axios('post', `/api/v1/campaign/pub/${id}/request/cancel`);
 
       if (res && res.success) {
         this.props.requestAdsAction({ id, status: 0, adsState: this.props.ads });
@@ -778,7 +778,7 @@ class Ads extends Component {
                   )}
                 </TabPane>
 
-                <TabPane
+                {/* <TabPane
                   tab={this.renderTabPaneBadge(
                     isModerator,
                     'Awaiting Purchase',
@@ -808,7 +808,7 @@ class Ads extends Component {
                   ) : (
                     <Empty description="No Awaiting Purchased Ads" />
                   )}
-                </TabPane>
+                </TabPane> */}
 
                 <TabPane
                   tab={this.renderTabPaneBadge(isModerator, 'Purchased', ads.paidAdsList)}
