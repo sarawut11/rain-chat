@@ -308,7 +308,7 @@ class Ads extends Component {
     console.log('onCancelRequest', item);
     const { id } = item;
     try {
-      const res = await Request.axios('post', `/api/v1/campaign/pub/${id}/cancel`);
+      const res = await Request.axios('post', `/api/v1/campaign/pub/${id}/request/cancel`);
 
       if (res && res.success) {
         this.props.requestAdsAction({ id, status: 0, adsState: this.props.ads });
