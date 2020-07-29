@@ -23,8 +23,9 @@
     - [/campaign/pub/:adsId (PUT)](#campaignpubadsid-put)
     - [/campaign/pub/:adsId (DELETE)](#campaignpubadsid-delete)
     - [/campaign/pub/:adsId/request (POST)](#campaignpubadsidrequest-post)
-    - [/campaign/pub/:adsId/cancel (POST)](#campaignpubadsidcancel-post)
+    - [/campaign/pub/:adsId/request/cancel (POST)](#campaignpubadsidrequestcancel-post)
     - [/campaign/pub/:adsId/purchase (POST)](#campaignpubadsidpurchase-post)
+    - [/campaign/pub/:adsId/purchase/cancel (POST)](#campaignpubadsidpurchasecancel-post)
     - [/campaign/impcost?type=x (GET)](#campaignimpcosttypex-get)
     - [/campaign/static (GET)](#campaignstatic-get)
   - [1.5 Moderator / Ads API](#15-moderator--ads-api)
@@ -496,7 +497,7 @@
     }
   }
   ```
-### /campaign/pub/:adsId/cancel (POST)
+### /campaign/pub/:adsId/request/cancel (POST)
   Cancel requested ads from review.
 
   ***Response***
@@ -551,7 +552,30 @@
     }
   }
   ```
+### /campaign/pub/:adsId/purchase/cancel (POST)
+  Cancel ads purhcase.
 
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    ads: {
+      id,           // Ads Id
+      userId,       // Advertiser's id
+      assetLink,    // Link to the ads content
+      impressions,
+      link,
+      buttonLabel,
+      title,
+      description,
+      status,       
+      lastTime,     // Last advertised time - Unix timestamp in UTC
+      time,         // Registration Time - Unix timestamp in UTC
+      type,         
+    }
+  }
+  ```
 ### /campaign/impcost?type=x (GET)
   Get the cost per impressions by Vitae Token
 

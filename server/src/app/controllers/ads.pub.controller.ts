@@ -279,7 +279,7 @@ export const requestAds = async (ctx, next) => {
   }
 };
 
-export const cancelAds = async (ctx, next) => {
+export const cancelAdsRequest = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
     const { adsId } = ctx.params;
@@ -365,7 +365,8 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
       const ads: Ads = await adsService.findAdsById(adsId);
       if (ads.status === Ads.STATUS.PendingPurchase) {
         await adsService.updateStatus(adsId, Ads.STATUS.Approved);
-        await updateAdsStatus(ads);
+        const updatedAds = await adsService.findAdsById(adsId);
+        await updateAdsStatus(updatedAds);
         console.log(`Purchase Ads => Expired | Restore status to approved | adsId:${adsId}`);
       }
       TransactionContext.getInstance().expireTransactionRequest(transInfo.insertId);
@@ -383,6 +384,49 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
     };
   } catch (error) {
     console.log(`Purchase Ads => Failed | Error:${error.message}`);
+    ctx.body = {
+      success: false,
+      message: "Failed"
+    };
+  }
+};
+
+export const cancelAdsPurchase = async (ctx, next) => {
+  try {
+    const { username } = ctx.state.user;
+    const { adsId } = ctx.params;
+    const { adsService, transactionService, settingService } = ServicesContext.getInstance();
+
+    const checkResult = await checkAdsId(username, adsId);
+    if (checkResult.success === false) {
+      ctx.body = checkResult;
+      return;
+    }
+
+    const { existingAds } = checkResult;
+    if (existingAds.status !== Ads.STATUS.PendingPurchase) {
+      console.log(`Purchase Ads => Failed | Not PendingPurchase | adsId:${adsId}`);
+      ctx.body = {
+        success: false,
+        message: "This ads is not approved."
+      };
+      return;
+    }
+
+    await adsService.updateStatus(adsId, Ads.STATUS.Approved);
+    const tranInfo = await transactionService.getLastRequestedTransaction(existingAds.userId);
+    if (tranInfo.type === Transaction.TYPE.ADS) {
+      TransactionContext.getInstance().expireTransactionRequest(tranInfo.id);
+    }
+    const updatedAds = await adsService.findAdsById(adsId);
+
+    ctx.body = {
+      success: true,
+      message: "Ads purchase canceled.",
+      ads: updatedAds
+    };
+  } catch (error) {
+    console.log(`Cancel Purchase Ads => Failed | Error:${error.message}`);
     ctx.body = {
       success: false,
       message: "Failed"
