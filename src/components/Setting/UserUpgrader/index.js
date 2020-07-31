@@ -215,7 +215,11 @@ class UserUpgrader extends Component {
                     Your balance: <span>{balance && balance.toFixed(8)}</span> vitae
                   </p>
                   <p>
-                    You have to pay <span>${usdPrice}</span> in Vitae.
+                    You have to pay{' '}
+                    <span>
+                      ${usdPrice}({vitaePrice} vitae)
+                    </span>{' '}
+                    in Vitae.
                   </p>
                 </div>
               )}
