@@ -212,7 +212,7 @@ class UserUpgrader extends Component {
               ) : (
                 <div style={{ textAlign: 'center' }}>
                   <p>
-                    Your balance: <span>{balance}</span> vitae
+                    Your balance: <span>{balance && balance.toFixed(8)}</span> vitae
                   </p>
                   <p>
                     You have to pay <span>${usdPrice}</span> in Vitae.

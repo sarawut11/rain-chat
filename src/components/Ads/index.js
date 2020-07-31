@@ -89,7 +89,7 @@ class ImpressionsContent extends Component {
           </Form.Item>
 
           <Form.Item label="Amount">
-            <Input value={amount} disabled />
+            <Input value={amount && amount.toFixed(8)} disabled />
           </Form.Item>
         </Form>
       </div>

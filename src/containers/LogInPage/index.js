@@ -150,9 +150,15 @@ class LogIn extends Component {
           <span>
             USD value: <b>$ {totalRainedUsd.toFixed(8)}</b>
           </span>
-          <span>
+          <span style={{ position: 'absolute', right: '10px' }}>
             <a href="/faq">
-              <b>FAQ</b>
+              <b style={{ color: 'black' }}>FAQ</b>
+            </a>
+            <a href="/tos" style={{ marginLeft: 10 }}>
+              <b style={{ color: 'black' }}>ToS</b>
+            </a>
+            <a href="/pp" style={{ marginLeft: 10 }}>
+              <b style={{ color: 'black' }}>Privacy Policy</b>
             </a>
           </span>
         </div>
