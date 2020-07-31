@@ -30,6 +30,30 @@ class UserUpgrader extends Component {
     upgradeMode: 0,
   };
 
+  async componentDidMount() {
+    try {
+      const res = await Request.axios('get', `/api/v1/membership/get-pending-request`);
+
+      if (res && res.success) {
+        const { vitaePrice, usdPrice, walletAddress, expireIn } = res;
+
+        if (expireIn) {
+          this.props.setMembershipUpgradeInfo({
+            membershipUpgradePending: true,
+            usdPrice,
+            vitaePrice,
+            walletAddress,
+            deadline: Date.now() + expireIn,
+          });
+        }
+      } else {
+        console.log(res.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   showModal = async () => {
     const { userInfo } = this.props;
 
@@ -138,6 +162,8 @@ class UserUpgrader extends Component {
       { label: 'Send vitae tokens', value: 0 },
       { label: 'Use my balance', value: 1 },
     ];
+
+    console.log('UserUpgrader render', this);
 
     return (
       <div>
