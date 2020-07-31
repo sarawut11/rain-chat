@@ -73,10 +73,11 @@ class ImpressionsContent extends Component {
   render() {
     console.log('ImpressionsContent', this);
     const { pointer } = this.props;
-    let amount = Number(this.state.impressions) * pointer.state.price;
+    let amount = Number(this.state.impressions) * pointer.state.price.toFixed(8);
+    amount = amount > 0 ? amount + 0.00000001 : amount;
     console.log(amount);
-    amount = Number(amount.toFixed(2)) + (amount - amount.toFixed(2) > 0 ? 0.01 : 0);
-    console.log(amount);
+    // amount = Number(amount.toFixed(8)) + (amount - amount.toFixed(8) > 0 ? 0.01 : 0);
+    // console.log(amount);
     return (
       <div>
         <Form style={{ marginTop: '20px' }} labelCol={{ span: 7 }} wrapperCol={{ span: 17 }}>
@@ -89,7 +90,7 @@ class ImpressionsContent extends Component {
           </Form.Item>
 
           <Form.Item label="Amount">
-            <Input value={amount && amount.toFixed(8) + 0.00000001} disabled />
+            <Input value={amount && amount.toFixed(8)} disabled />
           </Form.Item>
         </Form>
       </div>
