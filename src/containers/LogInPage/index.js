@@ -150,6 +150,11 @@ class LogIn extends Component {
           <span>
             USD value: <b>$ {totalRainedUsd.toFixed(8)}</b>
           </span>
+          <span>
+            <a href="/faq">
+              <b>FAQ</b>
+            </a>
+          </span>
         </div>
 
         <span className="login-logo-text">Vitae Rain Chat</span>
