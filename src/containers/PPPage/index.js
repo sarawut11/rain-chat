@@ -12,285 +12,139 @@ class LogIn extends Component {
       <div className="faq-container" style={{ width: '100%' }}>
         <Card style={{ width: '100%' }}>
           <Typography>
-            <Title level={2}>Terms of Service </Title>
-            <Title level={3}>IMPORTANT NOTICE OF TERMS OF SERVICE </Title>
+            <Title level={1}>Privacy Policy </Title>
+
             <Paragraph>
-              This legally-binding agreement is between Vitae Rain Chat and you. It represents a
-              comprehensive and exclusive statement of the terms and conditions relating to your
-              usage of Vitae Rain Chat’s documents, software, and any related materials
-              (“software”).{' '}
+              The purpose of our privacy policy is to make welcome visitors to Vitae Rain Chat.com
+              like yourself aware of the kinds of information we could gather about you. It also
+              outlines how that information might be used, if it might be disclosed to third party
+              individuals or entities, and the options you have regarding our use of and the
+              capacity you have to amend this information, and/or assistance with evaluating our
+              email services and solutions.{' '}
             </Paragraph>
 
             <Paragraph>
-              By selecting the “I agree” option and going ahead with the registration or
-              installation, by using our software or by showing your acceptance in any other way,
-              you agree to be bound by the terms and conditions of this agreement. Should you not
-              agree with all the terms and conditions stated, you will not be authorized to use the
-              software. You should cease the installation or use of the software immediately.{' '}
+              Vitae Rain Chat.com strictly forbids the sending of unsolicited emails in bulk form.
+              Vitae Rain Chat has a strong commitment to protecting the privacy rights of Users and
+              Subscribers as well as our clients, partners and their subscribers and users. Our aim
+              is to give users of our services and products a safe and secure environment in which
+              to do so.{' '}
             </Paragraph>
 
             <Paragraph>
-              You, and/or anyone you give authority to use your account is not permitted to engage
-              in unlawful conduct, or conduct which prevents another user/users from enjoying Vitae
-              Rain Chat, or conduct which Vitae Rain Chat—using sole discretion—considers to be
-              unacceptable.{' '}
+              VitaeRain.Chat Mail gives visitors opportunities to sign up to our website. By
+              providing us with your email address you permit us to use the information, and any
+              other details you provide at the point of collection, to send marketing communications
+              designed to promote Vitae Rain Chat products and services.{' '}
+            </Paragraph>
+
+            <Title level={3}>Use Of Information </Title>
+
+            <Paragraph>
+              Vitae Rain Chat will keep a record of your details associated with your subscription.
+              We also will track your ability to support HTML email, including whether or not you
+              open HTML email messages and collect information about the links you click. This is
+              done to help us provide you with more of the kind of Content that’s relevant to your
+              interests and needs.{' '}
+            </Paragraph>
+
+            <Title level={3}>Unsubscribing</Title>
+
+            <Paragraph>
+              Should you unsubscribe from our services, we will maintain a record of your
+              unsubscription. This is done as required by law, or in case we receive complaints. To
+              unsubscribe at any time, please see the unsubscribe option that appears at the bottom
+              of every email we send. Clicking this will take you to a page where you can opt-out of
+              receiving email messages from us. You can also unsubscribe by sending us an email with
+              ‘unsubscribe’ in the subject line and the message section of the email. There is also
+              an unsubscribe feature on this website, or you can contact us direct. As soon as we
+              have updated our database, your email address will be removed from our marketing email
+              lists.{' '}
+            </Paragraph>
+
+            <Title level={3}>Use of Personal Identifiable Information (PII) </Title>
+
+            <Paragraph>
+              Vitae Rain Chat will be the sole owner of any information about you that we collect.
+              We resolve not to license, share, sell, transfer, or rent your email address to any
+              third parties, including our sponsors, affiliates, or partners, unless ordered to do
+              so by a court of law. Information about you that is submitted to us will only be
+              available to people permitted or used by VitaeRain.Chat to manage this kind of
+              information, or for the purpose of contacting you in line with consent expressly
+              granted by you at the point of email collection, or to send you information in line
+              with any request for information you have made.{' '}
+            </Paragraph>
+
+            <Title level={3}>Access to information </Title>
+
+            <Paragraph>
+              Upon request, and after you have provided us with proof of your identity, we will
+              grant you access to all the information we hold about you. After viewing that
+              information, you can request any amends be made to that information, or that elements
+              of the information we hold are removed and we will carry out your wishes. All such
+              requests will be carried out within 10 days of us receiving notification and proof of
+              your identity. Vitae Rain Chat will take every possible precaution to protect your
+              information.{' '}
             </Paragraph>
 
             <Paragraph>
-              Even if you are a paid subscriber to any Vitae Rain Chat service or services, Vitae
-              Rain Chat reserves the right to terminate ALL of your accounts, if, in its sole
-              discretion, Vitae Rain Chat deems and determines that via ANY of your accounts or
-              nicknames, whether free or paid for, you have taken part in conduct that is
-              unacceptable or prohibited.{' '}
+              Any sensitive information that is submitted to our website is protected in both online
+              and offline forms. Vitae Rain Chat operates and enforces stringent internal policies
+              in order to protect the privacy and maintain the security of our visitors. We
+              constantly update and re-evaluate our polices, and use new technology as and when
+              deemed relevant in order to enhance the security measures we provide.{' '}
+            </Paragraph>
+
+            <Title level={3}>YouTube Terms Of Service (Tos) </Title>
+
+            <Paragraph>
+              We use YouTube API Services to search YouTube’s library of videos and share them on
+              our chat rooms. You can find out more information at YouTube Terms Of Service and
+              Google’s Privacy Policy.{' '}
+            </Paragraph>
+
+            <Title level={3}>Use Of IP Addresses </Title>
+
+            <Paragraph>
+              Vitae Rain Chat will use your IP address to help identify and solve problems that
+              might occur with our server and/or websites. We also carry out tracking of browser
+              types to build our understanding of visitor needs to influence our website design. No
+              IP address is linked to personally identifiable information.{' '}
             </Paragraph>
 
             <Paragraph>
-              Please note that your subscription fee will not be refunded (either wholly or
-              partially) if you have paid to subscribe to any Vitae Rain Chat services if your
-              account is, or your accounts are, suspended or terminated. This applies even if the
-              termination or suspension results from unacceptable or prohibited conduct carried out
-              via a nickname or free account.{' '}
+              We also track IP addresses to monitor user sessions and use the information to see how
+              users are interacting with our sites, and help us develop and deliver better services
+              to our subscribers and users. All personal information of our users will remain
+              anonymous and has no link to IP addresses.{' '}
+            </Paragraph>
+
+            <Title level={3}>Use of Cookies </Title>
+
+            <Paragraph>
+              Client-side cookies are employed to verify the login status of our subscribers and
+              users when they are using services or products that directly link to our website. The
+              cookies are also used to track point-of-entry to point-of registration for any user
+              taking part in our affiliate sign-up programs. Cookies can also be used to track and
+              measure the success or otherwise of specific marketing campaigns.{' '}
             </Paragraph>
 
             <Paragraph>
-              Without assuming responsibility therefore, Vitae Rain Chat reserves the right to take
-              action against any conduct or to restrict any conduct which Vitae Rain Chat, in its
-              sole discretion, deems to be offensive or harmful to other users, or is deemed to be
-              unacceptable for any reason or no reason whatsoever, or detracts from the reputation
-              of the Vitae Rain Chat service, or has or could have an adverse effect on Vitae Rain
-              Chat, its software, or its business in any way whatsoever.{' '}
+              The use of cookies on our site is not linked to any personally identifiable
+              information. All cookies are temporary and the cookie terminates when you close your
+              browser. You can still use the Vitae Rain Chat site even if you reject cookies, but
+              access to the site may be limited.{' '}
             </Paragraph>
 
             <Paragraph>
-              Without assuming responsibility therefore, Vitae Rain Chat reserves the right to take
-              action against any conduct or to restrict any conduct which Vitae Rain Chat, in its
-              sole discretion, deems to be offensive or harmful to other users, or is deemed to be
-              unacceptable for any reason or no reason whatsoever, or detracts from the reputation
-              of the Vitae Rain Chat service, or has or could have an adverse effect on Vitae Rain
-              Chat, its software, or its business in any way whatsoever.{' '}
-            </Paragraph>
-
-            <Paragraph>
-              Additionally, other examples of conduct deemed unacceptable by Vitae Rain Chat
-              includes, but is not limited to; (h) software hacking; (i) stealing another user’s
-              nickname or account; (j) sending any disabling device or harmful component, including
-              a worm, timebomb, Trojan, cancelbot, or any other device with intent to detrimentally
-              interfere with, appropriate, damage, surreptitiously intercept any system, personal
-              information, or data, or attempting, abetting, or soliciting any of the above
-              mentioned activities. Any failure on the part of Vitae Rain Chat to deal with
-              prohibited or unacceptable behavior does not constitute a waiver by Vitae Rain Chat in
-              respect of future, similar behavior.{' '}
-            </Paragraph>
-
-            <Paragraph>
-              In the absence of assuming responsibility therefore, Vitae Rain Chat also reserves the
-              right (at its sole discretion) to place restrictions on the activities of known or
-              suspected ‘hate’ groups or organizations with similar aims.{' '}
-            </Paragraph>
-
-            <Paragraph>
-              Vitae Rain Chat can also use web beacons, cookies, and other monitoring technology in
-              order to assist the compilation or anonymous statistical information concerning
-              visitors to our website. The information gathered will not be personally identifiable.
-              For more details about how Vitae Rain Chat collects and uses information, please see
-              the privacy policy that’s available at http://www.VItaeaRain.Chat{' '}
-            </Paragraph>
-
-            <Paragraph>
-              By agreeing to these terms and conditions, you further agree and understand that all
-              data, text, information, music, sounds, software, photographs, videos, graphics,
-              messages and other material (‘Content’) is provided by, and is the responsibility of
-              the person who provided the Content. Vitae Rain Chat cannot be held responsible for
-              such Content. Vitae Rain Chat is not responsible for the administration of Commercial
-              or other rooms, and is not responsible for the content of such rooms, unless this is
-              specifically stated.{' '}
-            </Paragraph>
-
-            <Paragraph>
-              The inclusion of a chat room or a User Submission (see below for definition) or any
-              other content on Vitae Rain Chat’s website homepage, landing page, or any other page,
-              does not constitute an Vitae Rain Chat endorsement of the content. It also does not
-              indicate that Vitae Rain Chat has reviewed or approved the content. Vitae Rain Chat
-              expressly disclaims all responsibility for the same.{' '}
-            </Paragraph>
-
-            <Paragraph>
-              Vitae Rain Chat holds or expresses no views or opinions in relation to the content of
-              any room. Vitae Rain Chat is not responsible for any activities that take place in any
-              room. Should you take part in any activity on Vitae Rain Chat, you do so at your own
-              risk.{' '}
-            </Paragraph>
-
-            <Paragraph>
-              Should another Vitae Rain Chat user who you do not know send or try to send you a
-              graphic, video, image, or other visual depiction (‘Images’ or an ‘Image) , the image
-              could be inappropriate for the rating of the Vitae Rain Chat room you are in. In such
-              an event, you should exercise your judgment before accepting an image. You hereby
-              agree that the act of accepting such an image or images is undertaken at your own
-              risk. You waive all your rights in law worldwide of any type whatsoever, including
-              equity or otherwise, in addition to all claims that could possibly be asserted
-              anywhere in the world against Vitae Rain Chat Parties (hereafter defined) that arise
-              from or relate to you accepting images.{' '}
-            </Paragraph>
-
-            <Paragraph>
-              You should also be aware that if you choose to distribute, disseminate, display,
-              publish, post, or otherwise make available (hereafter referred to as ‘Publish’) any
-              image, or send a text message to, or speak with another user or users (‘Chat’), that
-              user or those users could have the ability to capture, download, or reproduce the
-              contents of your Chat and or the Image or Images in undesirable or unpredicted
-              formats, manners, or locations, and to entities, individuals, or groups to whom you do
-              not wish such an image or images or Chat to be sent. As a result, you should not
-              Publish any chat or Images that you would not like to see potentially distributed to a
-              wide audience which could include people, groups or entities that you don’t want to
-              see the chat or Images.
-            </Paragraph>
-
-            <Paragraph>
-              Additionally, you give your consent that any Chats, Images, and other Content may be
-              posted on the Vitae Rain Chat homepage, and/or landing pages or other pages at various
-              times. You also hereby agree that you Publish Images and Chat at your own risk, and
-              waive all worldwide rights of any and every kind in law, equity or otherwise, and all
-              claims that could be asserted against Vitae Rain Chat parties (herein after defined)
-              that arise from or relate to your Publication of Chat or Images.{' '}
-            </Paragraph>
-
-            <Paragraph>
-              Notwithstanding the foregoing, it shall be regarded as a breach of the Terms of
-              Service for any Vitae Rain Chat user to capture an Image or Chat that has been
-              published on Vitae Rain Chat without gaining consent in writing from (i) whoever
-              Published the Chat or Images (ii) the person or people whose image has been
-              published—if they differ from the Publisher. As regards Terms of Service, no user or
-              other party can be deemed to be a third party beneficiary.{' '}
-            </Paragraph>
-
-            <Title level={3}>No Denigration or Solicitation </Title>
-            <Paragraph>
-              As part of the terms of use of Vitae Rain Chat, you must agree to never (either
-              directly or indirectly) (a) solicit, cause, or assist in causing or soliciting any
-              officer, agent, employee, director, palhelp, administrator, consultant, or anyone else
-              who is employed, or is a consultant, representative, assistant or volunteer for Vitae
-              Rain Chat (hereafter ‘Representative’) to (i) discontinue, suspend or terminate such a
-              Representative’s period of consultancy, employment or other professional connection
-              with Vitae Rain Chat or (ii) be employed by, or work for, or be a consultant for
-              another person or entity; or (b) make defamatory, denigrating, or negative remarks,
-              comments, or statements concerning Vitae Rain Chat or its Representatives, or engage
-              in any activity or conduct that could adversely affect Vitae Rain Chat’s reputation,
-              public image or character and/or that of any Representative of Vitae Rain Chat, or any
-              Vitae Rain Chat trademark, service mark and/or its goodwill; (c) cause or solicit any
-              client or customer of Vitae Rain Chat to stop using our services, and/or cause or
-              solicit any prospective client or customer of Vitae Rain Chat to use Vitae Rain Chat
-              services and/or products, and/or to use Vitae Rain Chat software or other products or
-              services that are competitors to Vitae Rain Chat’s products and/or services; (d)
-              assist, abet or authorize a person or entity to take part in any of the foregoing.{' '}
-            </Paragraph>
-
-            <Title level={3}>Becoming A Chat Room Host </Title>
-            <Paragraph>
-              Vitae Rain Chat’s terms and conditions permit you to create chat rooms of your own on
-              the Vitae Rain Chat platform. As a host of a chat room, if you encounter a user
-              demonstrating behaviors that do not align with the Terms of Service that apply to your
-              chat room, you (or those you have given the authority to act on your behalf) have a
-              number of ways to deal with such users:{' '}
-            </Paragraph>
-            <Paragraph>
-              Clicking on the name of the user who’s misbehaving and select action button will
-              reveal a menu of choices...{' '}
-            </Paragraph>
-
-            <Title level={3}>The Vitae Rain Chat Account Termination Policy </Title>
-            <Paragraph>
-              Any user’s access to the Vitae Rain Chat website will be terminated if users are
-              deemed to repeatedly infringe the terms of use. We reserve the right to determine if
-              any User Submission or Content is appropriate for Publishing and if it is compliant
-              the rules laid out in these Terms of Service. This includes, but is not limited to,
-              violations other than those to copyright and/or intellectual property rights, such as
-              the posting or Publishing of Content that is obscene, pornographic, defamatory, or
-              excessively long. With such User Submissions, Vitae Rain Chat reserves the right to
-              remove the content and/or terminate the User’s ability to upload such material to the
-              site. The termination can be activated at any time, without prior warning, and is at
-              the sole discretion of Vitae Rain Chat.{' '}
-            </Paragraph>
-
-            <Title level={3}>Law Enforcement </Title>
-            <Paragraph>
-              Vitae Rain Chat provides full cooperation with law enforcement officers and agencies
-              when they are investigating suspected criminal activity or requesting information
-              relating to the same. Not withstanding any provision made here to the contrary, Vitae
-              Rain Chat reserves the right to supply your name and other relevant information to the
-              appropriate authorities, with or without a subpoena.{' '}
-            </Paragraph>
-            <Paragraph>
-              Additionally, Vitae Rain Chat reserves the right, but has no obligation, to carry out
-              an internal review of the conduct of any user, either independently, or following a
-              complaint received from a third party user. All investigations carried out by Vitae
-              Rain Chat will include all steps deemed appropriate by Vitae Rain Chat in its sole
-              discretion. The conclusions reach by such an investigation may be shared with one or
-              more appropriate parties.
-            </Paragraph>
-
-            <Title level={3}>Termination of Vitae Rain Chat Accounts </Title>
-            <Paragraph>
-              If any User engages in activity expressly prohibited by the terms of this Agreement,
-              or commits any breach of this Agreement, then ANY of the following may result:{' '}
-            </Paragraph>
-            <Paragraph>
-              If any User engages in activity expressly prohibited by the terms of this Agreement,
-              or commits any breach of this Agreement, then ANY of the following may result:{' '}
-            </Paragraph>
-            <Paragraph>
-              Please note that if you are a paid subscriber in breach of this Agreement, your
-              subscription fee will not be refunded (either wholly or partially) should your Vitae
-              Rain Chat account be terminated or suspended.{' '}
-            </Paragraph>
-
-            <Title level={3}>Limitation of Liability And Indemnification </Title>
-            <Paragraph>
-              TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL VITAE RAIN CHAT OR ITS
-              AFFILIATES OR THEIR EMPLOYEES, OFFICERS, DIRECTORS, AGENTS or REPRESENTATIVES
-              (collectively known as ‘Vitae Rain Chat Parties) OR ANY OF THEIR SUPPLIERS BE LIABLE
-              OR RESPONSIBLE FOR ANY DAMAGES OF ANY TYPE OR NATURE. THIS INCLUDES, WITHOUT
-              LIMITATION, DAMAGES FOR BUSINESS INTERRUPTION, LOSS OF BUSINESS PROFIT, LOSS OF
-              INFORMATION OR DATA, OR ANY OTHER INDIRECT, INCIDENTAL, SPECIAL, OR CONSEQUENTIAL
-              DAMAGES) ARISING FROM THE USE OF, OR INABILITY TO USE THIS SOFTWARE, THE LICENSE, OR
-              OTHERWISE, IN CONNECTION WITH THIS AGREEMENT. THIS APPLIES EVEN IF VITAE RAIN CHAT HAS
-              RECEIVED ADVICE CONCERNING THE POSSIBILITY OF SUCH DAMAGES.{' '}
-            </Paragraph>
-            <Paragraph>
-              YOU ALSO AGREE TO FULLY INDEMNIFY AND HOLD ALL VITAE RAIN CHAT PARTIES HARMLESS FROM
-              AND AGAINST ANY AND ALL LOSSES, COSTS, DAMAGES, AND EXPENSES, INCLUDING, BUT NOT
-              LIMITED TO ATTORNEY’S FEES AND COURT COSTS, ARISING DIRECTLY OR INDIRECTLY FROM YOUR
-              USE OF THE VITAE RAIN CHAT SOFTWARE AND/OR YOUR BREACH OF ANY REPRESENTATION,
-              WARRANTY, OR COVENANT CONTAINED IN THIS AGREEMENT.{' '}
-            </Paragraph>
-
-            <Title level={3}>Governing Law and Amendments </Title>
-            <Paragraph>
-              This Agreement may not be modified except in the form of an agreement in writing from
-              an authorized Vitae Rain Chat representative. Vitae Rain Chat reserves the right to
-              modify this agreement’s terms without giving you prior notice, through posting the
-              updated version of the Agreement on the Vitae Rain Chat website. Additional to the
-              terms of this Agreement, you are bound by the terms of any posted guidelines and rules
-              that apply to your use of Vitae Rain Chat software.{' '}
-            </Paragraph>
-
-            <Title level={3}>Consolidation and Creditors’ Rights </Title>
-            <Paragraph>
-              In the event of a sale of assets, a merger or another corporate transaction involving
-              Vitae Rain Chat, or in the event of insolvency, bankruptcy, or another action
-              involving Vitae Rain Chat’s creditors, or under related or similar circumstances,
-              Vitae Rain Chat reserves the right to disclose and/or sell information relating to you
-              and your Account.{' '}
-            </Paragraph>
-            <Paragraph>
-              Vitae Rain Chat does not offer any refund or provide any claim to possible or
-              guaranteed income.{' '}
-            </Paragraph>
-
-            <Title level={3}>Privacy Policy </Title>
-            <Paragraph>
-              Vitae Rain Chat does not offer any refund or provide any claim to possible or
-              guaranteed income.{' '}
+              Should Vitae Rain Chat decide or need to alter its Privacy Policy, any changes will be
+              listed here. Vitae Rain Chat will not retroactively alter its policies. We maintain a
+              strong commitment to keeping all of our users up-to-date with and fully informed about
+              the kind of information we’re gathering, how that information could be used, and
+              whether such information will be shared with anyone. Users of Vitae Rain Chat sites
+              are always notified whenever their information is collected by third parties, enabling
+              the user to make an informed decision about whether or not they are happy to proceed
+              with services that require a third party.{' '}
             </Paragraph>
           </Typography>
         </Card>
