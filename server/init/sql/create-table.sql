@@ -228,6 +228,15 @@ CREATE TABLE `setting_info` (
   `type` varchar(10) NOT NULL DEFAULT '',
   PRIMARY KEY (`name`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+# Dump of table cost_per_imp_info
+# ------------------------------------------------------------
+DROP TABLE IF EXISTS `cost_per_imp_info`;
+CREATE TABLE `cost_per_imp_info` (
+  `userId` int(11) NOT NULL,
+  `price` double NOT NULL DEFAULT 0,
+  `time` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`userId`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

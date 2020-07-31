@@ -12,6 +12,7 @@ import {
   ExpenseConfirmService,
   WithdrawAddressService,
   SettingService,
+  ImpcostService,
 } from "@services";
 
 export class ServicesContext {
@@ -151,6 +152,16 @@ export class ServicesContext {
   }
   public setSettingService(service: SettingService): ServicesContext {
     this._settingService = service;
+    return this;
+  }
+
+  // Impcost service
+  private _impcostService: ImpcostService;
+  public get impcostService() {
+    return this._impcostService;
+  }
+  public setImpcostService(service: ImpcostService): ServicesContext {
+    this._impcostService = service;
     return this;
   }
 }
