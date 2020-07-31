@@ -59,6 +59,13 @@ const { Meta } = Card;
 const { TabPane } = Tabs;
 const { confirm, warning } = Modal;
 
+const getAmount = (impressions, price) => {
+  let amount = Number(impressions) * Number(price);
+  amount = Number(amount.toFixed(8));
+  amount = amount > 0 ? amount + 0.00000001 : amount;
+  return amount;
+};
+
 class ImpressionsContent extends Component {
   state = {
     impressions: 0,
@@ -73,11 +80,9 @@ class ImpressionsContent extends Component {
   render() {
     console.log('ImpressionsContent', this);
     const { pointer } = this.props;
-    let amount = Number(this.state.impressions) * pointer.state.price.toFixed(8);
-    amount = amount > 0 ? amount + 0.00000001 : amount;
+    const amount = getAmount(this.state.impressions, pointer.state.price);
     console.log(amount, this.state.impressions, pointer.state.price);
-    // amount = Number(amount.toFixed(8)) + (amount - amount.toFixed(8) > 0 ? 0.01 : 0);
-    // console.log(amount);
+
     return (
       <div>
         <Form style={{ marginTop: '20px' }} labelCol={{ span: 7 }} wrapperCol={{ span: 17 }}>
@@ -90,7 +95,7 @@ class ImpressionsContent extends Component {
           </Form.Item>
 
           <Form.Item label="Amount">
-            <Input value={amount && amount.toFixed(8)} disabled />
+            <Input value={amount} disabled />
           </Form.Item>
         </Form>
       </div>
@@ -262,11 +267,9 @@ class Ads extends Component {
       const data = new FormData();
       data.append('impressions', impressions);
       data.append('costPerImp', price);
-      // const amount = Number(impressions) * price;
-      let amount = Number(this.state.impressions) * this.state.price.toFixed(8);
-      amount = amount > 0 ? amount + 0.00000001 : amount;
+      const amount = getAmount(this.state.impressions, this.state.price);
       console.log(amount, this.state.impressions, this.state.price);
-      data.append('expectAmount', amount.toFixed(8));
+      data.append('expectAmount', amount);
       data.append('type', item.type);
       const res = await Request.axios('post', `/api/v1/campaign/pub/${id}/purchase`, data);
 
