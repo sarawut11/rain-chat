@@ -1,6 +1,7 @@
 /* eslint-disable react/prefer-stateless-function */
 import React, { Component } from 'react';
 import { Row, Col, Card, Typography } from 'antd';
+
 const { Title, Paragraph, Text } = Typography;
 // import SignInSignUp from '../../components/SignInSignUp';
 // import { landingDescription } from '../../constants/login';
@@ -60,7 +61,6 @@ class LogIn extends Component {
                   right corner), and select invite to chat.
                 </li>
               </ul>
-
               <Title level={3}>Upgrade $14.99</Title>
               <ul>
                 <li>
@@ -71,7 +71,6 @@ class LogIn extends Component {
                   of the purchase to all 1,000 upgraded members equally.)
                 </li>
               </ul>
-
               <Title level={3}>Upgrade $14.99</Title>
               <ul>
                 <li>
@@ -82,7 +81,6 @@ class LogIn extends Component {
                   of the purchase to all 1,000 upgraded members equally.)
                 </li>
               </ul>
-
               <Title level={3}>Advertising</Title>
               <ul>
                 <li>Create and upload your own graphic to these proportions: (3:4).</li>
@@ -96,7 +94,6 @@ class LogIn extends Component {
                   </ul>
                 </li>
               </ul>
-
               <Title level={3}>How to Withdraw</Title>
               <ul>
                 <li>
@@ -104,7 +101,6 @@ class LogIn extends Component {
                   it check for valid address?) to send your tokens to.
                 </li>
               </ul>
-
               <Title level={3}>How to use Exchanges</Title>
               <ul>
                 <li>
@@ -137,7 +133,6 @@ class LogIn extends Component {
                   </ul>
                 </li>
               </ul>
-
               <Title level={3}>Helpdesk</Title>
               <ul>
                 <li>
@@ -148,7 +143,6 @@ class LogIn extends Component {
                 </li>
                 <li>In the future, a Private help room will be accessible.</li>
               </ul>
-
               <Title level={3}>Compensation Plan</Title>
               <ul>
                 <li>
@@ -263,7 +257,6 @@ class LogIn extends Component {
                   </ul>
                 </li>
               </ul>
-
               <Title level={3}>Marketing</Title>
               <ul>
                 <li>Affiliate link provided on your profile page</li>
@@ -277,12 +270,10 @@ class LogIn extends Component {
                   </ul>
                 </li>
               </ul>
-
               <Title level={3}>Future additions</Title>
               <ul>
                 <li>Memes, Tipping, etc.</li>
               </ul>
-
               <Title level={3}>WEBSITES </Title>
               <ul>
                 Official Vitae: <a href="https://vitaetoken.io/">https://vitaetoken.io/</a> <br />
@@ -298,7 +289,6 @@ class LogIn extends Component {
                 <br />
                 GitHub: <a href="https://github.com/VitaeTeam/">https://github.com/VitaeTeam/</a>
               </ul>
-
               <Title level={3}>FORUMS </Title>
               <ul>
                 Discord: <a href="https://discord.gg/bWNJggg">https://discord.gg/bWNJggg</a> <br />{' '}
@@ -315,7 +305,6 @@ class LogIn extends Component {
                 Blockfolio:{' '}
                 <a href="https://blockfolio.com/coin/VITAE">https://blockfolio.com/coin/VITAE</a>
               </ul>
-
               <Title level={3}>UTILITY </Title>
               <ul>
                 Official Vitae Block-Explorer:{' '}
@@ -389,7 +378,6 @@ class LogIn extends Component {
                   https://drive.google.com/open?id=1wpjZPfqmOkdX4ltOWeXd2BhvKH08970c{' '}
                 </a>
               </ul>
-
               <Title level={3}>SOCIAL MEDIA </Title>
               <ul>
                 Twitter:{' '}
@@ -420,7 +408,6 @@ class LogIn extends Component {
                   https://www.youtube.com/channel/UC3ggiryD-5XLiZ-qGsFINyw
                 </a>
               </ul>
-
               <Title level={3}>EXCHANGES </Title>
               <ul>
                 <i>
@@ -428,7 +415,6 @@ class LogIn extends Component {
                   completed the KYC process.{' '}
                 </i>
               </ul>
-
               <Title level={3}>KYC required: </Title>
               <ul>
                 STEX: <a href="https://bit.ly/38Hj5Pq">https://bit.ly/38Hj5Pq </a>
@@ -448,7 +434,6 @@ class LogIn extends Component {
                   https://whitebit.com/referral/62499d21-691e-41f0-9754-78d8f83a5fb6{' '}
                 </a>
               </ul>
-
               <Title level={3}>No KYC Required: </Title>
               <ul>
                 UnNamed.Exchange:{' '}
@@ -471,7 +456,6 @@ class LogIn extends Component {
                 <br />
                 Social Send: <a href="https://socialsend.net/">https://socialsend.net/ </a>
               </ul>
-
               <Title level={3}>
                 {`"`}Not your keys, not your Crypto. {`"`}
               </Title>
@@ -481,31 +465,31 @@ class LogIn extends Component {
                 own. It is highly recommended that you only move a percentage of your total funds to
                 an exchange and for the shortest amount of time possible.{' '}
               </ul>
-
               <Title level={3}>Need Exchange support?</Title>
               <ul>
                 Please use the exchange help ticket system. Be polite and patient. It can take hours
                 if not days to receive a reply if they are busy.
               </ul>
-
               <Title level={3}>
                 Qt-Wallet (Users that are new to crypto and computers should use caution){' '}
               </Title>
               <ul>
-                Please make sure you are running the most recent version of the desktop wallet.
-                <br />
-                Download:{' '}
-                <a href="https://www.vitaetoken.io/wallet/">https://www.vitaetoken.io/wallet/ </a>
-                <br />
-                Snapshot:{' '}
-                <a href="https://downloads.vitae.co/VitaeSnapshot-latest.zip">
-                  https://downloads.vitae.co/VitaeSnapshot-latest.zip{' '}
-                </a>
-                <br />
-                Snapshot2:{' '}
-                <a href="http://gir.sqdmc.net/dev/vitae/">http://gir.sqdmc.net/dev/vitae/ </a>
-                <br />
-                Text for vitae.conf: <br />
+                <i>
+                  Please make sure you are running the most recent version of the desktop wallet.
+                  <br />
+                  Download:{' '}
+                  <a href="https://www.vitaetoken.io/wallet/">https://www.vitaetoken.io/wallet/ </a>
+                  <br />
+                  Snapshot:{' '}
+                  <a href="https://downloads.vitae.co/VitaeSnapshot-latest.zip">
+                    https://downloads.vitae.co/VitaeSnapshot-latest.zip{' '}
+                  </a>
+                  <br />
+                  Snapshot2:{' '}
+                  <a href="http://gir.sqdmc.net/dev/vitae/">http://gir.sqdmc.net/dev/vitae/ </a>
+                  <br />
+                  Text for vitae.conf: <br />
+                </i>
                 # disable zerocoin minting enablezeromint=0 <br />
                 # enable staking <br />
                 staking=1 <br />
@@ -547,8 +531,8 @@ class LogIn extends Component {
                 <br />
                 addnode=us-e2.vit.tips
                 <br />
-                Thank you and welcome to this exciting project! Vitae is latin for LIFE!
               </ul>
+              Thank you and welcome to this exciting project! Vitae is latin for LIFE!
             </Paragraph>
           </Typography>
         </Card>
