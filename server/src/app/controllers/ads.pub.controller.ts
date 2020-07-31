@@ -1,7 +1,7 @@
 import { ParameterizedContext } from "koa";
 import { ServicesContext, CMCContext, TransactionContext } from "@context";
 import { Ads, User, Transaction, TransactionDetail, Setting } from "@models";
-import { uploadFile, deleteFile, now } from "@utils";
+import { uploadFile, deleteFile, now, roundPrice } from "@utils";
 import { updateAdsStatus } from "@sockets";
 
 export const registerAds = async (ctx, next) => {
@@ -324,7 +324,7 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
   try {
     const { username } = ctx.state.user;
     const { adsId } = ctx.params;
-    const { adsService, transactionService, settingService } = ServicesContext.getInstance();
+    const { adsService, impcostService, transactionService, settingService } = ServicesContext.getInstance();
     const { impressions, costPerImp, expectAmount } = ctx.request.body;
 
     const checkResult = await checkAdsId(username, adsId);
@@ -339,6 +339,25 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
       ctx.body = {
         success: false,
         message: "This ads is not approved."
+      };
+      return;
+    }
+
+    const savedImpcost = await impcostService.getPrice(existingAds.userId);
+    if (savedImpcost === undefined) {
+      console.log(`Purchase Ads => Failed | Hacked | username:${checkResult.userInfo.username}`);
+      ctx.body = {
+        success: false,
+        message: "You didn't follow guide."
+      };
+      return;
+    }
+    const realAmount = savedImpcost.price * Number(impressions);
+    if (savedImpcost.price !== Number(costPerImp) || roundPrice(realAmount) !== Number(expectAmount)) {
+      console.log(`Purchase Ads => Failed | Imp cost not matched | username:${checkResult.userInfo.username}, amount:${roundPrice(realAmount)}`);
+      ctx.body = {
+        success: false,
+        message: "Expect amount does not matched."
       };
       return;
     }
@@ -395,7 +414,7 @@ export const cancelAdsPurchase = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
     const { adsId } = ctx.params;
-    const { adsService, transactionService, settingService } = ServicesContext.getInstance();
+    const { adsService, transactionService } = ServicesContext.getInstance();
 
     const checkResult = await checkAdsId(username, adsId);
     if (checkResult.success === false) {
@@ -436,8 +455,9 @@ export const cancelAdsPurchase = async (ctx, next) => {
 
 export const getCostPerImpression = async (ctx: ParameterizedContext, next) => {
   try {
+    const { id: userId } = ctx.state.user;
     const { type } = ctx.request.query;
-    const { settingService } = ServicesContext.getInstance();
+    const { impcostService, settingService } = ServicesContext.getInstance();
 
     // $1 === 2000 | 1000 impressions
     // 25% -> Company Revenue
@@ -449,6 +469,9 @@ export const getCostPerImpression = async (ctx: ParameterizedContext, next) => {
     const vitaePrice = CMCContext.getInstance().vitaePriceUSD();
     const usdPerImp = Number(type) === Ads.TYPE.RainRoomAds ? costPerImpRainAds : costPerImpStaticAds;
     const vitaePerImp = (usdPerImp / vitaePrice) * (1 / adsRevImpRevenue);
+
+    await impcostService.savePrice(userId, vitaePerImp);
+
     ctx.body = {
       success: true,
       message: "Success",

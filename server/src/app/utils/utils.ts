@@ -120,3 +120,7 @@ export const getInArraySQL = array => {
   res = res.substring(0, res.length - 1);
   return res;
 };
+
+export const roundPrice = (price: number): number => {
+  return Number((price + 0.00000001).toFixed(8));
+};

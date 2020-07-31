@@ -1,6 +1,6 @@
 import { ServicesContext } from "@context";
 import { User, Transaction, Setting } from "@models";
-import { checkUserInfo, isOwner, usdToVitae, now } from "@utils";
+import { checkUserInfo, isOwner, usdToVitae, now, roundPrice } from "@utils";
 import { confirmMembership } from "@controllers";
 import { updateBalanceSocket } from "@sockets";
 
@@ -36,7 +36,7 @@ export const getMembershipPrice = async (ctx, next) => {
     const { userService, settingService } = ServicesContext.getInstance();
     const userInfo: User = await userService.findUserByUsername(username);
     const membershipPriceUsd: number = await settingService.getSettingValue(Setting.KEY.MEMBERSHIP_PRICE_USD);
-    const vitaePrice = (usdToVitae(membershipPriceUsd) + 0.00000001).toFixed(8);
+    const vitaePrice = roundPrice(usdToVitae(membershipPriceUsd));
 
     ctx.body = {
       success: true,
