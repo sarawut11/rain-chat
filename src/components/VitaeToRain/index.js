@@ -196,7 +196,8 @@ class VitaeToRain extends Component {
                 </p>
               ) : (
                 <p style={{ textAlign: 'center' }}>
-                  Your balance: <span style={{ color: 'blue' }}>{balance}</span> vitae
+                  Your balance:{' '}
+                  <span style={{ color: 'blue' }}>{balance && balance.toFixed(8)}</span> vitae
                 </p>
               )}
             </Col>

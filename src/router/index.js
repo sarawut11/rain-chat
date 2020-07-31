@@ -11,7 +11,7 @@ const FUNCTION_ROUTERS = [
   '/ads',
   '/admin',
 ];
-const AUTH_ROUTERS = ['/login', '/register'];
+const AUTH_ROUTERS = ['/login', '/register', '/faq', '/tos', '/pp'];
 
 function MainView(props) {
   const { pathname } = props.location;
@@ -101,6 +101,9 @@ export default function App() {
             exact
             component={loadable(() => import('../containers/LogInPage'))}
           />
+          <Route path="/faq" exact component={loadable(() => import('../containers/FaqPage'))} />
+          <Route path="/tos" exact component={loadable(() => import('../containers/TosPage'))} />
+          <Route path="/pp" exact component={loadable(() => import('../containers/PPPage'))} />
           <Route exact path={FUNCTION_ROUTERS}>
             <Route path={FUNCTION_ROUTERS} exact component={MainView} />
             <Route path={FUNCTION_ROUTERS} exact component={RightView} />

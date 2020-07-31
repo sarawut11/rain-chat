@@ -97,7 +97,7 @@ export function notifyRainReward(reward) {
       <Row justify="center">
         <img src="../../assets/vitae-token-green-logo.png" alt="vitae-logo" />
       </Row>
-      <Row justify="center">{reward} Vitae</Row>
+      <Row justify="center">{reward && reward.toFixed(8)} Vitae</Row>
     </div>
   );
   const audio = new Audio('../assets/Win_Coins_MP3.mp3');

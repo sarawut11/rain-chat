@@ -306,7 +306,7 @@ class Withdraw extends Component {
 
     return (
       <div className="withdraw-container">
-        <h3>Your vitae balance: {userInfo.balance}</h3>
+        <h3>Your vitae balance: {userInfo.balance && userInfo.balance.toFixed(8)}</h3>
         <Button type="primary" onClick={this.showModal} loading={sendCodeLoading}>
           Withdraw
         </Button>
