@@ -89,6 +89,9 @@ class userInfoRender extends Component {
     } = this.state;
     const reflink = `${window.location.origin}/register?ref=${refcode}`;
     const reftext = reflink;
+    const dList1 = 10;
+    const dList2 = 20;
+    const dList3 = 15;
 
     console.log('\n --- ProfileInfo --- \n', this);
 
@@ -113,8 +116,9 @@ class userInfoRender extends Component {
             />
           </Form.Item>
           <Form.Item label="Email">{email}</Form.Item>
-          <Form.Item label="refcode link">{reftext}</Form.Item>
+          {/* <Form.Item label="refcode link">{reftext}</Form.Item> */}
           <Form.Item label="Role">{role}</Form.Item>
+          <Form.Item label="Downlines">102</Form.Item>
           <Row justify="center" align="middle">
             <Button
               type="primary"
