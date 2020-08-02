@@ -121,6 +121,14 @@ export class UserService {
     return query(sql, [refcode, username]);
   }
 
+  async getMyRefs(userId: number): Promise<number> {
+    const sql = `
+      SELECT * FROM ${this.USER_TABLE}
+      WHERE ${this.USER_COL.sponsorId} = ?;`;
+    const users: User[] = await query(sql, userId);
+    return users.length;
+  }
+
   // Find user information by user id user_info includes user name, avatar, last login time, status, etc. excluding password
   async getUserInfoById(userId: number): Promise<User> {
     const sql =

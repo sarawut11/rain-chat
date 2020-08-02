@@ -16,6 +16,7 @@ export const getProfileInfo = async (ctx, next) => {
       message: "Username does not exist."
     };
   } else {
+    const myRefs = await userService.getMyRefs(userInfo.id);
     const { id, name, email, balance, intro, avatar, refcode } = userInfo;
     ctx.body = {
       success: true,
@@ -27,7 +28,8 @@ export const getProfileInfo = async (ctx, next) => {
         balance,
         intro,
         avatar,
-        refcode
+        refcode,
+        myRefs,
       },
     };
   }

@@ -60,6 +60,7 @@ export const loginUser = async (ctx, next) => {
     }
     const token = generateToken({ id, username });
     const vitaePostEnabled = await isVitaePostEnabled(user);
+    const myRefs = await userService.getMyRefs(user.id);
     ctx.body = {
       success: true,
       message: "Login Successful",
@@ -75,6 +76,7 @@ export const loginUser = async (ctx, next) => {
         role,
         token,
         ban,
+        myRefs,
         isVitaePostEnabled: vitaePostEnabled
       },
     };

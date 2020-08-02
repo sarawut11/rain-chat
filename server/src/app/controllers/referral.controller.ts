@@ -20,3 +20,23 @@ export const validateReferral = async (ctx, next) => {
     };
   }
 };
+
+export const getMyRefs = async (ctx, next) => {
+  try {
+    const { id: userId } = ctx.request.body;
+    const { userService } = ServicesContext.getInstance();
+
+    const myRefs = await userService.getMyRefs(userId);
+    ctx.body = {
+      success: true,
+      message: "Success",
+      myRefs,
+    };
+  } catch (error) {
+    console.log("Get Refs => Failed | Error:", error.message);
+    ctx.body = {
+      success: false,
+      message: "Referral code is valid!",
+    };
+  }
+};
