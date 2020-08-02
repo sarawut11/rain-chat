@@ -84,6 +84,16 @@
   width: 380px;
 }
 
+.video-container-div {
+  max-width: 100%;
+  margin: auto;
+}
+
+.video-container {
+  width: 100%;
+  // margin: auto;
+}
+
 @media screen and (max-width: 647px) {
   .login-description-container {
     margin-bottom: 65px;
@@ -96,10 +106,15 @@
   }
 }
 
-@media screen and (min-width: 647px) {
+@media screen and (min-width: 700px) {
   .login-floating-window {
     span {
       margin-right: 5px;
     }
+  }
+  .login-description-container {
+    max-height: 100vh;
+    overflow: auto;
+    padding-bottom: 50px;
   }
 }
