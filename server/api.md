@@ -16,6 +16,7 @@
     - [/user/withdraw-address (GET)](#userwithdraw-address-get)
     - [/user/otp/request (GET)](#userotprequest-get)
     - [/user/otp/verify (POST)](#userotpverify-post)
+    - [/user/get-refs (GET)](#userget-refs-get)
   - [1.4 Ads](#14-ads)
     - [/campaign/pub/create (POST)](#campaignpubcreate-post)
     - [/campaign/pub/all (GET)](#campaignpuball-get)
@@ -232,6 +233,7 @@
       balance,
       avatar,
       refcode,
+      myRefs,
     }
   }
   ```
@@ -331,6 +333,17 @@
     success: true/false,
     message: "Success or Failed Message",
     isValid: true/false,
+  }
+  ```
+### /user/get-refs (GET)
+  Get number of my referrals
+
+  ***Response***
+  ```
+  {
+    success: true/false,
+    message: "Success or Failed Message",
+    myRefs,
   }
   ```
 

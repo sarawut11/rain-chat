@@ -20,6 +20,7 @@ const api = new Router()
   .get("/user/withdraw-address", APIController.getWithdrawAddresses)
   .get("/user/otp/request", APIController.generateOTP)
   .post("/user/otp/verify", APIController.verifyOTP)
+  .get("/user/get-refs", APIController.getMyRefs)
 
   // Rain
   .post("/rain/send-vitae/balance", APIController.rainFromBalance)

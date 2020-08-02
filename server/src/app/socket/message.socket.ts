@@ -83,11 +83,13 @@ export const getAllMessage = async ({ userId, clientHomePageList }) => {
       adsList.push(...allAds);
     }
     const vitaePostEnabled = await isVitaePostEnabled(user);
+    const myRefs = await userService.getMyRefs(user.id);
 
     return {
       userInfo: {
         ...user,
-        isVitaePostEnabled: vitaePostEnabled
+        isVitaePostEnabled: vitaePostEnabled,
+        myRefs,
       },
       homePageList,
       privateChat: Array.from(privateChat),
