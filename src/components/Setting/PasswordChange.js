@@ -49,13 +49,11 @@ class PasswordChange extends Component {
   };
 
   onChangePasswordClick = async () => {
-    console.log('CLick chnage password');
     const { password, confirmPassword, oldPassword } = this.state;
     // eslint-disable-next-line eqeqeq
     if (!oldPassword || !password || !confirmPassword || password != confirmPassword) {
       return;
     }
-    console.log('CLick chnage password1');
 
     try {
       const data = new FormData();
