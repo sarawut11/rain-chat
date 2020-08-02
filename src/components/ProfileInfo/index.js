@@ -20,6 +20,7 @@ class userInfoRender extends Component {
     refcode: '',
     username: '',
     role: '',
+    myRefs: 0,
     updateAvailable: false,
     updating: false,
   };
@@ -84,6 +85,7 @@ class userInfoRender extends Component {
       refcode,
       email,
       role,
+      myRefs,
       updateAvailable,
       updating,
     } = this.state;
@@ -118,7 +120,7 @@ class userInfoRender extends Component {
           <Form.Item label="Email">{email}</Form.Item>
           {/* <Form.Item label="refcode link">{reftext}</Form.Item> */}
           <Form.Item label="Role">{role}</Form.Item>
-          <Form.Item label="Downlines">102</Form.Item>
+          <Form.Item label="Downlines">{myRefs}</Form.Item>
           <Row justify="center" align="middle">
             <Button
               type="primary"

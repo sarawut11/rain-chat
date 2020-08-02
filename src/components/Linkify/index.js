@@ -69,7 +69,6 @@ class LinkifyWithTargetBlank extends React.Component {
   }
 
   render() {
-    console.log('\n\nLinkify\n\n', this.props.children, this.parse(this.props.children));
     return <React.Fragment>{this.parse(this.props.children)}</React.Fragment>;
   }
 }
