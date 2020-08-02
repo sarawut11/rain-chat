@@ -91,11 +91,6 @@ class userInfoRender extends Component {
     } = this.state;
     const reflink = `${window.location.origin}/register?ref=${refcode}`;
     const reftext = reflink;
-    const dList1 = 10;
-    const dList2 = 20;
-    const dList3 = 15;
-
-    console.log('\n --- ProfileInfo --- \n', this);
 
     return (
       <div className="userInfo">
