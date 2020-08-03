@@ -98,13 +98,16 @@ export const shareRevenue = async (amount: number, role: string, type: number) =
     await innerTranService.addTrans([COMPANY_USERID], amount, type);
   }
   else {
-    // Add Inner Transactions
     const users: User[] = await userService.findUsersByRole(role);
+    if (users.length === 0) return;
+
+    // Add Inner Transactions
     const userIds: number[] = [];
     users.forEach(user => userIds.push(user.id));
-    await innerTranService.addTrans(userIds, amount, type);
+    const eachShare = amount / users.length;
+    await innerTranService.addTrans(userIds, eachShare, type);
     // Update User Balance
-    await userService.shareRevenue(amount, User.ROLE.OWNER);
+    await userService.shareRevenue(amount, role);
     const updatedUsers = await userService.findUsersByRole(role);
     updatedUsers.forEach(user => updateBalanceSocket(user));
   }
