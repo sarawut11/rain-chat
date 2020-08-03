@@ -67,6 +67,14 @@ export class TransactionService {
     const params = [userId, Transaction.STATUS.REQUESTED, Transaction.STATUS.INSUFFICIENT_BALANCE, Transaction.TYPE.WITHDRAW];
     const trans: Transaction[] = await query(sql, params);
     if (trans.length === 0) return undefined;
+
+    const { settingService } = ServicesContext.getInstance();
+    const tranExpire: number = await settingService.getSettingValue(Setting.KEY.TRANSACTION_REQUEST_EXPIRE);
+    const expireIn: number = trans[0].time * 1000 + tranExpire - now() * 1000;
+    if (expireIn <= 0) {
+      TransactionContext.getInstance().expireTransactionRequest(trans[0].id);
+      return undefined;
+    }
     return trans[0];
   }
 
