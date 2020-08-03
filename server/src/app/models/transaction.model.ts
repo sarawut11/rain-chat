@@ -15,6 +15,7 @@ export class Transaction {
     REQUESTED: 0,
     PENDING_CONFIRM: 1,
     INSUFFICIENT_BALANCE: 2,
+    INSUFFICIENT_REQUEST: 4,
     CONFIRMED: 3
   };
 

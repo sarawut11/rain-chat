@@ -64,10 +64,13 @@ export class TransactionService {
         ${this.columns.status} IN (?,?) AND
         ${this.columns.type} != ?
       LIMIT 1;`;
-    const params = [userId, Transaction.STATUS.REQUESTED, Transaction.STATUS.INSUFFICIENT_BALANCE, Transaction.TYPE.WITHDRAW];
+    const params = [userId, Transaction.STATUS.REQUESTED, Transaction.STATUS.INSUFFICIENT_REQUEST, Transaction.TYPE.WITHDRAW];
     const trans: Transaction[] = await query(sql, params);
     if (trans.length === 0) return undefined;
 
+    if (trans[0].type === Transaction.STATUS.INSUFFICIENT_REQUEST) {
+      return trans[0];
+    }
     const { settingService } = ServicesContext.getInstance();
     const tranExpire: number = await settingService.getSettingValue(Setting.KEY.TRANSACTION_REQUEST_EXPIRE);
     const expireIn: number = trans[0].time * 1000 + tranExpire - now() * 1000;
@@ -135,7 +138,7 @@ export class TransactionService {
       values(?,?,?,?,?,?);`;
     return query(sql, [
       tranId, paidAmount, confirmTime, Transaction.STATUS.INSUFFICIENT_BALANCE, tranInfo.id,
-      tranInfo.userId, tranInfo.type, Transaction.STATUS.REQUESTED, tranInfo.expectAmount - paidAmount, now(), tranInfo.details
+      tranInfo.userId, tranInfo.type, Transaction.STATUS.INSUFFICIENT_REQUEST, tranInfo.expectAmount - paidAmount, now(), tranInfo.details
     ]);
   }
 
