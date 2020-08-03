@@ -16,7 +16,6 @@ export class InnerTransactionService {
   addTrans(userIds: number[], reward: number, type: number) {
     if (userIds.length === 0) return;
     const data = [];
-    reward /= userIds.length;
     let sql = `
       INSERT INTO ${this.TABLE_NAME} (
         ${this.COL.userId},
