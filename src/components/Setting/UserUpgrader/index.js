@@ -5,7 +5,6 @@ import { Button, Modal, notification, Row, Col, Radio } from 'antd';
 import Request from '../../../utils/request';
 import { setMembershipUpgradeInfo } from '../../../redux/actions/userAction';
 import MembershipCountDown from './MembershipCountDown';
-import { MEMBERSHIP_UPGRADE_DEADLINE_PERIOD } from '../../../constants/user';
 
 function mapStateToProps(state) {
   return {
@@ -108,7 +107,7 @@ class UserUpgrader extends Component {
               usdPrice,
               vitaePrice,
               walletAddress,
-              deadline: Date.now() + MEMBERSHIP_UPGRADE_DEADLINE_PERIOD,
+              deadline: Date.now() + res.expireTime,
             });
           } else {
             notification.error({

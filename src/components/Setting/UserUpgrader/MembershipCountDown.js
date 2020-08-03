@@ -25,9 +25,9 @@ class MembershipCountDown extends Component {
     try {
       const { role } = this.props.userInfo;
       if (role === 'FREE') {
-        notification.error({
-          message: 'Time up for the payment. Membership upgrade has been failed.',
-        });
+        // notification.error({
+        //   message: 'Time up for the payment. Membership upgrade has been failed.',
+        // });
 
         this.props.setMembershipUpgradeInfo({
           membershipUpgradePending: false,
