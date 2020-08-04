@@ -113,11 +113,6 @@ class Ads extends Component {
       impressions: 0,
       price: 0,
       loading: false,
-
-      // pendingTran: false,
-      // pendingTranAdsId: 0,
-      // paidAmount: 0,
-      // expectAmount: 0,
     };
   }
 
@@ -233,49 +228,6 @@ class Ads extends Component {
         } else {
           this.showImpressionModal(item);
         }
-        // eslint-disable-next-line eqeqeq
-        // if (type === 0 && status === 4 && item.id == adsId) {
-        //   // this.setState({
-        //   //   pendingTran: true,
-        //   //   pendingTranStatus: status,
-        //   //   paidAmount,
-        //   //   expectAmount,
-        //   //   pendingTranAdsId: adsId,
-        //   // });
-
-        //   confirm({
-        //     title: `You already have pending transaction.`,
-        //     icon: <ExclamationCircleOutlined />,
-        //     content: (
-        //       <div className="pending-tran-modal-content">
-        //         You have to pay <span>${expectAmount}</span> vitae to <span>${walletAddress}</span>.
-        //         But you sent only <span>${paidAmount}</span> vitae. Please send the rest{' '}
-        //         <span>${expectAmount - paidAmount}</span> to wallet address{' '}
-        //         <span>${walletAddress}</span>
-        //       </div>
-        //     ),
-        //     onOk() {
-        //       pointer.setState({ impressions: 0 });
-        //     },
-        //     onCancel() {
-        //       pointer.setState({ impressions: 0 });
-        //     },
-        //   });
-        // } else if (type === 0 || type === 1) {
-        //   confirm({
-        //     title: `You already have pending transaction.`,
-        //     icon: <ExclamationCircleOutlined />,
-        //     // content: <ImpressionsContent pointer={pointer} />,
-        //     onOk() {
-        //       pointer.setState({ impressions: 0 });
-        //     },
-        //     onCancel() {
-        //       pointer.setState({ impressions: 0 });
-        //     },
-        //   });
-        // } else {
-        //   this.showImpressionModal(item);
-        // }
       } else {
         this.showImpressionModal(item);
       }
