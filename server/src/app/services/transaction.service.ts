@@ -68,7 +68,7 @@ export class TransactionService {
     const trans: Transaction[] = await query(sql, params);
     if (trans.length === 0) return undefined;
 
-    if (trans[0].type === Transaction.STATUS.INSUFFICIENT_REQUEST) {
+    if (trans[0].status === Transaction.STATUS.INSUFFICIENT_REQUEST) {
       return trans[0];
     }
     const { settingService } = ServicesContext.getInstance();

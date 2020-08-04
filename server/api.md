@@ -1068,7 +1068,9 @@
       paidAmount,
       expectAmount,
       time,
-    }
+      adsId, // (Optional)
+    },
+    walletAddress
   }
   ```
 
