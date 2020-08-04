@@ -29,6 +29,9 @@ class UserUpgrader extends Component {
     upgradeMode: 0,
 
     pendingTran: false,
+    pendingTranStatus: 0,
+    pendingTranType: 0,
+    pendingTranWalletAddress: null,
     paidAmount: 0,
     expectAmount: 0,
   };
@@ -69,16 +72,17 @@ class UserUpgrader extends Component {
         const res = await Request.axios('get', `/api/v1/wallet/get-pending-tran`);
 
         if (res && res.success) {
-          const { pendingTran } = res;
+          const { pendingTran, walletAddress } = res;
           const { type, status, paidAmount, expectAmount } = pendingTran;
 
-          if (type === 1 && status === 4) {
-            this.setState({
-              pendingTran: true,
-              paidAmount,
-              expectAmount,
-            });
-          }
+          this.setState({
+            pendingTran: true,
+            pendingTranStatus: status,
+            pendingTranType: type,
+            pendingTranWalletAddress: walletAddress,
+            paidAmount,
+            expectAmount,
+          });
         } else {
           notification.error({
             message: res.message,
@@ -188,6 +192,9 @@ class UserUpgrader extends Component {
       walletAddress,
       upgradeMode,
       pendingTran,
+      pendingTranStatus,
+      pendingTranType,
+      pendingTranWalletAddress,
       paidAmount,
       expectAmount,
     } = this.state;
@@ -203,13 +210,24 @@ class UserUpgrader extends Component {
     const pendingTranShow = pendingTran ? (
       <div style={{ textAlign: 'center' }}>
         <p>
-          You have to pay <span>${expectAmount}</span> in Vitae. But you paid only{' '}
-          <span>${paidAmount}</span>.
-        </p>
-        <p>
-          Send <span>{expectAmount - paidAmount}</span> vitae to the vitae address{' '}
-          <span>{walletAddress}</span>.
-        </p>
+          You have pending{' '}
+          <span>{pendingTranType === 0 ? 'ads purchase' : 'membership request'}</span> transaction.
+        </p>{' '}
+        <br />
+        {pendingTranStatus === 4 ? (
+          <div>
+            <p>
+              You have to pay <span>${expectAmount}</span> in Vitae. But you paid only{' '}
+              <span>${paidAmount}</span>.
+            </p>
+            <p>
+              Send <span>{expectAmount - paidAmount}</span> vitae to the vitae address{' '}
+              <span>{pendingTranWalletAddress}</span>.
+            </p>
+          </div>
+        ) : (
+          <p>You have to finish the pending transaction to create a new transaction</p>
+        )}
       </div>
     ) : (
       <div style={{ textAlign: 'center' }}>
