@@ -182,10 +182,15 @@ export const getPendingTransaction = async (ctx, next) => {
         message: "No pending transaction."
       };
     } else {
+      const adsId = pendingTran.details === "" ? undefined : JSON.parse(pendingTran.details).adsId;
       ctx.body = {
         success: true,
         message: "Pending Transaction",
-        pendingTran
+        pendingTran: {
+          ...pendingTran,
+          adsId,
+        },
+        walletAddress: userInfo.walletAddress
       };
     }
   } catch (error) {
