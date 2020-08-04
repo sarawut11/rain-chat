@@ -27,6 +27,10 @@ class UserUpgrader extends Component {
     usdPrice: 0,
     walletAddress: null,
     upgradeMode: 0,
+
+    pendingTran: false,
+    paidAmount: 0,
+    expectAmount: 0,
   };
 
   async componentDidMount() {
@@ -36,7 +40,7 @@ class UserUpgrader extends Component {
       if (res && res.success) {
         const { vitaePrice, usdPrice, walletAddress, expireIn } = res;
 
-        if (expireIn) {
+        if (expireIn > 0) {
           this.props.setMembershipUpgradeInfo({
             membershipUpgradePending: true,
             usdPrice,
@@ -60,6 +64,30 @@ class UserUpgrader extends Component {
       this.setState({
         loadingPrice: true,
       });
+
+      try {
+        const res = await Request.axios('get', `/api/v1/wallet/get-pending-tran`);
+
+        if (res && res.success) {
+          const { pendingTran } = res;
+          const { type, status, paidAmount, expectAmount } = pendingTran;
+
+          if (type === 1 && status === 4) {
+            this.setState({
+              pendingTran: true,
+              paidAmount,
+              expectAmount,
+            });
+          }
+        } else {
+          notification.error({
+            message: res.message,
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+
       try {
         const res = await Request.axios('get', `/api/v1/membership/price`);
 
@@ -88,9 +116,9 @@ class UserUpgrader extends Component {
 
   handleOk = async () => {
     const { userInfo } = this.props;
-    const { vitaePrice, usdPrice, walletAddress, upgradeMode } = this.state;
+    const { vitaePrice, usdPrice, walletAddress, upgradeMode, pendingTran } = this.state;
 
-    if (userInfo.role === 'FREE') {
+    if (userInfo.role === 'FREE' && !pendingTran) {
       try {
         if (upgradeMode === 0) {
           const res = await Request.axios('post', `/api/v1/membership/role/upgrade/request`, {
@@ -135,9 +163,9 @@ class UserUpgrader extends Component {
           message: 'Failed to request to upgrade membership.',
         });
       }
-
-      this.setState({ visible: false });
     }
+
+    this.setState({ visible: false });
   };
 
   handleCancel = e => {
@@ -152,7 +180,17 @@ class UserUpgrader extends Component {
   };
 
   render() {
-    const { loadingPrice, visible, vitaePrice, usdPrice, walletAddress, upgradeMode } = this.state;
+    const {
+      loadingPrice,
+      visible,
+      vitaePrice,
+      usdPrice,
+      walletAddress,
+      upgradeMode,
+      pendingTran,
+      paidAmount,
+      expectAmount,
+    } = this.state;
     const { membershipUpgradePending } = this.props.membershipUpgradeInfo;
     const { userInfo } = this.props;
     const { balance } = this.props.userInfo;
@@ -161,6 +199,28 @@ class UserUpgrader extends Component {
       { label: 'Send vitae tokens', value: 0 },
       { label: 'Use my balance', value: 1 },
     ];
+
+    const pendingTranShow = pendingTran ? (
+      <div style={{ textAlign: 'center' }}>
+        <p>
+          You have to pay <span>${expectAmount}</span> in Vitae. But you paid only{' '}
+          <span>${paidAmount}</span>.
+        </p>
+        <p>
+          Send <span>{expectAmount - paidAmount}</span> vitae to the vitae address{' '}
+          <span>{walletAddress}</span>.
+        </p>
+      </div>
+    ) : (
+      <div style={{ textAlign: 'center' }}>
+        <p>
+          You have to pay <span>${usdPrice}</span> in Vitae.
+        </p>
+        <p>
+          Send <span>{vitaePrice}</span> vitae to the vitae address <span>{walletAddress}</span>.
+        </p>
+      </div>
+    );
 
     console.log('UserUpgrader render', this);
 
@@ -175,6 +235,7 @@ class UserUpgrader extends Component {
             </Button>
           )
         )}
+
         <Modal
           title="Uprgrade membership"
           visible={visible}
@@ -183,31 +244,25 @@ class UserUpgrader extends Component {
           className="membership-upgrade-modal"
         >
           <Row gutter={[20, 20]}>
-            <Col span={24}>
-              <Radio.Group
-                onChange={this.handleRadioChange}
-                value={upgradeMode}
-                buttonStyle="solid"
-              >
-                {radioOptions.map(option => (
-                  <Radio.Button value={option.value} key={option.value}>
-                    {option.label}
-                  </Radio.Button>
-                ))}
-              </Radio.Group>
-            </Col>
+            {!pendingTran && (
+              <Col span={24}>
+                <Radio.Group
+                  onChange={this.handleRadioChange}
+                  value={upgradeMode}
+                  buttonStyle="solid"
+                >
+                  {radioOptions.map(option => (
+                    <Radio.Button value={option.value} key={option.value}>
+                      {option.label}
+                    </Radio.Button>
+                  ))}
+                </Radio.Group>
+              </Col>
+            )}
 
             <Col span={24} className="membership-upgrade-text">
               {upgradeMode === 0 ? (
-                <div style={{ textAlign: 'center' }}>
-                  <p>
-                    You have to pay <span>${usdPrice}</span> in Vitae.
-                  </p>
-                  <p>
-                    Send <span>{vitaePrice}</span> vitae to the vitae address{' '}
-                    <span>{walletAddress}</span>.
-                  </p>
-                </div>
+                pendingTranShow
               ) : (
                 <div style={{ textAlign: 'center' }}>
                   <p>
