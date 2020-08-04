@@ -164,13 +164,8 @@ class Ads extends Component {
     }
   };
 
-  showImpressionsInput = item => async () => {
+  showImpressionModal = item => {
     const pointer = this;
-    this.setState({ impressions: 0, price: 0 });
-    const { price, impressions } = this.state;
-    const amount = Number(impressions) * price;
-    console.log('amount', amount, impressions, price);
-    await this.getImpcost(item);
     confirm({
       title: 'Please input impressions',
       icon: <ExclamationCircleOutlined />,
@@ -183,6 +178,62 @@ class Ads extends Component {
         pointer.setState({ impressions: 0 });
       },
     });
+  };
+
+  showImpressionsInput = item => async () => {
+    const pointer = this;
+    this.setState({ impressions: 0, price: 0 });
+    const { price, impressions } = this.state;
+    const amount = Number(impressions) * price;
+    console.log('amount', amount, impressions, price);
+    await this.getImpcost(item);
+
+    // get pending transaction
+
+    try {
+      const res = await Request.axios('get', `/api/v1/wallet/get-pending-tran`);
+
+      if (res && res.success) {
+        const { pendingTran, walletAddress } = res;
+        const { type, status, paidAmount, expectAmount, adsId } = pendingTran;
+
+        if (pendingTran) {
+          confirm({
+            title: (
+              <div className="pending-tran-modal-content">
+                You already have pending{' '}
+                {type === 0 ? <span>ads purchase</span> : <span>membership request</span>}{' '}
+                transaction.
+              </div>
+            ),
+            icon: <ExclamationCircleOutlined />,
+            content:
+              status === 4 ? (
+                <div className="pending-tran-modal-content">
+                  You have to pay <span>${expectAmount}</span> vitae to{' '}
+                  <span>${walletAddress}</span>. But you sent only <span>${paidAmount}</span> vitae.
+                  Please send the rest <span>${expectAmount - paidAmount}</span> to wallet address{' '}
+                  <span>${walletAddress}</span> to complete the pending transaction.
+                </div>
+              ) : (
+                `You can't create a new transaction until this transaction is finished.`
+              ),
+            onOk() {
+              pointer.setState({ impressions: 0 });
+            },
+            onCancel() {
+              pointer.setState({ impressions: 0 });
+            },
+          });
+        } else {
+          this.showImpressionModal(item);
+        }
+      } else {
+        this.showImpressionModal(item);
+      }
+    } catch (error) {
+      this.showImpressionModal(item);
+    }
   };
 
   hideCreateAdsModal = () => {
