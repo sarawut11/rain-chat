@@ -455,11 +455,12 @@ export class UserService {
     const sql = `
       UPDATE ${this.USER_TABLE} as a
       INNER JOIN (
-        SELECT COUNT(*) OVER() as total
+        SELECT COUNT(id) as total
         FROM ${this.USER_TABLE} WHERE ${this.USER_COL.role} = ?
       ) as b
-      SET a.${this.USER_COL.balance} = a.${this.USER_COL.balance} + ? / b.total;`;
-    return query(sql, [role, amount]);
+      SET a.${this.USER_COL.balance} = a.${this.USER_COL.balance} + ? / b.total
+      WHERE a.${this.USER_COL.role} = ?;`;
+    return query(sql, [role, amount, role]);
   }
 
   setModers(usernames: string[]) {
