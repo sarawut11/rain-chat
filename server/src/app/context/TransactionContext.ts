@@ -1,6 +1,7 @@
 import { socketServer, socketEventNames } from "@sockets";
 import { ServicesContext } from "@context";
-import { Transaction, User } from "@models";
+import { Transaction, User, Ads } from "@models";
+import { getAdsIdFromTran } from "../utils/utils";
 
 export class TransactionContext {
   static instance: TransactionContext;
@@ -13,7 +14,7 @@ export class TransactionContext {
   }
 
   async expireTransactionRequest(tranId: number) {
-    const { userService, transactionService } = ServicesContext.getInstance();
+    const { userService, transactionService, adsService } = ServicesContext.getInstance();
 
     const tranInfo: Transaction = await transactionService.getTransactionById(tranId);
     if (tranInfo === undefined) return;
@@ -21,6 +22,10 @@ export class TransactionContext {
 
     // Still in requested, meaning didn't make transaction yet, expire it
     await transactionService.expireTransactionRequest(tranId);
+    if (tranInfo.type === Transaction.TYPE.ADS) {
+      const adsId = getAdsIdFromTran(tranInfo.details);
+      await adsService.updateStatus(adsId, Ads.STATUS.Approved);
+    }
 
     // Send expire socket
     const userInfo: User = await userService.findUserById(tranInfo.userId);

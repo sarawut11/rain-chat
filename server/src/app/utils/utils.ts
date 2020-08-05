@@ -127,3 +127,15 @@ export const getInArraySQL = array => {
 export const roundPrice = (price: number): number => {
   return Number((price + 0.00000001).toFixed(8));
 };
+
+export const getTranExpireIn = async (requestedTime: number): Promise<number> => {
+  const { settingService } = ServicesContext.getInstance();
+  const tranExpire: number = await settingService.getSettingValue(Setting.KEY.TRANSACTION_REQUEST_EXPIRE);
+  const expireIn = requestedTime * 1000 + tranExpire - now() * 1000;
+  return expireIn;
+};
+
+export const getAdsIdFromTran = (tranDetails: string): number => {
+  const adsId = tranDetails === "" ? undefined : JSON.parse(tranDetails).adsId;
+  return Number(adsId);
+};

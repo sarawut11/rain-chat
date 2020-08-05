@@ -1,4 +1,4 @@
-import { query, now } from "@utils";
+import { query, now, getTranExpireIn } from "@utils";
 import { TransactionContext, ServicesContext } from "@context";
 import { Transaction, DefaultModel, TransactionDetail, Setting } from "@models";
 
@@ -71,9 +71,7 @@ export class TransactionService {
     if (trans[0].status === Transaction.STATUS.INSUFFICIENT_REQUEST) {
       return trans[0];
     }
-    const { settingService } = ServicesContext.getInstance();
-    const tranExpire: number = await settingService.getSettingValue(Setting.KEY.TRANSACTION_REQUEST_EXPIRE);
-    const expireIn: number = trans[0].time * 1000 + tranExpire - now() * 1000;
+    const expireIn: number = await getTranExpireIn(trans[0].time);
     if (expireIn <= 0) {
       TransactionContext.getInstance().expireTransactionRequest(trans[0].id);
       return undefined;

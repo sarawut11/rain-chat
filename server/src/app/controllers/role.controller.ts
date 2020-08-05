@@ -1,6 +1,6 @@
 import { ServicesContext } from "@context";
 import { User, Transaction, Setting } from "@models";
-import { checkUserInfo, isOwner, usdToVitae, now, roundPrice } from "@utils";
+import { checkUserInfo, isOwner, usdToVitae, roundPrice, getTranExpireIn } from "@utils";
 import { confirmMembership } from "@controllers";
 import { updateBalanceSocket } from "@sockets";
 
@@ -78,8 +78,7 @@ export const getMembershipPendingTran = async (ctx, next) => {
     }
 
     const membershipPriceUsd: number = await settingService.getSettingValue(Setting.KEY.MEMBERSHIP_PRICE_USD);
-    const tranExpire: number = await settingService.getSettingValue(Setting.KEY.TRANSACTION_REQUEST_EXPIRE);
-    const expireIn: number = pendingTran.time * 1000 + tranExpire - now() * 1000;
+    const expireIn: number = await getTranExpireIn(pendingTran.time);
     ctx.body = {
       success: true,
       message: "Pending Transaction",

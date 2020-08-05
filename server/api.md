@@ -1069,7 +1069,8 @@
       paidAmount,
       expectAmount,
       time,
-      adsId, // (Optional)
+      expireIn,       // expireTime in miliseconds
+      adsId,          // (Optional)
     },
     walletAddress
   }
