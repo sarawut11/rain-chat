@@ -8,6 +8,7 @@ dotenv.config();
 import { getSqlShellList, runSqlShellList } from "./utils";
 import { User } from "../src/app/models";
 import { query } from "../src/app/utils/db";
+import { rpcInterface } from "../src/app/utils/wallet/RpcInterface";
 
 const COMPANY_USERID = Number(process.env.COMPANY_USERID);
 const COMPANY_RAIN_ADDRESS = process.env.COMPANY_RAIN_ADDRESS;
@@ -36,9 +37,11 @@ const initDB = async () => {
   await query(sql, [COMPANY_USERID, "COMPANY", "company@wallet.com", md5(uniqid()), "Company Wallet", User.ROLE.COMPANY, uniqid(), COMPANY_RAIN_ADDRESS]);
   sql = "INSERT INTO user_info (id, username, email, password, name, role, refcode, walletAddress) VALUES (?,?,?,?,?,?,?,?);";
   await query(sql, [COMPANY_STOCKPILE_USERID, "STOCKPILE", "company.stockpile@wallet.com", md5(uniqid()), "Company Stockpile", User.ROLE.STOCKPILE, uniqid(), COMPANY_STOCKPILE_ADDRESS]);
+
   // Create Default Owner ( Admin )
-  sql = "INSERT INTO user_info (username, email, password, name, role, refcode) VALUES (?,?,?,?,?,?);";
-  await query(sql, [ADMIN_USERNAME, MAIL_USER, md5(ADMIN_PASSWORD), ADMIN_NAME, User.ROLE.OWNER, uniqid()]);
+  const walletAddress = await rpcInterface.getNewAddress();
+  sql = "INSERT INTO user_info (username, email, password, name, role, refcode, walletAddress) VALUES (?,?,?,?,?,?,?);";
+  await query(sql, [ADMIN_USERNAME, MAIL_USER, md5(ADMIN_PASSWORD), ADMIN_NAME, User.ROLE.OWNER, uniqid(), walletAddress]);
 
   // Create Vitae Rain Room
   sql = "INSERT INTO group_info (id,groupId,name,description,creatorId,createTime) VALUES (?,?,?,?,?,?);";

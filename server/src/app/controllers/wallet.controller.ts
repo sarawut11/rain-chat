@@ -1,5 +1,5 @@
-import { ServicesContext, RainContext } from "@context";
-import { now, rpcInterface, shareRevenue } from "@utils";
+import { ServicesContext, RainContext, TransactionContext } from "@context";
+import { now, rpcInterface, shareRevenue, getTranExpireIn, getAdsIdFromTran } from "@utils";
 import { updateBalanceSocket, updateAdsStatus } from "@sockets";
 import {
   Ads,
@@ -71,7 +71,7 @@ export const walletNotify = async (ctx, next) => {
           console.log(`Transaction Notify => Insufficient Amount | expectAmount:${tranInfo.expectAmount}, paidAmount:${txInfo.amount}, txId:${txid}`);
           await transactionService.setInsufficientTransaction(txid, txInfo.amount, txInfo.timereceived, tranInfo);
         } else {
-          await transactionService.confirmTransaction(tranInfo.id, txid, txInfo.amount, txInfo.timereceived);
+          TransactionContext.getInstance().confrimTransactionRequest(tranInfo.id, txid, txInfo.amount, txInfo.timereceived);
           if (tranInfo.type === Transaction.TYPE.MEMBERSHIP) {
             console.log(`Transaction Notify => Membership Upgraded | username:${userInfo.username}, txId:${txid}`);
             await confirmMembership(userInfo, txInfo.amount);
@@ -182,12 +182,14 @@ export const getPendingTransaction = async (ctx, next) => {
         message: "No pending transaction."
       };
     } else {
-      const adsId = pendingTran.details === "" ? undefined : JSON.parse(pendingTran.details).adsId;
+      const adsId = getAdsIdFromTran(pendingTran.details);
+      const expireIn = await getTranExpireIn(pendingTran.time);
       ctx.body = {
         success: true,
         message: "Pending Transaction",
         pendingTran: {
           ...pendingTran,
+          expireIn,
           adsId,
         },
         walletAddress: userInfo.walletAddress

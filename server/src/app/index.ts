@@ -4,7 +4,7 @@ import * as koaBody from "koa-body";
 import * as cors from "@koa/cors";
 import * as jwt from "koa-jwt";
 
-import { ServicesContext, RainContext, CMCContext, DailyContext } from "./context";
+import { ServicesContext, RainContext, CMCContext, DailyContext, TransactionContext } from "./context";
 import { appRoutes, apiRoutes, authRoutes } from "./routes";
 import { Server } from "./server";
 import {
@@ -59,5 +59,6 @@ export const App = Server.init(app => {
     RainContext.getInstance();
     DailyContext.getInstance();
     CMCContext.getInstance();
+    TransactionContext.getInstance();
     Server.run(process.env.PORT);
   });
