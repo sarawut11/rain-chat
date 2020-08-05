@@ -208,19 +208,19 @@ class Ads extends Component {
         if (status === 4) {
           content = (
             <div className="pending-tran-modal-content">
-              You have to pay <span>${expectAmount}</span> vitae to <span>${walletAddress}</span>.
-              But you sent only <span>${paidAmount}</span> vitae. Please send the rest{' '}
-              <span>${expectAmount - paidAmount}</span> to wallet address{' '}
-              <span>${walletAddress}</span> to complete the pending transaction.
+              You have to pay <span>{expectAmount}</span> vitae to <span>{walletAddress}</span>. But
+              you sent only <span>{paidAmount}</span> vitae. Please send the rest{' '}
+              <span>{expectAmount - paidAmount}</span> to wallet address{' '}
+              <span>{walletAddress}</span> to complete the pending transaction.
             </div>
           );
           // eslint-disable-next-line eqeqeq
         } else if (adsId && adsId == item.id) {
           content = (
             <div className="pending-tran-modal-content">
-              You have to pay <span>${expectAmount}</span> vitae to <span>${walletAddress}</span>.{' '}
+              You have to pay <span>{expectAmount}</span> vitae to <span>{walletAddress}</span>.{' '}
               {expireIn && expireIn > 0 && (
-                <Countdown title="Time left" value={Date.now() + expireIn} format="HH:mm:ss:SSS" />
+                <Countdown title="Time left" value={Date.now() + expireIn} format="mm:ss:SSS" />
               )}
             </div>
           );
@@ -261,6 +261,7 @@ class Ads extends Component {
         this.showImpressionModal(item);
       }
     } catch (error) {
+      console.log(error);
       this.showImpressionModal(item);
     }
   };
@@ -358,6 +359,7 @@ class Ads extends Component {
         notification.success({
           message: res.message,
         });
+        this.showImpressionsInput(item)();
       } else {
         notification.error({
           message: res.message,
