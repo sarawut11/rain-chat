@@ -1,4 +1,4 @@
-import { SET_USER_INFO, SET_BALANCE } from '../actions/userAction';
+import { SET_USER_INFO, SET_BALANCE, SET_USER_ROLE } from '../actions/userAction';
 
 const initialState = {
   userInfo: {},
@@ -27,6 +27,16 @@ const userReducer = (previousState = initialState, action) => {
         return {
           ...previousState,
           userInfo: { ...previousState.userInfo, balance: action.data.balance },
+        };
+      } catch (e) {
+        console.log(e);
+        return previousState;
+      }
+    case SET_USER_ROLE:
+      try {
+        return {
+          ...previousState,
+          userInfo: { ...previousState.userInfo, role: action.data.role },
         };
       } catch (e) {
         console.log(e);
