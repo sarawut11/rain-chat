@@ -17,14 +17,9 @@ class LogIn extends Component {
 
             <Paragraph>
               <ul>
-                <li>
-                  Users who break the rules will be banned. (Three strikes? How to word that.)
-                </li>
+                <li>Users who break the rules will be banned.</li>
                 <li>No personal attacks, name calling or making fun of others</li>
-                <li>
-                  Be creative with your posts. This makes the chat fun, and slower. You only need to
-                  post every hour to be eligible for rains.
-                </li>
+                <li>Be creative with your posts. This makes the chat fun, and slower.</li>
               </ul>
             </Paragraph>
 
@@ -47,10 +42,7 @@ class LogIn extends Component {
                   Go to the Vitae Rain Channel and click the green arrow at the top right. Choose
                   the amount you wish to send and click “Request”.
                 </li>
-                <li>
-                  You will then receive a Vitae address to send tokens and a countdown timer. What
-                  happens if you send after the timer expires?
-                </li>
+                <li>You will then receive a Vitae address to send tokens and a countdown timer.</li>
               </ul>
               <Title level={3}>Private Message/Group Message</Title>
               <ul>
@@ -71,19 +63,9 @@ class LogIn extends Component {
                   of the purchase to all 1,000 upgraded members equally.)
                 </li>
               </ul>
-              <Title level={3}>Upgrade $14.99</Title>
-              <ul>
-                <li>
-                  Upgraded members receive a portion of all advertising purchases. This includes
-                  Static and Rain ads. The distribution is to all Upgraded members for every
-                  purchase. The distribution is equal to every pro member. (IF 1,000 upgraded
-                  members are on the platform, then the purchase of a rain ad would distribute some
-                  of the purchase to all 1,000 upgraded members equally.)
-                </li>
-              </ul>
               <Title level={3}>Advertising</Title>
               <ul>
-                <li>Create and upload your own graphic to these proportions: (3:4).</li>
+                <li>Create and upload your own graphic.</li>
                 <li>Select a short headline and a paragraph of text for the ad description.</li>
                 <li>
                   Pricing Schedule:
@@ -97,8 +79,8 @@ class LogIn extends Component {
               <Title level={3}>How to Withdraw</Title>
               <ul>
                 <li>
-                  Go to your balance and select withdraw. Then provide a valid Vitae address (does
-                  it check for valid address?) to send your tokens to.
+                  Go to your balance and select withdraw. Then provide a valid Vitae address to send
+                  your tokens to.
                 </li>
               </ul>
               <Title level={3}>How to use Exchanges</Title>
@@ -110,9 +92,9 @@ class LogIn extends Component {
                   Some do not require KYC like InstaSwap and Unnamed.Exchange.
                 </li>
                 <li>
-                  A tutorial video on how to use Instaswap can be found <a href="#">here</a>.
+                  A tutorial video on how to use Instaswap can be found{' '}
+                  <a href="https://www.youtube.com/watch?v=OEV3hNb9cQ8">here</a>.
                 </li>
-                <li>I could not find the STEX video created by Kobe.</li>
                 <li>
                   What is KYC?
                   <ul>
@@ -128,7 +110,7 @@ class LogIn extends Component {
                   <ul>
                     <li>
                       A blockchain explorer is a browser for the blockchain used to track
-                      transactions among other things.
+                      transactions.
                     </li>
                   </ul>
                 </li>
@@ -136,12 +118,11 @@ class LogIn extends Component {
               <Title level={3}>Helpdesk</Title>
               <ul>
                 <li>
-                  Temporarily in the <a href="#">Vitae Discord server</a>
+                  Temporarily in the <a href="https://discord.gg/ENGEtWD">Vitae Discord server</a>
                   <ul>
                     <li>Join the #help channel and ask for assistance.</li>
                   </ul>
                 </li>
-                <li>In the future, a Private help room will be accessible.</li>
               </ul>
               <Title level={3}>Compensation Plan</Title>
               <ul>
@@ -162,7 +143,6 @@ class LogIn extends Component {
                         <li>May post text and emojis</li>
                         <li>All ad purchases share revenue with Pro members.</li>
                         <li>Not required to view a Static ad before posting.</li>
-                        <li>Other benefits?</li>
                       </ul>
                     </li>
                   </ul>
@@ -191,12 +171,7 @@ class LogIn extends Component {
                       </ul>
                     </li>
 
-                    <li>
-                      Static Ad purchase Rain
-                      <ul>
-                        <li>A certain amount of Vitae from Static Ads is rained</li>
-                      </ul>
-                    </li>
+                    <li>Static Ad purchase Rain</li>
 
                     <li>
                       Upgrade Purchase Rain
@@ -209,9 +184,8 @@ class LogIn extends Component {
                       Rain Ad View
                       <ul>
                         <li>
-                          A certain amount of Vitae from Rain Ads is rained (Rain ads Pay the
-                          viewer. This is a paid to view advertisement. All members that view the ad
-                          automatically receive a share of the ad revenue)
+                          Rain ads Pay the viewer. This is a paid to view advertisement. All members
+                          that view the ad automatically receive a share of the ad revenue
                         </li>
                       </ul>
                     </li>
@@ -231,7 +205,7 @@ class LogIn extends Component {
                       <ul>
                         <li>
                           As rains are collected, half of earnings are kept in your invisible POP
-                          Rain account. When it reaches a certain threshold. The amount is rained.
+                          Rain account.
                         </li>
                       </ul>
                     </li>

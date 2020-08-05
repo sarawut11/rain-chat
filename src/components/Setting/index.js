@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { SettingOutlined } from '@ant-design/icons';
 import UserUpgrader from './UserUpgrader';
 import Withdraw from './Withdraw';
+import PasswordChange from './PasswordChange';
 import './styles.scss';
 
 function Setting({ initApp, history, userInfo }) {
@@ -38,6 +39,10 @@ function Setting({ initApp, history, userInfo }) {
           <Col span={24}>
             <Divider>Withdraw your vitae</Divider>
             <Withdraw />
+          </Col>
+          <Col span={24}>
+            <Divider />
+            <PasswordChange />
           </Col>
           <Col span={24}>
             <Divider />

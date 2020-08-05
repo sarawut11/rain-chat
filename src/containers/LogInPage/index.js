@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Row, Col, Modal } from 'antd';
+import YouTube from 'react-youtube';
 import Request from '../../utils/request';
 import notification from '../../components/Notification';
 import SignInSignUp from '../../components/SignInSignUp';
@@ -93,9 +94,19 @@ class LogIn extends Component {
     window.location.href = '/group_chat/vitae-rain-group';
   };
 
+  _onReady(event) {
+    // access to player in all event handlers via event.target
+    // event.target.pauseVideo();
+  }
+
   render() {
     const { welcomeTitle, welcomeText, title1, text1, title2, text2 } = landingDescription;
     const { totalRainedUsd, totalRainedVitae } = this.state;
+    const videoOpts = {
+      playerVars: {
+        autoplay: 1,
+      },
+    };
     return (
       <div className="login">
         <Row className="login-container">
@@ -123,6 +134,17 @@ class LogIn extends Component {
                   <Col span={24}>
                     <h1>{welcomeTitle}</h1>
                     <p>{welcomeText}</p>
+                  </Col>
+
+                  <Col span={24}>
+                    <div className="video-container-div">
+                      <YouTube
+                        videoId="vM1-AjsKheg"
+                        opts={videoOpts}
+                        onReady={this._onReady}
+                        className="video-container"
+                      />
+                    </div>
                   </Col>
 
                   <Col span={24}>

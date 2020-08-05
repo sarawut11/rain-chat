@@ -1,9 +1,3 @@
-/**
- *
- * @param   时间戳
- * @return   yyyy-MM-dd hh:mm 格式的时间
- */
-
 function addZero(data) {
   if (data.toString().length === 1) {
     return `0${data}`;

@@ -17,6 +17,7 @@ import { setAdsAction, updateAdsInfo } from '../../containers/AdsPage/adsAction'
 import {
   setUserInfoAction,
   setBalanceAction,
+  setRoleAction,
   setMembershipUpgradeInfo,
 } from '../../redux/actions/userAction';
 import { setStaticAdsAction } from '../../redux/actions/staticAdsAction';
@@ -260,19 +261,25 @@ class InitApp {
       }
     });
 
-    window.socket.on(
-      'transactionConfirmed',
-      ({ type, paidAmount, expectAmount, time, confirmTime }) => {
-        console.log(
-          'Transaction Request Confirmed',
-          type,
-          paidAmount,
-          expectAmount,
-          time,
-          confirmTime,
+    window.socket.on('transactionConfirmed', ({ type, expectAmount, time }) => {
+      console.log('Transaction Request Confirmed', type, expectAmount, time);
+      const typeString = type === 0 ? 'ads' : 'membership upgrade';
+      antNotification.success({ message: `Transaction request for ${typeString} is confirmed.` });
+
+      if (type === 1) {
+        store.dispatch(
+          setMembershipUpgradeInfo({
+            membershipUpgradePending: false,
+            usdPrice: null,
+            vitaePrice: null,
+            walletAddress: null,
+            deadline: null,
+          }),
         );
-      },
-    );
+
+        store.dispatch(setRoleAction('UPGRADED'));
+      }
+    });
   }
 
   _listenUserInfo() {
