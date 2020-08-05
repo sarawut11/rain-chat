@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 /* eslint-disable react/jsx-indent */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-no-target-blank */
@@ -28,6 +29,7 @@ import {
   Tabs,
   Empty,
   Badge,
+  Statistic,
 } from 'antd';
 import {
   EditOutlined,
@@ -58,12 +60,13 @@ import {
 const { Meta } = Card;
 const { TabPane } = Tabs;
 const { confirm, warning } = Modal;
+const { Countdown } = Statistic;
 
 const getAmount = (impressions, price) => {
   let amount = Number(impressions) * Number(price);
   amount = Number(amount.toFixed(8));
-  amount = amount > 0 ? amount + 0.00000001 : amount;
-  return amount;
+  amount = amount > 0 ? Number(amount) + 0.00000001 : amount;
+  return Number(amount.toFixed(8));
 };
 
 class ImpressionsContent extends Component {
@@ -195,29 +198,55 @@ class Ads extends Component {
 
       if (res && res.success) {
         const { pendingTran, walletAddress } = res;
-        const { type, status, paidAmount, expectAmount, adsId } = pendingTran;
+        const { type, status, paidAmount, expectAmount, adsId, expireIn } = pendingTran;
+
+        console.log(res, item);
+
+        let content = <div />;
+        let title = <div />;
+
+        if (status === 4) {
+          content = (
+            <div className="pending-tran-modal-content">
+              You have to pay <span>${expectAmount}</span> vitae to <span>${walletAddress}</span>.
+              But you sent only <span>${paidAmount}</span> vitae. Please send the rest{' '}
+              <span>${expectAmount - paidAmount}</span> to wallet address{' '}
+              <span>${walletAddress}</span> to complete the pending transaction.
+            </div>
+          );
+          // eslint-disable-next-line eqeqeq
+        } else if (adsId && adsId == item.id) {
+          content = (
+            <div className="pending-tran-modal-content">
+              You have to pay <span>${expectAmount}</span> vitae to <span>${walletAddress}</span>.{' '}
+              {expireIn && expireIn > 0 && (
+                <Countdown title="Time left" value={Date.now() + expireIn} format="HH:mm:ss:SSS" />
+              )}
+            </div>
+          );
+        } else {
+          content = (
+            <div>You can`t create a new transaction until this transaction is finished.</div>
+          );
+        }
+
+        if (adsId == item.id) {
+          title = 'We are waiting your purchase for this ads.';
+        } else {
+          title = (
+            <div className="pending-tran-modal-content">
+              You already have pending{' '}
+              {type === 0 ? <span>ads purchase</span> : <span>membership request</span>}{' '}
+              transaction.
+            </div>
+          );
+        }
 
         if (pendingTran) {
           confirm({
-            title: (
-              <div className="pending-tran-modal-content">
-                You already have pending{' '}
-                {type === 0 ? <span>ads purchase</span> : <span>membership request</span>}{' '}
-                transaction.
-              </div>
-            ),
+            title,
             icon: <ExclamationCircleOutlined />,
-            content:
-              status === 4 ? (
-                <div className="pending-tran-modal-content">
-                  You have to pay <span>${expectAmount}</span> vitae to{' '}
-                  <span>${walletAddress}</span>. But you sent only <span>${paidAmount}</span> vitae.
-                  Please send the rest <span>${expectAmount - paidAmount}</span> to wallet address{' '}
-                  <span>${walletAddress}</span> to complete the pending transaction.
-                </div>
-              ) : (
-                `You can't create a new transaction until this transaction is finished.`
-              ),
+            content,
             onOk() {
               pointer.setState({ impressions: 0 });
             },
@@ -621,6 +650,9 @@ class Ads extends Component {
         )}
         {item.status === ADS_APPROVED && item.role !== 'MODERATOR' && (
           <Menu.Item onClick={this.showImpressionsInput(item)}>Purchase</Menu.Item>
+        )}
+        {item.status === ADS_PENDING_PURCHASE && item.role !== 'MODERATOR' && (
+          <Menu.Item onClick={this.showImpressionsInput(item)}>Purchase Info</Menu.Item>
         )}
       </Menu>
     );
