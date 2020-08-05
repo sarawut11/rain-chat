@@ -33,4 +33,25 @@ export class TransactionContext {
 
     console.log(`Expire Transaction => Success | transactionRequestId:${tranId}, username:${userInfo.username}`);
   }
+
+  async confrimTransactionRequest(tranId: number, txId: string, paidAmount: number, confirmTime: number) {
+    const { userService, transactionService } = ServicesContext.getInstance();
+    const tranInfo: Transaction = await transactionService.getTransactionById(tranId);
+    if (tranInfo === undefined) return;
+    if (tranInfo.status !== Transaction.STATUS.REQUESTED) return;
+
+    await transactionService.confirmTransaction(tranId, txId, paidAmount, confirmTime);
+
+    const userInfo: User = await userService.findUserById(tranInfo.userId);
+    if (userInfo === undefined) return;
+    socketServer.emitTo(userInfo.socketid, socketEventNames.TransactionConfirmed, {
+      type: tranInfo.type,
+      paidAmount,
+      expectAmount: tranInfo.expectAmount,
+      time: tranInfo.time,
+      confirmTime,
+    });
+
+    console.log(`Confirm Transaction => Success | transactionRequestId:${tranId}, username:${userInfo.username}`);
+  }
 }

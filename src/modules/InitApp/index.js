@@ -259,6 +259,20 @@ class InitApp {
         );
       }
     });
+
+    window.socket.on(
+      'transactionConfirmed',
+      ({ type, paidAmount, expectAmount, time, confirmTime }) => {
+        console.log(
+          'Transaction Request Confirmed',
+          type,
+          paidAmount,
+          expectAmount,
+          time,
+          confirmTime,
+        );
+      },
+    );
   }
 
   _listenUserInfo() {

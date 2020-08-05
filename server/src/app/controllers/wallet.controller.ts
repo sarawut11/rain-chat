@@ -1,4 +1,4 @@
-import { ServicesContext, RainContext } from "@context";
+import { ServicesContext, RainContext, TransactionContext } from "@context";
 import { now, rpcInterface, shareRevenue } from "@utils";
 import { updateBalanceSocket, updateAdsStatus } from "@sockets";
 import {
@@ -71,7 +71,7 @@ export const walletNotify = async (ctx, next) => {
           console.log(`Transaction Notify => Insufficient Amount | expectAmount:${tranInfo.expectAmount}, paidAmount:${txInfo.amount}, txId:${txid}`);
           await transactionService.setInsufficientTransaction(txid, txInfo.amount, txInfo.timereceived, tranInfo);
         } else {
-          await transactionService.confirmTransaction(tranInfo.id, txid, txInfo.amount, txInfo.timereceived);
+          TransactionContext.getInstance().confrimTransactionRequest(tranInfo.id, txid, txInfo.amount, txInfo.timereceived);
           if (tranInfo.type === Transaction.TYPE.MEMBERSHIP) {
             console.log(`Transaction Notify => Membership Upgraded | username:${userInfo.username}, txId:${txid}`);
             await confirmMembership(userInfo, txInfo.amount);

@@ -107,6 +107,7 @@
     - [updateAdsImpressions (Server)](#updateadsimpressions-server)
   - [2.7 Transaction](#27-transaction)
     - [transactionExpired (Server)](#transactionexpired-server)
+    - [transactionConfirmed (Server)](#transactionconfirmed-server)
 
 > **Note**
 > - All Date / Time formats are in unix timestamp format in UTC timezone
@@ -1468,5 +1469,18 @@
     type,           // Transaction Type
     expectAmount,   // Transaction Amount
     time,           // Requested Time
+  }
+  ```
+### transactionConfirmed (Server)
+  Notify user about the confirmed transaction
+
+  ***Data***
+  ```
+  {
+    type,           // Transaction Type
+    paid,           // Paid Amount
+    expectAmount,   // Transaction Amount
+    time,           // Requested Time
+    confirmTime,    // Confirmed Time
   }
   ```
