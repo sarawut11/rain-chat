@@ -13,6 +13,30 @@ export class TransactionContext {
     return TransactionContext.instance;
   }
 
+  constructor() {
+    // Check Expired Transactions
+    this.checkExpiredTrans();
+  }
+
+  async checkExpiredTrans() {
+    const { transactionService, adsService } = ServicesContext.getInstance();
+    const expiredTrans = await transactionService.getExpiredTrans();
+    const expiredAdsId: number[] = [];
+
+    await Promise.all(expiredTrans.map(tran => {
+      if (tran.type === Transaction.TYPE.ADS) {
+        expiredAdsId.push(getAdsIdFromTran(tran.details));
+      }
+      return transactionService.expireTransactionRequest(tran.id);
+    }));
+    console.log(`Expire Transactions => ${expiredTrans.length} trans expired.`);
+
+    await Promise.all(expiredAdsId.map(adsId => {
+      return adsService.updateStatus(adsId, Ads.STATUS.Approved);
+    }));
+    console.log(`Expire Ads => ${expiredAdsId.length} ads expired.`);
+  }
+
   async expireTransactionRequest(tranId: number) {
     const { userService, transactionService, adsService } = ServicesContext.getInstance();
 

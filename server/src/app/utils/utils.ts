@@ -136,6 +136,6 @@ export const getTranExpireIn = async (requestedTime: number): Promise<number> =>
 };
 
 export const getAdsIdFromTran = (tranDetails: string): number => {
-  const adsId = tranDetails === "" ? undefined : JSON.parse(tranDetails).adsId;
+  const adsId = tranDetails === "" || tranDetails === null ? undefined : JSON.parse(tranDetails).adsId;
   return Number(adsId);
 };

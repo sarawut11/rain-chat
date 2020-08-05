@@ -166,4 +166,18 @@ export class TransactionService {
     trans.forEach(tran => amount += tran.paidAmount);
     return amount;
   }
+
+  async getExpiredTrans(): Promise<Transaction[]> {
+    const { settingService } = ServicesContext.getInstance();
+    const tranExpire = await settingService.getSettingValue(Setting.KEY.TRANSACTION_REQUEST_EXPIRE);
+    const expireTime = now() - tranExpire / 1000;
+
+    const sql = `
+      SELECT * FROM ${this.TABLE_NAME}
+      WHERE
+        ${this.columns.time} <= ? AND
+        ${this.columns.status} = ?;`;
+    const trans: Transaction[] = await query(sql, [expireTime, Transaction.STATUS.REQUESTED]);
+    return trans;
+  }
 }
