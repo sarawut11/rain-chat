@@ -617,20 +617,20 @@ class Ads extends Component {
                 {item.type === ADS_TYPE_STATIC && 'Static ads'}
               </p>
             </Timeline.Item>
-            {item.impressions && (
+            {status === ADS_PAID && (
               <Timeline.Item color="green">
                 <p>
-                  <b>Impressions: </b>
+                  <b>Purchased Impressions: </b>
                   {item.impressions}
                 </p>
               </Timeline.Item>
             )}
-            {item.costPerImp && (
+            {status === ADS_PAID && (
               <Timeline.Item color="green">
                 <p>
-                  <b>Cost per impression:</b>
+                  <b>Remaining Impressions: </b>
+                  {item.impressions - item.givenImp}
                 </p>
-                <p>{item.costPerImp}</p>
               </Timeline.Item>
             )}
           </Timeline>
