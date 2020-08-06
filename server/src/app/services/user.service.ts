@@ -46,8 +46,11 @@ export class UserService {
   async findMatchUsers(username: string): Promise<User[]> {
     const sql = `
       SELECT * FROM ${this.USER_TABLE}
-      WHERE ${this.USER_COL.username} LIKE ?;`;
-    const users: User[] = await query(sql, username);
+      WHERE
+        ${this.USER_COL.username} LIKE ? AND
+        ${this.USER_COL.role} != ? AND
+        ${this.USER_COL.role} != ?;`;
+    const users: User[] = await query(sql, [username, User.ROLE.COMPANY, User.ROLE.STOCKPILE]);
     return users;
   }
 

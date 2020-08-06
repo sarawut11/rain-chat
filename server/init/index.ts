@@ -16,10 +16,6 @@ const COMPANY_STOCKPILE_USERID = Number(process.env.COMPANY_STOCKPILE_USERID);
 const COMPANY_STOCKPILE_ADDRESS = process.env.COMPANY_STOCKPILE_ADDRESS;
 
 const RAIN_GROUP_ID = process.env.RAIN_GROUP_ID;
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-const ADMIN_NAME = process.env.ADMIN_NAME;
-const MAIL_USER = process.env.MAIL_USER;
 
 // Execute the table creation sql script
 const initDB = async () => {
@@ -39,9 +35,17 @@ const initDB = async () => {
   await query(sql, [COMPANY_STOCKPILE_USERID, "STOCKPILE", "company.stockpile@wallet.com", md5(uniqid()), "Company Stockpile", User.ROLE.STOCKPILE, uniqid(), COMPANY_STOCKPILE_ADDRESS]);
 
   // Create Default Owner ( Admin )
-  const walletAddress = await rpcInterface.getNewAddress();
+  let walletAddress = await rpcInterface.getNewAddress();
   sql = "INSERT INTO user_info (username, email, password, name, role, refcode, walletAddress) VALUES (?,?,?,?,?,?,?);";
-  await query(sql, [ADMIN_USERNAME, MAIL_USER, md5(ADMIN_PASSWORD), ADMIN_NAME, User.ROLE.OWNER, uniqid(), walletAddress]);
+  await query(sql, ["iqmojo", "mojo00web@gmail.com", md5("password"), "Michael Bradley", User.ROLE.OWNER, uniqid(), walletAddress]);
+
+  walletAddress = await rpcInterface.getNewAddress();
+  sql = "INSERT INTO user_info (username, email, password, name, role, refcode, walletAddress) VALUES (?,?,?,?,?,?,?);";
+  await query(sql, ["CryptoParaglider", "russell@girdwood.net", md5("password"), "Crypto Paraglider", User.ROLE.OWNER, uniqid(), walletAddress]);
+
+  walletAddress = await rpcInterface.getNewAddress();
+  sql = "INSERT INTO user_info (username, email, password, name, role, refcode, walletAddress) VALUES (?,?,?,?,?,?,?);";
+  await query(sql, ["Sarawut", "sanit.sa@outlook.com", md5("password"), "Sarawut Sanit", User.ROLE.OWNER, uniqid(), walletAddress]);
 
   // Create Vitae Rain Room
   sql = "INSERT INTO group_info (id,groupId,name,description,creatorId,createTime) VALUES (?,?,?,?,?,?);";
