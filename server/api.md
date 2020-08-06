@@ -18,6 +18,7 @@
     - [/user/otp/verify (POST)](#userotpverify-post)
     - [/user/get-refs (GET)](#userget-refs-get)
   - [1.4 Ads](#14-ads)
+    - [Ads Model](#ads-model)
     - [/campaign/pub/create (POST)](#campaignpubcreate-post)
     - [/campaign/pub/all (GET)](#campaignpuball-get)
     - [/campaign/pub/:adsId (GET)](#campaignpubadsid-get)
@@ -1179,20 +1180,6 @@
       ], ...
     ],
     adsList: [
-      {
-        id,           // Ads Id
-        userId,       // Advertiser's id
-        assetLink,    // Link to the ads content
-        impressions,
-        link,
-        buttonLabel,
-        title,
-        description,
-        status,       
-        lastTime,     // Last advertised time - Unix timestamp in UTC
-        time,         // Registration Time - Unix timestamp in UTC
-        type,         
-      }, ...
     ]
   }
   ```
