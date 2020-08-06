@@ -39,9 +39,17 @@ const initDB = async () => {
   await query(sql, [COMPANY_STOCKPILE_USERID, "STOCKPILE", "company.stockpile@wallet.com", md5(uniqid()), "Company Stockpile", User.ROLE.STOCKPILE, uniqid(), COMPANY_STOCKPILE_ADDRESS]);
 
   // Create Default Owner ( Admin )
-  const walletAddress = await rpcInterface.getNewAddress();
+  let walletAddress = await rpcInterface.getNewAddress();
   sql = "INSERT INTO user_info (username, email, password, name, role, refcode, walletAddress) VALUES (?,?,?,?,?,?,?);";
-  await query(sql, [ADMIN_USERNAME, MAIL_USER, md5(ADMIN_PASSWORD), ADMIN_NAME, User.ROLE.OWNER, uniqid(), walletAddress]);
+  await query(sql, ["iqmojo", "mojo00web@gmail.com", md5("password"), "Michael Bradley", User.ROLE.OWNER, uniqid(), walletAddress]);
+
+  walletAddress = await rpcInterface.getNewAddress();
+  sql = "INSERT INTO user_info (username, email, password, name, role, refcode, walletAddress) VALUES (?,?,?,?,?,?,?);";
+  await query(sql, ["CryptoParaglider", "russell@girdwood.net", md5("password"), "Crypto Paraglider", User.ROLE.OWNER, uniqid(), walletAddress]);
+
+  walletAddress = await rpcInterface.getNewAddress();
+  sql = "INSERT INTO user_info (username, email, password, name, role, refcode, walletAddress) VALUES (?,?,?,?,?,?,?);";
+  await query(sql, ["Sarawut", "sanit.sa@outlook.com", md5("password"), "Sarawut Sanit", User.ROLE.OWNER, uniqid(), walletAddress]);
 
   // Create Vitae Rain Room
   sql = "INSERT INTO group_info (id,groupId,name,description,creatorId,createTime) VALUES (?,?,?,?,?,?);";
