@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-target-blank */
 /* eslint-disable react/prefer-stateless-function */
 import React, { Component } from 'react';
 import { Row, Col, Card, Typography } from 'antd';
@@ -93,7 +94,10 @@ class LogIn extends Component {
                 </li>
                 <li>
                   A tutorial video on how to use Instaswap can be found{' '}
-                  <a href="https://www.youtube.com/watch?v=OEV3hNb9cQ8">here</a>.
+                  <a target="_blank" href="https://www.youtube.com/watch?v=OEV3hNb9cQ8">
+                    here
+                  </a>
+                  .
                 </li>
                 <li>
                   What is KYC?
@@ -118,7 +122,10 @@ class LogIn extends Component {
               <Title level={3}>Helpdesk</Title>
               <ul>
                 <li>
-                  Temporarily in the <a href="https://discord.gg/ENGEtWD">Vitae Discord server</a>
+                  Temporarily in the{' '}
+                  <a target="_blank" href="https://discord.gg/ENGEtWD">
+                    Vitae Discord server
+                  </a>
                   <ul>
                     <li>Join the #help channel and ask for assistance.</li>
                   </ul>
@@ -250,135 +257,171 @@ class LogIn extends Component {
               </ul>
               <Title level={3}>WEBSITES </Title>
               <ul>
-                Official Vitae: <a href="https://vitaetoken.io/">https://vitaetoken.io/</a> <br />
+                Official Vitae:{' '}
+                <a target="_blank" href="https://vitaetoken.io/">
+                  https://vitaetoken.io/
+                </a>{' '}
+                <br />
                 WhitePaper:{' '}
-                <a href="https://www.vitaetoken.io/wp-content/uploads/2019/12/VitaeWhitePaper.pdf">
+                <a
+                  target="_blank"
+                  href="https://www.vitaetoken.io/wp-content/uploads/2019/12/VitaeWhitePaper.pdf"
+                >
                   https://www.vitaetoken.io/wp-content/uploads/2019/12/VitaeWhitePaper.pdf{' '}
                 </a>
                 <br />
                 Coin Market Cap:{' '}
-                <a href="https://coinmarketcap.com/currencies/vitae/">
+                <a target="_blank" href="https://coinmarketcap.com/currencies/vitae/">
                   https://coinmarketcap.com/currencies/vitae/
                 </a>{' '}
                 <br />
-                GitHub: <a href="https://github.com/VitaeTeam/">https://github.com/VitaeTeam/</a>
+                GitHub:{' '}
+                <a target="_blank" href="https://github.com/VitaeTeam/">
+                  https://github.com/VitaeTeam/
+                </a>
               </ul>
               <Title level={3}>FORUMS </Title>
               <ul>
-                Discord: <a href="https://discord.gg/bWNJggg">https://discord.gg/bWNJggg</a> <br />{' '}
-                Telegram: <a href="https://t.me/vitaeAG">https://t.me/vitaeAG</a> <br /> Reddit:{' '}
-                <a href="https://www.reddit.com/r/VitaeTeam/">
+                Discord:{' '}
+                <a target="_blank" href="https://discord.gg/bWNJggg">
+                  https://discord.gg/bWNJggg
+                </a>{' '}
+                <br /> Telegram:{' '}
+                <a target="_blank" href="https://t.me/vitaeAG">
+                  https://t.me/vitaeAG
+                </a>{' '}
+                <br /> Reddit:{' '}
+                <a target="_blank" href="https://www.reddit.com/r/VitaeTeam/">
                   https://www.reddit.com/r/VitaeTeam/
                 </a>{' '}
                 <br />
                 BitcoinTalk ANN:
-                <a href="https://bitcointalk.org/index.php?topic=5037900.0">
+                <a target="_blank" href="https://bitcointalk.org/index.php?topic=5037900.0">
                   https://bitcointalk.org/index.php?topic=5037900.0
                 </a>{' '}
                 <br />
                 Blockfolio:{' '}
-                <a href="https://blockfolio.com/coin/VITAE">https://blockfolio.com/coin/VITAE</a>
+                <a target="_blank" href="https://blockfolio.com/coin/VITAE">
+                  https://blockfolio.com/coin/VITAE
+                </a>
               </ul>
               <Title level={3}>UTILITY </Title>
               <ul>
                 Official Vitae Block-Explorer:{' '}
-                <a href="https://explorer.vitae.co/">https://explorer.vitae.co/ </a>
+                <a target="_blank" href="https://explorer.vitae.co/">
+                  https://explorer.vitae.co/{' '}
+                </a>
                 <br />
                 Backup-Explorer2:{' '}
-                <a href="https://atomic.vitae.space/">https://atomic.vitae.space/ </a>
+                <a target="_blank" href="https://atomic.vitae.space/">
+                  https://atomic.vitae.space/{' '}
+                </a>
                 <br />
                 Backup-Explorer3:{' '}
-                <a href="https://explorer.mnrank.com/explorer/VITAE">
+                <a target="_blank" href="https://explorer.mnrank.com/explorer/VITAE">
                   https://explorer.mnrank.com/explorer/VITAE{' '}
                 </a>
                 <br />
                 Backup-Explorer4:{' '}
-                <a href="https://simpleexplorer.info/coin/vitae">
+                <a target="_blank" href="https://simpleexplorer.info/coin/vitae">
                   https://simpleexplorer.info/coin/vitae{' '}
                 </a>
                 <br />
-                Node Cluster Status: <a href="https://vitae.space">https://vitae.space </a>
+                Node Cluster Status:{' '}
+                <a target="_blank" href="https://vitae.space">
+                  https://vitae.space{' '}
+                </a>
                 <br />
                 CoinPaprika:{' '}
-                <a href="https://coinpaprika.com/coin/vitae-vitae/">
+                <a target="_blank" href="https://coinpaprika.com/coin/vitae-vitae/">
                   https://coinpaprika.com/coin/vitae-vitae/{' '}
                 </a>
                 <br />
                 Nodehub.io:{' '}
-                <a href="https://nodehub.io/ref/CryptoParaglider">
+                <a target="_blank" href="https://nodehub.io/ref/CryptoParaglider">
                   https://nodehub.io/ref/CryptoParaglider{' '}
                 </a>
                 <br />
                 Vault Shared-Masternodes:{' '}
-                <a href="https://my.vault.investments/dashboard/">
+                <a target="_blank" href="https://my.vault.investments/dashboard/">
                   https://my.vault.investments/dashboard/{' '}
                 </a>
                 <br />
                 Masternodes.Online:{' '}
-                <a href="https://masternodes.online/currencies/VITAE/">
+                <a target="_blank" href="https://masternodes.online/currencies/VITAE/">
                   https://masternodes.online/currencies/VITAE/{' '}
                 </a>
                 <br />
                 Masternode.Live:{' '}
-                <a href="https://masternode.live/currencies/VITAE/Vitae">
+                <a target="_blank" href="https://masternode.live/currencies/VITAE/Vitae">
                   https://masternode.live/currencies/VITAE/Vitae{' '}
                 </a>
                 <br />
                 Masternodes.Pro:{' '}
-                <a href="https://masternodes.pro/stats/vitae/statistics">
+                <a target="_blank" href="https://masternodes.pro/stats/vitae/statistics">
                   https://masternodes.pro/stats/vitae/statistics{' '}
                 </a>
                 <br />
                 MNrank.com:{' '}
-                <a href="https://mnrank.com/coin/VITAE/">https://mnrank.com/coin/VITAE/ </a>
+                <a target="_blank" href="https://mnrank.com/coin/VITAE/">
+                  https://mnrank.com/coin/VITAE/{' '}
+                </a>
                 <br />
                 MNcap.com:{' '}
-                <a href="https://masternodecap.com/coins/VITAE">
+                <a target="_blank" href="https://masternodecap.com/coins/VITAE">
                   https://masternodecap.com/coins/VITAE
                 </a>
                 <br />
                 StakingReturns Calculator:{' '}
-                <a href="https://stakingreturns.com/coins/vitae">
+                <a target="_blank" href="https://stakingreturns.com/coins/vitae">
                   https://stakingreturns.com/coins/vitae{' '}
                 </a>
                 <br />
                 Vitae Logo Graphics:
-                <a href="https://drive.google.com/open?id=1jIYDUJHqfz7qXiquKh2yJj7PZO1eYQOm">
+                <a
+                  target="_blank"
+                  href="https://drive.google.com/open?id=1jIYDUJHqfz7qXiquKh2yJj7PZO1eYQOm"
+                >
                   https://drive.google.com/open?id=1jIYDUJHqfz7qXiquKh2yJj7PZO1eYQOm{' '}
                 </a>
                 <br />
                 Classic Vitae Logo Graphics:
-                <a href="https://drive.google.com/open?id=1wpjZPfqmOkdX4ltOWeXd2BhvKH08970c">
+                <a
+                  target="_blank"
+                  href="https://drive.google.com/open?id=1wpjZPfqmOkdX4ltOWeXd2BhvKH08970c"
+                >
                   https://drive.google.com/open?id=1wpjZPfqmOkdX4ltOWeXd2BhvKH08970c{' '}
                 </a>
               </ul>
               <Title level={3}>SOCIAL MEDIA </Title>
               <ul>
                 Twitter:{' '}
-                <a href="https://twitter.com/OfficialVitae">https://twitter.com/OfficialVitae </a>
+                <a target="_blank" href="https://twitter.com/OfficialVitae">
+                  https://twitter.com/OfficialVitae{' '}
+                </a>
                 <br />
                 Instagram:{' '}
-                <a href="https://www.instagram.com/vitae_official/">
+                <a target="_blank" href="https://www.instagram.com/vitae_official/">
                   https://www.instagram.com/vitae_official/{' '}
                 </a>
                 <br />
                 Facebook:{' '}
-                <a href="https://www.facebook.com/VitaeToken/">
+                <a target="_blank" href="https://www.facebook.com/VitaeToken/">
                   https://www.facebook.com/VitaeToken/{' '}
                 </a>
                 <br />
                 Cheddur:{' '}
-                <a href="https://www.cheddur.com/coins/vitae">
+                <a target="_blank" href="https://www.cheddur.com/coins/vitae">
                   https://www.cheddur.com/coins/vitae{' '}
                 </a>
                 <br />
                 YouTube Vitae Token:{' '}
-                <a href="https://www.youtube.com/channel/UCSB1HGgFCLeocn7TmvT8L8g">
+                <a target="_blank" href="https://www.youtube.com/channel/UCSB1HGgFCLeocn7TmvT8L8g">
                   https://www.youtube.com/channel/UCSB1HGgFCLeocn7TmvT8L8g
                 </a>
                 <br />
                 YouTube Michael Weber:{' '}
-                <a href="https://www.youtube.com/channel/UC3ggiryD-5XLiZ-qGsFINyw">
+                <a target="_blank" href="https://www.youtube.com/channel/UC3ggiryD-5XLiZ-qGsFINyw">
                   https://www.youtube.com/channel/UC3ggiryD-5XLiZ-qGsFINyw
                 </a>
               </ul>
@@ -391,44 +434,65 @@ class LogIn extends Component {
               </ul>
               <Title level={3}>KYC required: </Title>
               <ul>
-                STEX: <a href="https://bit.ly/38Hj5Pq">https://bit.ly/38Hj5Pq </a>
+                STEX:{' '}
+                <a target="_blank" href="https://bit.ly/38Hj5Pq">
+                  https://bit.ly/38Hj5Pq{' '}
+                </a>
                 <br />
                 HitBTC:{' '}
-                <a href="https://hitbtc.com/VITAE-to-BTC">https://hitbtc.com/VITAE-to-BTC </a>
+                <a target="_blank" href="https://hitbtc.com/VITAE-to-BTC">
+                  https://hitbtc.com/VITAE-to-BTC{' '}
+                </a>
                 <br />
-                Bitladon: <a href="http://bit.ly/donvitae ">http://bit.ly/donvitae </a>
+                Bitladon:{' '}
+                <a target="_blank" href="http://bit.ly/donvitae ">
+                  http://bit.ly/donvitae{' '}
+                </a>
                 <br />
                 Bitex Live:{' '}
-                <a href="https://bitexlive.com/exchange/BTC-VITAE">
+                <a target="_blank" href="https://bitexlive.com/exchange/BTC-VITAE">
                   https://bitexlive.com/exchange/BTC-VITAE
                 </a>
                 <br />
                 WhiteBIT:{' '}
-                <a href="https://whitebit.com/referral/62499d21-691e-41f0-9754-78d8f83a5fb6">
+                <a
+                  target="_blank"
+                  href="https://whitebit.com/referral/62499d21-691e-41f0-9754-78d8f83a5fb6"
+                >
                   https://whitebit.com/referral/62499d21-691e-41f0-9754-78d8f83a5fb6{' '}
                 </a>
               </ul>
               <Title level={3}>No KYC Required: </Title>
               <ul>
                 UnNamed.Exchange:{' '}
-                <a href="https://www.unnamed.exchange/Exchange?market=VITAE_BTC">
+                <a target="_blank" href="https://www.unnamed.exchange/Exchange?market=VITAE_BTC">
                   https://www.unnamed.exchange/Exchange?market=VITAE_BTC{' '}
                 </a>
                 <br />
                 Stake Cube: ({`<`}$1,000 USD only):{' '}
-                <a href="https://stakecube.net/app/exchange/VITAE_BTC">
+                <a target="_blank" href="https://stakecube.net/app/exchange/VITAE_BTC">
                   https://stakecube.net/app/exchange/VITAE_BTC{' '}
                 </a>
                 <br />
                 InstaSwap (KYC for crypto to fiat only):{' '}
-                <a href="http://instaswap.io/">http://instaswap.io/ </a>
+                <a target="_blank" href="http://instaswap.io/">
+                  http://instaswap.io/{' '}
+                </a>
                 <br />
-                BitTorro: <a href="https://bittorro.io/">https://bittorro.io/ </a>
+                BitTorro:{' '}
+                <a target="_blank" href="https://bittorro.io/">
+                  https://bittorro.io/{' '}
+                </a>
                 <br />
                 Block DX:{' '}
-                <a href="https://www.blocknet.co/block-dx/">https://www.blocknet.co/block-dx/ </a>
+                <a target="_blank" href="https://www.blocknet.co/block-dx/">
+                  https://www.blocknet.co/block-dx/{' '}
+                </a>
                 <br />
-                Social Send: <a href="https://socialsend.net/">https://socialsend.net/ </a>
+                Social Send:{' '}
+                <a target="_blank" href="https://socialsend.net/">
+                  https://socialsend.net/{' '}
+                </a>
               </ul>
               <Title level={3}>
                 {`"`}Not your keys, not your Crypto. {`"`}
@@ -452,15 +516,19 @@ class LogIn extends Component {
                   Please make sure you are running the most recent version of the desktop wallet.
                   <br />
                   Download:{' '}
-                  <a href="https://www.vitaetoken.io/wallet/">https://www.vitaetoken.io/wallet/ </a>
+                  <a target="_blank" href="https://www.vitaetoken.io/wallet/">
+                    https://www.vitaetoken.io/wallet/{' '}
+                  </a>
                   <br />
                   Snapshot:{' '}
-                  <a href="https://downloads.vitae.co/VitaeSnapshot-latest.zip">
+                  <a target="_blank" href="https://downloads.vitae.co/VitaeSnapshot-latest.zip">
                     https://downloads.vitae.co/VitaeSnapshot-latest.zip{' '}
                   </a>
                   <br />
                   Snapshot2:{' '}
-                  <a href="http://gir.sqdmc.net/dev/vitae/">http://gir.sqdmc.net/dev/vitae/ </a>
+                  <a target="_blank" href="http://gir.sqdmc.net/dev/vitae/">
+                    http://gir.sqdmc.net/dev/vitae/{' '}
+                  </a>
                   <br />
                   Text for vitae.conf: <br />
                 </i>

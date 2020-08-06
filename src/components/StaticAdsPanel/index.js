@@ -29,7 +29,7 @@ const StaticAdsPanel = props => {
           <Col span={24}>
             <Row justify="center">
               {ads.link && (
-                <Button type="primary" href={ads.link}>
+                <Button type="primary" href={ads.link} target="_blank">
                   {ads.buttonLabel}
                 </Button>
               )}
