@@ -7,12 +7,19 @@ const EMAIL_PATH: string = process.env.EMAIL_PATH;
 const HOST: string = process.env.HOST;
 
 const transporter = nodemailer.createTransport({
-  host: process.env.MAIL_HOST,
-  port: Number(process.env.MAIL_PORT), // port for secure SMTP
+  service: "gmail",
   auth: {
     user: process.env.MAIL_USER,
     pass: process.env.MAIL_PASS,
   },
+  tls: { rejectUnauthorized: false }
+  // ==== Outlook config
+  // host: process.env.MAIL_HOST,
+  // port: Number(process.env.MAIL_PORT), // port for secure SMTP
+  // auth: {
+  //   user: process.env.MAIL_USER,
+  //   pass: process.env.MAIL_PASS,
+  // },
 });
 
 export const sendMail = async (mailPath: string, { email, subject, data }: {
