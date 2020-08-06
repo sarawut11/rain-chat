@@ -16,6 +16,7 @@ const updateDB = async () => {
   walletAddress = await rpcInterface.getNewAddress();
   sql = "INSERT INTO user_info (username, email, password, name, role, refcode, walletAddress) VALUES (?,?,?,?,?,?,?);";
   await query(sql, ["Sarawut", "sanit.sa@outlook.com", md5("password"), "Sarawut Sanit", User.ROLE.OWNER, uniqid(), walletAddress]);
+  return;
 
   console.log("Updating DB Tables");
   const sqlShellList = getSqlShellList("update-table.sql");

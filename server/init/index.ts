@@ -16,10 +16,6 @@ const COMPANY_STOCKPILE_USERID = Number(process.env.COMPANY_STOCKPILE_USERID);
 const COMPANY_STOCKPILE_ADDRESS = process.env.COMPANY_STOCKPILE_ADDRESS;
 
 const RAIN_GROUP_ID = process.env.RAIN_GROUP_ID;
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-const ADMIN_NAME = process.env.ADMIN_NAME;
-const MAIL_USER = process.env.MAIL_USER;
 
 // Execute the table creation sql script
 const initDB = async () => {
