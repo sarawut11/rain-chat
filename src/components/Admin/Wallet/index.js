@@ -89,9 +89,6 @@ class Wallet extends Component {
                 {stockpileBalance}
               </Descriptions.Item>
             </Descriptions>
-            <Row justify="center" style={{ marginTop: 40 }}>
-              <Button type="primary">Withdraw from Main Wallet</Button>
-            </Row>
           </div>
         )}
       </div>
