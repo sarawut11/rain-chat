@@ -385,16 +385,6 @@ export class UserService {
     return users;
   }
 
-  getUsersByLastActivity(limit) {
-    const sql = `
-    SELECT u.id, u.socketid
-    FROM rain_group_msg as rgm
-    JOIN user_info as u
-    ON rgm.fromUser = u.id
-    ORDER BY rgm.time DESC LIMIT ?;`;
-    return query(sql, limit);
-  }
-
   getUsersByUserIds(userIds: number[]) {
     const array = getInArraySQL(userIds);
     const sql = `SELECT * FROM ${this.USER_TABLE} WHERE ${this.USER_COL.id} IN (${array});`;
