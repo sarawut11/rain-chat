@@ -209,11 +209,11 @@ export class RainContext {
 
   async rainUsersByLastActivity(amount) {
     const { groupChatService } = ServicesContext.getInstance();
-    const lastActiveUsers: Message[] = await groupChatService.getLastRainGroupMsg(this.settings.POP_RAIN_LAST_POST_USER);
-    amount /= lastActiveUsers.length;
+    const lastRainMsgs: Message[] = await groupChatService.getLastRainGroupMsg(this.settings.POP_RAIN_LAST_POST_USER);
+    amount /= lastRainMsgs.length;
     const userIds: number[] = [];
-    lastActiveUsers.forEach(user => userIds.push(user.id));
-    console.log(`Rain Users => Raining ${lastActiveUsers.length} users with ${amount} rewards for each`);
+    lastRainMsgs.forEach(msg => userIds.push(msg.fromUser));
+    console.log(`Rain Users => Raining ${userIds.length} users with ${amount} rewards for each`);
     this.rainUsers(userIds, amount);
   }
 
