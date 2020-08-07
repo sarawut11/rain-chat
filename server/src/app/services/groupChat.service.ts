@@ -76,10 +76,15 @@ export class GroupChatService {
 
   async getLastRainGroupMsg(limit: number): Promise<Message[]> {
     const sql = `
-      SELECT DISTINCT
-        ${this.COLUMNS.fromUser},
-        ${this.COLUMNS.time}
-      FROM ${this.RAIN_G_TNAME}
+      SELECT ${this.COLUMNS.fromUser}
+      FROM (
+        SELECT
+          ${this.COLUMNS.fromUser},
+          max(${this.COLUMNS.time}) as ${this.COLUMNS.time}
+        FROM ${this.RAIN_G_TNAME}
+        GROUP BY ${this.COLUMNS.fromUser}
+      ) as t1
+      WHERE ${this.COLUMNS.fromUser} != 0
       ORDER BY ${this.COLUMNS.time} DESC LIMIT ?;`;
     const msg: Message[] = await query(sql, limit);
     return msg;
