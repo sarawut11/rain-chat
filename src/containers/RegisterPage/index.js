@@ -15,6 +15,7 @@ export default class Register extends Component {
       password: '',
       show: false,
       sponsor: '',
+      loading: false,
     };
   }
 
@@ -51,18 +52,7 @@ export default class Register extends Component {
 
   register = async () => {
     const { name, email, username, password, sponsor, otp } = this.state;
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
-      notification('Invalid Email Format', 'warn');
-      return;
-    }
-    if (!/^[a-zA-Z0-9_\u4e00-\u9fa5]+$/.test(username)) {
-      notification('Username can only consist of numbers, letters, underscores', 'warn');
-      return;
-    }
-    if (!/^[A-Za-z0-9]+$/.test(password)) {
-      notification('Password can only consist of alphanumeric', 'warn');
-      return;
-    }
+    this.setState({ loading: true });
     try {
       const res = await Request.axios('post', '/api/v1/register', {
         name,
@@ -84,6 +74,7 @@ export default class Register extends Component {
     } catch (error) {
       notification(error, 'error');
     }
+    this.setState({ loading: false });
   };
 
   setValue = value => {
@@ -113,13 +104,13 @@ export default class Register extends Component {
   };
 
   render() {
-    const { show } = this.state;
+    const { show, loading } = this.state;
 
     console.log('\n\n ------   Register Page Render   -------- \n\n', this);
     return (
       <div className="register">
         {show ? (
-          <SignUp setValue={this.setValue} />
+          <SignUp setValue={this.setValue} verifyLoading={loading} />
         ) : (
           <Row justify="center" align="middle">
             <Spin />

@@ -1,6 +1,6 @@
 /* eslint-disable no-template-curly-in-string */
 import React, { Component } from 'react';
-import { Form, Input, Button, Card, message, Row, Col } from 'antd';
+import { Form, Input, Button, Card, message, Row, Col, notification } from 'antd';
 import Request from '../../utils/request';
 import './style.scss';
 
@@ -55,8 +55,14 @@ export default class SignUp extends Component {
     this.props.setValue(this.state);
   };
 
-  sendEmailConfirmRequest = async email => {
-    console.log('sendEmailConfirmRequest');
+  sendEmailConfirmRequest = async values => {
+    console.log('\n---   sendEmailConfirmRequest   ---\n', this);
+    const { username, email } = values;
+
+    if (!/^[a-zA-Z0-9_\u4e00-\u9fa5]+$/.test(username)) {
+      message.error('Username can only consist of numbers, letters, underscores');
+      return;
+    }
 
     try {
       const res = await Request.axios('post', '/api/v1/email/confirm', { email });
@@ -66,13 +72,12 @@ export default class SignUp extends Component {
           expireIn: res.expireIn,
           step: 'verification',
         });
+        message.success(res.message);
       } else {
         message.error(res.message);
-        // notification(res.message, 'error');
       }
     } catch (error) {
       message.error('Failed to sign up');
-      // notification(error, 'error');
     }
   };
 
@@ -80,7 +85,7 @@ export default class SignUp extends Component {
     console.log('\n\n---   on Finish   ----\n\n', values);
     // this.props.setValue(values);
     this.setState({ registerValues: { ...values }, loadingSubmit: true });
-    await this.sendEmailConfirmRequest(values.email);
+    await this.sendEmailConfirmRequest(values);
     this.setState({ loadingSubmit: false });
   };
 
@@ -98,7 +103,8 @@ export default class SignUp extends Component {
   };
 
   render() {
-    const { loadingSubmit, step, loadingVerify, expireIn } = this.state;
+    const { loadingSubmit, step, expireIn } = this.state;
+    const { verifyLoading } = this.props;
 
     return (
       <div className="sign-up-container">
@@ -154,7 +160,11 @@ export default class SignUp extends Component {
               <Form.Item>
                 <Row justify="space-between">
                   <Col span={12}>
-                    <Button onClick={this.onGoBack} style={{ width: '100%' }}>
+                    <Button
+                      onClick={this.onGoBack}
+                      style={{ width: '100%' }}
+                      disabled={verifyLoading}
+                    >
                       Go Back
                     </Button>
                   </Col>
@@ -163,7 +173,7 @@ export default class SignUp extends Component {
                     <Button
                       type="primary"
                       htmlType="submit"
-                      loading={loadingVerify}
+                      loading={verifyLoading}
                       style={{ width: '100%' }}
                     >
                       Verify
