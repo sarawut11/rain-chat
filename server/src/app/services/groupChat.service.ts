@@ -1,4 +1,5 @@
 import { query } from "@utils";
+import { Message } from "@models";
 
 export class GroupChatService {
   readonly RAIN_G_TNAME = "rain_group_msg";
@@ -71,5 +72,16 @@ export class GroupChatService {
         p.${this.COLUMNS.time} > ? AND
         p.${this.COLUMNS.groupId} = ?;`;
     return query(sql, data);
+  }
+
+  async getLastRainGroupMsg(limit: number): Promise<Message[]> {
+    const sql = `
+      SELECT DISTINCT
+        ${this.COLUMNS.fromUser} as id,
+        ${this.COLUMNS.time}
+      FROM ${this.RAIN_G_TNAME}
+      ORDER BY ${this.COLUMNS.time} DESC LIMIT ?;`;
+    const msg: Message[] = await query(sql, limit);
+    return msg;
   }
 }
