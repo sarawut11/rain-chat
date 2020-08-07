@@ -41,22 +41,7 @@ class LogIn extends Component {
 
   async login() {
     const { password } = this.state;
-    let { email, username } = this.state;
-    // Check the username value whether it's in email format
-    if (/^\S+@\S+\.\S+$/.test(username)) {
-      email = username;
-      username = '';
-    } else if (!/^[a-zA-Z0-9_\u4e00-\u9fa5]+$/.test(username)) {
-      notification(
-        'Username can only consist of characters, numbers, letters, underscores',
-        'warn',
-      );
-      return;
-    }
-    if (!/^[A-Za-z0-9]+$/.test(password)) {
-      notification('Password can only consist of alphanumeric', 'warn');
-      return;
-    }
+    const { email, username } = this.state;
     try {
       const res = await Request.axios('post', '/api/v1/login', { email, username, password });
       if (res && res.success) {
