@@ -208,20 +208,30 @@ class Ads extends Component {
         if (status === 4) {
           content = (
             <div className="pending-tran-modal-content">
-              You have to pay <span>{expectAmount}</span> vitae to <span>{walletAddress}</span>. But
-              you sent only <span>{paidAmount}</span> vitae. Please send the rest{' '}
+              You have to pay <span>{expectAmount}</span> Vitae to <span>{walletAddress}</span>. But
+              you sent only <span>{paidAmount}</span> Vitae. Please send the rest{' '}
               <span>{expectAmount - paidAmount}</span> to wallet address{' '}
               <span>{walletAddress}</span> to complete the pending transaction.
+              <p style={{ fontSize: 12 }}>
+                <br />
+                After payment is sent, it may take 10-30 minutes to confirm via the blockchain.
+                <br /> Please be patient.
+              </p>
             </div>
           );
           // eslint-disable-next-line eqeqeq
         } else if (adsId && adsId == item.id) {
           content = (
             <div className="pending-tran-modal-content">
-              You have to pay <span>{expectAmount}</span> vitae to <span>{walletAddress}</span>.{' '}
+              You have to pay <span>{expectAmount}</span> Vitae to <span>{walletAddress}</span>.{' '}
               {expireIn && expireIn > 0 && (
                 <Countdown title="Time left" value={Date.now() + expireIn} format="mm:ss:SSS" />
               )}
+              <p style={{ fontSize: 12 }}>
+                <br />
+                After payment is sent, it may take 10-30 minutes to confirm via the blockchain.
+                <br /> Please be patient.
+              </p>
             </div>
           );
         } else {

@@ -158,7 +158,7 @@ class Withdraw extends Component {
         }
       } else {
         confirm({
-          title: `You withdraw ${amount}vitae to ${walletAddress}.`,
+          title: `You are withdrawing ${amount} Vitae to ${walletAddress}.`,
           icon: <ExclamationCircleOutlined />,
           async onOk() {
             await _this.doWithdraw();
@@ -201,7 +201,10 @@ class Withdraw extends Component {
       <div className="withdraw-step-content">
         <Row gutter={[20, 20]} justify="space-around">
           <Col span={24}>
-            <p>We sent a verification code to your email. Please input the code below.</p>
+            <p>
+              We sent a verification code to your email. Please input the code below. If the email
+              does not arrive, please check your junk mail.
+            </p>
           </Col>
           <Col span={24}>
             <Input
@@ -226,7 +229,7 @@ class Withdraw extends Component {
       <div className="withdraw-step-content">
         <Row gutter={[20, 20]}>
           <Col span={24}>
-            <p>Input the vitae amount and address to withdraw.</p>
+            <p>Input the Vitae amount and address to withdraw.</p>
           </Col>
 
           <Col span={24}>
@@ -270,7 +273,7 @@ class Withdraw extends Component {
       <Result
         status="success"
         title="Success!"
-        subTitle={`You successfully withdrew ${amount}vitae to ${walletAddress}.`}
+        subTitle={`You successfully withdrew ${amount} Vitae to ${walletAddress}.`}
         className="withdraw-step-content"
       />
     );
@@ -306,7 +309,7 @@ class Withdraw extends Component {
 
     return (
       <div className="withdraw-container">
-        <h3>Your vitae balance: {userInfo.balance && userInfo.balance.toFixed(8)}</h3>
+        <h3>Your Vitae balance: {userInfo.balance && userInfo.balance.toFixed(8)}</h3>
         <Button type="primary" onClick={this.showModal} loading={sendCodeLoading}>
           Withdraw
         </Button>
