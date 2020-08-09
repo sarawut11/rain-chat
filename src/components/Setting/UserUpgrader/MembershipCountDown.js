@@ -54,7 +54,7 @@ class MembershipCountDown extends Component {
         {membershipUpgradePending && (
           <div>
             <p>
-              You should pay {vitaePrice}vitae to the wallet {walletAddress}
+              You should pay {vitaePrice} Vitae to the wallet {walletAddress}
             </p>
             <Countdown
               title="Time left for the payment"

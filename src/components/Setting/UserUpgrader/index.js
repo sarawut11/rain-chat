@@ -203,7 +203,7 @@ class UserUpgrader extends Component {
     const { balance } = this.props.userInfo;
 
     const radioOptions = [
-      { label: 'Send vitae tokens', value: 0 },
+      { label: 'Send Vitae tokens', value: 0 },
       { label: 'Use my balance', value: 1 },
     ];
 
@@ -221,8 +221,13 @@ class UserUpgrader extends Component {
               <span>${paidAmount}</span>.
             </p>
             <p>
-              Send <span>{expectAmount - paidAmount}</span> vitae to the vitae address{' '}
+              Send <span>{expectAmount - paidAmount}</span> Vitae to the Vitae address{' '}
               <span>{pendingTranWalletAddress}</span>.
+            </p>
+            <p style={{ fontSize: 12 }}>
+              <br />
+              After payment is sent, it may take 10-30 minutes to confirm via the blockchain.
+              <br /> Please be patient.
             </p>
           </div>
         ) : (
@@ -235,7 +240,12 @@ class UserUpgrader extends Component {
           You have to pay <span>${usdPrice}</span> in Vitae.
         </p>
         <p>
-          Send <span>{vitaePrice}</span> vitae to the vitae address <span>{walletAddress}</span>.
+          Send <span>{vitaePrice}</span> Vitae to the Vitae address <span>{walletAddress}</span>.
+        </p>
+        <p style={{ fontSize: 12 }}>
+          <br />
+          After payment is sent, it may take 10-30 minutes to confirm via the blockchain.
+          <br /> Please be patient.
         </p>
       </div>
     );
@@ -284,12 +294,12 @@ class UserUpgrader extends Component {
               ) : (
                 <div style={{ textAlign: 'center' }}>
                   <p>
-                    Your balance: <span>{balance && balance.toFixed(8)}</span> vitae
+                    Your balance: <span>{balance && balance.toFixed(8)}</span> Vitae
                   </p>
                   <p>
                     You have to pay{' '}
                     <span>
-                      ${usdPrice}({vitaePrice} vitae)
+                      ${usdPrice}({vitaePrice} Vitae)
                     </span>{' '}
                     in Vitae.
                   </p>
@@ -302,7 +312,7 @@ class UserUpgrader extends Component {
               You have to pay <span>${usdPrice}</span> in Vitae.
             </p>
             <p>
-              Send <span>{vitaePrice}</span> vitae to the vitae address <span>{walletAddress}</span>
+              Send <span>{vitaePrice}</span> Vitae to the Vitae address <span>{walletAddress}</span>
               .
             </p>
           </div> */}

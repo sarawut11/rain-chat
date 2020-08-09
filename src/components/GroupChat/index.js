@@ -58,31 +58,41 @@ class GroupChat extends Component {
   };
 
   joinGroup = async () => {
-    if (this.state.disableJoinButton) return;
-    this.setState({ disableJoinButton: true });
-    const { allGroupChats, homePageList, updateHomePageList, addGroupMessageAndInfo } = this.props;
-    const response = await request.socketEmitAndGetResponse(
-      'joinGroup',
-      { userInfo: this.props.userInfo, groupId: this.chatId },
-      () => {
-        notification('Add group failed', 'error', 1.5);
-        this.setState({ disableJoinButton: false });
-      },
-    );
-    const { messages, groupInfo } = response;
-    const lastContent = {
-      name: 'Group assistant',
-      message: 'You have successfully added a group, you can start chatting~',
-      time: Date.parse(new Date()) / 1000,
-    };
-    messages.push(lastContent);
-    addGroupMessageAndInfo({
-      allGroupChats,
-      messages,
-      groupId: this.chatId,
-      groupInfo,
-    });
-    updateHomePageList({ data: { ...lastContent, ...groupInfo }, homePageList });
+    try {
+      if (this.state.disableJoinButton) return;
+      this.setState({ disableJoinButton: true });
+      const {
+        allGroupChats,
+        homePageList,
+        updateHomePageList,
+        addGroupMessageAndInfo,
+      } = this.props;
+      console.log('\n\n---   joinGroup function   ---\n\n', this);
+      const response = await request.socketEmitAndGetResponse(
+        'joinGroup',
+        { userInfo: this.props.userInfo, groupId: this.chatId, userId: this.props.userInfo.id },
+        () => {
+          notification('Add group failed', 'error', 1.5);
+          this.setState({ disableJoinButton: false });
+        },
+      );
+      const { messages, groupInfo } = response;
+      const lastContent = {
+        name: 'Group assistant',
+        message: 'You have successfully added a group, you can start chatting~',
+        time: Date.parse(new Date()) / 1000,
+      };
+      messages.push(lastContent);
+      addGroupMessageAndInfo({
+        allGroupChats,
+        messages,
+        groupId: this.chatId,
+        groupInfo,
+      });
+      updateHomePageList({ data: { ...lastContent, ...groupInfo }, homePageList });
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   _showLeaveModal = () => {

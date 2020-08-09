@@ -294,7 +294,7 @@ class InitApp {
 
   _listenExpense() {
     window.socket.on('expenseCreated', ({ creatorUsername, amount }) => {
-      console.log(`${creatorUsername} created financial expense request of ${amount} vitae.`);
+      console.log(`${creatorUsername} created financial expense request of ${amount} Vitae.`);
     });
     window.socket.on('expenseConfirmed', ({ creatorUsername, confirmerUsername }) => {
       console.log(`${confirmerUsername} confirmed ${creatorUsername}'s financial expense request.`);

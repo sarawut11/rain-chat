@@ -37,7 +37,7 @@ function Setting({ initApp, history, userInfo }) {
             </Col>
           )}
           <Col span={24}>
-            <Divider>Withdraw your vitae</Divider>
+            <Divider>Withdraw your Vitae</Divider>
             <Withdraw />
           </Col>
           <Col span={24}>
