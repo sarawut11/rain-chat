@@ -112,9 +112,9 @@ export const joinGroup = async (io, socket, data, cbfn) => {
     const { userInfo, groupId } = data;
     const { groupService } = ServicesContext.getInstance();
 
-    const joinedThisGroup = (await groupService.isInGroup(userInfo.userId, groupId)).length;
+    const joinedThisGroup = (await groupService.isInGroup(userInfo.id, groupId)).length;
     if (!joinedThisGroup) {
-      await groupService.joinGroup(userInfo.userId, groupId);
+      await groupService.joinGroup(userInfo.id, groupId);
       socket.broadcast.to(groupId).emit(socketEventNames.GetGroupMsg, {
         ...userInfo,
         message: `${userInfo.name} joined a group chat`,
