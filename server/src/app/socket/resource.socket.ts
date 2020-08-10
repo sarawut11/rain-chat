@@ -42,6 +42,7 @@ export const socketEventNames = {
   // Transaction
   TransactionExpired: "transactionExpired",
   TransactionConfirmed: "transactionConfirmed",
+  UnknownDeposit: "unknownDeposit",
 
   // Expense
   ExpenseCreated: "expenseCreated",

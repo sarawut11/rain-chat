@@ -109,6 +109,7 @@
   - [2.7 Transaction](#27-transaction)
     - [transactionExpired (Server)](#transactionexpired-server)
     - [transactionConfirmed (Server)](#transactionconfirmed-server)
+    - [unknownDeposit (Server)](#unknowndeposit-server)
 
 > **Note**
 > - All Date / Time formats are in unix timestamp format in UTC timezone
@@ -1346,5 +1347,15 @@
     expectAmount,   // Transaction Amount
     time,           // Requested Time
     confirmTime,    // Confirmed Time
+  }
+  ```
+### unknownDeposit (Server)
+  Notify user about the unknown transaction
+
+  ***Data***
+  ```
+  {
+    amount,         // Amount of unknown deposit
+    balance,        // Updated balance
   }
   ```
