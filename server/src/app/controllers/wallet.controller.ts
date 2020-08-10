@@ -1,6 +1,6 @@
 import { ServicesContext, RainContext, TransactionContext } from "@context";
 import { now, rpcInterface, shareRevenue, getTranExpireIn, getAdsIdFromTran } from "@utils";
-import { updateBalanceSocket, updateAdsStatus } from "@sockets";
+import { updateBalanceSocket, updateAdsStatus, unknownDepositSocket } from "@sockets";
 import {
   Ads,
   User,
@@ -60,6 +60,9 @@ export const walletNotify = async (ctx, next) => {
         const tranInfo: Transaction = await transactionService.getLastRequestedTransaction(userInfo.id);
         if (tranInfo === undefined) {
           console.log(`Transaction Notify => Failed | Unknown deposit from user:${userInfo.id}, txId:${txid}`);
+          await userService.addBalance(userInfo.id, txInfo.amount);
+          const updatedUser: User = await userService.findUserById(userInfo.id);
+          unknownDepositSocket(updatedUser, txInfo.amount);
           ctx.body = {
             success: false,
             message: "Failed"

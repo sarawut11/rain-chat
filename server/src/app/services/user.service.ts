@@ -465,14 +465,6 @@ export class UserService {
     return query(sql, User.ROLE.MODERATOR);
   }
 
-  cancelModer(username: string) {
-    const sql = `
-      UPDATE ${this.USER_TABLE}
-      SET ${this.USER_COL.role} = ?
-      WHERE ${this.USER_COL.username} = ?;`;
-    return query(sql, [User.ROLE.UPGRADED_USER, username]);  // Change Role field to x,y,z format later
-  }
-
   updateMembership(userId, role) {
     const sql = `
       UPDATE ${this.USER_TABLE}

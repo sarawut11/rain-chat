@@ -1,3 +1,4 @@
+import * as moment from "moment";
 import { ServicesContext } from "@context";
 import { User } from "@models";
 import { isOwner, checkUserInfo } from "@utils";
@@ -96,7 +97,13 @@ export const cancelModer = async (ctx, next) => {
       return;
     }
 
-    await userService.cancelModer(modUsername);
+    const userInfo = checkRole.userInfo;
+    const expireTime = moment().utc().subtract(1, "months").unix();
+    if (userInfo.lastUpgradeTime <= expireTime) {
+      await userService.updateRole(modUsername, User.ROLE.FREE);
+    } else {
+      await userService.updateRole(modUsername, User.ROLE.UPGRADED_USER);
+    }
     const updatedUser: User = await userService.findUserByUsername(modUsername);
     ctx.body = {
       success: true,
