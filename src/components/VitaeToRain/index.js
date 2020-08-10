@@ -191,9 +191,14 @@ class VitaeToRain extends Component {
 
             <Col span={24}>
               {vitaeToRainMode === SEND_ACTUAL_TOKEN ? (
-                <p style={{ textAlign: 'center' }}>
-                  Send Vitae to address <span style={{ color: 'blue' }}>{walletAddress}</span>
-                </p>
+                <div>
+                  <p style={{ textAlign: 'center' }}>
+                    Send Vitae to address <span style={{ color: 'blue' }}>{walletAddress}</span>
+                  </p>
+                  <p style={{ textAlign: 'center', fontSize: 12, color: 'red' }}>
+                    For rain only. Do not send your upgrade payment here.
+                  </p>
+                </div>
               ) : (
                 <p style={{ textAlign: 'center' }}>
                   Your balance:{' '}
@@ -219,6 +224,14 @@ class VitaeToRain extends Component {
                     />
                   </Form.Item>
                 </Form>
+              </Col>
+            )}
+
+            {vitaeToRainMode === RAIN_FROM_BALANCE && (
+              <Col span={24}>
+                <p style={{ textAlign: 'center', fontSize: 12, color: 'red' }}>
+                  For rain only. Do not send your upgrade payment here.
+                </p>
               </Col>
             )}
           </Row>
