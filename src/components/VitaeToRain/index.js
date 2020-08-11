@@ -57,7 +57,7 @@ class VitaeToRain extends Component {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       notification.error({
         message: 'Failed to get rain address.',
       });
@@ -84,7 +84,7 @@ class VitaeToRain extends Component {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       notification.error({
         message: 'Failed to purchase from your balance.',
       });
@@ -130,7 +130,7 @@ class VitaeToRain extends Component {
   };
 
   handleRadioChange = e => {
-    console.log('Radio value', e.target.value);
+    // console.log('Radio value', e.target.value);
     this.props.setVitaeToRain({ vitaeToRainMode: e.target.value });
   };
 

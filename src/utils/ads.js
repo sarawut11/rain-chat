@@ -5,7 +5,7 @@ import store from '../redux/store';
 import { enableShowAds, disableShowAds } from '../redux/actions/bShowAdsAction';
 
 export function showAds(ads, duration, staticPost = false) {
-  console.log('showAds', ads, staticPost);
+  // console.log('showAds', ads, staticPost);
   const { bShowAds } = store.getState();
   const { title, description, link, assetLink, buttonLabel } = ads;
   const content = (
@@ -30,12 +30,12 @@ export function showAds(ads, duration, staticPost = false) {
 
       window.socket.emit('subscribeAdsReward', { token });
     } catch (e) {
-      console.log(e);
+      // console.log(e);
       return;
     }
   }
 
-  console.log('here');
+  // console.log('here');
 
   store.dispatch(disableShowAds());
 

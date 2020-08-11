@@ -81,10 +81,10 @@ class ImpressionsContent extends Component {
   };
 
   render() {
-    console.log('ImpressionsContent', this);
+    // console.log('ImpressionsContent', this);
     const { pointer } = this.props;
     const amount = getAmount(this.state.impressions, pointer.state.price);
-    console.log(amount, this.state.impressions, pointer.state.price);
+    // console.log(amount, this.state.impressions, pointer.state.price);
 
     return (
       <div>
@@ -139,7 +139,7 @@ class Ads extends Component {
           });
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         notification.error({
           message: 'Failed to get all ads.',
         });
@@ -188,7 +188,7 @@ class Ads extends Component {
     this.setState({ impressions: 0, price: 0 });
     const { price, impressions } = this.state;
     const amount = Number(impressions) * price;
-    console.log('amount', amount, impressions, price);
+    // console.log('amount', amount, impressions, price);
     await this.getImpcost(item);
 
     // get pending transaction
@@ -200,7 +200,7 @@ class Ads extends Component {
         const { pendingTran, walletAddress } = res;
         const { type, status, paidAmount, expectAmount, adsId, expireIn } = pendingTran;
 
-        console.log(res, item);
+        // console.log(res, item);
 
         let content = <div />;
         let title = <div />;
@@ -271,7 +271,7 @@ class Ads extends Component {
         this.showImpressionModal(item);
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       this.showImpressionModal(item);
     }
   };
@@ -293,7 +293,7 @@ class Ads extends Component {
   };
 
   onEditAds = item => () => {
-    console.log('edit ads');
+    // console.log('edit ads');
     if (item.status === 1 || item.status === 2) {
       warning({
         title: `You can't edit or delete a pending or approved ads.`,
@@ -319,7 +319,7 @@ class Ads extends Component {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       notification.error({
         message: 'Delete failed.',
       });
@@ -344,7 +344,7 @@ class Ads extends Component {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       notification.error({
         message: 'Request failed.',
       });
@@ -359,7 +359,7 @@ class Ads extends Component {
       data.append('impressions', impressions);
       data.append('costPerImp', price);
       const amount = getAmount(this.state.impressions, this.state.price);
-      console.log(amount, this.state.impressions, this.state.price);
+      // console.log(amount, this.state.impressions, this.state.price);
       data.append('expectAmount', amount);
       data.append('type', item.type);
       const res = await Request.axios('post', `/api/v1/campaign/pub/${id}/purchase`, data);
@@ -376,7 +376,7 @@ class Ads extends Component {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       notification.error({
         message: 'Purchase failed.',
       });
@@ -396,12 +396,12 @@ class Ads extends Component {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 
   onCancelRequest = item => async () => {
-    console.log('onCancelRequest', item);
+    // console.log('onCancelRequest', item);
     const { id } = item;
     try {
       const res = await Request.axios('post', `/api/v1/campaign/pub/${id}/request/cancel`);
@@ -417,7 +417,7 @@ class Ads extends Component {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       notification.error({
         message: 'Cancel request failed.',
       });
@@ -442,7 +442,7 @@ class Ads extends Component {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       notification.error({
         message: 'Failed to approve.',
       });
@@ -450,7 +450,7 @@ class Ads extends Component {
   };
 
   onRejectAds = item => async () => {
-    console.log('onRejectAds', item);
+    // console.log('onRejectAds', item);
 
     const { id } = item;
     try {
@@ -467,7 +467,7 @@ class Ads extends Component {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       notification.error({
         message: 'Failed to approve.',
       });

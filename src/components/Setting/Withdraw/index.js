@@ -58,7 +58,7 @@ class Withdraw extends Component {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       notification.error({
         message: 'Failed to send verification code to your email.',
       });
@@ -94,7 +94,7 @@ class Withdraw extends Component {
         this.setState({ codeValid: false });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       notification.error({
         message: 'Failed to verify the code.',
       });
@@ -118,7 +118,7 @@ class Withdraw extends Component {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       notification.error({
         message: 'Failed to withdraw.',
       });
@@ -177,7 +177,7 @@ class Withdraw extends Component {
   };
 
   handleCancel = e => {
-    console.log(e);
+    // console.log(e);
     this.setState({
       visible: false,
     });

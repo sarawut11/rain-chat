@@ -35,14 +35,14 @@ class PasswordChange extends Component {
   };
 
   handleOk = e => {
-    console.log(e);
+    // console.log(e);
     this.setState({
       visible: false,
     });
   };
 
   handleCancel = e => {
-    console.log(e);
+    // console.log(e);
     this.setState({
       visible: false,
     });
@@ -72,7 +72,7 @@ class PasswordChange extends Component {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       notification.error({
         message: 'Change password failed.',
       });
@@ -85,7 +85,7 @@ class PasswordChange extends Component {
   };
 
   render() {
-    console.log('Chnage password', this);
+    // console.log('Chnage password', this);
 
     return (
       <div>

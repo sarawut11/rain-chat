@@ -43,7 +43,7 @@ class Moderators extends Component {
           });
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         notification.error({
           message: 'Failed to get data.',
         });
@@ -73,7 +73,7 @@ class Moderators extends Component {
           });
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         notification.error({
           message: 'Failed to get data.',
         });
@@ -98,12 +98,12 @@ class Moderators extends Component {
   };
 
   onUsernameChange = (value, option) => {
-    console.log('onUsernameChange', value, option);
+    // console.log('onUsernameChange', value, option);
     this.setState({ usernamesToAdd: value });
   };
 
   onAddModerators = async () => {
-    console.log('onAddModerators', this.state.usernamesToAdd);
+    // console.log('onAddModerators', this.state.usernamesToAdd);
 
     const { usernamesToAdd } = this.state;
 
@@ -113,7 +113,7 @@ class Moderators extends Component {
       });
 
       if (res && res.success) {
-        console.log('here', this.props.adminState.usernameList, res);
+        // console.log('here', this.props.adminState.usernameList, res);
         let usernameList = [...this.props.adminState.usernameList];
 
         usernameList = usernameList.filter(item => {
@@ -139,7 +139,7 @@ class Moderators extends Component {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
 
       notification.error({
         message: 'Failed to get data.',
@@ -148,7 +148,7 @@ class Moderators extends Component {
   };
 
   onRemoveModer = username => async () => {
-    console.log('onRemoveModer', username);
+    // console.log('onRemoveModer', username);
 
     try {
       const res = await Request.axios('post', `/api/v1/admin/moders/cancel`, {
@@ -159,7 +159,7 @@ class Moderators extends Component {
         const { userInfo } = res;
         const usernameList = [...this.props.adminState.usernameList];
 
-        console.log('here', usernameList);
+        // console.log('here', usernameList);
 
         // usernameList = usernameList.filter(item => {
         //   return item.username !== userInfo.username;
@@ -178,7 +178,7 @@ class Moderators extends Component {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
 
       notification.error({
         message: 'Failed to get data.',
@@ -187,7 +187,7 @@ class Moderators extends Component {
   };
 
   render() {
-    console.log('Admin render', this);
+    // console.log('Admin render', this);
     const { loading } = this.state;
     const { modersCount, onlineModersCount, moders } = this.props.adminState;
     const { usernameOptions, usernamesToAdd } = this.state;
@@ -236,7 +236,7 @@ class Moderators extends Component {
             loading={loading}
             pagination={{
               onChange(page, pageSize) {
-                console.log(page, pageSize);
+                // console.log(page, pageSize);
               },
               pageSize: 10,
             }}

@@ -70,7 +70,7 @@ class InitApp {
 
   _listeningPrivateChatMsg() {
     window.socket.on('getPrivateMsg', data => {
-      console.log('\ngetPrivateMsg:\n', data);
+      // console.log('\ngetPrivateMsg:\n', data);
       const { homePageListState, allPrivateChatsState } = store.getState();
       // eslint-disable-next-line radix
       const chatId = parseInt(window.location.pathname.split('/').slice(-1)[0]);
@@ -165,7 +165,7 @@ class InitApp {
       store.dispatch(deleteHomePageListAction({ homePageList, chatId: groupId }));
       store.dispatch(deleteGroupChatAction({ allGroupChats, chatId: groupId }));
       window.location.href = '/group_chat/vitae-rain-group';
-      console.log(`You are kicked from Group:${groupId}`);
+      // console.log(`You are kicked from Group:${groupId}`);
     });
   }
 
@@ -195,12 +195,12 @@ class InitApp {
           store.dispatch(disableVitaePost());
         }
       } catch (e) {
-        console.log(e);
+        // console.log(e);
       }
 
       if (allMessage.userInfo.role !== 'MODERATOR' && allMessage.userInfo.role !== 'OWNER')
         store.dispatch(setAdsAction({ data: adsList }));
-      console.log('initMessage success. ', 'time=>', new Date().toLocaleString(), allMessage);
+      // console.log('initMessage success. ', 'time=>', new Date().toLocaleString(), allMessage);
 
       store.dispatch(setUserInfoAction({ data: allMessage.userInfo }));
     });
@@ -212,39 +212,39 @@ class InitApp {
 
   _listeningRain() {
     window.socket.on('rainComing', ({ after }) => {
-      console.log(`Rain is coming after ${after}seconds`);
+      // console.log(`Rain is coming after ${after}seconds`);
       notifyRainComing(after);
     });
     window.socket.on('showAds', ({ ads, duration }) => {
-      console.log('Show Ads', ads, '| Duration -', duration);
+      // console.log('Show Ads', ads, '| Duration -', duration);
       showAds(ads, duration);
     });
     window.socket.on('getRain', ({ reward, balance }) => {
-      console.log('Getting Reward:', reward);
-      console.log('Balance Updated :', balance);
+      // console.log('Getting Reward:', reward);
+      // console.log('Balance Updated :', balance);
       notifyRainReward(reward);
       store.dispatch(setBalanceAction(balance));
     });
     window.socket.on('updateAdsStatus', ({ ads }) => {
-      console.log('Ads Status Updated:', ads);
+      // console.log('Ads Status Updated:', ads);
       store.dispatch(updateAdsInfo(ads));
     });
     window.socket.on('updateAdsImpressions', ({ adsInfo }) => {
-      console.log('Impression Updated:', adsInfo.impressions);
+      // console.log('Impression Updated:', adsInfo.impressions);
     });
     window.socket.on('enableVitaePost', () => {
-      console.log('Able to post to Vitae Rain Room');
+      // console.log('Able to post to Vitae Rain Room');
       store.dispatch(enableVitaePost());
     });
     window.socket.on('showStaticAds', ({ ads }) => {
-      console.log('Static Ads:', ads);
+      // console.log('Static Ads:', ads);
       store.dispatch(setStaticAdsAction(ads));
     });
   }
 
   _listeningTransaction() {
     window.socket.on('transactionExpired', ({ type, expectAmount, time }) => {
-      console.log('Transaction Request Expired', type, expectAmount, time);
+      // console.log('Transaction Request Expired', type, expectAmount, time);
       const typeString = type === 0 ? 'ads' : 'membership upgrade';
       antNotification.error({ message: `Transaction request for ${typeString} is expired.` });
 
@@ -262,7 +262,7 @@ class InitApp {
     });
 
     window.socket.on('transactionConfirmed', ({ type, expectAmount, time }) => {
-      console.log('Transaction Request Confirmed', type, expectAmount, time);
+      // console.log('Transaction Request Confirmed', type, expectAmount, time);
       const typeString = type === 0 ? 'ads' : 'membership upgrade';
       antNotification.success({ message: `Transaction request for ${typeString} is confirmed.` });
 
@@ -284,23 +284,23 @@ class InitApp {
 
   _listenUserInfo() {
     window.socket.on('updateBalance', ({ balance }) => {
-      console.log('Balance Updated:', balance);
+      // console.log('Balance Updated:', balance);
       store.dispatch(setBalanceAction(balance));
     });
     window.socket.on('updateProfileInfo', ({ username, avatarUrl, name, intro }) => {
-      console.log(`${username}'s profile updated:`, avatarUrl, name, intro);
+      // console.log(`${username}'s profile updated:`, avatarUrl, name, intro);
     });
   }
 
   _listenExpense() {
     window.socket.on('expenseCreated', ({ creatorUsername, amount }) => {
-      console.log(`${creatorUsername} created financial expense request of ${amount} Vitae.`);
+      // console.log(`${creatorUsername} created financial expense request of ${amount} Vitae.`);
     });
     window.socket.on('expenseConfirmed', ({ creatorUsername, confirmerUsername }) => {
-      console.log(`${confirmerUsername} confirmed ${creatorUsername}'s financial expense request.`);
+      // console.log(`${confirmerUsername} confirmed ${creatorUsername}'s financial expense request.`);
     });
     window.socket.on('expenseRejected', ({ creatorUsername, rejectorUsername }) => {
-      console.log(`${rejectorUsername} rejected ${creatorUsername}'s financial expense request.`);
+      // console.log(`${rejectorUsername} rejected ${creatorUsername}'s financial expense request.`);
     });
   }
 
@@ -314,7 +314,7 @@ class InitApp {
     this._listeningTransaction();
     this._listenExpense();
     this._listenUserInfo();
-    console.log('subscribeSocket success. ', 'time=>', new Date().toLocaleString());
+    // console.log('subscribeSocket success. ', 'time=>', new Date().toLocaleString());
   }
 
   _connectSocket() {
@@ -335,17 +335,17 @@ class InitApp {
   _init = async () => {
     this._connectSocket();
     this.subscribeSocket();
-    console.log('init app success. ', 'time=>', new Date().toLocaleString());
+    // console.log('init app success. ', 'time=>', new Date().toLocaleString());
   };
 
   init = async () => {
     if (this._userInfo && !this.initialized) {
       await this._init();
       this.initialized = true;
-      console.log('initialized');
+      // console.log('initialized');
       let afterReconnecting = false;
       window.socket.on('error', error => {
-        console.log('window.socket on error', error);
+        // console.log('window.socket on error', error);
         // notification(error, 'error');
         antNotification.error({ message: error });
         // if (error.code === 401) {
@@ -360,38 +360,38 @@ class InitApp {
           window.socket.disconnect();
           this._init();
           afterReconnecting = true;
-          console.log('not reconnecting, open automatically time=>', new Date().toLocaleString());
+          // console.log('not reconnecting, open automatically time=>', new Date().toLocaleString());
         }
-        console.log(
-          'reconnect successfully. attemptNumber =>',
-          attemptNumber,
-          'socket-id => ',
-          window.socket.id,
-          'time=>',
-          new Date().toLocaleString(),
-        );
+        // console.log(
+        //   'reconnect successfully. attemptNumber =>',
+        //   attemptNumber,
+        //   'socket-id => ',
+        //   window.socket.id,
+        //   'time=>',
+        //   new Date().toLocaleString(),
+        // );
       });
       window.socket.on('reconnecting', attemptNumber => {
         afterReconnecting = true;
-        console.log(
-          'reconnecting. attemptNumber =>',
-          attemptNumber,
-          'time=>',
-          new Date().toLocaleString(),
-        );
+        // console.log(
+        //   'reconnecting. attemptNumber =>',
+        //   attemptNumber,
+        //   'time=>',
+        //   new Date().toLocaleString(),
+        // );
       });
       window.socket.on('disconnect', async reason => {
         afterReconnecting = false;
-        console.log(
-          'disconnect in client, disconnect reason =>',
-          reason,
-          'time=>',
-          new Date().toLocaleString(),
-        );
+        // console.log(
+        //   'disconnect in client, disconnect reason =>',
+        //   reason,
+        //   'time=>',
+        //   new Date().toLocaleString(),
+        // );
       });
       window.socket.on('reconnect_error', error => {
         afterReconnecting = false;
-        console.log('reconnect_error. error =>', error, 'time=>', new Date().toLocaleString());
+        // console.log('reconnect_error. error =>', error, 'time=>', new Date().toLocaleString());
         // notification(error, 'error');
         antNotification.error({ message: 'Internal server error' });
 

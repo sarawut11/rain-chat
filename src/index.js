@@ -13,8 +13,8 @@ if (window.location.protocol === 'https:' && navigator.serviceWorker) {
     navigator.serviceWorker.register(sw);
   });
 }
-console.log(process.env.NODE_ENV);
-console.log(process.env.API_URL);
+// console.log(process.env.NODE_ENV);
+// console.log(process.env.API_URL);
 
 ReactDom.render(
   <Provider store={store}>

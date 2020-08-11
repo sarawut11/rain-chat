@@ -21,7 +21,7 @@ const mapDispatchToProps = dispatch => ({
 
 class MembershipCountDown extends Component {
   onFinish = () => {
-    console.log('onFinish');
+    // console.log('onFinish');
     try {
       const { role } = this.props.userInfo;
       if (role === 'FREE') {
@@ -38,7 +38,7 @@ class MembershipCountDown extends Component {
         });
       }
     } catch (e) {
-      console.log(e);
+      // console.log(e);
     }
   };
 

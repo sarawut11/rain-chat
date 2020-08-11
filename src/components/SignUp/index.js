@@ -56,7 +56,7 @@ export default class SignUp extends Component {
   };
 
   sendEmailConfirmRequest = async values => {
-    console.log('\n---   sendEmailConfirmRequest   ---\n', this);
+    // console.log('\n---   sendEmailConfirmRequest   ---\n', this);
     const { username, email } = values;
 
     if (!/^[a-zA-Z0-9_\u4e00-\u9fa5]+$/.test(username)) {
@@ -82,7 +82,7 @@ export default class SignUp extends Component {
   };
 
   onFinish = async values => {
-    console.log('\n\n---   on Finish   ----\n\n', values);
+    // console.log('\n\n---   on Finish   ----\n\n', values);
     // this.props.setValue(values);
     this.setState({ registerValues: { ...values }, loadingSubmit: true });
     await this.sendEmailConfirmRequest(values);
@@ -94,7 +94,7 @@ export default class SignUp extends Component {
   };
 
   verifyEmail = async values => {
-    console.log('\n\n---   on verify email   ----\n\n', values);
+    // console.log('\n\n---   on verify email   ----\n\n', values);
 
     const { registerValues } = this.state;
     const { verificationCode } = values;

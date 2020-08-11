@@ -113,7 +113,7 @@ class GroupChatInfo extends Component {
     const { groupMember, onlineNumber, modalVisible, justShowOnlineMember } = this.state;
     const { groupInfo, leaveGroup } = this.props;
     const { role } = this.props.userInfo;
-    console.log('GroupInfo', groupInfo);
+    // console.log('GroupInfo', groupInfo);
     return (
       <div className="chatInformation">
         <CreateGroupModal

@@ -13,7 +13,7 @@ let userInfo = {};
 try {
   userInfo = JSON.parse(localStorage.getItem('userInfo'));
 } catch (e) {
-  console.log(e);
+  // console.log(e);
 }
 
 const getHomePageListReducer = (previousState = [], action) => {

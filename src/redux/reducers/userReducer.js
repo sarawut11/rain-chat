@@ -19,7 +19,7 @@ const userReducer = (previousState = initialState, action) => {
         localStorage.setItem('userInfo', JSON.stringify({ ...user_info, ...action.data.userInfo }));
         return { ...previousState, ...action.data };
       } catch (e) {
-        console.log(e);
+        // console.log(e);
         return previousState;
       }
     case SET_BALANCE:
@@ -29,7 +29,7 @@ const userReducer = (previousState = initialState, action) => {
           userInfo: { ...previousState.userInfo, balance: action.data.balance },
         };
       } catch (e) {
-        console.log(e);
+        // console.log(e);
         return previousState;
       }
     case SET_USER_ROLE:
@@ -39,7 +39,7 @@ const userReducer = (previousState = initialState, action) => {
           userInfo: { ...previousState.userInfo, role: action.data.role },
         };
       } catch (e) {
-        console.log(e);
+        // console.log(e);
         return previousState;
       }
     default:

@@ -40,7 +40,7 @@ class AdminHome extends Component {
           });
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         notification.error({
           message: 'Failed to get data.',
         });
@@ -54,7 +54,7 @@ class AdminHome extends Component {
     const user_info = this.props.userInfo;
     const prevUser = prevProps.userInfo;
 
-    console.log('\n --- user_info --- \n', user_info, prevUser);
+    // console.log('\n --- user_info --- \n', user_info, prevUser);
 
     if (prevUser.username !== user_info.username) {
       if (user_info.role === 'OWNER') {
@@ -71,7 +71,7 @@ class AdminHome extends Component {
             });
           }
         } catch (error) {
-          console.log(error);
+          // console.log(error);
           notification.error({
             message: 'Failed to get data.',
           });

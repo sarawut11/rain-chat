@@ -35,7 +35,7 @@ class LogIn extends Component {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
 
@@ -52,11 +52,11 @@ class LogIn extends Component {
           onOk: this.confirm,
         });
       } else {
-        console.log(res.message);
+        // console.log(res.message);
         notification(res.message, 'error');
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       notification(error, 'error');
     }
   }

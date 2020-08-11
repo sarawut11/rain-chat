@@ -25,7 +25,7 @@ class Wallet extends Component {
 
   async componentDidMount() {
     const user_info = this.props.userInfo;
-    console.log('componentDidMount', this, user_info);
+    // console.log('componentDidMount', this, user_info);
 
     if (user_info.role === 'OWNER') {
       this.setState({ loading: true });
@@ -41,7 +41,7 @@ class Wallet extends Component {
           });
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         notification.error({
           message: 'Failed to get data.',
         });

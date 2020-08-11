@@ -28,10 +28,10 @@ class StaticAdsPanel extends Component {
       if (res && res.success) {
         this.props.setStaticAds(res.ads);
       } else {
-        console.log(res.message);
+        // console.log(res.message);
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 
