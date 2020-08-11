@@ -22,6 +22,7 @@ import {
   WithdrawAddressService,
   SettingService,
   ImpcostService,
+  MembershipPriceService,
 } from "./services";
 
 export const App = Server.init(app => {
@@ -50,6 +51,7 @@ export const App = Server.init(app => {
       .setGroupChatService(new GroupChatService())
       .setAdsService(new AdsService())
       .setImpcostService(new ImpcostService())
+      .setMembershipPriceService(new MembershipPriceService())
       .setOtpService(new OtpService())
       .setExpenseService(new ExpenseService())
       .setExpenseConfirmService(new ExpenseConfirmService())
