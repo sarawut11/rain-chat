@@ -13,6 +13,7 @@ import {
   WithdrawAddressService,
   SettingService,
   ImpcostService,
+  MembershipPriceService,
 } from "@services";
 
 export class ServicesContext {
@@ -162,6 +163,16 @@ export class ServicesContext {
   }
   public setImpcostService(service: ImpcostService): ServicesContext {
     this._impcostService = service;
+    return this;
+  }
+
+  // MembershipPrice service
+  private _memberPriceService: MembershipPriceService;
+  public get membershipPriceService() {
+    return this._memberPriceService;
+  }
+  public setMembershipPriceService(service: MembershipPriceService): ServicesContext {
+    this._memberPriceService = service;
     return this;
   }
 }

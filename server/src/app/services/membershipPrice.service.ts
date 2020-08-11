@@ -1,8 +1,8 @@
 import { query, now } from "@utils";
 import { Price, DefaultModel } from "@models";
 
-export class ImpcostService {
-  public readonly TABLE = "cost_per_imp_info";
+export class MembershipPriceService {
+  public readonly TABLE = "membership_price_info";
   public readonly COL = {
     userId: "userId",
     price: "price",
