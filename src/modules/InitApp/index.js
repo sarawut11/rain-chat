@@ -157,9 +157,7 @@ class InitApp {
     });
     window.socket.on('kickedFromGroup', data => {
       const { groupId } = data;
-      const myInfo = JSON.parse(localStorage.getItem('userInfo'));
-      const { userId } = myInfo;
-      window.socket.emit('leaveGroup', { userId, groupId });
+      window.socket.emit('leaveGroup', { groupId });
       const homePageList = store.getState().homePageListState;
       const allGroupChats = store.getState().allGroupChatsState;
       store.dispatch(deleteHomePageListAction({ homePageList, chatId: groupId }));

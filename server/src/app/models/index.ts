@@ -16,4 +16,5 @@ export * from "./withdraw.address.model";
 export * from "./setting.model";
 export * from "./setting.all.model";
 export * from "./price.model";
-export * from "./message.model";
+export * from "./message.group.model";
+export * from "./message.private.model";
