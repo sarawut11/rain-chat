@@ -69,7 +69,7 @@ export default class PrivateChat extends Component {
     }
     const data = await request.socketEmitAndGetResponse(
       'addAsTheContact',
-      { userId: this._userInfo.userId, fromUser: this.friendId },
+      { fromUser: this.friendId },
       () => {
         notification('Add failed! ', 'error', 1.5);
         this.setState({ disableJoinButton: false });
