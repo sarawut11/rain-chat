@@ -20,10 +20,14 @@ class Admin extends Component {
   };
 
   componentWillMount() {
-    // console.log('component will mount', this);
-    const { role } = this.props.userInfo;
+    const _userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    const rxRole = this.props.userInfo.role;
+    const lsRole = _userInfo.role;
 
-    if (role !== 'OWNER') {
+    const role = rxRole || lsRole;
+    // console.log('component will mount', rxRole, lsRole, role, _userInfo);
+
+    if (role && role !== 'OWNER') {
       this.props.history.push('/');
     }
   }

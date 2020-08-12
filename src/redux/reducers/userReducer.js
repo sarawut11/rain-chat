@@ -1,3 +1,5 @@
+import { persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
 import { SET_USER_INFO, SET_BALANCE, SET_USER_ROLE } from '../actions/userAction';
 
 const initialState = {
@@ -11,7 +13,7 @@ const initialState = {
   },
 };
 
-const userReducer = (previousState = initialState, action) => {
+const initialUserReducer = (previousState = initialState, action) => {
   switch (action.type) {
     case SET_USER_INFO:
       try {
@@ -47,4 +49,10 @@ const userReducer = (previousState = initialState, action) => {
   }
 };
 
-export { userReducer };
+const persistConfig = {
+  key: 'userSetting',
+  storage,
+  whitelist: [],
+};
+
+export const userReducer = persistReducer(persistConfig, initialUserReducer);

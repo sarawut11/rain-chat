@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDom from 'react-dom';
 import { Provider } from 'react-redux';
-import store from './redux/store';
+import { PersistGate } from 'redux-persist/integration/react';
+import store, { persistor } from './redux/store';
 import App from './router';
 import AxiosHandle from './utils/request';
 import 'antd/dist/antd.css';
@@ -13,12 +14,12 @@ if (window.location.protocol === 'https:' && navigator.serviceWorker) {
     navigator.serviceWorker.register(sw);
   });
 }
-// console.log(process.env.NODE_ENV);
-// console.log(process.env.API_URL);
 
 ReactDom.render(
   <Provider store={store}>
-    <App />
+    <PersistGate persistor={persistor}>
+      <App />
+    </PersistGate>
   </Provider>,
   document.getElementById('app'),
 );
