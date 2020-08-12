@@ -2,7 +2,7 @@ import * as md5 from "md5";
 import * as uniqid from "uniqid";
 import * as moment from "moment";
 import { generateToken, authVerify } from "@middlewares";
-import { socketServer } from "@sockets";
+import { socketServer, socketEventNames } from "@sockets";
 import { ServicesContext } from "@context";
 import { User, Ban, Otp, Setting } from "@models";
 import { isVitaePostEnabled, generateOtp, verifyOtp, sendMail, rpcInterface, hashCode, vitaeToUsd } from "@utils";
@@ -141,6 +141,14 @@ export const registerUser = async (ctx, next) => {
       };
       return;
     }
+    if (/^[a-zA-Z0-9- ]*$/.test(name) === false) {
+      console.log("Register => Failed | Special Character Name. | Name:", name);
+      ctx.body = {
+        success: false,
+        message: "Name contains special characters.",
+      };
+      return;
+    }
 
     // Register DB
     const walletAddress = await rpcInterface.getNewAddress();
@@ -154,7 +162,7 @@ export const registerUser = async (ctx, next) => {
     // Join Rain Group & Broadcast
     const userInfo: User = await userService.getUserInfoByUsername(username);
     await groupService.joinGroup(userInfo.id, RAIN_GROUP_ID);
-    socketServer.broadcast("getGroupMsg", {
+    socketServer.broadcast(socketEventNames.GetGroupMsg, {
       ...userInfo,
       message: `${userInfo.name} joined a group chat`,
       groupId: RAIN_GROUP_ID,
