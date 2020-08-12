@@ -16,8 +16,11 @@ const initServer = server => {
   io = socketIo(server);
   io.use((socket, next) => {
     const token = socket.handshake.query.token;
-    if (authVerify(token)) {
+    const result = authVerify(token);
+    if (result) {
       console.log("Socket => Verify socket token | success");
+      socket.request.id = result.id;
+      socket.request.username = result.username;
       return next();
     }
     return next(new Error(`Socket => Authentication error`));

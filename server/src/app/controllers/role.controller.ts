@@ -214,12 +214,12 @@ export const upgradeMembershipBalance = async (ctx, next) => {
   }
 };
 
-const getUsersByRole = (page = 0, count = 10, role?, name?, username?, email?, searchString?): Promise<any> => new Promise(async (resolve, reject) => {
+const getUsersByRole = async (page = 0, count = 10, role?, name?, username?, email?, searchString?): Promise<any> => {
   if (count === 0) return ([]);
   const { userService } = ServicesContext.getInstance();
   const users = await userService.getUsers({
     start: page * count, count,
     role, name, username, email, searchString
   });
-  resolve(users);
-});
+  return users;
+};

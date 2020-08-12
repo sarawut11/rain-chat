@@ -1,6 +1,6 @@
 import { ServicesContext } from "@context";
 import { socketServer, socketEventNames, getRain } from "@sockets";
-import { Ads, User, InnerTransaction, AllSetting, Message } from "@models";
+import { Ads, User, InnerTransaction, AllSetting, GroupMessage } from "@models";
 
 export class RainContext {
   static instance: RainContext;
@@ -209,7 +209,7 @@ export class RainContext {
 
   async rainUsersByLastActivity(amount) {
     const { groupChatService } = ServicesContext.getInstance();
-    const lastRainMsgs: Message[] = await groupChatService.getLastRainGroupMsg(this.settings.POP_RAIN_LAST_POST_USER);
+    const lastRainMsgs: GroupMessage[] = await groupChatService.getLastRainGroupMsg(this.settings.POP_RAIN_LAST_POST_USER);
     amount /= lastRainMsgs.length;
     const userIds: number[] = [];
     lastRainMsgs.forEach(msg => userIds.push(msg.fromUser));

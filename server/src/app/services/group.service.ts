@@ -1,5 +1,5 @@
 import { query } from "@utils";
-import { Group } from "@models";
+import { Group, User } from "@models";
 
 export class GroupService {
   readonly GROUP_TABLE = "group_info";
@@ -49,17 +49,19 @@ export class GroupService {
   }
 
   // See if a user is in a group
-  isInGroup(userId, groupId) {
+  async isInGroup(userId, groupId): Promise<boolean> {
     const sql = `
       SELECT * FROM ${this.GROUP_USER_TABLE}
       WHERE
         ${this.GROUP_USER_COLUMNS.userId} = ? AND
         ${this.GROUP_USER_COLUMNS.groupId} = ?;`;
-    return query(sql, [userId, groupId]);
+    const result: any[] = await query(sql, [userId, groupId]);
+    return result.length !== 0;
   }
 
   // Create New Group
-  createGroup(arr) {
+  createGroup({ groupId, name, description, creatorId, createTime }:
+    { groupId: string, name: string, description: string, creatorId: number, createTime: number }) {
     const sql = `INSERT INTO ${this.GROUP_TABLE}(
       ${this.GROUP_COLUMNS.groupId},
       ${this.GROUP_COLUMNS.name},
@@ -67,11 +69,11 @@ export class GroupService {
       ${this.GROUP_COLUMNS.creatorId},
       ${this.GROUP_COLUMNS.createTime}
     ) VALUES (?,?,?,?,?)`;
-    return query(sql, arr);
+    return query(sql, [groupId, name, description, creatorId, createTime]);
   }
 
   // Update Group Information
-  updateGroupInfo({ name, description, groupId }) {
+  updateGroupInfo(groupId: string, name: string, description: string) {
     const sql = `
       UPDATE ${this.GROUP_TABLE}
       SET
@@ -90,5 +92,17 @@ export class GroupService {
         ${this.GROUP_USER_COLUMNS.userId} = ? AND
         ${this.GROUP_USER_COLUMNS.groupId} = ?;`;
     return query(sql, [userId, groupId]);
+  }
+
+  async getGroupMember(groupId): Promise<User[]> {
+    const sql = `
+      SELECT
+        g.userId, u.username, u.name, u.avatar, u.intro, u.socketid
+      FROM user_info AS u
+      INNER JOIN ${this.GROUP_USER_TABLE} AS g
+      ON g.${this.GROUP_USER_COLUMNS.userId} = u.id
+      WHERE g.${this.GROUP_USER_COLUMNS.groupId} = ?`;
+    const members: User[] = await query(sql, groupId);
+    return members;
   }
 }

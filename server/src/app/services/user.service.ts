@@ -222,7 +222,15 @@ export class UserService {
     if (email === undefined) email = "";
     if (searchString === undefined) searchString = "";
     const sql = `
-      SELECT *, COUNT(*) OVER() as totalCount FROM user_info
+      SELECT
+        ${this.USER_COL.id},
+        ${this.USER_COL.username},
+        ${this.USER_COL.name},
+        ${this.USER_COL.avatar},
+        ${this.USER_COL.intro},
+        ${this.USER_COL.role},
+        COUNT(*) OVER() as totalCount
+      FROM ${this.USER_TABLE}
       WHERE
         (role LIKE '%${role}%' AND
         username LIKE '%${username}%' AND

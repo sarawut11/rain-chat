@@ -1,8 +1,8 @@
-export class Message {
+export class PrivateMessage {
   public id: number;
   public fromUser: number;
-  public groupId: string;
+  public toUser: number;
   public message: string;
   public time: number;
-  public attachments: string;
+  public attachments: any;
 }
