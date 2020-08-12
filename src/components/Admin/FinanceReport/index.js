@@ -85,7 +85,7 @@ class FinanceReport extends Component {
           });
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         notification.error({
           message: 'Failed to get expense data.',
         });
@@ -102,7 +102,7 @@ class FinanceReport extends Component {
           });
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         notification.error({
           message: 'Failed to get data.',
         });
@@ -113,7 +113,7 @@ class FinanceReport extends Component {
   }
 
   onAccept = expenseId => async () => {
-    console.log('onAccept\n', expenseId);
+    // console.log('onAccept\n', expenseId);
     try {
       const res = await Request.axios('post', `/api/v1/expense/approve`, { expenseId });
 
@@ -128,7 +128,7 @@ class FinanceReport extends Component {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       notification.error({
         message: 'Failed to accept.',
       });
@@ -136,7 +136,7 @@ class FinanceReport extends Component {
   };
 
   onReject = expenseId => async () => {
-    console.log('onReject\n', expenseId);
+    // console.log('onReject\n', expenseId);
     try {
       const res = await Request.axios('post', `/api/v1/expense/reject`, { expenseId });
 
@@ -151,7 +151,7 @@ class FinanceReport extends Component {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       notification.error({
         message: 'Failed to reject.',
       });
@@ -159,7 +159,7 @@ class FinanceReport extends Component {
   };
 
   onWithdraw = expenseId => async () => {
-    console.log('onWithdraw\n', expenseId);
+    // console.log('onWithdraw\n', expenseId);
     try {
       const res = await Request.axios('post', `/api/v1/expense/withdraw`, { expenseId });
 
@@ -174,7 +174,7 @@ class FinanceReport extends Component {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       notification.error({
         message: 'Failed to withdraw.',
       });
@@ -380,7 +380,7 @@ class FinanceReport extends Component {
       },
     ];
 
-    console.log('\n\n -----      Expense render       ------ \n\n', this);
+    // console.log('\n\n -----      Expense render       ------ \n\n', this);
 
     return (
       <div>

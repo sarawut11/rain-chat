@@ -20,11 +20,11 @@ export default class Register extends Component {
   }
 
   async componentDidMount() {
-    console.log('registerpage componentdidmount');
+    // console.log('registerpage componentdidmount');
     const url_string = window.location.href;
     const url = new URL(url_string);
     const refcode = url.searchParams.get('ref');
-    console.log(refcode);
+    // console.log(refcode);
     if (refcode === null || refcode === '') {
       window.location.href = '/404';
     }
@@ -106,7 +106,7 @@ export default class Register extends Component {
   render() {
     const { show, loading } = this.state;
 
-    console.log('\n\n ------   Register Page Render   -------- \n\n', this);
+    // console.log('\n\n ------   Register Page Render   -------- \n\n', this);
     return (
       <div className="register">
         {show ? (

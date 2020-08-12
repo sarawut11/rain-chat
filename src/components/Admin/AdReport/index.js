@@ -39,7 +39,7 @@ class AdReport extends Component {
           });
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         notification.error({
           message: 'Failed to get data.',
         });

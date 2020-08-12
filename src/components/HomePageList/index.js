@@ -121,12 +121,6 @@ class HomePageList extends Component {
         });
       }
 
-      console.log(
-        '\n ---- searchInDB --- \n',
-        this.state.contactedItems,
-        data.fuzzyMatchResult,
-        newMatchResult,
-      );
       this.setState(state => ({
         contactedItems: [...state.contactedItems, ...newMatchResult],
       }));

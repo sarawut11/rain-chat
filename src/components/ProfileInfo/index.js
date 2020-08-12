@@ -58,7 +58,7 @@ class userInfoRender extends Component {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       antNotification.error({
         message: 'Profile update failed.',
       });

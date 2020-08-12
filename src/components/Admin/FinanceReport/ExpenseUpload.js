@@ -22,7 +22,7 @@ const mapDispatchToProps = dispatch => ({
 });
 
 function beforeUpload(file) {
-  console.log('file.type:\n', file.type);
+  // console.log('file.type:\n', file.type);
   const isPdf = file.type === 'application/pdf';
   if (!isPdf) {
     message.error('You can only upload PDF file!');
@@ -67,7 +67,7 @@ class ExpenseUpload extends React.Component {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       notification.error({
         message: 'Failed to upload expense.',
       });

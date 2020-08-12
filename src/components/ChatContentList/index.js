@@ -49,9 +49,9 @@ class ChatContentList extends Component {
       const ul = document.getElementsByClassName('chat-content-list')[0];
       const pList = ul.getElementsByTagName('p');
       for (let i = 0; i < pList.length; i += 1) {
-        console.log(pList[i].innerHTML, pList[i]);
+        // console.log(pList[i].innerHTML, pList[i]);
         let newHtml = pList[i].innerHTML.toString();
-        console.log('newHtml:', newHtml);
+        // console.log('newHtml:', newHtml);
         newHtml = newHtml.split('&lt;').join('<');
         newHtml = newHtml.split('&gt;').join('>');
         // newHtml = newHtml.replaceAll('&lt;', '<');
@@ -60,7 +60,7 @@ class ChatContentList extends Component {
         pList[i].innerHTML = newHtml;
       }
     } catch (e) {
-      console.log(e);
+      // console.log(e);
     }
   };
 
@@ -168,7 +168,7 @@ class ChatContentList extends Component {
       );
     });
 
-    console.log('\n --- ChatContentList --- \n', this);
+    // console.log('\n --- ChatContentList --- \n', this);
     return (
       <ul
         className="chat-content-list"

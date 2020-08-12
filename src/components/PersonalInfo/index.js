@@ -110,7 +110,7 @@ class PersonalInfo extends Component {
       showShareIcon,
       showShareModal,
     } = this.props;
-    console.log(this.props);
+    // console.log(this.props);
 
     const { username, name, intro, role } = userInfo;
     return (

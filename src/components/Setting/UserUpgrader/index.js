@@ -53,10 +53,10 @@ class UserUpgrader extends Component {
           });
         }
       } else {
-        console.log(res.message);
+        // console.log(res.message);
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
 
@@ -89,7 +89,7 @@ class UserUpgrader extends Component {
           });
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
 
       try {
@@ -108,7 +108,7 @@ class UserUpgrader extends Component {
           });
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         notification.error({
           message: 'Failed to get user upgrader data.',
         });
@@ -162,7 +162,7 @@ class UserUpgrader extends Component {
           }
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         notification.error({
           message: 'Failed to request to upgrade membership.',
         });
@@ -173,7 +173,7 @@ class UserUpgrader extends Component {
   };
 
   handleCancel = e => {
-    console.log(e);
+    // console.log(e);
     this.setState({
       visible: false,
     });
@@ -250,7 +250,7 @@ class UserUpgrader extends Component {
       </div>
     );
 
-    console.log('UserUpgrader render', this);
+    // console.log('UserUpgrader render', this);
 
     return (
       <div>

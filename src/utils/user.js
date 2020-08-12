@@ -1,5 +1,5 @@
 export const setUserLS = userInfo => {
-  console.log('\n ---  setUserLS  --- \n', userInfo);
+  // console.log('\n ---  setUserLS  --- \n', userInfo);
   if (!userInfo.username) {
     return;
   }

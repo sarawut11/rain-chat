@@ -45,7 +45,7 @@ class InputArea extends Component {
         cb();
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       cb();
     }
   }
@@ -62,7 +62,7 @@ class InputArea extends Component {
         if (window.location.href.includes('vitae-rain-group')) {
           _this._postMessage();
         } else {
-          console.log(message, inputMsg);
+          // console.log(message, inputMsg);
           sendMessage(message || inputMsg, attachments);
 
           // _this.state.inputMsg = '';
@@ -82,7 +82,7 @@ class InputArea extends Component {
   };
 
   _postMessage = () => {
-    console.log('_postMessage');
+    // console.log('_postMessage');
     const { sendMessage } = this.props;
     sendMessage('I love Vitae. :heart:', []);
     this.props.disableVitaePost();
@@ -105,7 +105,7 @@ class InputArea extends Component {
   };
 
   _inputMsgChange = value => {
-    console.log('_inputMsgChange');
+    // console.log('_inputMsgChange');
     this.setState(
       {
         inputMsg: value,
@@ -181,7 +181,7 @@ class InputArea extends Component {
   };
 
   //  displayContents = (contents) => {
-  //    console.log('contents', contents);
+  //    // console.log('contents', contents);
   //    //  this.setState({
   //    //    inputMsg: contents
   //    //  });
@@ -274,7 +274,7 @@ class InputArea extends Component {
     const { role } = userInfo;
     const { vitaePostEnabled } = this.props;
 
-    console.log('\n\n --- InputArea --- \n\n', this);
+    // console.log('\n\n --- InputArea --- \n\n', this);
 
     return role === 'FREE' && window.location.href.includes('vitae-rain-group') ? (
       <div className="input-msg">

@@ -71,7 +71,7 @@ const setAdminReducer = (previousState = initialState, action) => {
           modersCount: previousState.modersCount + action.data.addedModers.length,
         };
       } catch (e) {
-        console.log(e);
+        // console.log(e);
         return previousState;
       }
 
@@ -92,7 +92,7 @@ const setAdminReducer = (previousState = initialState, action) => {
           modersCount: previousState.modersCount - 1,
         };
       } catch (e) {
-        console.log(e);
+        // console.log(e);
         return previousState;
       }
 

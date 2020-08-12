@@ -19,7 +19,21 @@ class Admin extends Component {
     loading: false,
   };
 
+  componentWillMount() {
+    const _userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    const rxRole = this.props.userInfo.role;
+    const lsRole = _userInfo.role;
+
+    const role = rxRole || lsRole;
+    // console.log('component will mount', rxRole, lsRole, role, _userInfo);
+
+    if (role && role !== 'OWNER') {
+      this.props.history.push('/');
+    }
+  }
+
   render() {
+    // console.log('Admin', this);
     return (
       <div className="dashboard-container">
         <Tabs>

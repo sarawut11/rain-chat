@@ -48,7 +48,7 @@ const setAdsReducer = (previousState = initialState, action) => {
 
         return { ...previousState, ...formatAdsList(adsList) };
       } catch (e) {
-        console.log(e);
+        // console.log(e);
         return previousState;
       }
     case UPDATE_ADS_INFO:
@@ -74,7 +74,7 @@ const setAdsReducer = (previousState = initialState, action) => {
 
         return { ...previousState, ...formatAdsList(adsList) };
       } catch (e) {
-        console.log(e);
+        // console.log(e);
         return previousState;
       }
     default:

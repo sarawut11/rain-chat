@@ -40,7 +40,7 @@ const expenseReducer = (previousState = initialState, action) => {
 
         return { ...previousState, expenses: newExpenses };
       } catch (e) {
-        console.log(e);
+        // console.log(e);
         return previousState;
       }
 
@@ -53,7 +53,7 @@ const expenseReducer = (previousState = initialState, action) => {
 
         return { ...previousState, expenses: newExpenses };
       } catch (e) {
-        console.log(e);
+        // console.log(e);
         return previousState;
       }
 

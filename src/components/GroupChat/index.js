@@ -67,7 +67,7 @@ class GroupChat extends Component {
         updateHomePageList,
         addGroupMessageAndInfo,
       } = this.props;
-      console.log('\n\n---   joinGroup function   ---\n\n', this);
+      // console.log('\n\n---   joinGroup function   ---\n\n', this);
       const response = await request.socketEmitAndGetResponse(
         'joinGroup',
         { userInfo: this.props.userInfo, groupId: this.chatId, userId: this.props.userInfo.id },
@@ -91,7 +91,7 @@ class GroupChat extends Component {
       });
       updateHomePageList({ data: { ...lastContent, ...groupInfo }, homePageList });
     } catch (e) {
-      console.log(e);
+      // console.log(e);
     }
   };
 

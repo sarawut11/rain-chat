@@ -28,7 +28,7 @@ export default class CreateAds extends Component {
   };
 
   componentDidMount() {
-    // console.log('create ads component did mount', this.props);
+    // // console.log('create ads component did mount', this.props);
     const { editingAds, editMode } = this.props;
     if (editMode) {
       this.setState({ ...editingAds });
@@ -93,7 +93,7 @@ export default class CreateAds extends Component {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       notification.error({
         message: 'Failed.',
       });
@@ -103,7 +103,7 @@ export default class CreateAds extends Component {
   };
 
   handleCancel = e => {
-    console.log(e);
+    // console.log(e);
     this.hideModal();
   };
 

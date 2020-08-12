@@ -91,7 +91,7 @@ export default class PrivateChat extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     const { relatedCurrentChat, match } = nextProps;
-    // console.log('shouldComponentUpdate', relatedCurrentChat, chatId, this.props.chatId, this._sendByMe);
+    // // console.log('shouldComponentUpdate', relatedCurrentChat, chatId, this.props.chatId, this._sendByMe);
     if (relatedCurrentChat || match.params.userId !== this.chatId || this._sendByMe) {
       this._sendByMe = false;
       return true;

@@ -55,7 +55,7 @@ export default class Chat {
             },
           );
         } catch (error) {
-          console.log(error);
+          // console.log(error);
           notification('Something went wrong, please try again later', 'error');
           const errorText = 'try again later';
           reject(errorText);

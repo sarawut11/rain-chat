@@ -6,6 +6,7 @@ import { setAdminAction } from './adminAction';
 
 const mapStateToProps = state => ({
   admin: state.adminState,
+  userInfo: state.user.userInfo,
 });
 
 const mapDispatchToProps = dispatch => ({

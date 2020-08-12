@@ -10,7 +10,7 @@ export default function debounce(func, threshold = 500, immediate = false) {
       timer = null;
       if (!immediate) func.apply(context, args);
     };
-    console.log('please wait');
+    // console.log('please wait');
     clearTimeout(timer);
     timer = setTimeout(later, threshold);
     if (callNow) func.apply(context, args);

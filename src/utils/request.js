@@ -12,7 +12,7 @@ export default class Request {
   }
 
   static async axios(method = 'get', url, params) {
-    console.log('request', url);
+    // console.log('request', url);
     const handleMethod = method === 'get' && params ? { params } : params;
 
     const user_info = JSON.parse(localStorage.getItem('userInfo'));
@@ -34,7 +34,7 @@ export default class Request {
           resolve(response);
         })
         .catch(error => {
-          console.log('request error', error, error.response);
+          // console.log('request error', error, error.response);
           notification.error({
             message: 'Internal server error.',
           });
@@ -63,7 +63,7 @@ export default class Request {
   static socketEmitAndGetResponse(emitName, data, onError) {
     return new Promise((resolve, reject) => {
       try {
-        console.log('socketEmitAndGetResponse:\n', data);
+        // console.log('socketEmitAndGetResponse:\n', data);
         window.socket.emit(emitName, data, response => {
           resolve(response);
         });
