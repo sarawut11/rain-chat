@@ -52,10 +52,18 @@ export const updateProfileInfo = async (ctx, next) => {
       return;
     }
     if (/^[a-zA-Z0-9- ]*$/.test(name) === false) {
-      console.log("Register => Failed | Special Character Name. | Name:", name);
+      console.log("Profile Update => Failed | Special Character Name. | Name:", name);
       ctx.body = {
         success: false,
         message: "Name contains special characters.",
+      };
+      return;
+    }
+    if (/^[a-zA-Z0-9- ]*$/.test(intro) === false) {
+      console.log("Profile Update => Failed | Special Character Intro. | Intro:", intro);
+      ctx.body = {
+        success: false,
+        message: "Intro contains special characters.",
       };
       return;
     }
