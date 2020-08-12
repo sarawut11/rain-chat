@@ -141,6 +141,14 @@ export const registerUser = async (ctx, next) => {
       };
       return;
     }
+    if (/^[a-zA-Z0-9- ]*$/.test(name) === false) {
+      console.log("Register => Failed | Special Character Name. | Name:", name);
+      ctx.body = {
+        success: false,
+        message: "Name contains special characters.",
+      };
+      return;
+    }
 
     // Register DB
     const walletAddress = await rpcInterface.getNewAddress();
