@@ -113,7 +113,7 @@ class userInfoRender extends Component {
             />
           </Form.Item>
           <Form.Item label="Email">{email}</Form.Item>
-          <Form.Item label="refcode link">{reftext}</Form.Item>
+          {/* <Form.Item label="refcode link">{reftext}</Form.Item> */}
           <Form.Item label="Role">{role}</Form.Item>
           <Form.Item label="Downlines">{myRefs}</Form.Item>
           <Row justify="center" align="middle">

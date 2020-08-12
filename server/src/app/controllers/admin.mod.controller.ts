@@ -1,3 +1,4 @@
+import * as moment from "moment";
 import { ServicesContext } from "@context";
 import { User } from "@models";
 import { isOwner, checkUserInfo } from "@utils";
@@ -5,7 +6,7 @@ import { isOwner, checkUserInfo } from "@utils";
 export const getModsAnalytics = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
-    const { userService } = ServicesContext.getInstance();
+    const { userService, innerTranService } = ServicesContext.getInstance();
 
     const checkRole = await isOwner(username);
     if (checkRole.success === false) {
@@ -17,11 +18,24 @@ export const getModsAnalytics = async (ctx, next) => {
     const modersCount = moders.length;
     const onlineModersCount = moders.filter(moder => moder.socketid !== "").length;
 
+    const moderAmounts = await Promise.all(moders.map(moder => {
+      return innerTranService.getPaymentByLastWeeks(moder.id, 1);
+    }));
+
+    const moderatorPayments = [];
+    moders.forEach((moder, i) => {
+      moderatorPayments.push({
+        ...moder,
+        totalModerPay: moderAmounts[i].payment,
+        lastModer: moderAmounts[i].weekPayments[0],
+      });
+    });
+
     ctx.body = {
       success: true,
       modersCount,
       onlineModersCount,
-      moders,
+      moders: moderatorPayments,
     };
   } catch (error) {
     console.error(error.message);
@@ -96,7 +110,13 @@ export const cancelModer = async (ctx, next) => {
       return;
     }
 
-    await userService.cancelModer(modUsername);
+    const userInfo = checkRole.userInfo;
+    const expireTime = moment().utc().subtract(1, "months").unix();
+    if (userInfo.lastUpgradeTime <= expireTime) {
+      await userService.updateRole(modUsername, User.ROLE.FREE);
+    } else {
+      await userService.updateRole(modUsername, User.ROLE.UPGRADED_USER);
+    }
     const updatedUser: User = await userService.findUserByUsername(modUsername);
     ctx.body = {
       success: true,

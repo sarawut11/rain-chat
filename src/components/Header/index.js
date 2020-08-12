@@ -27,8 +27,6 @@ export default class Header extends Component {
     const data = {
       name: groupName,
       description: groupNotice,
-      creatorId: userId,
-      // createTime: Date.parse(new Date()) / 1000
     };
     window.socket.emit('createGroup', data, res => {
       const {

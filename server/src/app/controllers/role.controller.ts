@@ -1,6 +1,6 @@
 import { ServicesContext } from "@context";
 import { User, Transaction, Setting } from "@models";
-import { checkUserInfo, isOwner, usdToVitae, now, roundPrice } from "@utils";
+import { checkUserInfo, isOwner, usdToVitae, roundPrice, getTranExpireIn } from "@utils";
 import { confirmMembership } from "@controllers";
 import { updateBalanceSocket } from "@sockets";
 
@@ -33,10 +33,11 @@ export const getAllUsers = async (ctx, next) => {
 export const getMembershipPrice = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
-    const { userService, settingService } = ServicesContext.getInstance();
+    const { userService, settingService, membershipPriceService } = ServicesContext.getInstance();
     const userInfo: User = await userService.findUserByUsername(username);
     const membershipPriceUsd: number = await settingService.getSettingValue(Setting.KEY.MEMBERSHIP_PRICE_USD);
     const vitaePrice = roundPrice(usdToVitae(membershipPriceUsd));
+    await membershipPriceService.savePrice(userInfo.id, vitaePrice);
 
     ctx.body = {
       success: true,
@@ -78,8 +79,7 @@ export const getMembershipPendingTran = async (ctx, next) => {
     }
 
     const membershipPriceUsd: number = await settingService.getSettingValue(Setting.KEY.MEMBERSHIP_PRICE_USD);
-    const tranExpire: number = await settingService.getSettingValue(Setting.KEY.TRANSACTION_REQUEST_EXPIRE);
-    const expireIn: number = pendingTran.time * 1000 + tranExpire - now() * 1000;
+    const expireIn: number = await getTranExpireIn(pendingTran.time);
     ctx.body = {
       success: true,
       message: "Pending Transaction",
@@ -101,7 +101,7 @@ export const upgradeMembershipPurchase = async (ctx, next) => {
   try {
     const { username, id: userId } = ctx.state.user;
     const { expectAmount } = ctx.request.body;
-    const { transactionService, settingService } = ServicesContext.getInstance();
+    const { transactionService, settingService, membershipPriceService } = ServicesContext.getInstance();
 
     const checkUser = await checkUserInfo(username);
     if (checkUser.success === false) {
@@ -115,6 +115,16 @@ export const upgradeMembershipPurchase = async (ctx, next) => {
       ctx.body = {
         success: false,
         message: "You can't upgrade your membership."
+      };
+      return;
+    }
+
+    const savedMembershipPrice = await membershipPriceService.getPrice(userInfo.id);
+    if (savedMembershipPrice === undefined || savedMembershipPrice.price !== Number(expectAmount)) {
+      console.log(`Membership Purchase => Failed | Price not matched | username:${username}`);
+      ctx.body = {
+        success: false,
+        message: "Expect amount does not match."
       };
       return;
     }
@@ -149,6 +159,8 @@ export const upgradeMembershipBalance = async (ctx, next) => {
   try {
     const { username } = ctx.state.user;
     const { expectAmount } = ctx.request.body;
+    const { userService, membershipPriceService } = ServicesContext.getInstance();
+
     const checkUser = await checkUserInfo(username);
     if (checkUser.success === false) {
       ctx.body = checkUser;
@@ -163,6 +175,15 @@ export const upgradeMembershipBalance = async (ctx, next) => {
       };
       return;
     }
+    const savedMembershipPrice = await membershipPriceService.getPrice(userInfo.id);
+    if (savedMembershipPrice === undefined || savedMembershipPrice.price !== Number(expectAmount)) {
+      console.log(`Membership Purchase => Failed | Price not matched | username:${username}`);
+      ctx.body = {
+        success: false,
+        message: "Expect amount does not match."
+      };
+      return;
+    }
 
     if (userInfo.balance < Number(expectAmount)) {
       console.log(`Membership Upgrade Balance => Failed | Insufficient balance | balance:${userInfo.balance}, username:${username}`);
@@ -173,7 +194,6 @@ export const upgradeMembershipBalance = async (ctx, next) => {
       return;
     }
 
-    const { userService } = ServicesContext.getInstance();
     await userService.addBalance(userInfo.id, -expectAmount);
     await confirmMembership(userInfo, expectAmount);
     const updatedUser = await userService.findUserByUsername(username);
@@ -194,12 +214,12 @@ export const upgradeMembershipBalance = async (ctx, next) => {
   }
 };
 
-const getUsersByRole = (page = 0, count = 10, role?, name?, username?, email?, searchString?): Promise<any> => new Promise(async (resolve, reject) => {
+const getUsersByRole = async (page = 0, count = 10, role?, name?, username?, email?, searchString?): Promise<any> => {
   if (count === 0) return ([]);
   const { userService } = ServicesContext.getInstance();
   const users = await userService.getUsers({
     start: page * count, count,
     role, name, username, email, searchString
   });
-  resolve(users);
-});
+  return users;
+};

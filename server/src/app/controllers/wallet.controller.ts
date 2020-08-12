@@ -1,6 +1,6 @@
-import { ServicesContext, RainContext } from "@context";
-import { now, rpcInterface, shareRevenue } from "@utils";
-import { updateBalanceSocket, updateAdsStatus } from "@sockets";
+import { ServicesContext, RainContext, TransactionContext } from "@context";
+import { now, rpcInterface, shareRevenue, getTranExpireIn, getAdsIdFromTran } from "@utils";
+import { updateBalanceSocket, updateAdsStatus, unknownDepositSocket } from "@sockets";
 import {
   Ads,
   User,
@@ -60,6 +60,9 @@ export const walletNotify = async (ctx, next) => {
         const tranInfo: Transaction = await transactionService.getLastRequestedTransaction(userInfo.id);
         if (tranInfo === undefined) {
           console.log(`Transaction Notify => Failed | Unknown deposit from user:${userInfo.id}, txId:${txid}`);
+          await userService.addBalance(userInfo.id, txInfo.amount);
+          const updatedUser: User = await userService.findUserById(userInfo.id);
+          unknownDepositSocket(updatedUser, txInfo.amount);
           ctx.body = {
             success: false,
             message: "Failed"
@@ -71,7 +74,7 @@ export const walletNotify = async (ctx, next) => {
           console.log(`Transaction Notify => Insufficient Amount | expectAmount:${tranInfo.expectAmount}, paidAmount:${txInfo.amount}, txId:${txid}`);
           await transactionService.setInsufficientTransaction(txid, txInfo.amount, txInfo.timereceived, tranInfo);
         } else {
-          await transactionService.confirmTransaction(tranInfo.id, txid, txInfo.amount, txInfo.timereceived);
+          TransactionContext.getInstance().confrimTransactionRequest(tranInfo.id, txid, txInfo.amount, txInfo.timereceived);
           if (tranInfo.type === Transaction.TYPE.MEMBERSHIP) {
             console.log(`Transaction Notify => Membership Upgraded | username:${userInfo.username}, txId:${txid}`);
             await confirmMembership(userInfo, txInfo.amount);
@@ -182,12 +185,14 @@ export const getPendingTransaction = async (ctx, next) => {
         message: "No pending transaction."
       };
     } else {
-      const adsId = pendingTran.details === "" ? undefined : JSON.parse(pendingTran.details).adsId;
+      const adsId = getAdsIdFromTran(pendingTran.details);
+      const expireIn = await getTranExpireIn(pendingTran.time);
       ctx.body = {
         success: true,
         message: "Pending Transaction",
         pendingTran: {
           ...pendingTran,
+          expireIn,
           adsId,
         },
         walletAddress: userInfo.walletAddress

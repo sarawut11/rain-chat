@@ -4,7 +4,7 @@ import * as koaBody from "koa-body";
 import * as cors from "@koa/cors";
 import * as jwt from "koa-jwt";
 
-import { ServicesContext, RainContext, CMCContext, DailyContext } from "./context";
+import { ServicesContext, RainContext, CMCContext, DailyContext, TransactionContext } from "./context";
 import { appRoutes, apiRoutes, authRoutes } from "./routes";
 import { Server } from "./server";
 import {
@@ -22,6 +22,7 @@ import {
   WithdrawAddressService,
   SettingService,
   ImpcostService,
+  MembershipPriceService,
 } from "./services";
 
 export const App = Server.init(app => {
@@ -50,6 +51,7 @@ export const App = Server.init(app => {
       .setGroupChatService(new GroupChatService())
       .setAdsService(new AdsService())
       .setImpcostService(new ImpcostService())
+      .setMembershipPriceService(new MembershipPriceService())
       .setOtpService(new OtpService())
       .setExpenseService(new ExpenseService())
       .setExpenseConfirmService(new ExpenseConfirmService())
@@ -59,5 +61,6 @@ export const App = Server.init(app => {
     RainContext.getInstance();
     DailyContext.getInstance();
     CMCContext.getInstance();
+    TransactionContext.getInstance();
     Server.run(process.env.PORT);
   });

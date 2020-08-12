@@ -7,6 +7,13 @@ export const updateBalanceSocket = (updatedUser: User) => {
   }, error => console.log("Socket => Update Balance | Error:", error.message));
 };
 
+export const unknownDepositSocket = (updatedUser: User, amount: number) => {
+  socketServer.emitTo(updatedUser.socketid, socketEventNames.UnknownDeposit, {
+    amount,
+    balance: updatedUser.balance,
+  }, error => console.log("Socket => Unknown Deposit | Error:", error.message));
+};
+
 export const updateProfileInfoSocket = (updatedUser: User) => {
   socketServer.broadcast(socketEventNames.UpdateProfileInfo, {
     username: updatedUser.username,

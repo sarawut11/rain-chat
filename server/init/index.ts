@@ -8,6 +8,7 @@ dotenv.config();
 import { getSqlShellList, runSqlShellList } from "./utils";
 import { User } from "../src/app/models";
 import { query } from "../src/app/utils/db";
+import { rpcInterface } from "../src/app/utils/wallet/RpcInterface";
 
 const COMPANY_USERID = Number(process.env.COMPANY_USERID);
 const COMPANY_RAIN_ADDRESS = process.env.COMPANY_RAIN_ADDRESS;
@@ -15,10 +16,6 @@ const COMPANY_STOCKPILE_USERID = Number(process.env.COMPANY_STOCKPILE_USERID);
 const COMPANY_STOCKPILE_ADDRESS = process.env.COMPANY_STOCKPILE_ADDRESS;
 
 const RAIN_GROUP_ID = process.env.RAIN_GROUP_ID;
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-const ADMIN_NAME = process.env.ADMIN_NAME;
-const MAIL_USER = process.env.MAIL_USER;
 
 // Execute the table creation sql script
 const initDB = async () => {
@@ -36,17 +33,29 @@ const initDB = async () => {
   await query(sql, [COMPANY_USERID, "COMPANY", "company@wallet.com", md5(uniqid()), "Company Wallet", User.ROLE.COMPANY, uniqid(), COMPANY_RAIN_ADDRESS]);
   sql = "INSERT INTO user_info (id, username, email, password, name, role, refcode, walletAddress) VALUES (?,?,?,?,?,?,?,?);";
   await query(sql, [COMPANY_STOCKPILE_USERID, "STOCKPILE", "company.stockpile@wallet.com", md5(uniqid()), "Company Stockpile", User.ROLE.STOCKPILE, uniqid(), COMPANY_STOCKPILE_ADDRESS]);
+
   // Create Default Owner ( Admin )
-  sql = "INSERT INTO user_info (username, email, password, name, role, refcode) VALUES (?,?,?,?,?,?);";
-  await query(sql, [ADMIN_USERNAME, MAIL_USER, md5(ADMIN_PASSWORD), ADMIN_NAME, User.ROLE.OWNER, uniqid()]);
+  let walletAddress = await rpcInterface.getNewAddress();
+  sql = "INSERT INTO user_info (username, email, password, name, role, refcode, walletAddress) VALUES (?,?,?,?,?,?,?);";
+  await query(sql, ["iqmojo", "mojo00web@gmail.com", md5("password"), "Michael Bradley", User.ROLE.OWNER, uniqid(), walletAddress]);
+
+  walletAddress = await rpcInterface.getNewAddress();
+  sql = "INSERT INTO user_info (username, email, password, name, role, refcode, walletAddress) VALUES (?,?,?,?,?,?,?);";
+  await query(sql, ["CryptoParaglider", "russell@girdwood.net", md5("password"), "Crypto Paraglider", User.ROLE.OWNER, uniqid(), walletAddress]);
+
+  walletAddress = await rpcInterface.getNewAddress();
+  sql = "INSERT INTO user_info (username, email, password, name, role, refcode, walletAddress) VALUES (?,?,?,?,?,?,?);";
+  await query(sql, ["Sarawut", "sanit.sa@outlook.com", md5("password"), "Sarawut Sanit", User.ROLE.OWNER, uniqid(), walletAddress]);
 
   // Create Vitae Rain Room
   sql = "INSERT INTO group_info (id,groupId,name,description,creatorId,createTime) VALUES (?,?,?,?,?,?);";
   await query(sql, [1, RAIN_GROUP_ID, "Vitae Rain Room", "Vitae Rain Room", 1, moment().utc().unix()]);
 
   // Assign Admin to Vitae Rain Room
-  sql = "INSERT INTO group_user_relation (id, groupId, userId) VALUE (?,?,?);";
-  await query(sql, [1, RAIN_GROUP_ID, 1]);
+  sql = "INSERT INTO group_user_relation (groupId, userId) VALUE (?,?);";
+  await query(sql, [RAIN_GROUP_ID, 3]);
+  await query(sql, [RAIN_GROUP_ID, 4]);
+  await query(sql, [RAIN_GROUP_ID, 5]);
   sql = "INSERT INTO rain_group_msg (fromUser, groupId, message, time, attachments) VALUE (?,?,?,?,?);";
   await query(sql, [0, RAIN_GROUP_ID, "Welcome to Vitae Rain Room", moment().utc().unix(), "[]"]);
 

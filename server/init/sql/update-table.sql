@@ -17,8 +17,10 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-DROP TABLE IF EXISTS `cost_per_imp_info`;
-CREATE TABLE `cost_per_imp_info` (
+# Dump of table membership_price_info
+# ------------------------------------------------------------
+DROP TABLE IF EXISTS `membership_price_info`;
+CREATE TABLE `membership_price_info` (
   `userId` int(11) NOT NULL,
   `price` double NOT NULL DEFAULT 0,
   `time` int(11) NOT NULL DEFAULT 0,

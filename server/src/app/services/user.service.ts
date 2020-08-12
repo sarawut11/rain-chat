@@ -46,8 +46,11 @@ export class UserService {
   async findMatchUsers(username: string): Promise<User[]> {
     const sql = `
       SELECT * FROM ${this.USER_TABLE}
-      WHERE ${this.USER_COL.username} LIKE ?;`;
-    const users: User[] = await query(sql, username);
+      WHERE
+        ${this.USER_COL.username} LIKE ? AND
+        ${this.USER_COL.role} != ? AND
+        ${this.USER_COL.role} != ?;`;
+    const users: User[] = await query(sql, [username, User.ROLE.COMPANY, User.ROLE.STOCKPILE]);
     return users;
   }
 
@@ -219,7 +222,15 @@ export class UserService {
     if (email === undefined) email = "";
     if (searchString === undefined) searchString = "";
     const sql = `
-      SELECT *, COUNT(*) OVER() as totalCount FROM user_info
+      SELECT
+        ${this.USER_COL.id},
+        ${this.USER_COL.username},
+        ${this.USER_COL.name},
+        ${this.USER_COL.avatar},
+        ${this.USER_COL.intro},
+        ${this.USER_COL.role},
+        COUNT(*) OVER() as totalCount
+      FROM ${this.USER_TABLE}
       WHERE
         (role LIKE '%${role}%' AND
         username LIKE '%${username}%' AND
@@ -382,16 +393,6 @@ export class UserService {
     return users;
   }
 
-  getUsersByLastActivity(limit) {
-    const sql = `
-    SELECT u.id, u.socketid
-    FROM rain_group_msg as rgm
-    JOIN user_info as u
-    ON rgm.fromUser = u.id
-    ORDER BY rgm.time DESC LIMIT ?;`;
-    return query(sql, limit);
-  }
-
   getUsersByUserIds(userIds: number[]) {
     const array = getInArraySQL(userIds);
     const sql = `SELECT * FROM ${this.USER_TABLE} WHERE ${this.USER_COL.id} IN (${array});`;
@@ -470,14 +471,6 @@ export class UserService {
       SET ${this.USER_COL.role} = ?
       WHERE ${this.USER_COL.username} IN (${array});`;
     return query(sql, User.ROLE.MODERATOR);
-  }
-
-  cancelModer(username: string) {
-    const sql = `
-      UPDATE ${this.USER_TABLE}
-      SET ${this.USER_COL.role} = ?
-      WHERE ${this.USER_COL.username} = ?;`;
-    return query(sql, [User.ROLE.UPGRADED_USER, username]);  // Change Role field to x,y,z format later
   }
 
   updateMembership(userId, role) {

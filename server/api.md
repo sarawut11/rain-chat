@@ -18,6 +18,7 @@
     - [/user/otp/verify (POST)](#userotpverify-post)
     - [/user/get-refs (GET)](#userget-refs-get)
   - [1.4 Ads](#14-ads)
+    - [Ads Model](#ads-model)
     - [/campaign/pub/create (POST)](#campaignpubcreate-post)
     - [/campaign/pub/all (GET)](#campaignpuball-get)
     - [/campaign/pub/:adsId (GET)](#campaignpubadsid-get)
@@ -107,6 +108,8 @@
     - [updateAdsImpressions (Server)](#updateadsimpressions-server)
   - [2.7 Transaction](#27-transaction)
     - [transactionExpired (Server)](#transactionexpired-server)
+    - [transactionConfirmed (Server)](#transactionconfirmed-server)
+    - [unknownDeposit (Server)](#unknowndeposit-server)
 
 > **Note**
 > - All Date / Time formats are in unix timestamp format in UTC timezone
@@ -361,6 +364,27 @@
 > - 0: Rain Room Ads
 > - 1: Static Ads
 > 
+### Ads Model
+  ```
+  {
+    id,             // adsId
+    userId,         // Creator's userId
+    type,           // 0: Rain Room Ads, 1: Static Ads
+    status,         // 0: Created, 1: Pending, 2: Approved, 3: Rejected, 4: PendingPurchase, 5: PendingConfirm, 6: Paid
+    assetLink,      // Link to the ads content
+    link,
+    buttonLabel,
+    title,
+    description,
+    impressions,    // Purchased Impressions
+    givenImp,       // Given Impressions
+    time,           // Registration Time - Unix timestamp in UTC
+    lastTime,       // Last advertised time - Unix timestamp in UTC
+    reviewer,       // Reviewer's userId
+    costPerImp,     // Reward per imp in vitae
+    paidAmount,     // Paid Amount in vitae
+  }
+  ```
 ### /campaign/pub/create (POST)
   Register ads
 
@@ -379,18 +403,6 @@
     success: true/false,
     message: "Success or Failed Message",
     ads: {
-      id,           // Ads Id
-      userId,       // Advertiser's id
-      assetLink,    // Link to the ads content
-      impressions,
-      link,
-      buttonLabel,
-      title,
-      description,
-      status,       
-      lastTime,     // Last advertised time - Unix timestamp in UTC
-      time,         // Registration Time - Unix timestamp in UTC
-      type,         
     }
   }
   ```
@@ -403,20 +415,6 @@
     success: true/false,
     message: "Success or Failed Message",
     ads: [
-      {
-        id,           // Ads Id
-        userId,       // Advertiser's id
-        assetLink,    // Link to the ads content
-        impressions,
-        link,
-        buttonLabel,
-        title,
-        description,
-        status,       
-        lastTime,     // Last advertised time - Unix timestamp in UTC
-        time,         // Registration Time - Unix timestamp in UTC
-        type,         
-      },
       ...
     ]
   }
@@ -430,18 +428,6 @@
     success: true/false,
     message: "Success or Failed Message",
     ads: {
-      id,           // Ads Id
-      userId,       // Advertiser's id
-      assetLink,    // Link to the ads content
-      impressions,
-      link,
-      buttonLabel,
-      title,
-      description,
-      status,       
-      lastTime,     // Last advertised time - Unix timestamp in UTC
-      time,         // Registration Time - Unix timestamp in UTC
-      type,         
     }
   }
   ```
@@ -462,18 +448,6 @@
     success: true/false,
     message: "Success or Failed Message",
     ads: {
-      id,           // Ads Id
-      userId,       // Advertiser's id
-      assetLink,    // Link to the ads content
-      impressions,
-      link,
-      buttonLabel,
-      title,
-      description,
-      status,       
-      lastTime,     // Last advertised time - Unix timestamp in UTC
-      time,         // Registration Time - Unix timestamp in UTC
-      type,         
     }
   }
   ```
@@ -496,18 +470,6 @@
     success: true/false,
     message: "Success or Failed Message",
     ads: {
-      id,           // Ads Id
-      userId,       // Advertiser's id
-      assetLink,    // Link to the ads content
-      impressions,
-      link,
-      buttonLabel,
-      title,
-      description,
-      status,       
-      lastTime,     // Last advertised time - Unix timestamp in UTC
-      time,         // Registration Time - Unix timestamp in UTC
-      type,         
     }
   }
   ```
@@ -520,18 +482,6 @@
     success: true/false,
     message: "Success or Failed Message",
     ads: {
-      id,           // Ads Id
-      userId,       // Advertiser's id
-      assetLink,    // Link to the ads content
-      impressions,
-      link,
-      buttonLabel,
-      title,
-      description,
-      status,       
-      lastTime,     // Last advertised time - Unix timestamp in UTC
-      time,         // Registration Time - Unix timestamp in UTC
-      type,         
     }
   }
   ```
@@ -551,18 +501,6 @@
     message: "Success or Failed Message",
     expireTime,     // expiration time in seconds
     ads: {
-      id,           // Ads Id
-      userId,       // Advertiser's id
-      assetLink,    // Link to the ads content
-      impressions,
-      link,
-      buttonLabel,
-      title,
-      description,
-      status,       
-      lastTime,     // Last advertised time - Unix timestamp in UTC
-      time,         // Registration Time - Unix timestamp in UTC
-      type,         
     }
   }
   ```
@@ -575,18 +513,6 @@
     success: true/false,
     message: "Success or Failed Message",
     ads: {
-      id,           // Ads Id
-      userId,       // Advertiser's id
-      assetLink,    // Link to the ads content
-      impressions,
-      link,
-      buttonLabel,
-      title,
-      description,
-      status,       
-      lastTime,     // Last advertised time - Unix timestamp in UTC
-      time,         // Registration Time - Unix timestamp in UTC
-      type,         
     }
   }
   ```
@@ -615,18 +541,6 @@
     success: true/false,
     message: "Success or Failed Message",
     ads: {
-      id,           // Ads Id
-      userId,       // Advertiser's id
-      assetLink,    // Link to the ads content
-      impressions,
-      link,
-      buttonLabel,
-      title,
-      description,
-      status,       
-      lastTime,     // Last advertised time - Unix timestamp in UTC
-      time,         // Registration Time - Unix timestamp in UTC
-      type,         
     }
   }
   ```
@@ -642,18 +556,7 @@
     message: "Success or Failed Message",
     ads: [
       {
-        id,           // Ads Id
-        userId,       // Advertiser's id
-        assetLink,    // Link to the ads content
-        impressions,
-        link,
-        buttonLabel,
-        title,
-        description,
-        status,       
-        lastTime,     // Last advertised time - Unix timestamp in UTC
-        time,         // Registration Time - Unix timestamp in UTC
-        type,         
+        ...  
         // Ads Creator's Info
         username,
         name,
@@ -674,19 +577,7 @@
   {
     success: true/false,
     message: "Success or Failed Message",
-    ads: {
-      id,           // Ads Id
-      userId,       // Advertiser's id
-      assetLink,    // Link to the ads content
-      impressions,
-      link,
-      buttonLabel,
-      title,
-      description,
-      status,       
-      lastTime,     // Last advertised time - Unix timestamp in UTC
-      time,         // Registration Time - Unix timestamp in UTC
-      type,         
+    ads: {    
     }
   }
   ```
@@ -698,19 +589,7 @@
   {
     success: true/false,
     message: "Success or Failed Message",
-    ads: {
-      id,           // Ads Id
-      userId,       // Advertiser's id
-      assetLink,    // Link to the ads content
-      impressions,
-      link,
-      buttonLabel,
-      title,
-      description,
-      status,       
-      lastTime,     // Last advertised time - Unix timestamp in UTC
-      time,         // Registration Time - Unix timestamp in UTC
-      type,         
+    ads: {   
     }
   }
   ```
@@ -1068,7 +947,8 @@
       paidAmount,
       expectAmount,
       time,
-      adsId, // (Optional)
+      expireIn,       // expireTime in miliseconds
+      adsId,          // (Optional)
     },
     walletAddress
   }
@@ -1301,20 +1181,6 @@
       ], ...
     ],
     adsList: [
-      {
-        id,           // Ads Id
-        userId,       // Advertiser's id
-        assetLink,    // Link to the ads content
-        impressions,
-        link,
-        buttonLabel,
-        title,
-        description,
-        status,       
-        lastTime,     // Last advertised time - Unix timestamp in UTC
-        time,         // Registration Time - Unix timestamp in UTC
-        type,         
-      }, ...
     ]
   }
   ```
@@ -1468,5 +1334,28 @@
     type,           // Transaction Type
     expectAmount,   // Transaction Amount
     time,           // Requested Time
+  }
+  ```
+### transactionConfirmed (Server)
+  Notify user about the confirmed transaction
+
+  ***Data***
+  ```
+  {
+    type,           // Transaction Type
+    paid,           // Paid Amount
+    expectAmount,   // Transaction Amount
+    time,           // Requested Time
+    confirmTime,    // Confirmed Time
+  }
+  ```
+### unknownDeposit (Server)
+  Notify user about the unknown transaction
+
+  ***Data***
+  ```
+  {
+    amount,         // Amount of unknown deposit
+    balance,        // Updated balance
   }
   ```

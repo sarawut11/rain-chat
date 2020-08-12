@@ -1,4 +1,5 @@
 import { query } from "@utils";
+import { GroupMessage } from "@models";
 
 export class GroupChatService {
   readonly RAIN_G_TNAME = "rain_group_msg";
@@ -22,21 +23,6 @@ export class GroupChatService {
         WHERE groupId = ? order by time desc limit ?,?)
       As n order by n.time;`;
     return query(sql, [groupId, start, count]);
-  }
-
-  /**
-   * Get group members
-   * @param   groupId   Group Id
-   * @return  group_member_id  Group Member Id
-   */
-  getGroupMember(groupId) {
-    const sql = `
-      SELECT
-        g.userId, u.socketid, u.username, u.name, u.email, u.avatar, u.intro, u.balance
-      FROM group_user_relation AS g
-      INNER JOIN user_info AS u
-      ON g.userId = u.id WHERE groupId = ?`;
-    return query(sql, groupId);
   }
 
   /**
@@ -71,5 +57,21 @@ export class GroupChatService {
         p.${this.COLUMNS.time} > ? AND
         p.${this.COLUMNS.groupId} = ?;`;
     return query(sql, data);
+  }
+
+  async getLastRainGroupMsg(limit: number): Promise<GroupMessage[]> {
+    const sql = `
+      SELECT ${this.COLUMNS.fromUser}
+      FROM (
+        SELECT
+          ${this.COLUMNS.fromUser},
+          max(${this.COLUMNS.time}) as ${this.COLUMNS.time}
+        FROM ${this.RAIN_G_TNAME}
+        GROUP BY ${this.COLUMNS.fromUser}
+      ) as t1
+      WHERE ${this.COLUMNS.fromUser} != 0
+      ORDER BY ${this.COLUMNS.time} DESC LIMIT ?;`;
+    const msg: GroupMessage[] = await query(sql, limit);
+    return msg;
   }
 }
