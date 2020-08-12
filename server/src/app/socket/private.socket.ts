@@ -40,18 +40,17 @@ export const getOnePrivateChatMessages = async (io, socket, data, cbFn) => {
   }
 };
 
-/**
- * Add as contact
- * @param  userId    Local user
- * @param  fromUser  Friends of the local user (the other party)
- */
-export const addAsTheContact = async (io, socket, data, cbFn) => {
+export const addAsTheContact = async (io, socket, { fromUser }, cbFn) => {
   try {
-    const { userId, fromUser } = data;
+    const userId: number = socket.request.id;
     const { userService } = ServicesContext.getInstance();
-    await userService.addFriendEachOther(userId, fromUser, now());
+
     const userInfo: User = await userService.getUserInfoById(fromUser);
-    console.log("Socket => AddAsTheContact | data:", data, "time:", nowDate());
+    const isFriend = await userService.isFriend(userId, fromUser);
+    if (!isFriend) {
+      await userService.addFriendEachOther(userId, fromUser, now());
+      console.log("Socket => AddAsTheContact | data:", { userId, fromUser }, "time:", nowDate());
+    }
     cbFn(userInfo);
   } catch (error) {
     console.log("Socket => AddAsTheContact | Error:", error.message);

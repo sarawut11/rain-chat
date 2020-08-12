@@ -255,7 +255,7 @@ export class UserService {
   }
 
   // Check if the user id is a friend of the local user by checking the user id. If yes, return userId and remark.
-  async isFriend(userId, fromUser): Promise<boolean> {
+  async isFriend(userId: number, fromUser: number): Promise<boolean> {
     const sql = `
       SELECT * FROM ${this.USER_REL_TABLE}
       WHERE
