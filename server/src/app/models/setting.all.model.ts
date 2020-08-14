@@ -17,6 +17,7 @@ export class AllSetting {
 
   public COST_PER_IMPRESSION_RAIN_ADS: number;
   public COST_PER_IMPRESSION_STATIC_ADS: number;
+  public MINIMUM_IMP_PURCHASE: number;
 
   public ADS_REV_COMPANY_SHARE: number;
   public ADS_REV_IMP_REVENUE: number;

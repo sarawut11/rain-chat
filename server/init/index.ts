@@ -82,6 +82,7 @@ const addSettings = async () => {
 
   await addSetting("COST_PER_IMPRESSION_RAIN_ADS", "0.0005", "DOUBLE");
   await addSetting("COST_PER_IMPRESSION_STATIC_ADS", "0.001", "DOUBLE");
+  await addSetting("MINIMUM_IMP_PURCHASE", "20000", "INT");
 
   await addSetting("ADS_REV_COMPANY_SHARE", "0.25", "DOUBLE");
   await addSetting("ADS_REV_IMP_REVENUE", "0.75", "DOUBLE");
