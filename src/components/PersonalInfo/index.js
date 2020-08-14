@@ -26,7 +26,6 @@ class PersonalInfo extends Component {
     window.socket.emit(
       'deleteContact',
       {
-        fromUser: myInfo.userId,
         toUser: userInfo.userId,
       },
       res => {

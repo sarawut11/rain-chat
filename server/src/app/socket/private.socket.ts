@@ -79,13 +79,14 @@ export const getUserInfo = async (io, socket, userId, cbFn) => {
   }
 };
 
-export const deleteContact = async (io, socket, { fromUser, toUser }, cbFn) => {
+export const deleteContact = async (io, socket, { toUser }, cbFn) => {
   try {
+    const userId: number = socket.request.id;
     const { userService } = ServicesContext.getInstance();
-    await userService.deleteContact(fromUser, toUser);
+    await userService.deleteContact(userId, toUser);
     const socketIds = await userService.getSocketid(toUser);
-    socketServer.emitTo(socketIds.join(","), socketEventNames.BeDeleted, fromUser);
-    console.log(`Socket => DeleteContact | userId:${fromUser}, toUser:${toUser}, time:${nowDate()}`);
+    socketServer.emitTo(socketIds.join(","), socketEventNames.BeDeleted, userId);
+    console.log(`Socket => DeleteContact | userId:${userId}, toUser:${toUser}, time:${nowDate()}`);
     cbFn({ code: 200, data: "delete contact successfully" });
   } catch (error) {
     console.log("Socket => Delete Contact | Error:", error.message);
