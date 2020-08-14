@@ -70,7 +70,6 @@ export default class Chat {
         window.socket.emit(
           'getOnePrivateChatMessages',
           {
-            userId,
             toUser: chatId,
             start,
             count,
