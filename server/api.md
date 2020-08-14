@@ -529,6 +529,7 @@
   {
     success: true/false,
     message: "Success or Failed Message",
+    minImpPurchase: // Minimum impressions to purchase
     price: // vitae token cost per impression
   }
   ```

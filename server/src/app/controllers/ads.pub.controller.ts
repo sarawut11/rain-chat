@@ -343,6 +343,16 @@ export const purchaseAds = async (ctx: ParameterizedContext, next) => {
       return;
     }
 
+    const minImpPurchase = await settingService.getSettingValue(Setting.KEY.MINIMUM_IMP_PURCHASE);
+    if (impressions < minImpPurchase) {
+      console.log(`Purchase Ads => Failed | Insufficient Impressions | username:${checkResult.userInfo.username}`);
+      ctx.body = {
+        success: false,
+        message: "Insufficient impressions."
+      };
+      return;
+    }
+
     const savedImpcost = await impcostService.getPrice(existingAds.userId);
     if (savedImpcost === undefined) {
       console.log(`Purchase Ads => Failed | Hacked | username:${checkResult.userInfo.username}`);
@@ -462,6 +472,7 @@ export const getCostPerImpression = async (ctx: ParameterizedContext, next) => {
     // $1 === 2000 | 1000 impressions
     // 25% -> Company Revenue
     // 75% -> Buy Impressions
+    const minImpPurchase: number = await settingService.getSettingValue(Setting.KEY.MINIMUM_IMP_PURCHASE);
     const costPerImpRainAds: number = await settingService.getSettingValue(Setting.KEY.COST_PER_IMPRESSION_RAIN_ADS);
     const costPerImpStaticAds: number = await settingService.getSettingValue(Setting.KEY.COST_PER_IMPRESSION_STATIC_ADS);
     const adsRevImpRevenue: number = await settingService.getSettingValue(Setting.KEY.ADS_REV_IMP_REVENUE);
@@ -475,6 +486,7 @@ export const getCostPerImpression = async (ctx: ParameterizedContext, next) => {
     ctx.body = {
       success: true,
       message: "Success",
+      minImpPurchase,
       price: vitaePerImp
     };
   } catch (error) {
