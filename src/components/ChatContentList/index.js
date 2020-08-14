@@ -89,7 +89,6 @@ class ChatContentList extends Component {
       this._chat
         .lazyLoadPrivateChatMessages({
           chats,
-          userId: this.props.userInfo.id,
           chatId,
           start: ChatContent.length + 1,
           count: 20,

@@ -29,7 +29,7 @@ export default class PrivateChat extends Component {
 
   sendMessage = async (inputMsg = '', attachments = []) => {
     if (inputMsg.trim() === '' && attachments.length === 0) return;
-    const { userId, avatar, name } = this._userInfo;
+    const { userId } = this._userInfo;
     const {
       allPrivateChats,
       homePageList,
@@ -37,10 +37,7 @@ export default class PrivateChat extends Component {
       addPrivateChatMessages,
     } = this.props;
     const data = {
-      fromUser: userId, // Own id
       toUser: this.friendId, // Other's id
-      avatar, // Own avatar
-      name,
       message: inputMsg === '' ? `[${attachments[0].type || 'file'}]` : `${inputMsg}`, // Message content
       attachments, // attatchment
       // time: Date.parse(new Date()) / 1000 //
