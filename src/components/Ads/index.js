@@ -30,6 +30,7 @@ import {
   Empty,
   Badge,
   Statistic,
+  message,
 } from 'antd';
 import {
   EditOutlined,
@@ -74,6 +75,24 @@ class ImpressionsContent extends Component {
     impressions: 0,
   };
 
+  onOk = async () => {
+    const { pointer, item } = this.props;
+    if (Number(this.state.impressions) < Number(pointer.state.minImpPurchase)) {
+      message.error(`Minimum Impressions is ${pointer.state.minImpPurchase}`);
+      return;
+    }
+    await pointer.onPurchase(item);
+    this.setState({ impressions: 0 });
+    pointer.setState({ impressions: 0 });
+  };
+
+  onCancel = async () => {
+    const { pointer } = this.props;
+    this.setState({ impressions: 0 });
+    pointer.setState({ impressions: 0 });
+    pointer.hideImpressionModal();
+  };
+
   onImpressionsChange = value => {
     const { pointer } = this.props;
     this.setState({ impressions: value });
@@ -81,26 +100,38 @@ class ImpressionsContent extends Component {
   };
 
   render() {
-    // console.log('ImpressionsContent', this);
+    console.log('ImpressionsContent', this);
     const { pointer } = this.props;
     const amount = getAmount(this.state.impressions, pointer.state.price);
+    const { minImpPurchase, price } = pointer.state;
+    const minPrice = minImpPurchase * price;
     // console.log(amount, this.state.impressions, pointer.state.price);
 
     return (
       <div>
-        <Form style={{ marginTop: '20px' }} labelCol={{ span: 7 }} wrapperCol={{ span: 17 }}>
-          <Form.Item label="Impressions" name="impression-form">
-            <InputNumber
-              name="impressions"
-              onChange={this.onImpressionsChange}
-              style={{ width: '100%' }}
-            />
-          </Form.Item>
+        <Modal
+          visible={this.props.visible}
+          title="Please input impressions"
+          onOk={this.onOk}
+          onCancel={this.onCancel}
+        >
+          <div style={{ textAlign: 'center' }}>
+            Minimum Impressions: {minImpPurchase} ({minPrice.toFixed(8)} Vitae)
+          </div>
+          <Form style={{ marginTop: '20px' }} labelCol={{ span: 7 }} wrapperCol={{ span: 17 }}>
+            <Form.Item label="Impressions" name="impression-form">
+              <InputNumber
+                name="impressions"
+                onChange={this.onImpressionsChange}
+                style={{ width: '100%' }}
+              />
+            </Form.Item>
 
-          <Form.Item label="Amount">
-            <Input value={amount} disabled />
-          </Form.Item>
-        </Form>
+            <Form.Item label="Amount">
+              <Input value={amount} disabled />
+            </Form.Item>
+          </Form>
+        </Modal>
       </div>
     );
   }
@@ -115,7 +146,10 @@ class Ads extends Component {
       editAdsVisible: false,
       impressions: 0,
       price: 0,
+      // eslint-disable-next-line react/no-unused-state
+      minImpPurchase: 20000,
       loading: false,
+      currentItem: {},
     };
   }
 
@@ -169,18 +203,11 @@ class Ads extends Component {
 
   showImpressionModal = item => {
     const pointer = this;
-    confirm({
-      title: 'Please input impressions',
-      icon: <ExclamationCircleOutlined />,
-      content: <ImpressionsContent pointer={pointer} />,
-      async onOk() {
-        await pointer.onPurchase(item);
-        pointer.setState({ impressions: 0 });
-      },
-      onCancel() {
-        pointer.setState({ impressions: 0 });
-      },
-    });
+    this.setState({ impContentVisible: true, currentItem: item });
+  };
+
+  hideImpressionModal = () => {
+    this.setState({ impContentVisible: false });
   };
 
   showImpressionsInput = item => async () => {
@@ -353,11 +380,15 @@ class Ads extends Component {
 
   onPurchase = async item => {
     const { id } = item;
-    const { impressions, price } = this.state;
+    const { impressions, price, minImpPurchase } = this.state;
     try {
       const data = new FormData();
       data.append('impressions', impressions);
       data.append('costPerImp', price);
+      if (Number(impressions) < Number(minImpPurchase)) {
+        message.error(`Minimum Impressions is ${minImpPurchase}`);
+        return;
+      }
       const amount = getAmount(this.state.impressions, this.state.price);
       // console.log(amount, this.state.impressions, this.state.price);
       data.append('expectAmount', amount);
@@ -369,6 +400,7 @@ class Ads extends Component {
         notification.success({
           message: res.message,
         });
+        this.hideImpressionModal();
         this.showImpressionsInput(item)();
       } else {
         notification.error({
@@ -376,7 +408,7 @@ class Ads extends Component {
         });
       }
     } catch (error) {
-      // console.log(error);
+      console.log(error);
       notification.error({
         message: 'Purchase failed.',
       });
@@ -389,7 +421,7 @@ class Ads extends Component {
       const res = await Request.axios('get', `/api/v1/campaign/impcost?type=${type}`);
 
       if (res && res.success) {
-        this.setState({ price: res.price });
+        this.setState({ price: res.price, minImpPurchase: res.minImpPurchase });
       } else {
         notification.error({
           message: res.message,
@@ -712,7 +744,14 @@ class Ads extends Component {
   };
 
   render() {
-    const { createAdsVisible, editAdsVisible, editingAds, loading } = this.state;
+    const {
+      createAdsVisible,
+      editAdsVisible,
+      editingAds,
+      loading,
+      impContentVisible,
+      currentItem,
+    } = this.state;
     const { ads, createAdsAction, editAdsAction, userInfo } = this.props;
 
     const isModerator = userInfo.role === 'MODERATOR';
@@ -727,6 +766,10 @@ class Ads extends Component {
           createAdsAction={createAdsAction}
           ads={this.props.ads}
         />
+
+        {impContentVisible && (
+          <ImpressionsContent pointer={this} visible={impContentVisible} item={currentItem} />
+        )}
 
         {editAdsVisible && (
           <CreateAds
