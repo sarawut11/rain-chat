@@ -141,7 +141,7 @@ class ChatContentList extends Component {
       }
       const time = toNormalTime(item.time);
       const attachments = item.attachments;
-      if (item.tip) {
+      if (item.tip || item.fromUser === 1) {
         return (
           <li className="tip" key={index}>
             {item.message}
@@ -157,7 +157,6 @@ class ChatContentList extends Component {
             name={item.name}
             username={item.username}
             time={time}
-            github_id={item.github_id}
             clickImage={this.clickImage}
             shouldScrollIntoView={!(this._scrollHeight && this._loadingNewMessages)}
             clickAvatar={() => clickAvatar(item.fromUser)}

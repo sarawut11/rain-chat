@@ -1,12 +1,14 @@
 import { ServicesContext } from "@context";
 import { socketServer, socketEventNames, getRain } from "@sockets";
 import { Ads, User, InnerTransaction, AllSetting, GroupMessage } from "@models";
+import { now, roundPrice } from "@utils";
 
 export class RainContext {
   static instance: RainContext;
   static usersToRainAds: number[];
 
   readonly COMPANY_STOCKPILE_USERID: number = Number(process.env.COMPANY_STOCKPILE_USERID);
+  readonly RAIN_GROUP_ID = process.env.RAIN_GROUP_ID;
 
   settings: AllSetting;
 
@@ -108,7 +110,7 @@ export class RainContext {
       }
       console.log(`Rain Room Ads => Rain Rewards | adsId:${ads.id}, reward:${rainReward}`);
 
-      await RainContext.instance.rainUsers(RainContext.usersToRainAds, rainReward);
+      await RainContext.instance.rainUsers(RainContext.usersToRainAds, rainReward, rainReward * RainContext.usersToRainAds.length);
       await adsService.campaignAds(ads.id, RainContext.usersToRainAds.length);
 
       // Send updated impression info to ads' creator
@@ -164,14 +166,14 @@ export class RainContext {
   }
 
   // ========== Common Rain Section ========== //
-  async rainUsers(userIds: number[], rainReward: number) {
+  async rainUsers(userIds: number[], rainReward: number, totalAmount: number) {
     if (userIds.length === 0) {
       console.log("Rain Users => Failed | No users to rain");
       return;
     }
 
     // Update DB
-    const { userService, innerTranService } = ServicesContext.getInstance();
+    const { userService, innerTranService, groupChatService } = ServicesContext.getInstance();
     const normalReward = rainReward / 2;
     const popReward = rainReward / 2;
     await userService.rainUsers(userIds, normalReward, popReward);
@@ -181,6 +183,19 @@ export class RainContext {
     const users: User[] = await userService.getUsersByUserIds(userIds);
     users.forEach(user => getRain(user, normalReward));
     console.log(`Rain Users => Rained | ${userIds.length} users, reward:${rainReward}`);
+
+    await groupChatService.saveGroupMsg({
+      fromUser: 1,
+      groupId: this.RAIN_GROUP_ID,
+      message: `Rained ${totalAmount.toFixed(8)} Vitae.`,
+      time: now(),
+      attachments: "",
+    });
+    socketServer.broadcastChannel(this.RAIN_GROUP_ID, socketEventNames.GetGroupMsg, {
+      message: `Rained ${totalAmount.toFixed(8)} Vitae.`,
+      groupId: this.RAIN_GROUP_ID,
+      tip: "rain",
+    });
 
     await this.popRain();
   }
@@ -210,11 +225,11 @@ export class RainContext {
   async rainUsersByLastActivity(amount) {
     const { groupChatService } = ServicesContext.getInstance();
     const lastRainMsgs: GroupMessage[] = await groupChatService.getLastRainGroupMsg(this.settings.POP_RAIN_LAST_POST_USER);
-    amount /= lastRainMsgs.length;
+    const reward = amount / lastRainMsgs.length;
     const userIds: number[] = [];
     lastRainMsgs.forEach(msg => userIds.push(msg.fromUser));
-    console.log(`Rain Users => Raining ${userIds.length} users with ${amount} rewards for each`);
-    this.rainUsers(userIds, amount);
+    console.log(`Rain Users => Raining ${userIds.length} users with ${reward} rewards for each`);
+    this.rainUsers(userIds, reward, amount);
   }
 
 }
