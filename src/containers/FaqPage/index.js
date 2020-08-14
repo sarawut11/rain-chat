@@ -27,6 +27,16 @@ class LogIn extends Component {
             <Title level={2}>How the Chat Works</Title>
 
             <Paragraph>
+              <ul>
+                <li>Rain is divided equally among the last 200 users to post in the Rain Chat.</li>
+              </ul>
+              <Title level={3}>Free Users</Title>
+              <ul>
+                <li>
+                  May only post once per hour. This means you can miss a lot of rain so upgrade as
+                  soon as you can via the settings tab.
+                </li>
+              </ul>
               <Title level={3}>Recruiting</Title>
               <ul>
                 <li>
