@@ -84,6 +84,7 @@ export default class SignUp extends Component {
   onFinish = async values => {
     // console.log('\n\n---   on Finish   ----\n\n', values);
     // this.props.setValue(values);
+    localStorage.removeItem('userInfo');
     this.setState({ registerValues: { ...values }, loadingSubmit: true });
     await this.sendEmailConfirmRequest(values);
     this.setState({ loadingSubmit: false });
