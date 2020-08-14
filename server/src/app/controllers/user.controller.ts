@@ -5,17 +5,27 @@ import { updateProfileInfoSocket } from "@sockets";
 import { now, uploadFile, deleteFile } from "@utils";
 
 export const getProfileInfo = async (ctx, next) => {
-  const { username } = ctx.params;
-  const { userService } = ServicesContext.getInstance();
+  try {
+    const { username } = ctx.params;
+    const { userService } = ServicesContext.getInstance();
 
-  const userInfo: User = await userService.findUserByUsername(username);
-  if (userInfo === undefined) {
-    console.log(`Profile Info => Failed | Invalid username:${username}`);
-    ctx.body = {
-      success: false,
-      message: "Username does not exist."
-    };
-  } else {
+    if (username !== ctx.state.user.username) {
+      console.log(`Profile Info => Failed | Invalid username:${username}`);
+      ctx.body = {
+        success: false,
+        message: "Username does not matched."
+      };
+      return;
+    }
+    const userInfo: User = await userService.findUserByUsername(username);
+    if (userInfo === undefined) {
+      console.log(`Profile Info => Failed | Invalid username:${username}`);
+      ctx.body = {
+        success: false,
+        message: "Username does not exist."
+      };
+      return;
+    }
     const myRefs = await userService.getMyRefs(userInfo.id);
     const { id, name, email, balance, intro, avatar, refcode } = userInfo;
     ctx.body = {
@@ -32,6 +42,12 @@ export const getProfileInfo = async (ctx, next) => {
         myRefs,
       },
     };
+  } catch (error) {
+    console.log(`Profile Info => Failed | Error:${error.message}`);
+    ctx.body = {
+      success: false,
+      message: error.message
+    };
   }
 };
 
@@ -42,6 +58,14 @@ export const updateProfileInfo = async (ctx, next) => {
     const { name, intro } = ctx.request.body;
     const { userService } = ServicesContext.getInstance();
 
+    if (username !== ctx.state.user.username) {
+      console.log(`Profile Update => Failed | Invalid username:${username}`);
+      ctx.body = {
+        success: false,
+        message: "Username does not matched."
+      };
+      return;
+    }
     const userInfo: User = await userService.findUserByUsername(username);
     if (userInfo === undefined) {
       console.log("Profile Update => Failed | Unknown user");
