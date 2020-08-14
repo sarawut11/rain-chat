@@ -1,24 +1,32 @@
 import * as socketIo from "socket.io";
-import { User } from "@models";
+import { User, PrivateMessage } from "@models";
 import { ServicesContext } from "@context";
 import { socketServer, socketEventNames } from "@sockets";
 import { now, nowDate } from "@utils";
 
-export const sendPrivateMsg = async (io, socket, data, cbFn) => {
+export const sendPrivateMsg = async (io, socket, { toUser, message, attachments }, cbFn) => {
   try {
+    const userId: number = socket.request.id;
     const { chatService, userService } = ServicesContext.getInstance();
 
-    if (!data) return;
-    data.time = Date.parse(new Date().toString()) / 1000;
-    await chatService.savePrivateMsg({
-      ...data,
-      attachments: JSON.stringify(data.attachments),
-    });
+    const isFriend: boolean = await userService.isFriend(userId, toUser);
+    if (!isFriend) return;
+    if (!message) return;
+    const fromUser: User = await userService.findUserById(userId);
+    const msgData = {
+      fromUser: userId,
+      avatar: fromUser.avatar,
+      toUser,
+      message,
+      time: now(),
+      attachments: JSON.stringify(attachments),
+    };
+    await chatService.savePrivateMsg(msgData);
 
-    const user: User = await userService.findUserById(data.toUser);
-    socketServer.emitTo(user.socketid, socketEventNames.GetPrivateMsg, data);
-    console.log("Socket => SendPrivateMsg | data:", data, "time:", nowDate());
-    cbFn(data);
+    const user: User = await userService.findUserById(toUser);
+    socketServer.emitTo(user.socketid, socketEventNames.GetPrivateMsg, msgData);
+    console.log("Socket => SendPrivateMsg | data:", msgData, "time:", nowDate());
+    cbFn(msgData);
   } catch (error) {
     console.log("Socket => SendPrivateMsg | Error:", error.message);
     io.to(socket.id).emit("error", { code: 500, message: error.message });

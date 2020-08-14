@@ -70,7 +70,7 @@ class GroupChat extends Component {
       // console.log('\n\n---   joinGroup function   ---\n\n', this);
       const response = await request.socketEmitAndGetResponse(
         'joinGroup',
-        { userInfo: this.props.userInfo, groupId: this.chatId, userId: this.props.userInfo.id },
+        { groupId: this.chatId },
         () => {
           notification('Add group failed', 'error', 1.5);
           this.setState({ disableJoinButton: false });
