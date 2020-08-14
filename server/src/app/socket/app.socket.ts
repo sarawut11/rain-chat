@@ -82,8 +82,8 @@ const initServer = server => {
       .on("getUserInfo", async (userID, fn) => {
         await privateSockets.getUserInfo(io, socket, userID, fn);
       })
-      .on("deleteContact", async ({ fromUser, toUser }, fn) => {
-        await privateSockets.deleteContact(io, socket, { fromUser, toUser }, fn);
+      .on("deleteContact", async (data, fn) => {
+        await privateSockets.deleteContact(io, socket, data, fn);
       })
 
       // Group chat
