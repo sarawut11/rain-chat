@@ -184,15 +184,16 @@ export class RainContext {
     users.forEach(user => getRain(user, normalReward));
     console.log(`Rain Users => Rained | ${userIds.length} users, reward:${rainReward}`);
 
+    const message = `It Rained ${(totalAmount / 2).toFixed(8)} Vitae.`;
     await groupChatService.saveGroupMsg({
       fromUser: 1,
       groupId: this.RAIN_GROUP_ID,
-      message: `Rained ${totalAmount.toFixed(8)} Vitae.`,
+      message,
       time: now(),
       attachments: "",
     });
     socketServer.broadcastChannel(this.RAIN_GROUP_ID, socketEventNames.GetGroupMsg, {
-      message: `Rained ${totalAmount.toFixed(8)} Vitae.`,
+      message,
       groupId: this.RAIN_GROUP_ID,
       tip: "rain",
     });
