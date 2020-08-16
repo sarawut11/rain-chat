@@ -20,6 +20,7 @@ export class Transaction {
   };
 
   public static readonly TYPE = {
+    UNKNOWN: -1,
     ADS: 0,
     MEMBERSHIP: 1,
     VITAE_RAIN: 2, // Send-Vitae Purchase
