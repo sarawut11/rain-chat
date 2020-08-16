@@ -37,7 +37,7 @@ class ChatHeader extends Component {
           )}
           {title}
         </div>
-        {groupId && groupId === 'vitae-rain-group' ? (
+        {/* {groupId && groupId === 'vitae-rain-group' ? (
           <VitaeToRain />
         ) : (
           showShareIcon && (
@@ -45,6 +45,14 @@ class ChatHeader extends Component {
               <use xlinkHref="#icon-share" />
             </svg>
           )
+        )} */}
+
+        {groupId && groupId === 'vitae-rain-group' && <VitaeToRain />}
+
+        {showShareIcon && (
+          <svg onClick={this._showShareModal} className="icon shareIcon" aria-hidden="true">
+            <use xlinkHref="#icon-share" />
+          </svg>
         )}
         <svg onClick={this._clickChatInfo} className="icon information-icon" aria-hidden="true">
           <use xlinkHref={icon} />
