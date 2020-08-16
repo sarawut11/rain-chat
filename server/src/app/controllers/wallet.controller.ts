@@ -27,6 +27,15 @@ export const walletNotify = async (ctx, next) => {
 
     if (txInfo.confirmations > 0) { // Confirmed
       if (txInfo.details[0].category === WalletNotifyDetail.CATEGORY.receive) {
+        const confirmedTran = await transactionService.getTranByTxId(txid);
+        if (confirmedTran !== undefined) {
+          ctx.body = {
+            success: true,
+            message: "Already Confirmed"
+          };
+          return;
+        }
+
         const receiveAddress = txInfo.details[0].address;
         if (receiveAddress === COMPANY_RAIN_ADDRESS) {
           console.log("Transaction Notify => Send Vitae To Rain | Amount:", txInfo.amount);
@@ -60,6 +69,7 @@ export const walletNotify = async (ctx, next) => {
         const tranInfo: Transaction = await transactionService.getLastRequestedTransaction(userInfo.id);
         if (tranInfo === undefined) {
           console.log(`Transaction Notify => Failed | Unknown deposit from user:${userInfo.id}, txId:${txid}`);
+          await transactionService.createUnknownTransaction(userInfo.id, txInfo.amount, txid, txInfo.timereceived);
           await userService.addBalance(userInfo.id, txInfo.amount);
           const updatedUser: User = await userService.findUserById(userInfo.id);
           unknownDepositSocket(updatedUser, txInfo.amount);

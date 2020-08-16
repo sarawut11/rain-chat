@@ -46,6 +46,24 @@ export class TransactionService {
     return result;
   }
 
+  async createUnknownTransaction(userId: number, paidAmount: number, txId: string, confirmTime: number): Promise<DefaultModel> {
+    const sql = `
+      INSERT INTO ${this.TABLE_NAME}(
+        ${this.columns.userId},
+        ${this.columns.transactionId},
+        ${this.columns.type},
+        ${this.columns.status},
+        ${this.columns.expectAmount},
+        ${this.columns.paidAmount},
+        ${this.columns.time},
+        ${this.columns.confirmTime}
+      )
+      VALUES (?,?,?,?,?,?,?,?);
+    `;
+    const result: DefaultModel = await query(sql, [userId, txId, Transaction.TYPE.UNKNOWN, Transaction.STATUS.CONFIRMED, 0, paidAmount, confirmTime, confirmTime]);
+    return result;
+  }
+
   expireTransactionRequest(tranId: number) {
     const sql = `
       UPDATE ${this.TABLE_NAME}
@@ -179,5 +197,16 @@ export class TransactionService {
         ${this.columns.status} = ?;`;
     const trans: Transaction[] = await query(sql, [expireTime, Transaction.STATUS.REQUESTED]);
     return trans;
+  }
+
+  async getTranByTxId(txId: string): Promise<Transaction> {
+    const sql = `
+      SELECT * FROM ${this.TABLE_NAME}
+      WHERE
+        ${this.columns.transactionId} = ?;
+    `;
+    const trans: Transaction[] = await query(sql, txId);
+    if (trans.length === 0) return undefined;
+    return trans[0];
   }
 }
