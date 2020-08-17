@@ -238,6 +238,8 @@ class LogIn extends Component {
                   </ul>
                 </li>
 
+                <li>($5.00) is immediately rained in the Rain Chat Room</li>
+
                 <li>
                   Operations cost and upkeep ($4.99)
                   <ul>
