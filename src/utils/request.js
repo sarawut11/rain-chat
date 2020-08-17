@@ -6,9 +6,7 @@ export default class Request {
   static apiUrl = process.env.API_URL;
 
   static axiosConfigInit() {
-    if (process.env.NODE_ENV !== 'production') {
-      axios.defaults.baseURL = this.apiUrl;
-    }
+    axios.defaults.baseURL = this.apiUrl;
   }
 
   static async axios(method = 'get', url, params) {

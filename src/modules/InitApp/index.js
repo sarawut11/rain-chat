@@ -35,8 +35,7 @@ import request from '../../utils/request';
 
 class InitApp {
   constructor(props) {
-    this.WEBSITE_ADDRESS =
-      process.env.NODE_ENV === 'production' ? 'https://production_link' : request.apiUrl;
+    this.WEBSITE_ADDRESS = request.apiUrl;
     this._userInfo = JSON.parse(localStorage.getItem('userInfo'));
     this._hasCalledMe = false;
     this._browserNotification = new BrowserNotification();
