@@ -241,7 +241,7 @@ class Ads extends Component {
               <span>{walletAddress}</span> to complete the pending transaction.
               <p style={{ fontSize: 12 }}>
                 <br />
-                After payment is sent, it may take 10-30 minutes to confirm via the blockchain.
+                After payment is sent, it may take 10-60 minutes to confirm via the blockchain.
                 <br /> Please be patient.
               </p>
             </div>
@@ -256,7 +256,7 @@ class Ads extends Component {
               )}
               <p style={{ fontSize: 12 }}>
                 <br />
-                After payment is sent, it may take 10-30 minutes to confirm via the blockchain.
+                After payment is sent, it may take 10-60 minutes to confirm via the blockchain.
                 <br /> Please be patient.
               </p>
             </div>

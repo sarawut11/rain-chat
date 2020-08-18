@@ -226,7 +226,7 @@ class UserUpgrader extends Component {
             </p>
             <p style={{ fontSize: 12 }}>
               <br />
-              After payment is sent, it may take 10-30 minutes to confirm via the blockchain.
+              After payment is sent, it may take 10-60 minutes to confirm via the blockchain.
               <br /> Please be patient.
             </p>
           </div>
@@ -244,7 +244,7 @@ class UserUpgrader extends Component {
         </p>
         <p style={{ fontSize: 12 }}>
           <br />
-          After payment is sent, it may take 10-30 minutes to confirm via the blockchain.
+          After payment is sent, it may take 10-60 minutes to confirm via the blockchain.
           <br /> Please be patient.
         </p>
       </div>
