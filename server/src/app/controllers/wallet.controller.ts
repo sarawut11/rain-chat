@@ -82,17 +82,25 @@ export const walletNotify = async (ctx, next) => {
 
         if (txInfo.amount < tranInfo.expectAmount) {
           console.log(`Transaction Notify => Insufficient Amount | expectAmount:${tranInfo.expectAmount}, paidAmount:${txInfo.amount}, txId:${txid}`);
-          await transactionService.setInsufficientTransaction(txid, txInfo.amount, txInfo.timereceived, tranInfo);
+          // await transactionService.setInsufficientTransaction(txid, txInfo.amount, txInfo.timereceived, tranInfo);
+          await transactionService.createUnknownTransaction(userInfo.id, txInfo.amount, txid, txInfo.timereceived);
+          await userService.addBalance(userInfo.id, txInfo.amount);
+          const updatedUser: User = await userService.findUserById(userInfo.id);
+          unknownDepositSocket(updatedUser, txInfo.amount);
         } else {
           TransactionContext.getInstance().confrimTransactionRequest(tranInfo.id, txid, txInfo.amount, txInfo.timereceived);
           if (tranInfo.type === Transaction.TYPE.MEMBERSHIP) {
             console.log(`Transaction Notify => Membership Upgraded | username:${userInfo.username}, txId:${txid}`);
-            await confirmMembership(userInfo, txInfo.amount);
+            await confirmMembership(userInfo, tranInfo.expectAmount);
           } else if (tranInfo.type === Transaction.TYPE.ADS) {
             const details: TransactionDetail = JSON.parse(tranInfo.details);
             console.log(`Transaction Notify => Ads Purchased | username:${userInfo.username}, adsId:${details.adsId} txId:${txid}`);
-            await confirmAds(details.adsId, txInfo.amount, details.adsType, details.impressions, details.costPerImp);
+            await confirmAds(details.adsId, tranInfo.expectAmount, details.adsType, details.impressions, details.costPerImp);
           }
+
+          await userService.addBalance(userInfo.id, txInfo.amount - tranInfo.expectAmount);
+          const updatedUser: User = await userService.findUserById(userInfo.id);
+          unknownDepositSocket(updatedUser, txInfo.amount);
         }
       } else if (txInfo.details[0].category === WalletNotifyDetail.CATEGORY.send) {
         // Withdraw Notify
