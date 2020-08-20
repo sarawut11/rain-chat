@@ -86,7 +86,7 @@ export const walletNotify = async (ctx, next) => {
           await transactionService.createUnknownTransaction(userInfo.id, txInfo.amount, txid, txInfo.timereceived);
           await userService.addBalance(userInfo.id, txInfo.amount);
           const updatedUser: User = await userService.findUserById(userInfo.id);
-          unknownDepositSocket(updatedUser, txInfo.amount);
+          updateBalanceSocket(updatedUser);
         } else {
           TransactionContext.getInstance().confrimTransactionRequest(tranInfo.id, txid, txInfo.amount, txInfo.timereceived);
           if (tranInfo.type === Transaction.TYPE.MEMBERSHIP) {
@@ -100,7 +100,7 @@ export const walletNotify = async (ctx, next) => {
 
           await userService.addBalance(userInfo.id, txInfo.amount - tranInfo.expectAmount);
           const updatedUser: User = await userService.findUserById(userInfo.id);
-          unknownDepositSocket(updatedUser, txInfo.amount);
+          updateBalanceSocket(updatedUser);
         }
       } else if (txInfo.details[0].category === WalletNotifyDetail.CATEGORY.send) {
         // Withdraw Notify
