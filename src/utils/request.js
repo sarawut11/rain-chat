@@ -3,7 +3,7 @@ import axios from 'axios';
 import { notification } from 'antd';
 
 export default class Request {
-  static apiUrl = process.env.API_URL;
+  static apiUrl = 'https://vitaerain.chat';
 
   static axiosConfigInit() {
     axios.defaults.baseURL = this.apiUrl;
