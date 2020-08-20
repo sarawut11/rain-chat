@@ -222,7 +222,7 @@ class UserUpgrader extends Component {
             </p>
             <p>
               Send <span>{expectAmount - paidAmount}</span> Vitae to the Vitae address{' '}
-              <span>{pendingTranWalletAddress}</span>.
+              <span>{pendingTranWalletAddress}</span>
             </p>
             <p style={{ fontSize: 12 }}>
               <br />
@@ -240,7 +240,7 @@ class UserUpgrader extends Component {
           You have to pay <span>${usdPrice}</span> in Vitae.
         </p>
         <p>
-          Send <span>{vitaePrice}</span> Vitae to the Vitae address <span>{walletAddress}</span>.
+          Send <span>{vitaePrice}</span> Vitae to the Vitae address <span>{walletAddress}</span>
         </p>
         <p style={{ fontSize: 12 }}>
           <br />

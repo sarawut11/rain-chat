@@ -235,7 +235,7 @@ class Ads extends Component {
         if (status === 4) {
           content = (
             <div className="pending-tran-modal-content">
-              You have to pay <span>{expectAmount}</span> Vitae to <span>{walletAddress}</span>. But
+              You have to pay <span>{expectAmount}</span> Vitae to <span>{walletAddress}</span> But
               you sent only <span>{paidAmount}</span> Vitae. Please send the rest{' '}
               <span>{expectAmount - paidAmount}</span> to wallet address{' '}
               <span>{walletAddress}</span> to complete the pending transaction.
@@ -250,7 +250,7 @@ class Ads extends Component {
         } else if (adsId && adsId == item.id) {
           content = (
             <div className="pending-tran-modal-content">
-              You have to pay <span>{expectAmount}</span> Vitae to <span>{walletAddress}</span>.{' '}
+              You have to pay <span>{expectAmount}</span> Vitae to <span>{walletAddress}</span>{' '}
               {expireIn && expireIn > 0 && (
                 <Countdown title="Time left" value={Date.now() + expireIn} format="mm:ss:SSS" />
               )}
