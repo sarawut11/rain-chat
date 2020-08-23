@@ -1,19 +1,11 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const merge = require('webpack-merge');
 const path = require('path');
-const dotenv = require('dotenv');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const webpack = require('webpack');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const commonConfig = require('./webpack.common.config.js');
-
-const env = dotenv.config().parsed;
-// reduce it to a nice object, the same as before
-const envKeys = Object.keys(env).reduce((prev, next) => {
-  prev[`process.env.${next}`] = JSON.stringify(env[next]);
-  return prev;
-}, {});
 
 module.exports = merge(commonConfig, {
   mode: 'development',
@@ -55,9 +47,5 @@ module.exports = merge(commonConfig, {
     compress: true,
     stats: 'errors-only', // Output only when an error occurs
   },
-  plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new ProgressBarPlugin(),
-    new webpack.DefinePlugin(envKeys),
-  ],
+  plugins: [new webpack.HotModuleReplacementPlugin(), new ProgressBarPlugin()],
 });

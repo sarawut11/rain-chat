@@ -7,19 +7,12 @@ const EMAIL_PATH: string = process.env.EMAIL_PATH;
 const HOST: string = process.env.HOST;
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: process.env.MAIL_HOST,
+  port: Number(process.env.MAIL_PORT),
   auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
   },
-  tls: { rejectUnauthorized: false }
-  // ==== Outlook config
-  // host: process.env.MAIL_HOST,
-  // port: Number(process.env.MAIL_PORT), // port for secure SMTP
-  // auth: {
-  //   user: process.env.MAIL_USER,
-  //   pass: process.env.MAIL_PASS,
-  // },
 });
 
 export const sendMail = async (mailPath: string, { email, subject, data }: {
@@ -34,8 +27,8 @@ export const sendMail = async (mailPath: string, { email, subject, data }: {
   try {
     mailPath = path.join(EMAIL_PATH, mailPath);
     let html = (await fs.readFileSync("." + mailPath)).toString();
-    html = html.replace(/{{HOST}}/g, `http://${HOST}`);
-    html = html.replace(/{{EMAIL_PATH}}/g, `http://${path.join(HOST, EMAIL_PATH)}`);
+    html = html.replace(/{{HOST}}/g, `https://${HOST}`);
+    html = html.replace(/{{EMAIL_PATH}}/g, `https://${path.join(HOST, EMAIL_PATH)}`);
     html = html.replace(/{{COPYRIGHT_YEAR}}/g, moment().utc().year().toString());
 
     if (data.username !== undefined) html = html.replace(/{{USERNAME}}/g, data.username);
