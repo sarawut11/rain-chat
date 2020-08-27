@@ -11,7 +11,6 @@ export const socketEventNames = {
   // Group Chat
   SendPrivateMsg: "sendPrivateMsg",
   GetPrivateMsg: "getPrivateMsg",
-  GetOnePrivateChatMessages: "getOnePrivateChatMessages",
   AddAsContact: "addAsTheContact",
   GetUserInfo: "getUserInfo",
   DeleteContact: "deleteContact",
@@ -21,7 +20,6 @@ export const socketEventNames = {
   // Private Message
   SendGroupMsg: "sendGroupMsg",
   GetGroupMsg: "getGroupMsg",
-  GetOneGroupMessages: "getOneGroupMessages",
   GetOneGroupItem: "getOneGroupItem",
   CreateGroup: "createGroup",
   UpdateGroupInfo: "updateGroupInfo",

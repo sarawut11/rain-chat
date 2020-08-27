@@ -33,22 +33,6 @@ export const sendPrivateMsg = async (io, socket, { toUser, message, attachments 
   }
 };
 
-export const getOnePrivateChatMessages = async (io, socket, data, cbFn) => {
-  try {
-    const userId = socket.request.id;
-    const { chatService } = ServicesContext.getInstance();
-    const { toUser, start, count } = data;
-
-    const RowDataPacket = await chatService.getPrivateDetail(userId, toUser, start - 1, count);
-    const privateMessages = JSON.parse(JSON.stringify(RowDataPacket));
-    console.log("Socket => GetOnePrivateChatMessages | data:", data, "time:", nowDate());
-    cbFn(privateMessages);
-  } catch (error) {
-    console.log("Socket => GetOnePrivateChatMessages | Error:", error.message);
-    io.to(socket.id).emit("error", { code: 500, message: error.message });
-  }
-};
-
 export const addAsTheContact = async (io, socket, { fromUser }, cbFn) => {
   try {
     const userId: number = socket.request.id;

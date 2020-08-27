@@ -44,27 +44,6 @@ export const sendGroupMsg = async (io, socket, data: GroupMessage, cbFn) => {
   }
 };
 
-// get group messages in a group;
-export const getOneGroupMessages = async (io, socket, { groupId, start, count }, cbfn) => {
-  try {
-    const userId: number = socket.request.id;
-    const { groupChatService, groupService } = ServicesContext.getInstance();
-    const isInGroup = await groupService.isInGroup(userId, groupId);
-    if (!isInGroup) return;
-    const RowDataPacket = await groupChatService.getGroupMsg(
-      groupId,
-      start - 1,
-      count,
-    );
-    const groupMessages = JSON.parse(JSON.stringify(RowDataPacket));
-    console.log("Socket => GetOneGroupMessages | data:", { groupId, start, count });
-    cbfn(groupMessages);
-  } catch (error) {
-    console.log("Socket => GetOneGroupMessages | error", error.message);
-    io.to(socket.id).emit("error", { code: 500, message: error.message });
-  }
-};
-
 // get group item including messages and group info.
 export const getOneGroupItem = async (io, socket, { groupId, start }, cbfn) => {
   try {
