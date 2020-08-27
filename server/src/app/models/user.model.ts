@@ -18,6 +18,8 @@ export class User {
   public ban: number;
   public walletAddress: string;
 
+  public status: number;
+
   public static readonly ROLE = {
     COMPANY: "COMPANY",
     STOCKPILE: "STOCKPILE",

@@ -33,6 +33,7 @@ const initServer = server => {
 
     socket.use((packet, next) => {
       if (!requestFrequency(socketId)) return next();
+      console.error("Access interface frequently, please try again in a minute!");
       next(new Error("Access interface frequently, please try again in a minute!"));
     });
 
@@ -100,9 +101,6 @@ const initServer = server => {
       })
       .on("kickMember", async (data, fn) => {
         await groupSockets.kickMember(io, socket, data, fn);
-      })
-      .on("getGroupMember", async (groupId, fn) => {
-        await groupSockets.getGroupMember(io, socket, groupId, fn);
       })
       .on("banMember", async (data, fn) => {
         await groupSockets.banMember(io, socket, data, fn);
@@ -210,6 +208,7 @@ function emitAsync(socket: socketIo.Socket, emitName, data, callback) {
 }
 
 export const socketServer = {
+  server: io,
   initServer,
   broadcast,
   broadcastChannel,

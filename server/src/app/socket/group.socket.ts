@@ -233,37 +233,6 @@ export const banMember = async (io, socket, { userId, groupId }, cbfn) => {
   }
 };
 
-export const getGroupMember = async (io, socket, groupId, cbfn) => {
-  try {
-    const { groupService } = ServicesContext.getInstance();
-    const RowDataPacket = await groupService.getGroupMember(groupId);
-    const userInfos = JSON.parse(JSON.stringify(RowDataPacket));
-    io.in(groupId).clients((err, onlineSockets) => {
-      if (err) {
-        throw err;
-      }
-      userInfos.forEach(userInfo => {
-        userInfo.status = 0;
-        if (userInfo.socketid) {
-          const socketIds: string[] = userInfo.socketid.split(",");
-          for (const onlineSocket of onlineSockets) {
-            const socketExist = socketIds.some(socketId => socketId === onlineSocket);
-            if (socketExist) {
-              userInfo.status = 1;
-            }
-          }
-        }
-        delete userInfo.socketid;
-      });
-      console.log("Socket => GetGroupMember | data:", groupId, "time:", nowDate().unix());
-      cbfn(userInfos);
-    });
-  } catch (error) {
-    console.log("Socket => Get Group Member | Error:", error.message);
-    io.to(socket.id).emit("error", { code: 500, message: error.message });
-  }
-};
-
 export const findMatch = async (io, socket, { field, searchUser }, cbFn) => {
   try {
     // searchUser : true => find users | searchUser : false => find groups
