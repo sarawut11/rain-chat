@@ -81,6 +81,10 @@ const api = new Router()
   // Socket
   .post("/socket/init", APIController.initSocket)
   .post("/socket/getGroupMember", APIController.getGroupMember)
+  .post("/socket/getGroupMessage", APIController.getGroupMessage)
+  .post("/socket/getPrivateMessage", APIController.getPrivateMessage)
+  .post("/socket/getUserInfo", APIController.getUserInfo)
+  .post("/socket/getGroupItem", APIController.getOneGroupItem)
   ;
 
 export const apiRoutes = new Router()

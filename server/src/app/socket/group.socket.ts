@@ -44,48 +44,6 @@ export const sendGroupMsg = async (io, socket, data: GroupMessage, cbFn) => {
   }
 };
 
-// get group messages in a group;
-export const getOneGroupMessages = async (io, socket, { groupId, start, count }, cbfn) => {
-  try {
-    const userId: number = socket.request.id;
-    const { groupChatService, groupService } = ServicesContext.getInstance();
-    const isInGroup = await groupService.isInGroup(userId, groupId);
-    if (!isInGroup) return;
-    const RowDataPacket = await groupChatService.getGroupMsg(
-      groupId,
-      start - 1,
-      count,
-    );
-    const groupMessages = JSON.parse(JSON.stringify(RowDataPacket));
-    console.log("Socket => GetOneGroupMessages | data:", { groupId, start, count });
-    cbfn(groupMessages);
-  } catch (error) {
-    console.log("Socket => GetOneGroupMessages | error", error.message);
-    io.to(socket.id).emit("error", { code: 500, message: error.message });
-  }
-};
-
-// get group item including messages and group info.
-export const getOneGroupItem = async (io, socket, { groupId, start }, cbfn) => {
-  try {
-    const userId: number = socket.request.id;
-    const { groupService } = ServicesContext.getInstance();
-    const isInGroup = await groupService.isInGroup(userId, groupId);
-    if (!isInGroup) return;
-
-    const groupMsgAndInfo = await getGroupItem({
-      groupId,
-      start: start || 1,
-      count: 20,
-    });
-    console.log("Socket => GetOneGroupItem | data:", { groupId, start });
-    cbfn(groupMsgAndInfo);
-  } catch (error) {
-    console.log("Socket => GetOneGroupItem | Error:", error.message);
-    io.to(socket.id).emit("error", { code: 500, message: error.message });
-  }
-};
-
 export const createGroup = async (io, socket, { name, description }, cbfn) => {
   try {
     const creatorId: number = socket.request.id;
@@ -136,7 +94,7 @@ export const joinGroup = async (io, socket, { groupId }, cbfn) => {
     console.log(isInGroup);
     if (!isInGroup) {
       await groupService.joinGroup(userId, groupId);
-      socket.broadcast.to(groupId).emit(socketEventNames.GetGroupMsg, {
+      socketServer.broadcastChannel(groupId, socketEventNames.GetGroupMsg, {
         id: userInfo.id,
         username: userInfo.username,
         name: userInfo.name,
@@ -148,9 +106,7 @@ export const joinGroup = async (io, socket, { groupId }, cbfn) => {
       });
     }
     socket.join(groupId);
-    const groupItem = await getGroupItem({ groupId });
     console.log("Socket => JoinGroup | data:", { groupId, userId }, "time:", nowDate());
-    cbfn(groupItem);
   } catch (error) {
     console.log("Socket => Join Group | Error", error.message);
     io.to(socket.id).emit("error", { code: 500, message: error.message });

@@ -320,7 +320,10 @@ class InitApp {
   }
 
   _connectSocket() {
-    window.socket = io(`${this.WEBSITE_ADDRESS}?token=${this._userInfo.token}`);
+    window.socket = io(`${this.WEBSITE_ADDRESS}?token=${this._userInfo.token}`, {
+      upgrade: false,
+      transports: ['websocket'],
+    });
     this.sendRegularSocket();
   }
 

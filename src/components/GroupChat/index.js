@@ -68,28 +68,30 @@ class GroupChat extends Component {
         addGroupMessageAndInfo,
       } = this.props;
       // console.log('\n\n---   joinGroup function   ---\n\n', this);
-      const response = await request.socketEmitAndGetResponse(
-        'joinGroup',
-        { groupId: this.chatId },
-        () => {
-          notification('Add group failed', 'error', 1.5);
-          this.setState({ disableJoinButton: false });
-        },
-      );
-      const { messages, groupInfo } = response;
-      const lastContent = {
-        name: 'Group assistant',
-        message: 'You have successfully added a group, you can start chatting~',
-        time: Date.parse(new Date()) / 1000,
-      };
-      messages.push(lastContent);
-      addGroupMessageAndInfo({
-        allGroupChats,
-        messages,
-        groupId: this.chatId,
-        groupInfo,
+      await request.socketEmit('joinGroup', { groupId: this.chatId }, () => {
+        notification('Add group failed', 'error', 1.5);
+        this.setState({ disableJoinButton: false });
       });
-      updateHomePageList({ data: { ...lastContent, ...groupInfo }, homePageList });
+      const res = await request.axios('post', '/api/v1/socket/getGroupItem', {
+        groupId: this.chatId,
+        start: 1,
+      });
+      if (res && res.success) {
+        const { messages, groupInfo } = res.groupMsgAndInfo;
+        const lastContent = {
+          name: 'Group assistant',
+          message: 'You have successfully added a group, you can start chatting~',
+          time: Date.parse(new Date()) / 1000,
+        };
+        messages.push(lastContent);
+        addGroupMessageAndInfo({
+          allGroupChats,
+          messages,
+          groupId: this.chatId,
+          groupInfo,
+        });
+        updateHomePageList({ data: { ...lastContent, ...groupInfo }, homePageList });
+      }
     } catch (e) {
       // console.log(e);
     }
@@ -151,14 +153,19 @@ class GroupChat extends Component {
     });
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     const { allGroupChats } = this.props;
     const chatItem = allGroupChats && allGroupChats.get(this.chatId);
     // (Product Design) When searching for groups that have not been added, click to go to the group content, request the group content, and avoid adding groups if you do n’t understand.
-    if (!chatItem && window.socket) {
-      window.socket.emit('getOneGroupItem', { groupId: this.chatId, start: 1 }, groupMsgAndInfo => {
-        this.setState({ groupMsgAndInfo });
+    if (!chatItem) {
+      const res = await request.axios('post', '/api/v1/socket/getGroupItem', {
+        groupId: this.chatId,
+        start: 1,
       });
+      if (res && res.success) {
+        const groupMsgAndInfo = res.groupMsgAndInfo;
+        this.setState({ groupMsgAndInfo });
+      }
     }
   }
 

@@ -64,14 +64,8 @@ const initServer = server => {
       .on("sendPrivateMsg", async (data, cbFn) => {
         await privateSockets.sendPrivateMsg(io, socket, data, cbFn);
       })
-      .on("getOnePrivateChatMessages", async (data, fn) => {
-        await privateSockets.getOnePrivateChatMessages(io, socket, data, fn);
-      })
       .on("addAsTheContact", async (data, fn) => {
         privateSockets.addAsTheContact(io, socket, data, fn);
-      })
-      .on("getUserInfo", async (userID, fn) => {
-        await privateSockets.getUserInfo(io, socket, userID, fn);
       })
       .on("deleteContact", async (data, fn) => {
         await privateSockets.deleteContact(io, socket, data, fn);
@@ -80,12 +74,6 @@ const initServer = server => {
       // Group chat
       .on("sendGroupMsg", async (data, cbFn) => {
         await groupSockets.sendGroupMsg(io, socket, data, cbFn);
-      })
-      .on("getOneGroupMessages", async (data, fn) => {
-        await groupSockets.getOneGroupMessages(io, socket, data, fn);
-      })
-      .on("getOneGroupItem", async (data, fn) => {
-        await groupSockets.getOneGroupItem(io, socket, data, fn);
       })
       .on("createGroup", async (data, fn) => {
         await groupSockets.createGroup(io, socket, data, fn);

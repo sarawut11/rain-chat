@@ -1,9 +1,11 @@
+import { notification as antNotification } from 'antd';
 import { clearUnreadAction } from '../../containers/HomePageList/homePageListAction';
 import { addGroupMessagesAction } from '../../containers/GroupChatPage/groupChatAction';
 import { addPrivateChatMessagesAction } from '../../containers/PrivateChatPage/privateChatAction';
 import { shareAction } from '../../redux/actions/shareAction';
 import store from '../../redux/store';
 import notification from '../../components/Notification';
+import Request from '../../utils/request';
 
 export default class Chat {
   constructor() {
@@ -30,67 +32,66 @@ export default class Chat {
     store.dispatch(clearUnreadAction({ homePageList, chatFromId }));
   }
 
-  lazyLoadGroupMessages({ chats, chatId, start, count }) {
-    return new Promise((resolve, reject) => {
-      if (!this._hasLoadAllMessages) {
-        try {
-          window.socket.emit(
-            'getOneGroupMessages',
-            { groupId: chatId, start, count },
-            groupMessages => {
-              if (groupMessages && groupMessages.length === 0) {
-                this._hasLoadAllMessages = true;
-                notification('Already in the end', 'warn', 2);
-                reject();
-              }
-              store.dispatch(
-                addGroupMessagesAction({
-                  allGroupChats: chats,
-                  messages: groupMessages,
-                  groupId: chatId,
-                  inLazyLoading: true,
-                }),
-              );
-              resolve();
-            },
+  async lazyLoadGroupMessages({ chats, chatId, start, count }) {
+    if (!this._hasLoadAllMessages) {
+      try {
+        const res = await Request.axios('post', '/api/v1/socket/getGroupMessage', {
+          groupId: chatId,
+          start,
+          count,
+        });
+        if (res && res.success) {
+          const groupMessages = res.groupMessages;
+          if (groupMessages && groupMessages.length === 0) {
+            this._hasLoadAllMessages = true;
+            notification('Already in the end', 'warn', 2);
+            return;
+          }
+          store.dispatch(
+            addGroupMessagesAction({
+              allGroupChats: chats,
+              messages: groupMessages,
+              groupId: chatId,
+              inLazyLoading: true,
+            }),
           );
-        } catch (error) {
-          // console.log(error);
-          notification('Something went wrong, please try again later', 'error');
-          const errorText = 'try again later';
-          reject(errorText);
+        } else {
+          antNotification.error({ message: res.message });
         }
+      } catch (error) {
+        // console.log(error);
+        notification('Something went wrong, please try again later', 'error');
       }
-    });
+    }
   }
 
-  lazyLoadPrivateChatMessages({ chats, userId, chatId, start, count }) {
-    return new Promise((resolve, reject) => {
+  lazyLoadPrivateChatMessages({ chats, chatId, start, count }) {
+    return new Promise(async (resolve, reject) => {
       if (!this._hasLoadAllMessages) {
-        window.socket.emit(
-          'getOnePrivateChatMessages',
-          {
-            toUser: chatId,
-            start,
-            count,
-          },
-          privateChatMessages => {
-            if (privateChatMessages && privateChatMessages.length === 0) {
-              this._hasLoadAllMessages = true;
-              notification('Already in the end', 'warn', 2);
-              reject();
-            }
-            store.dispatch(
-              addPrivateChatMessagesAction({
-                allPrivateChats: chats,
-                messages: privateChatMessages,
-                chatId,
-                inLazyLoading: true,
-              }),
-            );
-            resolve('success!');
-          },
-        );
+        const res = await Request.axios('post', '/api/v1/socket/getPrivateMessage', {
+          toUser: chatId,
+          start,
+          count,
+        });
+        if (res && res.success) {
+          const privateMessages = res.privateMessages;
+          if (privateMessages && privateMessages.length === 0) {
+            this._hasLoadAllMessages = true;
+            notification('Already in the end', 'warn', 2);
+            reject();
+          }
+          store.dispatch(
+            addPrivateChatMessagesAction({
+              allPrivateChats: chats,
+              messages: privateMessages,
+              chatId,
+              inLazyLoading: true,
+            }),
+          );
+          resolve('success!');
+        } else {
+          antNotification.error({ message: res.message });
+        }
       }
     });
   }
