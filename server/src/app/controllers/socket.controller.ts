@@ -158,3 +158,27 @@ export const getOneGroupItem = async (ctx, next) => {
     };
   }
 };
+
+export const findMatch = async (ctx, next) => {
+  try {
+    const { searchUser, field } = ctx.request.body;
+    // searchUser : true => find users | searchUser : false => find groups
+    const { userService, groupService } = ServicesContext.getInstance();
+    let fuzzyMatchResult;
+    if (searchUser) {
+      fuzzyMatchResult = await userService.findMatchUsers(`%${field}%`);
+    } else {
+      fuzzyMatchResult = await groupService.findMatchGroups(`%${field}%`);
+    }
+    ctx.body = {
+      success: true,
+      fuzzyMatchResult
+    };
+  } catch (error) {
+    console.error("Socket => FindMatch Failed |", error.message);
+    ctx.body = {
+      success: false,
+      message: "Find Match Failed"
+    };
+  }
+};

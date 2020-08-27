@@ -10,6 +10,7 @@ import ListItems from '../ListItems';
 import Chat from '../../modules/Chat';
 import StaticAdsPanel from '../StaticAdsPanel';
 import { getUserLS } from '../../utils/user';
+import Request from '../../utils/request';
 
 class HomePageList extends Component {
   constructor(props) {
@@ -84,17 +85,21 @@ class HomePageList extends Component {
     return options;
   }
 
-  searchInDB({ searchUser }) {
-    window.socket.emit('findMatch', { field: this._filedStr, searchUser }, data => {
+  async searchInDB({ searchUser }) {
+    const res = await Request.axios('post', '/api/v1/socket/findMatch', {
+      field: this._filedStr,
+      searchUser,
+    });
+    if (res && res.success) {
       const newMatchResult = [];
-
-      if (data.searchUser) {
+      const fuzzyMatchResult = res.fuzzyMatchResult;
+      if (searchUser) {
         this.setState(state => ({
           showSearchUser: false,
           searchResultTitle: { ...state.searchResultTitle, user: 'All users' },
         }));
 
-        data.fuzzyMatchResult.forEach(element => {
+        fuzzyMatchResult.forEach(element => {
           element.userId = element.id;
           const contactedIndex = this.state.contactedItems.findIndex(item => {
             return item.userId === element.userId;
@@ -110,7 +115,7 @@ class HomePageList extends Component {
           searchResultTitle: { ...state.searchResultTitle, group: 'All groups' },
         }));
 
-        data.fuzzyMatchResult.forEach(element => {
+        fuzzyMatchResult.forEach(element => {
           const contactedIndex = this.state.contactedItems.findIndex(item => {
             return item.id === element.id;
           });
@@ -124,7 +129,7 @@ class HomePageList extends Component {
       this.setState(state => ({
         contactedItems: [...state.contactedItems, ...newMatchResult],
       }));
-    });
+    }
   }
 
   clickItemHandle = ({ homePageList, chatFromId }) => {

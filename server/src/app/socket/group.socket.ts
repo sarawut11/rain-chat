@@ -188,21 +188,3 @@ export const banMember = async (io, socket, { userId, groupId }, cbfn) => {
     io.to(socket.id).emit("error", { code: 500, message: error.message });
   }
 };
-
-export const findMatch = async (io, socket, { field, searchUser }, cbFn) => {
-  try {
-    // searchUser : true => find users | searchUser : false => find groups
-    const { userService, groupService } = ServicesContext.getInstance();
-    let fuzzyMatchResult;
-    field = `%${field}%`;
-    if (searchUser) {
-      fuzzyMatchResult = await userService.findMatchUsers(field);
-    } else {
-      fuzzyMatchResult = await groupService.findMatchGroups(field);
-    }
-    cbFn({ fuzzyMatchResult, searchUser });
-  } catch (error) {
-    console.log("Socket => Find Match | Error:", error.message);
-    io.to(socket.id).emit("error", { code: 500, message: error.message });
-  }
-};
