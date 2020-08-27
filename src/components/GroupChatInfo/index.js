@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { notification as antNotification } from 'antd';
 import UserAdapter from '../UserAvatar';
 import './styles.scss';
 import CreateGroupModal from '../CreateGroupModal';
 import notification from '../Notification';
 import { setUserInfoAction } from '../../redux/actions/userAction';
 import { getUserLS } from '../../utils/user';
+import Request from '../../utils/request';
 
 class GroupChatInfo extends Component {
   constructor(props) {
@@ -21,16 +23,20 @@ class GroupChatInfo extends Component {
     this._isCreator = this._userInfo.id === parseInt(props.groupInfo.creatorId, 10);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const groupId = this.props.chatId;
-    window.socket.emit('getGroupMember', groupId, data => {
+    const res = await Request.axios('post', '/api/v1/socket/getGroupMember', { groupId });
+    if (res && res.success) {
+      const data = res.members;
       data.sort((a, b) => b.status - a.status);
       const onlineMember = data.filter(e => e.status === 1);
       this.setState({
         groupMember: data,
         onlineNumber: onlineMember.length,
       });
-    });
+    } else {
+      antNotification.error({ message: res.message });
+    }
   }
 
   _clickMember = userId => {

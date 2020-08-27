@@ -80,6 +80,7 @@ const api = new Router()
 
   // Socket
   .post("/socket/init", APIController.initSocket)
+  .post("/socket/getGroupMember", APIController.getGroupMember)
   ;
 
 export const apiRoutes = new Router()
