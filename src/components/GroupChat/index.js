@@ -151,14 +151,19 @@ class GroupChat extends Component {
     });
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     const { allGroupChats } = this.props;
     const chatItem = allGroupChats && allGroupChats.get(this.chatId);
     // (Product Design) When searching for groups that have not been added, click to go to the group content, request the group content, and avoid adding groups if you do n’t understand.
-    if (!chatItem && window.socket) {
-      window.socket.emit('getOneGroupItem', { groupId: this.chatId, start: 1 }, groupMsgAndInfo => {
-        this.setState({ groupMsgAndInfo });
+    if (!chatItem) {
+      const res = await request.axios('post', '/api/v1/socket/getGroupItem', {
+        groupId: this.chatId,
+        start: 1,
       });
+      if (res && res.success) {
+        const groupMsgAndInfo = res.groupMsgAndInfo;
+        this.setState({ groupMsgAndInfo });
+      }
     }
   }
 

@@ -114,13 +114,17 @@ export default class PrivateChat extends Component {
     deleteHomePageList({ homePageList, chatId: this.chatId });
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     const { allPrivateChats } = this.props;
     const chatItem = allPrivateChats && allPrivateChats.get(this.chatId);
-    if (!chatItem && window.socket) {
-      window.socket.emit('getUserInfo', this.chatId, toUserInfo => {
-        this.setState({ toUserInfo });
+    if (!chatItem) {
+      const res = await request.axios('post', '/api/v1/socket/getUserInfo', {
+        userId: this.chatId,
       });
+      if (res && res.success) {
+        const toUserInfo = res.userInfo;
+        this.setState({ toUserInfo });
+      }
     }
   }
 

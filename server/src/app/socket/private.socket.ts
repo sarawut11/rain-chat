@@ -51,18 +51,6 @@ export const addAsTheContact = async (io, socket, { fromUser }, cbFn) => {
   }
 };
 
-export const getUserInfo = async (io, socket, userId, cbFn) => {
-  try {
-    const { userService } = ServicesContext.getInstance();
-    const userInfo: User = await userService.getUserInfoById(userId);
-    console.log("Socket => GetUserInfo | userId:", userId, "time:", nowDate());
-    cbFn(userInfo);
-  } catch (error) {
-    console.log("Socket => GetUserInfo | Error:", error.message);
-    io.to(socket.id).emit("error", { code: 500, message: error.message });
-  }
-};
-
 export const deleteContact = async (io, socket, { toUser }, cbFn) => {
   try {
     const userId: number = socket.request.id;

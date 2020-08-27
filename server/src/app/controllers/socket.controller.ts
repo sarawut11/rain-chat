@@ -1,5 +1,6 @@
 import { ServicesContext } from "@context";
-import { socketServer, getAllMessage } from "@sockets";
+import { socketServer, getAllMessage, getGroupItem } from "@sockets";
+import { User } from "@models";
 
 export const initSocket = async (ctx, next) => {
   try {
@@ -106,6 +107,54 @@ export const getPrivateMessage = async (ctx, next) => {
     ctx.body = {
       success: false,
       message: "Get Private Message Failed"
+    };
+  }
+};
+
+export const getUserInfo = async (ctx, next) => {
+  try {
+    const { userId } = ctx.request.body;
+    const { userService } = ServicesContext.getInstance();
+    const userInfo: User = await userService.getUserInfoById(userId);
+    console.log("Socket => GetUserInfo | userId:", userId);
+
+    ctx.body = {
+      success: true,
+      userInfo,
+    };
+  } catch (error) {
+    console.error("Socket => GetUserInfo Failed |", error.message);
+    ctx.body = {
+      success: false,
+      message: "Get User Info Failed"
+    };
+  }
+};
+
+export const getOneGroupItem = async (ctx, next) => {
+  try {
+    const { id: userId } = ctx.state.user;
+    const { groupId, start } = ctx.request.body;
+    const { groupService } = ServicesContext.getInstance();
+    const isInGroup = await groupService.isInGroup(userId, groupId);
+    if (!isInGroup) return;
+
+    const groupMsgAndInfo = await getGroupItem({
+      groupId,
+      start: start || 1,
+      count: 20,
+    });
+    console.log("Socket => GetOneGroupItem | data:", { groupId, start });
+
+    ctx.body = {
+      success: true,
+      groupMsgAndInfo
+    };
+  } catch (error) {
+    console.error("Socket => GetOneGroupItem Failed |", error.message);
+    ctx.body = {
+      success: false,
+      message: "Get Group Item Failed"
     };
   }
 };
