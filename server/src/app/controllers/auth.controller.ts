@@ -23,7 +23,7 @@ export const loginUser = async (ctx, next) => {
       return;
     }
     const user: User = await userService.findUserByEmailOrUsername(email, username);
-    if (user === undefined) {
+    if (user === undefined || user.username !== username) {
       console.log("Login => Failed | Username does not exist. | Username:", username);
       ctx.body = {
         success: false,
