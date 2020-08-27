@@ -324,17 +324,6 @@ class InitApp {
       upgrade: false,
       transports: ['websocket'],
     });
-    this.sendRegularSocket();
-  }
-
-  // Send regular socket every 15mins to avoid disconnection from idle status
-  sendRegularSocket() {
-    setTimeout(() => {
-      if (window.socket) {
-        window.socket.emit('regular ping');
-      }
-      this.sendRegularSocket();
-    }, 15 * 60 * 1000);
   }
 
   _init = async () => {

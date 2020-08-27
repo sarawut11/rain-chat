@@ -13,7 +13,9 @@ let io: socketIo.Server;
 const initServer = server => {
   const { userService } = ServicesContext.getInstance();
 
-  io = socketIo(server);
+  io = socketIo(server, {
+    pingTimeout: 18000000
+  });
   io.use((socket, next) => {
     const token = socket.handshake.query.token;
     const result = authVerify(token);
