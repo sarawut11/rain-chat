@@ -85,6 +85,7 @@ const api = new Router()
   .post("/socket/getPrivateMessage", APIController.getPrivateMessage)
   .post("/socket/getUserInfo", APIController.getUserInfo)
   .post("/socket/getGroupItem", APIController.getOneGroupItem)
+  .post("/socket/findMatch", APIController.findMatch)
   ;
 
 export const apiRoutes = new Router()

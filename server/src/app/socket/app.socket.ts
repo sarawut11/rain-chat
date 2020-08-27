@@ -93,9 +93,6 @@ const initServer = server => {
       .on("banMember", async (data, fn) => {
         await groupSockets.banMember(io, socket, data, fn);
       })
-      .on("findMatch", async ({ field, searchUser }, fn) => {
-        groupSockets.findMatch(io, socket, { field, searchUser }, fn);
-      })
 
       // Rain Sockets
       .on("subscribeAdsReward", async ({ token }) => {
@@ -123,7 +120,7 @@ const initServer = server => {
           //   ]);
           // }
 
-          console.log(`Socket => Disconnect | reason:${reason} userId:${userId}, socketId:${socket.id}`);
+          console.log(`Socket => Disconnect | reason:${reason}, userId:${userId}, socketId:${socket.id}`);
         } catch (error) {
           console.log("Socket => Disconnect | Error:", error.message);
           io.to(socketId).emit("error", { code: 500, message: error.message });
