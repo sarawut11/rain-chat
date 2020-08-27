@@ -94,7 +94,7 @@ export const joinGroup = async (io, socket, { groupId }, cbfn) => {
     console.log(isInGroup);
     if (!isInGroup) {
       await groupService.joinGroup(userId, groupId);
-      socket.broadcast.to(groupId).emit(socketEventNames.GetGroupMsg, {
+      socketServer.broadcastChannel(groupId, socketEventNames.GetGroupMsg, {
         id: userInfo.id,
         username: userInfo.username,
         name: userInfo.name,
@@ -106,9 +106,7 @@ export const joinGroup = async (io, socket, { groupId }, cbfn) => {
       });
     }
     socket.join(groupId);
-    const groupItem = await getGroupItem({ groupId });
     console.log("Socket => JoinGroup | data:", { groupId, userId }, "time:", nowDate());
-    cbfn(groupItem);
   } catch (error) {
     console.log("Socket => Join Group | Error", error.message);
     io.to(socket.id).emit("error", { code: 500, message: error.message });
