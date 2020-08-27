@@ -28,18 +28,8 @@ const initServer = server => {
 
   io.on("connection", async socket => {
     const socketId = socket.id;
-    let userId;
-    let clientHomePageList;
-    console.log("Socket => Connection | socketId:", socketId);
-
-    // Get data for group chats and private chats
-    await emitAsync(socket, socketEventNames.InitSocket, socketId, (userID, homePageList) => {
-      userId = userID;
-      clientHomePageList = homePageList;
-    });
-    const allMessage = await getAllMessage({ userId, clientHomePageList });
-    socket.emit(socketEventNames.InitSocketSuccess, allMessage);
-    console.log(`Socket => InitSocketSuccess | userId:${userId}`);
+    const userId = socket.request.id;
+    console.log(`Socket => Connection | socketId:${socketId}, userId:${userId}`);
 
     socket.use((packet, next) => {
       if (!requestFrequency(socketId)) return next();

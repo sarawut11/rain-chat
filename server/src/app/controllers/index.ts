@@ -16,3 +16,4 @@ export * from "./wallet.controller";
 export * from "./role.controller";
 export * from "./rain.controller";
 export * from "./expense.controller";
+export * from "./socket.controller";

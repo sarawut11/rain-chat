@@ -176,34 +176,39 @@ class InitApp {
   }
 
   _listeningInitMessage() {
-    window.socket.on('initSocketSuccess', allMessage => {
-      const privateChat = new Map(allMessage.privateChat);
-      const groupChat = new Map(allMessage.groupChat);
-      const { adsList } = allMessage;
-      store.dispatch(setHomePageListAction(allMessage.homePageList));
-      store.dispatch(setAllPrivateChatsAction({ data: privateChat }));
-      store.dispatch(setAllGroupChatsAction({ data: groupChat }));
-
-      try {
-        const { isVitaePostEnabled } = allMessage.userInfo;
-        if (isVitaePostEnabled) {
-          store.dispatch(enableVitaePost());
-        } else {
-          store.dispatch(disableVitaePost());
-        }
-      } catch (e) {
-        // console.log(e);
-      }
-
-      if (allMessage.userInfo.role !== 'MODERATOR' && allMessage.userInfo.role !== 'OWNER')
-        store.dispatch(setAdsAction({ data: adsList }));
-      // console.log('initMessage success. ', 'time=>', new Date().toLocaleString(), allMessage);
-
-      store.dispatch(setUserInfoAction({ data: allMessage.userInfo }));
-    });
-    window.socket.on('initSocket', (socketId, fn) => {
+    window.socket.on('connect', async () => {
       const clientHomePageList = JSON.parse(localStorage.getItem(`homePageList-${this.userId}`));
-      fn(this.userId, clientHomePageList);
+      const res = await request.axios('post', `/api/v1/socket/init`, { clientHomePageList });
+      if (res && res.success) {
+        const allMessage = res.allMessage;
+        const privateChat = new Map(allMessage.privateChat);
+        const groupChat = new Map(allMessage.groupChat);
+        const { adsList } = allMessage;
+        store.dispatch(setHomePageListAction(allMessage.homePageList));
+        store.dispatch(setAllPrivateChatsAction({ data: privateChat }));
+        store.dispatch(setAllGroupChatsAction({ data: groupChat }));
+
+        try {
+          const { isVitaePostEnabled } = allMessage.userInfo;
+          if (isVitaePostEnabled) {
+            store.dispatch(enableVitaePost());
+          } else {
+            store.dispatch(disableVitaePost());
+          }
+        } catch (e) {
+          // console.log(e);
+        }
+
+        if (allMessage.userInfo.role !== 'MODERATOR' && allMessage.userInfo.role !== 'OWNER')
+          store.dispatch(setAdsAction({ data: adsList }));
+        // console.log('initMessage success. ', 'time=>', new Date().toLocaleString(), allMessage);
+
+        store.dispatch(setUserInfoAction({ data: allMessage.userInfo }));
+      } else {
+        antNotification.error({
+          message: res.message,
+        });
+      }
     });
   }
 

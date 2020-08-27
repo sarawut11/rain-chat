@@ -3,8 +3,6 @@ export const socketEventNames = {
   // Init
   Connect: "connect",
   Disconnect: "disconnect",
-  InitSocket: "initSocket",
-  InitSocketSuccess: "initSocketSuccess",
 
   // User
   UpdateBalance: "updateBalance",
