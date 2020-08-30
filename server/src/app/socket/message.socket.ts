@@ -36,7 +36,7 @@ export const getGroupItem = async ({
   };
 };
 
-export const getAllMessage = async ({ userId, clientHomePageList }) => {
+export const getAllMessage = async ({ userId, clientHomePageList, socketId }) => {
   try {
     const { userService, chatService, groupChatService, adsService } = ServicesContext.getInstance();
     const user: User = await userService.findUserById(userId);
@@ -47,6 +47,12 @@ export const getAllMessage = async ({ userId, clientHomePageList }) => {
     const homePageList = groupList.concat(privateList);
     const privateChat = new Map();
     const groupChat = new Map();
+
+    const socketIds = user.socketid.split(",");
+    socketIds.push(socketId);
+    const newSocketIdStr = socketIds.join(",");
+    await userService.saveUserSocketId(userId, newSocketIdStr);
+
     if (homePageList && homePageList.length) {
       for (const item of homePageList) {
         if (clientHomePageList && clientHomePageList.length) {
@@ -93,7 +99,8 @@ export const getAllMessage = async ({ userId, clientHomePageList }) => {
       homePageList,
       privateChat: Array.from(privateChat),
       groupChat: Array.from(groupChat),
-      adsList
+      adsList,
+      groupList,
     };
   } catch (error) {
     console.log(error);

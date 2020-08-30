@@ -15,6 +15,7 @@ npm-debug.log*
 .versions/
 coverage/
 dist/
+dist-socket/
 dist.1/
 dist.2/
 frontEnd/

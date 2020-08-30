@@ -4,9 +4,8 @@ import { ServicesContext } from "@context";
 import { socketServer, socketEventNames } from "@sockets";
 import { now, nowDate } from "@utils";
 
-export const sendPrivateMsg = async (io, socket, { toUser, message, attachments }, cbFn) => {
+export const sendPrivateMsg = async (socket, { userId, toUser, message, attachments }, cbFn) => {
   try {
-    const userId: number = socket.request.id;
     const { chatService, userService } = ServicesContext.getInstance();
 
     const isFriend: boolean = await userService.isFriend(userId, toUser);
@@ -29,13 +28,13 @@ export const sendPrivateMsg = async (io, socket, { toUser, message, attachments 
     cbFn(msgData);
   } catch (error) {
     console.log("Socket => SendPrivateMsg | Error:", error.message);
-    io.to(socket.id).emit("error", { code: 500, message: error.message });
+    socket.emit("error", { code: 500, message: error.message });
   }
 };
 
-export const getOnePrivateChatMessages = async (io, socket, data, cbFn) => {
+export const getOnePrivateChatMessages = async (socket, data, cbFn) => {
   try {
-    const userId = socket.request.id;
+    const userId = data.userId;
     const { chatService } = ServicesContext.getInstance();
     const { toUser, start, count } = data;
 
@@ -45,13 +44,12 @@ export const getOnePrivateChatMessages = async (io, socket, data, cbFn) => {
     cbFn(privateMessages);
   } catch (error) {
     console.log("Socket => GetOnePrivateChatMessages | Error:", error.message);
-    io.to(socket.id).emit("error", { code: 500, message: error.message });
+    socket.emit("error", { code: 500, message: error.message });
   }
 };
 
-export const addAsTheContact = async (io, socket, { fromUser }, cbFn) => {
+export const addAsTheContact = async (socket, { userId, fromUser }, cbFn) => {
   try {
-    const userId: number = socket.request.id;
     const { userService } = ServicesContext.getInstance();
 
     const userInfo: User = await userService.getUserInfoById(fromUser);
@@ -63,11 +61,11 @@ export const addAsTheContact = async (io, socket, { fromUser }, cbFn) => {
     cbFn(userInfo);
   } catch (error) {
     console.log("Socket => AddAsTheContact | Error:", error.message);
-    io.to(socket.id).emit("error", { code: 500, message: error.message });
+    socket.emit("error", { code: 500, message: error.message });
   }
 };
 
-export const getUserInfo = async (io, socket, userId, cbFn) => {
+export const getUserInfo = async (socket, userId, cbFn) => {
   try {
     const { userService } = ServicesContext.getInstance();
     const userInfo: User = await userService.getUserInfoById(userId);
@@ -75,13 +73,12 @@ export const getUserInfo = async (io, socket, userId, cbFn) => {
     cbFn(userInfo);
   } catch (error) {
     console.log("Socket => GetUserInfo | Error:", error.message);
-    io.to(socket.id).emit("error", { code: 500, message: error.message });
+    socket.emit("error", { code: 500, message: error.message });
   }
 };
 
-export const deleteContact = async (io, socket, { toUser }, cbFn) => {
+export const deleteContact = async (socket, { userId, toUser }, cbFn) => {
   try {
-    const userId: number = socket.request.id;
     const { userService } = ServicesContext.getInstance();
     await userService.deleteContact(userId, toUser);
     const socketIds = await userService.getSocketid(toUser);
@@ -90,6 +87,6 @@ export const deleteContact = async (io, socket, { toUser }, cbFn) => {
     cbFn({ code: 200, data: "delete contact successfully" });
   } catch (error) {
     console.log("Socket => Delete Contact | Error:", error.message);
-    io.to(socket.id).emit("error", { code: 500, message: error.message });
+    socket.emit("error", { code: 500, message: error.message });
   }
 };

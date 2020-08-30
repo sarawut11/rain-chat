@@ -1,124 +1,70 @@
-/* eslint-disable consistent-return */
-import * as socketIo from "socket.io";
+import * as socketClient from "socket.io-client";
 
 import { ServicesContext } from "@context";
-import { requestFrequency, authVerify } from "@middlewares";
-import { getAllMessage, subscribeAdsReward, socketEventNames, Channels } from "@sockets";
+import { getAllMessage, subscribeAdsReward } from "@sockets";
 import * as privateSockets from "./private.socket";
 import * as groupSockets from "./group.socket";
-import { User } from "@models";
 
-let io: socketIo.Server;
+let socket = socketClient.Socket;
 
-const initServer = server => {
-  const { userService } = ServicesContext.getInstance();
+const initServer = () => {
 
-  io = socketIo(server);
-  io.use((socket, next) => {
-    const token = socket.handshake.query.token;
-    const result = authVerify(token);
-    if (result) {
-      console.log("Socket => Verify socket token | success");
-      socket.request.id = result.id;
-      socket.request.username = result.username;
-      return next();
-    }
-    return next(new Error(`Socket => Authentication error`));
-  });
+  socket = socketClient("http://localhost:3030?token=rain-chat-server");
 
-  io.on("connection", async socket => {
-    const socketId = socket.id;
-    let userId;
-    let clientHomePageList;
-    console.log("Socket => Connection | socketId:", socketId);
-
-    // Get data for group chats and private chats
-    await emitAsync(socket, socketEventNames.InitSocket, socketId, (userID, homePageList) => {
-      userId = userID;
-      clientHomePageList = homePageList;
-    });
-    const allMessage = await getAllMessage({ userId, clientHomePageList });
-    socket.emit(socketEventNames.InitSocketSuccess, allMessage);
-    console.log(`Socket => InitSocketSuccess | userId:${userId}`);
-
-    socket.use((packet, next) => {
-      if (!requestFrequency(socketId)) return next();
-      next(new Error("Access interface frequently, please try again in a minute!"));
-    });
-
-    // init socket
-    const socketIds = await userService.getSocketid(userId);
-    socketIds.push(socketId);
-    const newSocketIdStr = socketIds.join(",");
-    await userService.saveUserSocketId(userId, newSocketIdStr);
-    console.log(`Socket => InitSocket | userId:${userId}`);
-
-    // init GroupChat
-    const result = await userService.getGroupList(userId);
-    const groupList = JSON.parse(JSON.stringify(result));
-    for (const item of groupList) {
-      socket.join(item.groupId);
-    }
-
-    // Join Role Channels
-    const user = await userService.findUserById(userId);
-    if (user.role === User.ROLE.OWNER)
-      socket.join(Channels.OwnerChannel);
-    if (user.role === User.ROLE.MODERATOR)
-      socket.join(Channels.ModerChannel);
-    console.log(`Socket => InitGroupChat | userId:${userId}`);
-
-    socket
+  socket.on("connect", () => {
+    socket.on("initSocket", async (data, cbFn) => {
+      const allMessages = await getAllMessage(data);
+      cbFn(allMessages);
+    })
       // Private message
       .on("sendPrivateMsg", async (data, cbFn) => {
-        await privateSockets.sendPrivateMsg(io, socket, data, cbFn);
+        await privateSockets.sendPrivateMsg(socket, data, cbFn);
       })
       .on("getOnePrivateChatMessages", async (data, fn) => {
-        await privateSockets.getOnePrivateChatMessages(io, socket, data, fn);
+        await privateSockets.getOnePrivateChatMessages(socket, data, fn);
       })
       .on("addAsTheContact", async (data, fn) => {
-        privateSockets.addAsTheContact(io, socket, data, fn);
+        privateSockets.addAsTheContact(socket, data, fn);
       })
       .on("getUserInfo", async (userID, fn) => {
-        await privateSockets.getUserInfo(io, socket, userID, fn);
+        await privateSockets.getUserInfo(socket, userID, fn);
       })
       .on("deleteContact", async (data, fn) => {
-        await privateSockets.deleteContact(io, socket, data, fn);
+        await privateSockets.deleteContact(socket, data, fn);
       })
-
       // Group chat
       .on("sendGroupMsg", async (data, cbFn) => {
-        await groupSockets.sendGroupMsg(io, socket, data, cbFn);
+        await groupSockets.sendGroupMsg(socket, data, cbFn);
       })
       .on("getOneGroupMessages", async (data, fn) => {
-        await groupSockets.getOneGroupMessages(io, socket, data, fn);
+        await groupSockets.getOneGroupMessages(socket, data, fn);
       })
       .on("getOneGroupItem", async (data, fn) => {
-        await groupSockets.getOneGroupItem(io, socket, data, fn);
+        await groupSockets.getOneGroupItem(socket, data, fn);
       })
       .on("createGroup", async (data, fn) => {
-        await groupSockets.createGroup(io, socket, data, fn);
+        await groupSockets.createGroup(socket, data, fn);
       })
       .on("updateGroupInfo", async (data, fn) => {
-        await groupSockets.updateGroupInfo(io, socket, data, fn);
+        await groupSockets.updateGroupInfo(socket, data, fn);
       })
       .on("joinGroup", async (data, fn) => {
-        await groupSockets.joinGroup(io, socket, data, fn);
+        await groupSockets.joinGroup(socket, data, fn);
       })
       .on("leaveGroup", async data => {
-        await groupSockets.leaveGroup(io, socket, data);
+        await groupSockets.leaveGroup(socket, data);
       })
       .on("kickMember", async (data, fn) => {
-        await groupSockets.kickMember(io, socket, data, fn);
+        await groupSockets.kickMember(socket, data, fn);
       })
-      .on("getGroupMember", async (groupId, fn) => {
-        await groupSockets.getGroupMember(io, socket, groupId, fn);
+      .on("getGroupMember", async (data, fn) => {
+        await groupSockets.getGroupMember(socket, data, fn);
       })
       .on("banMember", async (data, fn) => {
-        await groupSockets.banMember(io, socket, data, fn);
+        await groupSockets.banMember(socket, data, fn);
       })
-      .on("findMatch", async ({ field, searchUser }, fn) => {
-        groupSockets.findMatch(io, socket, { field, searchUser }, fn);
+      .on("findMatch", async (data, fn) => {
+        await groupSockets.findMatch(socket, data, fn);
       })
 
       // Rain Sockets
@@ -127,8 +73,9 @@ const initServer = server => {
       })
 
       // Disconnect
-      .on("disconnect", async reason => {
+      .on("disconnected", async ({ reason, userId, socketId }) => {
         try {
+          const { userService } = ServicesContext.getInstance();
           const socketids = await userService.getSocketid(userId);
           const index = socketids.indexOf(socketId);
 
@@ -147,10 +94,8 @@ const initServer = server => {
           //   ]);
           // }
 
-          console.log(`Socket => Disconnect | reason:${reason} userId:${userId}, socketId:${socket.id}`);
         } catch (error) {
           console.log("Socket => Disconnect | Error:", error.message);
-          io.to(socketId).emit("error", { code: 500, message: error.message });
         }
       });
   });
@@ -158,7 +103,7 @@ const initServer = server => {
 
 const broadcast = (emitName, data, onError?) => {
   try {
-    io.sockets.emit(emitName, data);
+    socket.emit("broadcast", { emitName, data });
   } catch (error) {
     console.log(error);
     if (onError) {
@@ -169,7 +114,7 @@ const broadcast = (emitName, data, onError?) => {
 
 const broadcastChannel = (channelName: string, emitName: string, data: any, onError?) => {
   try {
-    io.to(channelName).emit(emitName, data);
+    socket.emit("broadcastChannel", { channelName, emitName, data });
   } catch (error) {
     console.log(error);
     if (onError) {
@@ -180,50 +125,23 @@ const broadcastChannel = (channelName: string, emitName: string, data: any, onEr
 
 const emitTo = (toSocketIds: string, emitName, data, onError?) => {
   try {
-    const socketids = toSocketIds.split(",");
-    socketids.forEach(socketid => {
-      if (socketid !== "" && socketid !== undefined)
-        io.to(socketid).emit(emitName, data);
-    });
+    socket.emit("emitTo", { toSocketIds, emitName, data });
   } catch (error) {
     if (onError)
       onError(error);
   }
 };
 
-const allSocketCount = (): number => {
-  return Object.keys(io.sockets.sockets).length;
-};
-
-const getRoomClients = (room): Promise<any> => {
-  return new Promise((resolve, reject) => {
-    io.of("/").in(room).clients((error, clients) => {
-      resolve(clients);
-    });
+const allSocketCount = (): Promise<number> => new Promise((resolve, reject) => {
+  socket.emit("allSocketCount", count => {
+    resolve(count);
   });
-};
-
-function emitAsync(socket: socketIo.Socket, emitName, data, callback) {
-  return new Promise((resolve, reject) => {
-    if (!socket || !socket.emit) {
-      // eslint-disable-next-line prefer-promise-reject-errors
-      reject("pls input socket");
-    }
-    socket.emit(emitName, data, (...args) => {
-      let response;
-      if (typeof callback === "function") {
-        response = callback(...args);
-      }
-      resolve(response);
-    });
-  });
-}
+});
 
 export const socketServer = {
   initServer,
   broadcast,
   broadcastChannel,
   emitTo,
-  getRoomClients,
   allSocketCount,
 };

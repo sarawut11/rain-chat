@@ -203,7 +203,7 @@ class InitApp {
     });
     window.socket.on('initSocket', (socketId, fn) => {
       const clientHomePageList = JSON.parse(localStorage.getItem(`homePageList-${this.userId}`));
-      fn(this.userId, clientHomePageList);
+      fn({ userId: this.userId, clientHomePageList });
     });
   }
 

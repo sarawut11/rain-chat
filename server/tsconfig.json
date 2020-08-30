@@ -21,7 +21,7 @@
     },
     "lib": ["es2015", "es6", "esnext.asynciterable", "dom"]
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "webpack.socket.config.js", "webpack.config.js"],
   "exclude": ["node_modules"],
   "awesomeTypescriptLoaderOptions": {
     "forceIsolatedModules": true,
