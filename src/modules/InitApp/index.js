@@ -315,18 +315,9 @@ class InitApp {
   }
 
   _connectSocket() {
-    window.socket = io(`${this.WEBSITE_ADDRESS}?token=${this._userInfo.token}`);
-    this.sendRegularSocket();
-  }
-
-  // Send regular socket every 15mins to avoid disconnection from idle status
-  sendRegularSocket() {
-    setTimeout(() => {
-      if (window.socket) {
-        window.socket.emit('regular ping');
-      }
-      this.sendRegularSocket();
-    }, 15 * 60 * 1000);
+    window.socket = io(`${this.WEBSITE_ADDRESS}?token=${this._userInfo.token}`, {
+      transports: ['websocket'],
+    });
   }
 
   _init = async () => {
