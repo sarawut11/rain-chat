@@ -130,7 +130,7 @@ class ChatContentList extends Component {
 
   render() {
     const { ChatContent, clickAvatar } = this.props;
-    const listItems = ChatContent.map((item, index) => {
+    const listItems = ChatContent.slice(-200).map((item, index) => {
       let isMe;
       if (item.toUser) {
         // is private chat
