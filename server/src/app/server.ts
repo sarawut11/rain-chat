@@ -28,7 +28,7 @@ export class Server {
   }
 
   static run(port: string) {
-    socketServer.initServer();
+    socketServer.initServer(Server.server);
 
     Server.server.listen(this.normalizePort(port));
     //   .on('listening', () => this.onListening(Server.server))

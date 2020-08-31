@@ -374,6 +374,16 @@ export class UserService {
     return users[0].socketid.split(",");
   }
 
+  async getOnlineUserCount(): Promise<number> {
+    const sql = `
+      SELECT ${this.USER_COL.id}
+      FROM ${this.USER_TABLE}
+      WHERE
+        ${this.USER_COL.socketId} != "" && ${this.USER_COL.socketId} != ",";`;
+    const users: User[] = await query(sql);
+    return users.length;
+  }
+
   async getUserBySocketId(socketId): Promise<User> {
     if (socketId === "") socketId = undefined;
     const sql = `

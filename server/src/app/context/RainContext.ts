@@ -151,8 +151,8 @@ export class RainContext {
           type: ads.type,
         }
       });
-      const socketCount = await socketServer.allSocketCount();
-      await adsService.campaignAds(ads.id, socketCount);
+      const userCount = await userService.getOnlineUserCount();
+      await adsService.campaignAds(ads.id, userCount);
 
       // Send updated impression info to ads' creator
       const creator: User = await userService.findUserById(ads.userId);

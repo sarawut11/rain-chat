@@ -1,21 +1,33 @@
-import * as socketClient from "socket.io-client";
-
+import * as socketIo from "socket.io";
 import { ServicesContext } from "@context";
 import { getAllMessage, subscribeAdsReward } from "@sockets";
 import * as privateSockets from "./private.socket";
 import * as groupSockets from "./group.socket";
 
-let socket = socketClient.Socket;
+let io: socketIo.Server;
 
-const initServer = () => {
+const initServer = server => {
+  io = socketIo(server, {
+    transports: ["websocket"],
+    pingInterval: 25000,
+    pingTimeout: 18000000
+  });
 
-  socket = socketClient("http://localhost:3030?token=rain-chat-server");
+  io.use((socket, next) => {
+    const token = socket.handshake.query.token;
+    if (token === "socket-server") {
+      console.log("Socket => Server socket connected");
+      return next();
+    }
+    return next(new Error(`Socket => Authentication error`));
+  });
 
-  socket.on("connect", () => {
-    socket.on("initSocket", async (data, cbFn) => {
-      const allMessages = await getAllMessage(data);
-      cbFn(allMessages);
-    })
+  io.on("connection", async socket => {
+    socket
+      .on("initSocket", async (data, cbFn) => {
+        const allMessages = await getAllMessage(data);
+        cbFn(allMessages);
+      })
       // Private message
       .on("sendPrivateMsg", async (data, cbFn) => {
         await privateSockets.sendPrivateMsg(socket, data, cbFn);
@@ -103,7 +115,7 @@ const initServer = () => {
 
 const broadcast = (emitName, data, onError?) => {
   try {
-    socket.emit("broadcast", { emitName, data });
+    io.sockets.emit("broadcast", { emitName, data });
   } catch (error) {
     console.log(error);
     if (onError) {
@@ -114,7 +126,7 @@ const broadcast = (emitName, data, onError?) => {
 
 const broadcastChannel = (channelName: string, emitName: string, data: any, onError?) => {
   try {
-    socket.emit("broadcastChannel", { channelName, emitName, data });
+    io.sockets.emit("broadcastChannel", { channelName, emitName, data });
   } catch (error) {
     console.log(error);
     if (onError) {
@@ -125,23 +137,16 @@ const broadcastChannel = (channelName: string, emitName: string, data: any, onEr
 
 const emitTo = (toSocketIds: string, emitName, data, onError?) => {
   try {
-    socket.emit("emitTo", { toSocketIds, emitName, data });
+    io.sockets.emit("emitTo", { toSocketIds, emitName, data });
   } catch (error) {
     if (onError)
       onError(error);
   }
 };
 
-const allSocketCount = (): Promise<number> => new Promise((resolve, reject) => {
-  socket.emit("allSocketCount", count => {
-    resolve(count);
-  });
-});
-
 export const socketServer = {
   initServer,
   broadcast,
   broadcastChannel,
   emitTo,
-  allSocketCount,
 };
