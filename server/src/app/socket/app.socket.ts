@@ -69,8 +69,14 @@ const initServer = server => {
       .on("kickMember", async (data, fn) => {
         await groupSockets.kickMember(socket, data, fn);
       })
-      .on("getGroupMember", async (data, fn) => {
-        await groupSockets.getGroupMember(socket, data, fn);
+      .on("getGroupMember", async (groupId, fn) => {
+        const onlineSockets = await Promise.all(Object.keys(io.sockets.sockets).map(key => {
+          return emitGetResponse(io.sockets.sockets[key], "onlineSockets", groupId);
+        }));
+        await groupSockets.getGroupMember(socket, {
+          groupId,
+          onlineSockets: onlineSockets.join(",").split(",")
+        }, fn);
       })
       .on("banMember", async (data, fn) => {
         await groupSockets.banMember(socket, data, fn);
@@ -133,6 +139,18 @@ const broadcastChannel = (channelName: string, emitName: string, data: any, onEr
       onError(error);
     }
   }
+};
+
+const emitGetResponse = (socket: socketIo.Socket, emitName: string, data): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    try {
+      socket.emit(emitName, data, response => {
+        resolve(response);
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
 };
 
 const emitTo = (toSocketIds: string, emitName, data, onError?) => {

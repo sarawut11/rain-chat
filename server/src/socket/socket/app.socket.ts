@@ -27,6 +27,11 @@ const initServer = server => {
         if (socketid !== "" && socketid !== undefined)
           io.to(socketid).emit(emitName, data);
       });
+    })
+    .on("onlineSockets", (groupId, cbFn) => {
+      io.in(groupId).clients((err, onlineSockets) => {
+        cbFn(onlineSockets);
+      });
     });
 
   // Client Communication
@@ -125,9 +130,7 @@ const initServer = server => {
         serverSocket.emit("kickMember", { ...data, userId }, cbFn);
       })
       .on("getGroupMember", async (groupId, cbFn) => {
-        io.in(groupId).clients((err, onlineSockets) => {
-          serverSocket.emit("getGroupMember", { groupId, onlineSockets }, cbFn);
-        });
+        serverSocket.emit("getGroupMember", groupId, cbFn);
       })
       .on("banMember", async (data, cbFn) => {
         serverSocket.emit("banMember", { ...data, userId }, cbFn);
