@@ -4,9 +4,17 @@ dotenv.config();
 import * as http from "http";
 import { socketServer } from "./socket/index";
 
+let port = 3030;
+const portArgIndex = process.argv.indexOf("--port");
+try {
+  port = Number(process.argv[portArgIndex + 1]);
+} catch (error) {
+  console.log("Error parsing port args");
+}
+
 const server = http.createServer();
 socketServer.initServer(server);
 
-server.listen(3030, () => {
-  console.log("Listening socket server on *:3030");
+server.listen(port, () => {
+  console.log(`Listening socket server on *:${port}`);
 });
