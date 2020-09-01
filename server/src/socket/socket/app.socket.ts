@@ -108,9 +108,9 @@ const initServer = server => {
         serverSocket.emit("getOneGroupItem", { ...data, userId }, cbFn);
       })
       .on("createGroup", async (data, cbFn) => {
-        serverSocket.emit("createGroup", { ...data, userId, socket }, response => {
-          socket.join(data.groupId);
-          cbFn(response);
+        serverSocket.emit("createGroup", { ...data, userId }, groupInfo => {
+          socket.join(groupInfo.groupId);
+          cbFn(groupInfo);
         });
       })
       .on("updateGroupInfo", async (data, cbFn) => {
@@ -127,13 +127,13 @@ const initServer = server => {
         serverSocket.emit("leaveGroup", { ...data, userId });
       })
       .on("kickMember", async (data, cbFn) => {
-        serverSocket.emit("kickMember", { ...data, userId }, cbFn);
+        serverSocket.emit("kickMember", { ...data, ownerId: userId }, cbFn);
       })
       .on("getGroupMember", async (groupId, cbFn) => {
         serverSocket.emit("getGroupMember", groupId, cbFn);
       })
       .on("banMember", async (data, cbFn) => {
-        serverSocket.emit("banMember", { ...data, userId }, cbFn);
+        serverSocket.emit("banMember", { ...data, ownerId: userId }, cbFn);
       })
       .on("findMatch", async (data, cbFn) => {
         serverSocket.emit("findMatch", data, cbFn);

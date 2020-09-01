@@ -15,7 +15,7 @@
     "watch-build": "webpack --config webpack.config.js --progress --colors -w",
     "start-socket": "npm run build-socket && npm run watch-socket",
     "watch-socket": "concurrently -k -p \"[{name}]\" -n \"Node,TypeScript\" -c \"green.bold,cyan.bold,green.bold\" \"npm run runSocketNodemon\" \"npm run watch-socket-build\"",
-    "build-socket": "npm run clean-socket-dist && webpack --config webpack.socket.config.js --progress --colors",
+    "build:socket": "npm run clean-socket-dist && webpack --config webpack.socket.config.js --progress --colors",
     "runSocketNodemon": "nodemon --delay 80ms node --inspect=0.0.0.0:9229 ./dist-socket/index.js",
     "watch-socket-build": "webpack --config webpack.socket.config.js --progress --colors -w",
     "clean-socket-dist": "rimraf dist-socket",

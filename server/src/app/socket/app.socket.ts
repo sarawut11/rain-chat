@@ -46,41 +46,41 @@ const initServer = server => {
       })
       // Group chat
       .on("sendGroupMsg", async (data, cbFn) => {
-        await groupSockets.sendGroupMsg(socket, data, cbFn);
+        await groupSockets.sendGroupMsg(data, cbFn);
       })
       .on("getOneGroupMessages", async (data, fn) => {
-        await groupSockets.getOneGroupMessages(socket, data, fn);
+        await groupSockets.getOneGroupMessages(data, fn);
       })
       .on("getOneGroupItem", async (data, fn) => {
-        await groupSockets.getOneGroupItem(socket, data, fn);
+        await groupSockets.getOneGroupItem(data, fn);
       })
       .on("createGroup", async (data, fn) => {
-        await groupSockets.createGroup(socket, data, fn);
+        await groupSockets.createGroup(data, fn);
       })
       .on("updateGroupInfo", async (data, fn) => {
-        await groupSockets.updateGroupInfo(socket, data, fn);
+        await groupSockets.updateGroupInfo(data, fn);
       })
       .on("joinGroup", async (data, fn) => {
-        await groupSockets.joinGroup(socket, data, fn);
+        await groupSockets.joinGroup(data, fn);
       })
       .on("leaveGroup", async data => {
-        await groupSockets.leaveGroup(socket, data);
+        await groupSockets.leaveGroup(data);
       })
       .on("kickMember", async (data, fn) => {
-        await groupSockets.kickMember(socket, data, fn);
+        await groupSockets.kickMember(data, fn);
       })
       .on("getGroupMember", async (groupId, fn) => {
         const online = await onlineSockets(groupId);
-        await groupSockets.getGroupMember(socket, {
+        await groupSockets.getGroupMember({
           groupId,
           onlineSockets: online
         }, fn);
       })
       .on("banMember", async (data, fn) => {
-        await groupSockets.banMember(socket, data, fn);
+        await groupSockets.banMember(data, fn);
       })
       .on("findMatch", async (data, fn) => {
-        await groupSockets.findMatch(socket, data, fn);
+        await groupSockets.findMatch(data, fn);
       })
 
       // Rain Sockets

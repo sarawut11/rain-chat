@@ -1,4 +1,3 @@
-import * as socketIo from "socket.io";
 import { User, PrivateMessage } from "@models";
 import { ServicesContext } from "@context";
 import { socketServer, socketEventNames } from "@sockets";

@@ -103,9 +103,8 @@ class GroupChat extends Component {
   };
 
   leaveGroup = () => {
-    const userId = this.props.userInfo.id;
     const { homePageList, deleteHomePageList, allGroupChats, deleteGroupChat } = this.props;
-    window.socket.emit('leaveGroup', { userId, groupId: this.chatId });
+    window.socket.emit('leaveGroup', { groupId: this.chatId });
     deleteHomePageList({ homePageList, chatId: this.chatId });
     deleteGroupChat({ allGroupChats, groupId: this.chatId });
     this.props.history.push('/');

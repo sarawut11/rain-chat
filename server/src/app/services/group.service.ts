@@ -1,6 +1,8 @@
 import { query } from "@utils";
 import { Group, User } from "@models";
 
+const RAIN_GROUP_ID = process.env.RAIN_GROUP_ID;
+
 export class GroupService {
   readonly GROUP_TABLE = "group_info";
   readonly GROUP_COLUMNS = {
@@ -97,12 +99,15 @@ export class GroupService {
   async getGroupMember(groupId): Promise<User[]> {
     const sql = `
       SELECT
-        g.userId, u.username, u.name, u.avatar, u.intro, u.socketid
+        g.userId, u.username, u.name, u.avatar, u.intro, u.socketid, u.ban
       FROM user_info AS u
       INNER JOIN ${this.GROUP_USER_TABLE} AS g
       ON g.${this.GROUP_USER_COLUMNS.userId} = u.id
       WHERE g.${this.GROUP_USER_COLUMNS.groupId} = ?`;
     const members: User[] = await query(sql, groupId);
+    if (groupId === RAIN_GROUP_ID) {
+      return members.filter(member => member.ban === 0);
+    }
     return members;
   }
 }

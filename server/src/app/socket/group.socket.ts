@@ -6,7 +6,7 @@ import { socketServer, getGroupItem, socketEventNames } from "@sockets";
 
 const RAIN_GROUP_ID = process.env.RAIN_GROUP_ID;
 
-export const sendGroupMsg = async (socket, data, cbFn) => {
+export const sendGroupMsg = async (data, cbFn) => {
   try {
     if (data.fromUser !== data.userId) {
       console.log("Socket => Send Group Msg | Cracked | userId:", data.userId);
@@ -40,12 +40,11 @@ export const sendGroupMsg = async (socket, data, cbFn) => {
     // cbFn(data);
   } catch (error) {
     console.log("Socket => Send Group Msg | Error:", error.message);
-    socket.emit("error", { code: 500, message: error.message });
   }
 };
 
 // get group messages in a group;
-export const getOneGroupMessages = async (socket, { userId, groupId, start, count }, cbfn) => {
+export const getOneGroupMessages = async ({ userId, groupId, start, count }, cbfn) => {
   try {
     const { groupChatService, groupService } = ServicesContext.getInstance();
     const isInGroup = await groupService.isInGroup(userId, groupId);
@@ -60,12 +59,11 @@ export const getOneGroupMessages = async (socket, { userId, groupId, start, coun
     cbfn(groupMessages);
   } catch (error) {
     console.log("Socket => GetOneGroupMessages | error", error.message);
-    socket.emit("error", { code: 500, message: error.message });
   }
 };
 
 // get group item including messages and group info.
-export const getOneGroupItem = async (socket, { userId, groupId, start }, cbfn) => {
+export const getOneGroupItem = async ({ userId, groupId, start }, cbfn) => {
   try {
     const { groupService } = ServicesContext.getInstance();
     const isInGroup = await groupService.isInGroup(userId, groupId);
@@ -80,11 +78,10 @@ export const getOneGroupItem = async (socket, { userId, groupId, start }, cbfn) 
     cbfn(groupMsgAndInfo);
   } catch (error) {
     console.log("Socket => GetOneGroupItem | Error:", error.message);
-    socket.emit("error", { code: 500, message: error.message });
   }
 };
 
-export const createGroup = async (socket, { userId: creatorId, name, description }, cbfn) => {
+export const createGroup = async ({ userId: creatorId, name, description }, cbfn) => {
   try {
     const { groupService, userService } = ServicesContext.getInstance();
     const groupId = uuid();
@@ -92,7 +89,6 @@ export const createGroup = async (socket, { userId: creatorId, name, description
     const userInfo: User = await userService.findUserById(creatorId);
     if (userInfo.role !== User.ROLE.OWNER && userInfo.role !== User.ROLE.UPGRADED_USER && userInfo.role !== User.ROLE.MODERATOR) {
       console.log("Socket => Create Group | Failed | Free members can't create a group");
-      socket.emit("error", { code: 500, message: "Free Members can't create a group" });
     } else {
       const groupInfo = { groupId, name, description, creatorId, createTime };
       await groupService.createGroup(groupInfo);
@@ -102,11 +98,10 @@ export const createGroup = async (socket, { userId: creatorId, name, description
     }
   } catch (error) {
     console.log("Socket => Create Group | Error:", error.message);
-    socket.emit("error", { code: 500, message: error.message });
   }
 };
 
-export const updateGroupInfo = async (socket, { userId: creatorId, groupId, name, description }, cbfn) => {
+export const updateGroupInfo = async ({ userId: creatorId, groupId, name, description }, cbfn) => {
   try {
     const { groupService } = ServicesContext.getInstance();
     const groupInfo = await groupService.getGroupByGroupId(groupId);
@@ -117,17 +112,15 @@ export const updateGroupInfo = async (socket, { userId: creatorId, groupId, name
     cbfn("Group data modified successfully");
   } catch (error) {
     console.log("Socket => Update Group Info | Error:", error.message);
-    socket.emit("error", { code: 500, message: error.message });
   }
 };
 
-export const joinGroup = async (socket, { userId, groupId }, cbfn) => {
+export const joinGroup = async ({ userId, groupId }, cbfn) => {
   try {
     const { userService, groupService } = ServicesContext.getInstance();
 
     const userInfo = await userService.findUserById(userId);
     const isInGroup = await groupService.isInGroup(userId, groupId);
-    console.log(isInGroup);
     if (!isInGroup) {
       await groupService.joinGroup(userId, groupId);
       socketServer.broadcastChannel(groupId, socketEventNames.GetGroupMsg, {
@@ -146,11 +139,10 @@ export const joinGroup = async (socket, { userId, groupId }, cbfn) => {
     cbfn(groupItem);
   } catch (error) {
     console.log("Socket => Join Group | Error", error.message);
-    socket.emit("error", { code: 500, message: error.message });
   }
 };
 
-export const leaveGroup = async (socket, { userId, groupId }) => {
+export const leaveGroup = async ({ userId, groupId }) => {
   try {
     const { groupService } = ServicesContext.getInstance();
 
@@ -158,16 +150,15 @@ export const leaveGroup = async (socket, { userId, groupId }) => {
     console.log("Socket => LeaveGroup | data:", { groupId, userId }, "time:", nowDate());
   } catch (error) {
     console.log("Socket => Leave Group | Error:", error.message);
-    socket.emit("error", { code: 500, message: error.message });
   }
 };
 
-export const kickMember = async (socket, { userId, groupId }, cbFn) => {
+export const kickMember = async ({ userId, groupId, ownerId }, cbFn) => {
   try {
     console.log("Socket => Kick member request | data:", { groupId, userId });
     const { userService, groupService } = ServicesContext.getInstance();
 
-    const user: User = await userService.getUserBySocketId(socket.id);
+    const user: User = await userService.findUserById(ownerId);
     if (user === undefined) return;
 
     const group: Group = await groupService.getGroupByGroupId(groupId);
@@ -182,14 +173,13 @@ export const kickMember = async (socket, { userId, groupId }, cbFn) => {
     cbFn({ code: 200, data: "Kicked member successfully" });
   } catch (error) {
     console.log("Socket => Kick Member | Error:", error.message);
-    socket.emit("error", { code: 500, message: error.message });
   }
 };
 
-export const banMember = async (socket, { userId, groupId }, cbfn) => {
+export const banMember = async ({ userId, groupId, ownerId }, cbfn) => {
   try {
     const { groupService, userService, banService } = ServicesContext.getInstance();
-    const user: User = await userService.getUserBySocketId(socket.id);
+    const user: User = await userService.findUserById(ownerId);
     if (user === undefined) return;
 
     if (groupId === RAIN_GROUP_ID) { // Vitae Rain Group
@@ -197,7 +187,6 @@ export const banMember = async (socket, { userId, groupId }, cbfn) => {
       if (user.role !== User.ROLE.OWNER && user.role !== User.ROLE.MODERATOR) return;
 
       // Ban user from vitae-rain group
-      await groupService.leaveGroup(userId, groupId);
       await banService.banUserFromGroup(userId, groupId);
       await userService.banUserFromRainGroup(userId);
       const kicker: User = await userService.findUserById(userId);
@@ -220,11 +209,10 @@ export const banMember = async (socket, { userId, groupId }, cbfn) => {
     cbfn({ code: 200, data: "ban member successfully" });
   } catch (error) {
     console.log("error", error.message);
-    socket.emit("error", { code: 500, message: error.message });
   }
 };
 
-export const getGroupMember = async (socket, { groupId, onlineSockets }, cbfn) => {
+export const getGroupMember = async ({ groupId, onlineSockets }, cbfn) => {
   try {
     const { groupService } = ServicesContext.getInstance();
     const RowDataPacket = await groupService.getGroupMember(groupId);
@@ -246,11 +234,10 @@ export const getGroupMember = async (socket, { groupId, onlineSockets }, cbfn) =
     cbfn(userInfos);
   } catch (error) {
     console.log("Socket => Get Group Member | Error:", error.message);
-    socket.emit("error", { code: 500, message: error.message });
   }
 };
 
-export const findMatch = async (socket, { field, searchUser }, cbFn) => {
+export const findMatch = async ({ field, searchUser }, cbFn) => {
   try {
     // searchUser : true => find users | searchUser : false => find groups
     const { userService, groupService } = ServicesContext.getInstance();
@@ -264,6 +251,5 @@ export const findMatch = async (socket, { field, searchUser }, cbFn) => {
     cbFn({ fuzzyMatchResult, searchUser });
   } catch (error) {
     console.log("Socket => Find Match | Error:", error.message);
-    socket.emit("error", { code: 500, message: error.message });
   }
 };

@@ -139,16 +139,18 @@ class GroupChatInfo extends Component {
           </p>
           <p className="noticeContent">{groupInfo.description}</p>
           <p className="memberTitle">
-            {`online users: ${onlineNumber}`}
+            {`Online users: ${onlineNumber}`}
             <span className="showAllMember" onClick={this._showAllMember}>
-              {`${justShowOnlineMember ? 'view all' : 'Just watch online'}`}
+              {`${justShowOnlineMember ? 'View all' : 'Just watch online'}`}
             </span>
           </p>
         </div>
         {this.GroupMemberRender(groupMember)}
-        <p className="leave" onClick={leaveGroup}>
-          Leave group chat
-        </p>
+        {groupInfo.groupId !== 'vitae-rain-group' && (
+          <p className="leave" onClick={leaveGroup}>
+            Leave group chat
+          </p>
+        )}
       </div>
     );
   }
