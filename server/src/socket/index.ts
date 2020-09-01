@@ -13,8 +13,7 @@ try {
 }
 
 const server = http.createServer();
-socketServer.initServer(server);
-
 server.listen(port, () => {
   console.log(`Listening socket server on *:${port}`);
 });
+socketServer.initServer(server);

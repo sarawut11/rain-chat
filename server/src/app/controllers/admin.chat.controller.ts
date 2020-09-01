@@ -1,6 +1,7 @@
 import { ServicesContext } from "@context";
 import { User, Group } from "@models";
 import { isOwner } from "@utils";
+import { socketServer } from "@sockets";
 
 export const getChatAnalytics = async (ctx, next) => {
   try {
@@ -15,14 +16,14 @@ export const getChatAnalytics = async (ctx, next) => {
 
     const users: User[] = await userService.findMatchUsers("%%");
     const userCount = users.length;
-    const onlineUserCount = users.filter(user => user.socketid !== "").length;
+    const onlineSockets = await socketServer.onlineSockets("/");
     const groups: Group[] = await groupService.findMatchGroups("%%");
     const groupCount = groups.length;
 
     ctx.body = {
       success: true,
       userCount,
-      onlineUserCount,
+      onlineUserCount: onlineSockets.length,
       groupCount,
     };
   } catch (error) {

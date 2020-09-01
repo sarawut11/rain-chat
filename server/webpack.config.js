@@ -37,6 +37,7 @@ const config = {
           emitErrors: true,
           failOnHint: true,
         },
+        ws: true,
       },
     }),
     new CopyWebpackPlugin({ patterns: [{ from: 'public', to: 'public' }] }),

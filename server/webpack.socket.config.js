@@ -36,6 +36,7 @@ const config = {
           emitErrors: true,
           failOnHint: true,
         },
+        ws: true,
       },
     }),
   ],
