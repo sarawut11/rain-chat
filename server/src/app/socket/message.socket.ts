@@ -48,10 +48,7 @@ export const getAllMessage = async ({ userId, clientHomePageList, socketId }) =>
     const privateChat = new Map();
     const groupChat = new Map();
 
-    const socketIds = user.socketid.split(",");
-    socketIds.push(socketId);
-    const newSocketIdStr = socketIds.join(",");
-    await userService.saveUserSocketId(userId, newSocketIdStr);
+    await userService.setStatus(userId, User.STATUS.ONLINE);
 
     if (homePageList && homePageList.length) {
       for (const item of homePageList) {

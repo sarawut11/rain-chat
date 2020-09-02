@@ -16,7 +16,7 @@ export const getModsAnalytics = async (ctx, next) => {
 
     const moders: User[] = await userService.findUsersByRole(User.ROLE.MODERATOR);
     const modersCount = moders.length;
-    const onlineModersCount = moders.filter(moder => moder.socketid !== "").length;
+    const onlineModersCount = moders.filter(moder => moder.status === User.STATUS.ONLINE).length;
 
     const moderAmounts = await Promise.all(moders.map(moder => {
       return innerTranService.getPaymentByLastWeeks(moder.id, 1);

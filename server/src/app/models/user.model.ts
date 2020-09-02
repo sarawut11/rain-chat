@@ -7,7 +7,6 @@ export class User {
   public email: string;
   public avatar: string;
   public intro: string;
-  public socketid: string;
   public sponsor: number;
   public balance: number;
   public popBalance: number;
@@ -17,6 +16,7 @@ export class User {
   public lastVitaePostTime: number;
   public ban: number;
   public walletAddress: string;
+  public status: number;
 
   public static readonly ROLE = {
     COMPANY: "COMPANY",
@@ -30,5 +30,10 @@ export class User {
   public static readonly BAN = {
     NONE: 0,
     BANNED: 1,
+  };
+
+  public static readonly STATUS = {
+    OFFLINE: 0,
+    ONLINE: 1,
   };
 }

@@ -32,7 +32,7 @@ export const getHomeAnalytics = async (ctx, next) => {
       if (user.role === User.ROLE.FREE) freeMembersCount++;
       if (user.role === User.ROLE.UPGRADED_USER) upgradedMembersCount++;
       if (user.role === User.ROLE.MODERATOR) moderatorsCount++;
-      if (user.role === User.ROLE.MODERATOR && user.socketid !== "") onlineModeratorsCount++;
+      if (user.role === User.ROLE.MODERATOR && user.status === User.STATUS.ONLINE) onlineModeratorsCount++;
     });
     totalMembersCount = allUsers.length;
 

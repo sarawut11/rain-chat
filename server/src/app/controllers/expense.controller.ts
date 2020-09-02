@@ -46,7 +46,7 @@ export const createExpenseRequest = async (ctx, next) => {
     const insertedExpense = await getFullExpenseInfo(result.insertId);
 
     // Notify other owners
-    socketServer.emitTo(getOwnersSocketId(owners, userInfo.id), socketEventNames.ExpenseCreated, {
+    socketServer.emitTo(getOwnersUserId(owners, userInfo.id), socketEventNames.ExpenseCreated, {
       creatorUsername: username,
       amount,
     });
@@ -134,7 +134,7 @@ export const approveExpense = async (ctx, next) => {
     const updatedExpense = await getFullExpenseInfo(expenseId);
 
     // Notify other owners
-    socketServer.emitTo(getOwnersSocketId(owners, userId), socketEventNames.ExpenseConfirmed, {
+    socketServer.emitTo(getOwnersUserId(owners, userId), socketEventNames.ExpenseConfirmed, {
       creatorUsername: updatedExpense.userId,
       confirmerUsername: username
     });
@@ -182,7 +182,7 @@ export const rejectExpense = async (ctx, next) => {
 
     // Notify other owners
     const owners = await userService.findUsersByRole(User.ROLE.OWNER);
-    socketServer.emitTo(getOwnersSocketId(owners, userId), socketEventNames.ExpenseRejected, {
+    socketServer.emitTo(getOwnersUserId(owners, userId), socketEventNames.ExpenseRejected, {
       creatorUsername: updatedExpense.userId,
       rejectorUsername: username
     });
@@ -265,10 +265,10 @@ const generateFileName = (username: string) => {
   return `expense/expense-${username}-${moment().utc().unix()}.pdf`;
 };
 
-const getOwnersSocketId = (users: User[], userId: number) => {
-  const socketids = [];
-  users.filter(user => user.id !== userId).forEach(user => socketids.push(user.socketid));
-  return socketids.join(",");
+const getOwnersUserId = (users: User[], userId: number) => {
+  const userIds = [];
+  users.filter(user => user.id !== userId).forEach(user => userIds.push(user.id));
+  return userIds.join(",");
 };
 
 const checkApproves = async (expenseId: number, ownerCount: number) => {

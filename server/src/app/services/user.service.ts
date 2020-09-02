@@ -15,7 +15,6 @@ export class UserService {
     email: "email",
     avatar: "avatar",
     intro: "intro",
-    socketId: "socketid",
     sponsorId: "sponsor",
     walletAddress: "walletAddress",
     balance: "balance",
@@ -25,6 +24,7 @@ export class UserService {
     lastUpgradeTime: "lastUpgradeTime",
     lastVitaePostTime: "lastVitaePostTime",
     ban: "ban",
+    status: "status",
   };
 
   readonly USER_REL_TABLE = "user_user_relation";
@@ -38,8 +38,8 @@ export class UserService {
   };
 
   constructor() {
-    // Clear All User's socketId
-    this.clearAllSocketIds();
+    // Clear All User's status
+    this.clearStatus();
   }
 
   // Fuzzy matching users
@@ -350,28 +350,17 @@ export class UserService {
     return query(sql, userId);
   }
 
-  clearAllSocketIds() {
-    const sql = `UPDATE ${this.USER_TABLE} SET socketid = '';`;
-    return query(sql);
+  clearStatus() {
+    const sql = `UPDATE ${this.USER_TABLE} SET ${this.USER_COL.status} = ?;`;
+    return query(sql, User.STATUS.OFFLINE);
   }
 
-  saveUserSocketId(userId, socketId) {
-    const data = [socketId, userId];
+  async setStatus(userId: number, status: number) {
     const sql = `
       UPDATE ${this.USER_TABLE}
-      SET ${this.USER_COL.socketId} = ?
+      SET ${this.USER_COL.status} = ?
       WHERE ${this.USER_COL.id} = ? LIMIT 1;`;
-    return query(sql, data);
-  }
-
-  async getSocketid(userId: number): Promise<string[]> {
-    const sql = `
-      SELECT ${this.USER_COL.socketId}
-      FROM ${this.USER_TABLE}
-      WHERE ${this.USER_COL.id} = ? LIMIT 1;`;
-    const users: User[] = await query(sql, userId);
-    if (users.length === 0) return [];
-    return users[0].socketid.split(",");
+    return query(sql, [status, userId]);
   }
 
   async getOnlineUserCount(): Promise<number> {
@@ -379,19 +368,9 @@ export class UserService {
       SELECT ${this.USER_COL.id}
       FROM ${this.USER_TABLE}
       WHERE
-        ${this.USER_COL.socketId} != "" && ${this.USER_COL.socketId} != ",";`;
-    const users: User[] = await query(sql);
+        ${this.USER_COL.status} >= ?;`;
+    const users: User[] = await query(sql, [User.STATUS.ONLINE]);
     return users.length;
-  }
-
-  async getUserBySocketId(socketId): Promise<User> {
-    if (socketId === "") socketId = undefined;
-    const sql = `
-      SELECT * FROM ${this.USER_TABLE}
-      WHERE ${this.USER_COL.socketId} LIKE '%${socketId}%' LIMIT 1;`;
-    const users: User[] = await query(sql);
-    if (users.length === 0) return undefined;
-    return users[0];
   }
 
   async getUsersByPopLimited(): Promise<User[]> {

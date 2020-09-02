@@ -10,7 +10,7 @@ const path = require('path');
 
 const config = {
   mode: 'development',
-  entry: './src/socket/index.ts',
+  entry: './src/app/socket.ts',
   target: 'node',
   output: {
     // Puts the output at the root of the dist folder

@@ -2,13 +2,13 @@ import { User } from "@models";
 import { socketServer, socketEventNames } from "@sockets";
 
 export const updateBalanceSocket = (updatedUser: User) => {
-  socketServer.emitTo(updatedUser.socketid, socketEventNames.UpdateBalance, {
+  socketServer.emitTo(updatedUser.id, socketEventNames.UpdateBalance, {
     balance: updatedUser.balance,
   }, error => console.log("Socket => Update Balance | Error:", error.message));
 };
 
 export const unknownDepositSocket = (updatedUser: User, amount: number) => {
-  socketServer.emitTo(updatedUser.socketid, socketEventNames.UnknownDeposit, {
+  socketServer.emitTo(updatedUser.id, socketEventNames.UnknownDeposit, {
     amount,
     balance: updatedUser.balance,
   }, error => console.log("Socket => Unknown Deposit | Error:", error.message));

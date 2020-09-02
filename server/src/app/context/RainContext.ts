@@ -114,9 +114,8 @@ export class RainContext {
       await adsService.campaignAds(ads.id, RainContext.usersToRainAds.length);
 
       // Send updated impression info to ads' creator
-      const creator: User = await userService.findUserById(ads.userId);
       const updatedAd: Ads = await adsService.findAdsById(ads.id);
-      socketServer.emitTo(creator.socketid, socketEventNames.UpdateAdsImpressions, {
+      socketServer.emitTo(ads.userId, socketEventNames.UpdateAdsImpressions, {
         adsInfo: updatedAd
       });
     } catch (error) {
@@ -155,9 +154,8 @@ export class RainContext {
       await adsService.campaignAds(ads.id, userCount);
 
       // Send updated impression info to ads' creator
-      const creator: User = await userService.findUserById(ads.userId);
       const updatedAd: Ads = await adsService.findAdsById(ads.id);
-      socketServer.emitTo(creator.socketid, socketEventNames.UpdateAdsImpressions, {
+      socketServer.emitTo(ads.userId, socketEventNames.UpdateAdsImpressions, {
         adsInfo: updatedAd
       });
     }

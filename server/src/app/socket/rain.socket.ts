@@ -30,7 +30,7 @@ export const updateAdsStatus = async (ads: Ads) => {
       reviewerAvatar: reviewer === undefined ? undefined : reviewer.avatar,
     }
   };
-  socketServer.emitTo(user.socketid, socketEventNames.UpdateAdsStatus, data,
+  socketServer.emitTo(user.id, socketEventNames.UpdateAdsStatus, data,
     (error) => console.error(error.message));
   // Notify Moderators & Owners
   socketServer.broadcastChannel(Channels.OwnerChannel, socketEventNames.UpdateAdsStatus,
@@ -40,7 +40,7 @@ export const updateAdsStatus = async (ads: Ads) => {
 };
 
 export const getRain = async (rainedUser: User, reward: number) => {
-  socketServer.emitTo(rainedUser.socketid, socketEventNames.GetRain, {
+  socketServer.emitTo(rainedUser.id, socketEventNames.GetRain, {
     reward,
     balance: rainedUser.balance
   }, error => console.log("Socket => GetRain | Error:", error.message));

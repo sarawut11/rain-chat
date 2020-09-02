@@ -16,7 +16,7 @@ export const getChatAnalytics = async (ctx, next) => {
 
     const users: User[] = await userService.findMatchUsers("%%");
     const userCount = users.length;
-    const onlineSockets = await socketServer.onlineSockets("/");
+    const onlineSockets = await socketServer.onlineUsers("/");
     const groups: Group[] = await groupService.findMatchGroups("%%");
     const groupCount = groups.length;
 

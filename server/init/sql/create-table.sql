@@ -27,7 +27,6 @@ CREATE TABLE `user_info` (
   `email` varchar(40) NOT NULL DEFAULT '',
   `avatar` varchar(250) DEFAULT '',
   `intro` varchar(100) DEFAULT '',
-  `socketid` char(255) DEFAULT '',
   `sponsor` int(11) DEFAULT 1,
   `walletAddress` char(255) DEFAULT '',
   `balance` double DEFAULT 0,
@@ -37,6 +36,7 @@ CREATE TABLE `user_info` (
   `lastUpgradeTime` int(11) NOT NULL DEFAULT 0,
   `lastVitaePostTime` int(11) NOT NULL DEFAULT 0,
   `ban` tinyint(1) NOT NULL DEFAULT 0,
+  `status` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 # Dump of table group_info

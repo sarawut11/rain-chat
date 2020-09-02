@@ -99,7 +99,7 @@ export class GroupService {
   async getGroupMember(groupId): Promise<User[]> {
     const sql = `
       SELECT
-        g.userId, u.username, u.name, u.avatar, u.intro, u.socketid, u.ban
+        g.userId, u.username, u.name, u.avatar, u.intro, u.ban
       FROM user_info AS u
       INNER JOIN ${this.GROUP_USER_TABLE} AS g
       ON g.${this.GROUP_USER_COLUMNS.userId} = u.id

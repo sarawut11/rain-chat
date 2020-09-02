@@ -38,7 +38,7 @@ export class TransactionContext {
   }
 
   async expireTransactionRequest(tranId: number) {
-    const { userService, transactionService, adsService } = ServicesContext.getInstance();
+    const { transactionService, adsService } = ServicesContext.getInstance();
 
     const tranInfo: Transaction = await transactionService.getTransactionById(tranId);
     if (tranInfo === undefined) return;
@@ -52,28 +52,24 @@ export class TransactionContext {
     }
 
     // Send expire socket
-    const userInfo: User = await userService.findUserById(tranInfo.userId);
-    if (userInfo === undefined) return;
-    socketServer.emitTo(userInfo.socketid, socketEventNames.TransactionExpired, {
+    socketServer.emitTo(tranInfo.userId, socketEventNames.TransactionExpired, {
       type: tranInfo.type,
       expectAmount: tranInfo.expectAmount,
       time: tranInfo.time,
     });
 
-    console.log(`Expire Transaction => Success | transactionRequestId:${tranId}, username:${userInfo.username}`);
+    console.log(`Expire Transaction => Success | transactionRequestId:${tranId}, userId:${tranInfo.userId}`);
   }
 
   async confrimTransactionRequest(tranId: number, txId: string, paidAmount: number, confirmTime: number) {
-    const { userService, transactionService } = ServicesContext.getInstance();
+    const { transactionService } = ServicesContext.getInstance();
     const tranInfo: Transaction = await transactionService.getTransactionById(tranId);
     if (tranInfo === undefined) return;
     if (tranInfo.status !== Transaction.STATUS.REQUESTED) return;
 
     await transactionService.confirmTransaction(tranId, txId, paidAmount, confirmTime);
 
-    const userInfo: User = await userService.findUserById(tranInfo.userId);
-    if (userInfo === undefined) return;
-    socketServer.emitTo(userInfo.socketid, socketEventNames.TransactionConfirmed, {
+    socketServer.emitTo(tranInfo.userId, socketEventNames.TransactionConfirmed, {
       type: tranInfo.type,
       paidAmount,
       expectAmount: tranInfo.expectAmount,
@@ -81,6 +77,6 @@ export class TransactionContext {
       confirmTime,
     });
 
-    console.log(`Confirm Transaction => Success | transactionRequestId:${tranId}, username:${userInfo.username}`);
+    console.log(`Confirm Transaction => Success | transactionRequestId:${tranId}, userId:${tranInfo.userId}`);
   }
 }

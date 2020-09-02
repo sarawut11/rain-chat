@@ -2,11 +2,11 @@ import * as uuid from "uuid/v1";
 import { User, Group, Setting, GroupMessage } from "@models";
 import { ServicesContext } from "@context";
 import { isVitaePostEnabled, now, nowDate } from "@utils";
-import { socketServer, getGroupItem, socketEventNames } from "@sockets";
+import { getGroupItem, socketEventNames } from "@sockets";
 
 const RAIN_GROUP_ID = process.env.RAIN_GROUP_ID;
 
-export const sendGroupMsg = async (data, cbFn) => {
+export const sendGroupMsg = async (data, enableFn, cbFn) => {
   try {
     if (data.fromUser !== data.userId) {
       console.log("Socket => Send Group Msg | Cracked | userId:", data.userId);
@@ -26,18 +26,15 @@ export const sendGroupMsg = async (data, cbFn) => {
       const vitaePostTime: number = await settingService.getSettingValue(Setting.KEY.VITAE_POST_TIME);
       data.message = await settingService.getSettingValue(Setting.KEY.VITAE_POST_TEXT);
       await userService.resetLastVitaePostTime(user.id);
-      setTimeout(() => {
-        socketServer.emitTo(user.socketid, socketEventNames.EnableVitaePost, {});
-      }, vitaePostTime);
+      setTimeout(() => enableFn(user.id, socketEventNames.EnableVitaePost, {}), vitaePostTime);
     }
     if (!data) return;
     data.attachments = JSON.stringify(data.attachments);
     data.avatar = user.avatar;
     data.time = now();
     await groupChatService.saveGroupMsg({ ...data });
-    socketServer.broadcastChannel(data.groupId, socketEventNames.GetGroupMsg, data);
     console.log("Socket => SendGroupMsg | data:", data);
-    // cbFn(data);
+    cbFn(data.groupId, socketEventNames.GetGroupMsg, data);
   } catch (error) {
     console.log("Socket => Send Group Msg | Error:", error.message);
   }
@@ -81,7 +78,7 @@ export const getOneGroupItem = async ({ userId, groupId, start }, cbfn) => {
   }
 };
 
-export const createGroup = async ({ userId: creatorId, name, description }, cbfn) => {
+export const createGroup = async (socket, { userId: creatorId, name, description }, cbfn) => {
   try {
     const { groupService, userService } = ServicesContext.getInstance();
     const groupId = uuid();
@@ -94,6 +91,7 @@ export const createGroup = async ({ userId: creatorId, name, description }, cbfn
       await groupService.createGroup(groupInfo);
       await groupService.joinGroup(creatorId, groupId);
       console.log("Socket => Create Group | data:", groupInfo, "time:", new Date().toLocaleString());
+      socket.join(groupId);
       cbfn(groupInfo);
     }
   } catch (error) {
@@ -115,7 +113,7 @@ export const updateGroupInfo = async ({ userId: creatorId, groupId, name, descri
   }
 };
 
-export const joinGroup = async ({ userId, groupId }, cbfn) => {
+export const joinGroup = async (socket, { userId, groupId }, joinFn, cbfn) => {
   try {
     const { userService, groupService } = ServicesContext.getInstance();
 
@@ -123,7 +121,8 @@ export const joinGroup = async ({ userId, groupId }, cbfn) => {
     const isInGroup = await groupService.isInGroup(userId, groupId);
     if (!isInGroup) {
       await groupService.joinGroup(userId, groupId);
-      socketServer.broadcastChannel(groupId, socketEventNames.GetGroupMsg, {
+      socket.join(groupId);
+      joinFn(groupId, socketEventNames.GetGroupMsg, {
         id: userInfo.id,
         username: userInfo.username,
         name: userInfo.name,
@@ -142,18 +141,19 @@ export const joinGroup = async ({ userId, groupId }, cbfn) => {
   }
 };
 
-export const leaveGroup = async ({ userId, groupId }) => {
+export const leaveGroup = async (socket, { userId, groupId }) => {
   try {
     const { groupService } = ServicesContext.getInstance();
 
     await groupService.leaveGroup(userId, groupId);
     console.log("Socket => LeaveGroup | data:", { groupId, userId }, "time:", nowDate());
+    socket.leave(groupId);
   } catch (error) {
     console.log("Socket => Leave Group | Error:", error.message);
   }
 };
 
-export const kickMember = async ({ userId, groupId, ownerId }, cbFn) => {
+export const kickMember = async ({ userId, groupId, ownerId }, kickFn, cbFn) => {
   try {
     console.log("Socket => Kick member request | data:", { groupId, userId });
     const { userService, groupService } = ServicesContext.getInstance();
@@ -168,7 +168,7 @@ export const kickMember = async ({ userId, groupId, ownerId }, cbFn) => {
     await groupService.leaveGroup(userId, groupId);
     const kicker: User = await userService.findUserById(userId);
     if (kicker !== undefined)
-      socketServer.emitTo(kicker.socketid, socketEventNames.KickedFromGroup, { groupId });
+      kickFn(kicker.id, socketEventNames.KickedFromGroup, { groupId });
     console.log("Socket => KickMember | Kicked:", { userId, groupId }, "time:", nowDate());
     cbFn({ code: 200, data: "Kicked member successfully" });
   } catch (error) {
@@ -176,7 +176,7 @@ export const kickMember = async ({ userId, groupId, ownerId }, cbFn) => {
   }
 };
 
-export const banMember = async ({ userId, groupId, ownerId }, cbfn) => {
+export const banMember = async ({ userId, groupId, ownerId }, kickFn, cbfn) => {
   try {
     const { groupService, userService, banService } = ServicesContext.getInstance();
     const user: User = await userService.findUserById(ownerId);
@@ -191,7 +191,7 @@ export const banMember = async ({ userId, groupId, ownerId }, cbfn) => {
       await userService.banUserFromRainGroup(userId);
       const kicker: User = await userService.findUserById(userId);
       if (kicker !== undefined)
-        socketServer.emitTo(kicker.socketid, socketEventNames.KickedFromGroup, { groupId });
+        kickFn(kicker.id, socketEventNames.KickedFromGroup, { groupId });
     } else {  // General Group
       // Check Group Ownership
       const group = await groupService.getGroupByGroupId(groupId);
@@ -203,7 +203,7 @@ export const banMember = async ({ userId, groupId, ownerId }, cbfn) => {
       await banService.banUserFromGroup(userId, groupId);
       const kicker: User = await userService.findUserById(userId);
       if (kicker !== undefined)
-        socketServer.emitTo(kicker.socketid, socketEventNames.KickedFromGroup, { groupId });
+        kickFn(kicker.id, socketEventNames.KickedFromGroup, { groupId });
     }
     console.log(`Socket => BanMember | User:${userId} from Group:${groupId} | time: ${nowDate()}`);
     cbfn({ code: 200, data: "ban member successfully" });
@@ -212,23 +212,17 @@ export const banMember = async ({ userId, groupId, ownerId }, cbfn) => {
   }
 };
 
-export const getGroupMember = async ({ groupId, onlineSockets }, cbfn) => {
+export const getGroupMember = async ({ groupId, onlineUsers }, cbfn) => {
   try {
     const { groupService } = ServicesContext.getInstance();
     const RowDataPacket = await groupService.getGroupMember(groupId);
     const userInfos = JSON.parse(JSON.stringify(RowDataPacket));
+    console.log(onlineUsers);
     userInfos.forEach(userInfo => {
       userInfo.status = 0;
-      if (userInfo.socketid) {
-        const socketIds: string[] = userInfo.socketid.split(",");
-        for (const onlineSocket of onlineSockets) {
-          const socketExist = socketIds.some(socketId => socketId === onlineSocket);
-          if (socketExist) {
-            userInfo.status = 1;
-          }
-        }
+      if (onlineUsers.includes(`${userInfo.userId}`)) {
+        userInfo.status = 1;
       }
-      delete userInfo.socketid;
     });
     console.log("Socket => GetGroupMember | data:", groupId, "time:", nowDate().unix());
     cbfn(userInfos);
