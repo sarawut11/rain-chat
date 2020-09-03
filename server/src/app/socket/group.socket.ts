@@ -217,7 +217,6 @@ export const getGroupMember = async ({ groupId, onlineUsers }, cbfn) => {
     const { groupService } = ServicesContext.getInstance();
     const RowDataPacket = await groupService.getGroupMember(groupId);
     const userInfos = JSON.parse(JSON.stringify(RowDataPacket));
-    console.log(onlineUsers);
     userInfos.forEach(userInfo => {
       userInfo.status = 0;
       if (onlineUsers.includes(`${userInfo.userId}`)) {

@@ -44,7 +44,7 @@ export const getFinancialAnalytics = async (ctx, next) => {
     });
 
     // Get Company Maintenance Amount
-    const maintenanceAmount: number = await innerTranService.getAmount(COMPANY_USERID);
+    const maintenanceAmount: number = await userService.getBalance(COMPANY_USERID);
 
     ctx.body = {
       success: true,

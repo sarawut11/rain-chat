@@ -69,7 +69,7 @@ export class GroupChatService {
         FROM ${this.RAIN_G_TNAME}
         GROUP BY ${this.COLUMNS.fromUser}
       ) as t1
-      WHERE ${this.COLUMNS.fromUser} != 0
+      WHERE ${this.COLUMNS.fromUser} > 2
       ORDER BY ${this.COLUMNS.time} DESC LIMIT ?;`;
     const msg: GroupMessage[] = await query(sql, limit);
     return msg;

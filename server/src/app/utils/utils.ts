@@ -93,8 +93,8 @@ export const checkUserInfo = (username, role?): Promise<{
 export const shareRevenue = async (amount: number, role: string, type: number) => {
   const { userService, innerTranService } = ServicesContext.getInstance();
   if (role === User.ROLE.COMPANY) {
-    // Deposit Company Wallet directly later ...
     // Add Inner Transactions
+    await userService.addBalance(COMPANY_USERID, amount);
     await innerTranService.addTrans([COMPANY_USERID], amount, type);
   }
   else {
