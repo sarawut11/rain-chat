@@ -42,7 +42,7 @@ export class RainContext {
     try {
       setTimeout(() => this.stockpileRain(), this.settings.STOCKPILE_RAIN_INTERVAL);
 
-      const { userService } = ServicesContext.getInstance();
+      const { userService, groupChatService } = ServicesContext.getInstance();
       const stockpile = await userService.findUserById(this.COMPANY_STOCKPILE_USERID);
       if (stockpile === undefined) {
         console.log("Stockpile Rain => No stockpile");
@@ -55,6 +55,7 @@ export class RainContext {
 
       console.log("Stockpile Rain => Raining", this.settings.STOCKPILE_RAIN_AMOUNT);
       await userService.addBalance(this.COMPANY_STOCKPILE_USERID, -this.settings.STOCKPILE_RAIN_AMOUNT);
+      await groupChatService.clearRainRoomMsg(1500);
       await this.rainUsersByLastActivity(this.settings.STOCKPILE_RAIN_AMOUNT);
     } catch (error) {
       console.log("Stockpile Rain => Failed,", error.message);
@@ -66,7 +67,7 @@ export class RainContext {
     try {
       setTimeout(() => this.campaignRainAds(), this.settings.RAIN_ADS_INTERVAL + this.settings.RAIN_ADS_DURATION);
 
-      const { userService, adsService } = ServicesContext.getInstance();
+      const { userService, adsService, groupChatService } = ServicesContext.getInstance();
       const ads: Ads = await adsService.findAdsToCampaign(Ads.TYPE.RainRoomAds);
       if (ads === undefined) {
         console.log("Rain Room Ads => No Ads to rain");
@@ -99,6 +100,7 @@ export class RainContext {
         duration: this.settings.RAIN_ADS_DURATION
       });
       await delay(this.settings.RAIN_ADS_DURATION);
+      await groupChatService.clearRainRoomMsg(1500);
 
       // Rain Rewards after ads duration
       const impressions = ads.impressions;

@@ -25,16 +25,6 @@ export class GroupChatService {
     return query(sql, [groupId, start, count]);
   }
 
-  /**
-   * Save chat history
-   * @param   userId  User Id
-   * @param   groupId  Group Id
-   * @param   message  Message
-   * @param   name     Username
-   * @param   time     Time
-   * @return
-   */
-
   saveGroupMsg({ fromUser, groupId, message, time, attachments }) {
     const data = [fromUser, groupId, message, time, attachments];
     const sql =
@@ -73,5 +63,18 @@ export class GroupChatService {
       ORDER BY ${this.COLUMNS.time} DESC LIMIT ?;`;
     const msg: GroupMessage[] = await query(sql, limit);
     return msg;
+  }
+
+  async clearRainRoomMsg(keepNumber: number) {
+    const sql = `
+      DELETE FROM ${this.RAIN_G_TNAME}
+      WHERE ${this.COLUMNS.id} NOT IN (
+        SELECT t.${this.COLUMNS.id} FROM (
+          SELECT ${this.COLUMNS.id}
+          FROM ${this.RAIN_G_TNAME}
+          ORDER BY ${this.COLUMNS.id} DESC LIMIT ?
+        ) as t
+      );`;
+    return query(sql, keepNumber);
   }
 }
