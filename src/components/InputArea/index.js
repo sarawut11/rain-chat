@@ -302,7 +302,7 @@ class InputArea extends Component {
         {showEmojiPicker && (
           <Picker
             onSelect={this._selectEmoji}
-            backgroundImageFn={() => 'https://cdn.aermin.top/emojione.png'}
+            backgroundImageFn={() => '/assets/emojione.png'}
             showPreview={false}
           />
         )}
