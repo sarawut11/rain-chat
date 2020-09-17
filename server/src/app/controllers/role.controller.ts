@@ -37,6 +37,14 @@ export const getMembershipPrice = async (ctx, next) => {
     const userInfo: User = await userService.findUserByUsername(username);
     const membershipPriceUsd: number = await settingService.getSettingValue(Setting.KEY.MEMBERSHIP_PRICE_USD);
     const vitaePrice = roundPrice(usdToVitae(membershipPriceUsd));
+    if (vitaePrice <= 0) {
+      console.log(`Get Membership Price => Failed | CMC Vitae Price Incorrect | username:${username}`);
+      ctx.body = {
+        success: false,
+        message: "Get Membership Price failed"
+      };
+      return;
+    }
     await membershipPriceService.savePrice(userInfo.id, vitaePrice);
 
     ctx.body = {
@@ -172,6 +180,14 @@ export const upgradeMembershipBalance = async (ctx, next) => {
       ctx.body = {
         success: false,
         message: "You can't upgrade your membership."
+      };
+      return;
+    }
+    if (Number(expectAmount) < 0) {
+      console.log(`Membership Upgrade Balance => Failed | Negotive expected amount | username:${username}`);
+      ctx.body = {
+        success: false,
+        message: "Insufficient balance."
       };
       return;
     }
